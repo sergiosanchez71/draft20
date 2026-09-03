@@ -1,0 +1,24 @@
+{
+    "id": "atraco",
+    "items": [
+        { "id": "atr_cerebro_operacion",          "emoji": "🧠", "valor": 10 },
+        { "id": "atr_hacker",                     "emoji": "💻", "valor": 9  },
+        { "id": "atr_conductor_profesional",      "emoji": "🏎️", "valor": 8  },
+        { "id": "atr_experto_armas",              "emoji": "🔫", "valor": 8  },
+        { "id": "atr_soporte_tecnico",            "emoji": "🛠️", "valor": 8  },
+        { "id": "atr_locksmith",                  "emoji": "🔐", "valor": 7  },
+        { "id": "atr_camuflaje",                  "emoji": "🥷", "valor": 7  },
+        { "id": "atr_contacto_interno",           "emoji": "🕵️", "valor": 6  },
+        { "id": "atr_experto_disfraz",            "emoji": "🎭", "valor": 6  },
+
+        { "id": "atr_delata_en_5_min",            "emoji": "🤐", "valor": 1  },
+        { "id": "atr_disfraz_payaso",             "emoji": "🤡", "valor": 1  },
+        { "id": "atr_pistola_de_agua",            "emoji": "💧", "valor": 1  },
+        { "id": "atr_olvido_guantes",             "emoji": "🧤", "valor": 1  },
+        { "id": "atr_maletin_solo_lleva_sandwiches","emoji": "🥪", "valor": 1  },
+        { "id": "atr_pierde_calzoncillos_twitter","emoji": "🩲", "valor": 1  },
+        { "id": "atr_celiaco_helicoptero",        "emoji": "🥖", "valor": 2  },
+        { "id": "atr_se_olvida_disfraces",        "emoji": "👕", "valor": 2  },
+        { "id": "atr_molotov_de_agua",            "emoji": "🍶", "valor": 2  }
+    ]
+}

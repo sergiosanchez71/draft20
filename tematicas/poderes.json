@@ -1,0 +1,22 @@
+{
+    "id": "poderes",
+    "items": [
+        { "id": "pod_volar",                       "emoji": "🦅",  "valor": 10 },
+        { "id": "pod_viajar_tiempo",               "emoji": "⌛",  "valor": 10 },
+        { "id": "pod_super_inteligencia",          "emoji": "🧠",  "valor": 10 },
+        { "id": "pod_telequinesis",                "emoji": "🫳", "valor": 9  },
+        { "id": "pod_invisibilidad",               "emoji": "👻",  "valor": 9  },
+        { "id": "pod_super_velocidad",             "emoji": "⚡",  "valor": 9  },
+        { "id": "pod_telepatia",                   "emoji": "📡",  "valor": 8  },
+        { "id": "pod_regeneracion",                "emoji": "❤️‍🩹", "valor": 8  },
+
+        { "id": "pod_halitosis_perpetua",          "emoji": "🦨",  "valor": 1  },
+        { "id": "pod_solo_de_noche",               "emoji": "🌙",  "valor": 3  },
+        { "id": "pod_olor_pies_perpetuo",          "emoji": "🦶",  "valor": 1  },
+        { "id": "pod_si_llueve_no_funciona",       "emoji": "☔",  "valor": 2  },
+        { "id": "pod_gritar_para_usarlo",          "emoji": "📢",  "valor": 2  },
+        { "id": "pod_max_15_min",                  "emoji": "⏱️", "valor": 3  },
+        { "id": "pod_siempre_descalzo",            "emoji": "🩴", "valor": 2  },
+        { "id": "pod_solo_mirando_al_norte",       "emoji": "🧭",  "valor": 1  }
+    ]
+}

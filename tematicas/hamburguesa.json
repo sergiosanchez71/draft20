@@ -1,0 +1,25 @@
+{
+    "id": "hamburguesa",
+    "items": [
+        { "id": "ing_pan_brioche",           "emoji": "🍞", "valor": 8  },
+        { "id": "ing_carne_wagyu",           "emoji": "🥩", "valor": 10 },
+        { "id": "ing_queso_cheddar",         "emoji": "🧀", "valor": 6  },
+        { "id": "ing_bacon_crujiente",       "emoji": "🥓", "valor": 7  },
+        { "id": "ing_cebolla_caramelizada",  "emoji": "🧅", "valor": 5  },
+        { "id": "ing_aguacate",              "emoji": "🥑", "valor": 6  },
+        { "id": "ing_trufa_negra",           "emoji": "🟤", "valor": 10 },
+        { "id": "ing_huevo_organico",        "emoji": "🍳", "valor": 7  },
+        { "id": "ing_lechuga",               "emoji": "🥬", "valor": 2  },
+        { "id": "ing_tomate",                "emoji": "🍅", "valor": 2  },
+        { "id": "ing_pepinillos",            "emoji": "🥒", "valor": 3  },
+        { "id": "ing_ketchup",               "emoji": "🍅", "valor": 1  },
+        { "id": "ing_mostaza",               "emoji": "🟡", "valor": 2  },
+        { "id": "ing_mayonesa",              "emoji": "🥫", "valor": 2  },
+        { "id": "ing_pan_sesamo",            "emoji": "🍞", "valor": 3  },
+        { "id": "ing_cebolla_cruda",         "emoji": "🧅", "valor": 3  },
+        { "id": "ing_pepinillo_solo",        "emoji": "🥒", "valor": 1  },
+        { "id": "ing_salsa_soya_caducada",   "emoji": "🥫", "valor": 1  },
+        { "id": "ing_queso_naranja_plastico","emoji": "🧀", "valor": 1  },
+        { "id": "ing_cucaracha_confitada",   "emoji": "🪳", "valor": 1  }
+    ]
+}

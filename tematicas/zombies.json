@@ -1,0 +1,25 @@
+{
+    "id": "zombies",
+    "items": [
+        { "id": "arm_katana",              "emoji": "⚔️", "valor": 10 },
+        { "id": "arm_motosierra",          "emoji": "🪚", "valor": 9  },
+        { "id": "ref_bunker_subterraneo",  "emoji": "🏰", "valor": 9  },
+        { "id": "ref_mansion_fortificada", "emoji": "🏛️", "valor": 8  },
+        { "id": "com_ex_marine",           "emoji": "🪖", "valor": 7  },
+        { "id": "arm_escopeta",            "emoji": "🔫", "valor": 8  },
+        { "id": "arm_bate_clavos",         "emoji": "🏏", "valor": 5  },
+        { "id": "arm_pistola",             "emoji": "🔫", "valor": 5  },
+        { "id": "arm_machete",             "emoji": "🔪", "valor": 4  },
+        { "id": "ref_estacion_policial",   "emoji": "🏛️", "valor": 5  },
+        { "id": "ref_supermercado",        "emoji": "🏪", "valor": 4  },
+        { "id": "ref_camion_blindado",     "emoji": "🚛", "valor": 6  },
+        { "id": "com_medico_militar",      "emoji": "🧑‍⚕️", "valor": 7  },
+        { "id": "com_hacker",              "emoji": "💻", "valor": 5  },
+        { "id": "com_gato_callejero",      "emoji": "🐱", "valor": 4  },
+        { "id": "arm_tenedor",             "emoji": "🍴", "valor": 3  },
+        { "id": "ref_cueva_humeda",        "emoji": "🕳️", "valor": 2  },
+        { "id": "ref_contenedor_basura",   "emoji": "🗑️", "valor": 2  },
+        { "id": "com_bebe_lloron",         "emoji": "👶", "valor": 1  },
+        { "id": "com_perro_3_patas",       "emoji": "🐕", "valor": 2  }
+    ]
+}

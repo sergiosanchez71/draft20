@@ -1,0 +1,26 @@
+{
+    "id": "videojuegos",
+    "items": [
+        { "id": "vj_mundo_abierto",            "emoji": "🌐", "valor": 10 },
+        { "id": "vj_historia_brutal",         "emoji": "📖", "valor": 9  },
+        { "id": "vj_super_inteligencia",      "emoji": "🧠", "valor": 9  },
+        { "id": "vj_coop_asiento",            "emoji": "👥", "valor": 8  },
+        { "id": "vj_mods_infinitos",          "emoji": "🔧", "valor": 8  },
+        { "id": "vj_banda_sonora_epica",      "emoji": "🎵", "valor": 8  },
+        { "id": "vj_studio_from",             "emoji": "⚔️", "valor": 9  },
+        { "id": "vj_studio_rockstar",         "emoji": "🤠", "valor": 10 },
+        { "id": "vj_studio_nintendo",         "emoji": "🍄", "valor": 10 },
+
+        { "id": "vj_microtransacciones",      "emoji": "💳", "valor": 2  },
+        { "id": "vj_lanzamiento_bug",         "emoji": "🐛", "valor": 1  },
+        { "id": "vj_dlc_paywall",             "emoji": "🧱", "valor": 3  },
+        { "id": "vj_drm_always_on",           "emoji": "🔒", "valor": 1  },
+        { "id": "vj_season_pass_vacio",       "emoji": "📭", "valor": 2  },
+        { "id": "vj_ia_enemigos_tonta",       "emoji": "🤪", "valor": 3  },
+        { "id": "vj_battle_pass_infinito",    "emoji": "♾️", "valor": 2  },
+        { "id": "vj_microtrans_cosmetic",     "emoji": "💄", "valor": 3  },
+        { "id": "vj_tutorial_20min",          "emoji": "⏳", "valor": 1  },
+        { "id": "vj_key_bindings_rotas",      "emoji": "⌨️", "valor": 2  },
+        { "id": "vj_dialogos_que_no_saltan",  "emoji": "💬", "valor": 2  }
+    ]
+}

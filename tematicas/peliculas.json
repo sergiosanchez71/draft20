@@ -1,0 +1,25 @@
+{
+    "id": "peliculas",
+    "items": [
+        { "id": "act_leonardo",         "emoji": "🎬", "valor": 10 },
+        { "id": "act_zendaya",          "emoji": "🌟", "valor": 8  },
+        { "id": "act_morgan_freeman",   "emoji": "👤", "valor": 8  },
+        { "id": "act_keanu_reeves",     "emoji": "🕶️", "valor": 9  },
+        { "id": "pre_200m",             "emoji": "💰", "valor": 10 },
+        { "id": "act_jennifer_lawrence","emoji": "👩", "valor": 7  },
+        { "id": "act_will_smith",       "emoji": "👨", "valor": 6  },
+        { "id": "act_jack_black",       "emoji": "🤡", "valor": 5  },
+        { "id": "gen_accion",           "emoji": "💥", "valor": 7  },
+        { "id": "gen_comedia",          "emoji": "😂", "valor": 4  },
+        { "id": "gen_drama",            "emoji": "🎭", "valor": 6  },
+        { "id": "gen_terror",           "emoji": "👻", "valor": 5  },
+        { "id": "gen_romance",          "emoji": "💕", "valor": 4  },
+        { "id": "pre_50m",              "emoji": "💵", "valor": 7  },
+        { "id": "pre_10m",              "emoji": "💸", "valor": 4  },
+        { "id": "act_nicolas_cage",     "emoji": "🎭", "valor": 6  },
+        { "id": "gen_documental",       "emoji": "📹", "valor": 2  },
+        { "id": "gen_cine_arte",        "emoji": "🎨", "valor": 3  },
+        { "id": "pre_50k",              "emoji": "🪙", "valor": 1  },
+        { "id": "gen_musical_indie",    "emoji": "🎤", "valor": 4  }
+    ]
+}
