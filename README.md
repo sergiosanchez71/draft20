@@ -1,6 +1,6 @@
 # Draft 20
 
-Juego de **subasta por turnos para 2 jugadores** en tiempo real, optimizado para móvil. Cada jugador empieza con **20 monedas** y 8 ítems se subastan en rondas alternas. El que más monedas conserve al final gana.
+Juego de **subasta por turnos para 2 jugadores** en tiempo real, optimizado para móvil. Cada jugador empieza con **20 monedas** y 8 ítems se subastan en rondas alternas. Gana quien reúne la colección de mayor **valor intrínseco** (suma de `valor` de sus ítems).
 
 > Stack: PHP 8 (sin frameworks) + JavaScript vanilla + Tailwind CDN. Persistencia en archivos JSON. Cero dependencias externas en backend.
 
@@ -41,7 +41,7 @@ Abrir `http://127.0.0.1:8000` en el navegador.
 
 ### Reglas
 
-- **8 ítems** únicos según la temática elegida (se barajan del pool de 20, sin repetición).
+- **8 ítems** únicos por partida, elegidos del pool de la temática con **reparto equilibrado**: sorteo ponderado por tiers de `valor` (premium ≥8, medios 4-7, malos ≤3) con castigo por repetición y límites duros (**malos 1-3**, premium 2-5, medios 0-4). Así nunca salen partidas cargadas de ítems malos ni todo gemas.
 - **20 monedas** iniciales por jugador.
 - En cada ronda se subasta **1 ítem**:
   - Los jugadores alternan pujas (+1 o +3 monedas).
@@ -302,7 +302,7 @@ Reglas:
 - `items[].id`: snake_case con prefijo temático (`ing_`, `arm_`, `act_`, `des_`...).
 - `items[].emoji`: 1 glifo o shortcode.
 - `items[].valor`: entero 1-10 (calidad intrínseca del ítem, escala del "burger battle"). Wagyu y trufa valen 10; ketchup y mostaza valen 1-2. Es el único campo que determina el ganador.
-- Mínimo **8 ítems** (se sirven 8 al azar por partida).
+- Mínimo **8 ítems** (se sirven 8 por partida con reparto equilibrado por tiers: ver `seleccionar_items_balanceados()` en `api/crear_sala.php`).
 - Cada `id` debe existir en `lang/<iso>.json::items` para resolverse en UI.
 
 ### Temáticas incluidas

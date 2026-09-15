@@ -3,8 +3,9 @@
  * Draft 20 — API: crear_sala
  *
  * Crea una sala nueva, genera un código único de 5 caracteres,
- * baraja los ítems de la temática elegida, hace slice a ITEMS_POR_PARTIDA (8)
- * y la deja en estado "esperando" con el Jugador 1 ya inicializado.
+ * selecciona ITEMS_POR_PARTIDA (8) ítems de la temática con reparto
+ * equilibrado por tiers de valor y la deja en estado "esperando" con el
+ * Jugador 1 ya inicializado.
  *
  * Sistema i18n: el archivo de temática contiene SOLO {id, emoji}.
  * El nombre visible de cada ítem lo provee el frontend cruzando el id
@@ -44,6 +45,20 @@ const MAX_INTENTOS_CODIGO   = 25;
 // Mecánica de la partida: 4 ítems por persona (cap duro).
 const ITEMS_POR_PARTIDA     = 8;   // = 2 × MAX_ITEMS_POR_JUGADOR (4 por jugador)
 const MAX_ITEMS_POR_JUGADOR = 4;   // tope duro; al llegar, el rival recibe los restantes a precio=0
+
+// Selección equilibrada por tiers de valor (premium ≥8 / medios 4-7 / malos ≤3).
+// Sorteo ponderado con castigo por repetición + límites duros por partida.
+const TIER_PREMIUM_MIN_VALOR        = 8;
+const TIER_MEDIO_MIN_VALOR          = 4;
+const PARTIDA_MIN_PREMIUM           = 2;
+const PARTIDA_MAX_PREMIUM           = 5;
+const PARTIDA_MAX_PREMIUM_SIN_MEDIOS = 6; // si la temática no tiene ítems medios
+const PARTIDA_MIN_MALOS             = 1;
+const PARTIDA_MAX_MALOS             = 3;
+const PARTIDA_MAX_MEDIOS            = 4;
+const SORTEO_CASTIGO                = 0.4;  // el peso del tier que sale se multiplica por esto
+const SORTEO_PESO_MINIMO            = 0.05; // suelo del peso para no llegar a 0
+const SORTEO_PESOS_INICIALES        = ['premium' => 3.0, 'medio' => 2.0, 'malo' => 1.2];
 
 // ============================================================================
 //  Helpers (con guard function_exists por si se carga junto a estado.php)
@@ -180,6 +195,121 @@ if (!function_exists('barajar')) {
     }
 }
 
+if (!function_exists('clasificar_tier')) {
+    /**
+     * Clasifica un ítem por su valor en tier premium / medio / malo.
+     */
+    function clasificar_tier(int $valor): string {
+        if ($valor >= TIER_PREMIUM_MIN_VALOR) return 'premium';
+        if ($valor >= TIER_MEDIO_MIN_VALOR)   return 'medio';
+        return 'malo';
+    }
+}
+
+if (!function_exists('seleccionar_items_balanceados')) {
+    /**
+     * Elige $n ítems de la temática con reparto equilibrado por tiers.
+     *
+     * - Pesos iniciales por tier; cada vez que sale un ítem de un tier, su
+     *   peso se multiplica por SORTEO_CASTIGO → menos probable repetir tier.
+     * - Límites duros por partida: malos 1-3, premium 2-5 (2-6 si no hay
+     *   medios), medios 0-4. Los mínimos se fuerzan si quedan pocos huecos.
+     * - Si un tier se agota, sus cupos pasan a los demás (fallback).
+     * - El orden final se baraja para que la subasta no sea predecible.
+     */
+    function seleccionar_items_balanceados(array $items, int $n): array {
+        // 1) Agrupar por tier y barajar cada grupo (aleatoriedad intra-tier).
+        $pools = ['premium' => [], 'medio' => [], 'malo' => []];
+        foreach ($items as $it) {
+            $pools[clasificar_tier((int) ($it['valor'] ?? 0))][] = $it;
+        }
+        foreach ($pools as &$p) { shuffle($p); }
+        unset($p);
+
+        // 2) Límites efectivos acotados por el tamaño real de cada pool.
+        $hayMedios = count($pools['medio']) > 0;
+        $caps = [
+            'premium' => min($hayMedios ? PARTIDA_MAX_PREMIUM : PARTIDA_MAX_PREMIUM_SIN_MEDIOS, count($pools['premium'])),
+            'medio'   => min(PARTIDA_MAX_MEDIOS, count($pools['medio'])),
+            'malo'    => min(PARTIDA_MAX_MALOS, count($pools['malo'])),
+        ];
+        $mins = [
+            'premium' => min(PARTIDA_MIN_PREMIUM, count($pools['premium'])),
+            'medio'   => 0,
+            'malo'    => count($pools['malo']) > 0 ? PARTIDA_MIN_MALOS : 0,
+        ];
+
+        // 3) Sorteo ponderado con castigo + forzado de mínimos.
+        $pesos    = SORTEO_PESOS_INICIALES;
+        $conteo   = ['premium' => 0, 'medio' => 0, 'malo' => 0];
+        $elegidos = [];
+
+        while (count($elegidos) < $n) {
+            $restantes  = $n - count($elegidos);
+            $disponibles = [];
+            foreach (['premium', 'medio', 'malo'] as $t) {
+                if (!empty($pools[$t]) && $conteo[$t] < $caps[$t]) {
+                    $disponibles[] = $t;
+                }
+            }
+            if (empty($disponibles)) break; // sin cupo → fallback inferior
+
+            // Si los huecos restantes no llegan para cubrir mínimos pendientes, forzar.
+            $deficit    = 0;
+            $pendientes = [];
+            foreach (['premium', 'medio', 'malo'] as $t) {
+                if ($conteo[$t] < $mins[$t] && !empty($pools[$t])) {
+                    $deficit += $mins[$t] - $conteo[$t];
+                    $pendientes[] = $t;
+                }
+            }
+            $forzado = ($restantes <= $deficit && !empty($pendientes)) ? $pendientes[0] : null;
+
+            // Sorteo ponderado entre los tiers disponibles.
+            $total      = 0.0;
+            $pesosTier  = [];
+            foreach ($disponibles as $t) {
+                $pesosTier[$t] = ($forzado !== null && $t !== $forzado) ? 0.0 : $pesos[$t];
+                $total += $pesosTier[$t];
+            }
+            if ($forzado !== null && $total <= 0.0) {
+                $elegido = $forzado;
+            } else {
+                $roll    = (random_int(0, PHP_INT_MAX - 1) / PHP_INT_MAX) * $total;
+                $acum    = 0.0;
+                $elegido = $disponibles[count($disponibles) - 1];
+                foreach ($disponibles as $t) {
+                    $acum += $pesosTier[$t];
+                    if ($roll < $acum) { $elegido = $t; break; }
+                }
+            }
+
+            // Extraer un ítem aleatorio del tier elegido.
+            $idx         = random_int(0, count($pools[$elegido]) - 1);
+            $elegidos[]  = $pools[$elegido][$idx];
+            array_splice($pools[$elegido], $idx, 1);
+
+            $conteo[$elegido]++;
+            $pesos[$elegido] = max(SORTEO_PESO_MINIMO, $pesos[$elegido] * SORTEO_CASTIGO);
+        }
+
+        // 4) Fallback extremo: completar con sobrantes si no se llegó a $n.
+        if (count($elegidos) < $n) {
+            $sobrantes = [];
+            foreach ($pools as $p) {
+                foreach ($p as $it) { $sobrantes[] = $it; }
+            }
+            shuffle($sobrantes);
+            foreach ($sobrantes as $it) {
+                if (count($elegidos) >= $n) break;
+                $elegidos[] = $it;
+            }
+        }
+
+        return barajar($elegidos);
+    }
+}
+
 if (!function_exists('escribir_sala_bloqueado')) {
     /**
      * Escribe el JSON de una sala con lock exclusivo (LOCK_EX).
@@ -234,10 +364,10 @@ if (strlen($nombreJ1) > 20) {
 try {
     $tematica = cargar_tematica($tematicaId);
 
-    // Barajamos los ítems y hacemos slice a ITEMS_POR_PARTIDA (8 = 4 por persona).
+    // Selección equilibrada por tiers (8 = 4 por persona): sorteo ponderado con
+    // castigo por repetición y límites duros → evita partidas cargadas de malos.
     // Guardamos SOLO los IDs en la sala → agnóstico de idioma (i18n).
-    $itemsBarajados = barajar($tematica['items']);
-    $itemsPool      = array_slice($itemsBarajados, 0, ITEMS_POR_PARTIDA);
+    $itemsPool      = seleccionar_items_balanceados($tematica['items'], ITEMS_POR_PARTIDA);
     $itemsMezclados = array_map(
         static fn(array $it): string => (string) $it['id'],
         $itemsPool
@@ -252,7 +382,7 @@ try {
         'codigo'              => $codigo,
         'estado'              => 'esperando',     // esperando | jugando | finalizada
         'tematica'            => $tematica['id'],
-        'items_mezclados'     => $itemsMezclados, // 8 IDs barajados (no nombres)
+        'items_mezclados'     => $itemsMezclados, // 8 IDs con reparto equilibrado por tiers (no nombres)
         'indice_item'         => 0,
         'item_actual'         => [
             'id'            => $primerItem['id'],

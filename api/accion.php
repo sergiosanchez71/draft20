@@ -345,13 +345,15 @@ try {
     }
 
     // 2) Validar turno.
-    //    Excepción: si hay una decisión pendiente y el jugador es el 'para',
-    //    puede enviar 'asignar_rival' aunque no sea su turno nominal.
+    //    Excepciones:
+    //    - 'asignar_rival': el decisor pendiente puede actuar aunque no sea su turno.
+    //    - 'abandonar': cualquiera puede salir en cualquier momento de la partida.
     $turnoActual = $estado['item_actual']['turno_de'];
     $esDecisor = $accion === 'asignar_rival'
         && is_array($estado['decision_pendiente'] ?? null)
         && (int) ($estado['decision_pendiente']['para'] ?? -1) === $miSlot;
-    if ($turnoActual !== $miSlot && !$esDecisor) {
+    $esAbandono = $accion === 'abandonar';
+    if ($turnoActual !== $miSlot && !$esDecisor && !$esAbandono) {
         flock($fp, LOCK_UN); fclose($fp);
         responder(['ok' => false, 'error' => 'No es tu turno.'], 409);
     }
