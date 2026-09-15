@@ -17,23 +17,22 @@
         pollTimer: null,
         isPolling: false,
         actionInFlight: false,
-        turnStartAt: null,
-        turnTurnoDe: null,
-        turnTimerId: null,
         abandonoDetectadoVibrado: false,
         tematicaSeleccionada: null,
         tematicaCategoria: null,
         pollFailures: 0,
         pollInFlight: false,
         rivalAusente: null,
-        timeoutEnviado: false,
+        ultimoEmoteEnviado: 0,
+        botWaitUntil: 0,
+        botKeyDelay: null,
+        botValores: null,
+        botDificultad: 'normal',
         statsRegistradas: false,
         ultimoEmoteTs: 0,
         bot: null,
         botTurnoKey: null,
     };
-
-    const TURN_SECONDS = 60;
 
     // =================== i18n ===================
     function t(key, params) {
@@ -210,9 +209,13 @@
     function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
 
     // =================== modal genérico ===================
-    function showModal(content) {
+    function showModal(content, opts) {
+        opts = opts || {};
         const overlay = el('div', { class: 'fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4' });
-        const box = el('div', { class: 'bg-slate-800 w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl p-5 fade-in' });
+        const box = el('div', {
+            class: 'bg-slate-800 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 fade-in ' +
+                (opts.lockBody ? 'max-h-[90vh] overflow-hidden' : 'max-h-[85vh] overflow-y-auto'),
+        });
         function close() { overlay.remove(); }
         overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
         box.appendChild(content);
@@ -227,7 +230,6 @@
             ['ui.reglas.sub_titulo', 'ui.reglas.sub_texto'],
             ['ui.reglas.cap_titulo', 'ui.reglas.cap_texto'],
             ['ui.reglas.dead_titulo', 'ui.reglas.dead_texto'],
-            ['ui.reglas.timeout_titulo', 'ui.reglas.timeout_texto'],
             ['ui.reglas.fin_titulo', 'ui.reglas.fin_texto'],
         ];
         const content = el('div', {}, [
@@ -302,12 +304,43 @@
 
         const errorBox = el('div', { id: 'lobbyError', class: 'hidden bg-rose-500 text-white p-3 rounded-lg mx-4 mb-4 text-sm text-center' });
 
+        // Dificultad del bot (persistida entre sesiones).
+        try {
+            const difGuardada = localStorage.getItem('draft20_bot_dificultad');
+            if (difGuardada) state.botDificultad = difGuardada;
+        } catch (e) { /* ignore */ }
+        const difOpciones = [['facil', 'ui.lobby.bot_facil'], ['normal', 'ui.lobby.bot_normal'], ['dificil', 'ui.lobby.bot_dificil']];
+        const difBtns = [];
+        const difWrap = el('div', { class: 'flex gap-2 justify-center mt-2' });
+        function pintarDificultad() {
+            difBtns.forEach(function (b, i) {
+                const activo = state.botDificultad === difOpciones[i][0];
+                b.className = 'px-3 py-1.5 rounded-full text-xs border btn-tap ' +
+                    (activo ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
+            });
+        }
+        difOpciones.forEach(function (d) {
+            const b = el('button', {
+                type: 'button',
+                onclick: function () {
+                    state.botDificultad = d[0];
+                    try { localStorage.setItem('draft20_bot_dificultad', d[0]); } catch (e) { /* ignore */ }
+                    pintarDificultad();
+                },
+            }, t(d[1]));
+            difBtns.push(b);
+            difWrap.appendChild(b);
+        });
+        pintarDificultad();
+
         const practiceBtn = el('div', { class: 'm-4' }, [
             el('button', {
                 id: 'btnPractice',
                 class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
                 onclick: onPractice,
             }, t('ui.lobby.btn_practicar')),
+            el('div', { class: 'text-center text-[11px] text-slate-500 mt-3' }, t('ui.lobby.bot_dificultad')),
+            difWrap,
         ]);
 
         app.appendChild(errorBox);
@@ -437,29 +470,38 @@
         startPollingLobby();
     }
 
+    /**
+     * Crea una partida de práctica: sala nueva + bot sentado como J2.
+     * Usada por "Practicar vs 🤖" y por la revancha contra bot (misma dificultad).
+     */
+    async function iniciarPartidaBot(tematica, dificultad, nombre) {
+        const nombreFinal = (nombre && nombre.trim()) || state.jugadorNombre || 'Tú';
+        const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombreFinal });
+        if (!r.ok) { toast(r.error || 'Error'); return false; }
+        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: '🤖 Bot' });
+        if (!r2.ok) { toast(r2.error || 'Error'); return false; }
+        try {
+            localStorage.setItem('draft20_bot_' + r.codigo, JSON.stringify({
+                jugadorId: r2.jugador_id,
+                dificultad: dificultad || 'normal',
+            }));
+        } catch (e) { /* ignore */ }
+        state.codigo = r.codigo;
+        state.jugadorId = r.jugador_id;
+        state.jugadorNombre = nombreFinal;
+        saveSession();
+        window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
+        return true;
+    }
+
     async function onPractice() {
         const tematica = state.tematicaSeleccionada || defaultTematica();
         const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || 'Tú';
+        const dificultad = state.botDificultad || 'normal';
         const btn = $('#btnPractice');
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
-        const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombre });
-        if (!r.ok) {
-            showLobbyError(r.error || 'Error');
-            if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
-            return;
-        }
-        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: '🤖 Bot' });
-        if (!r2.ok) {
-            showLobbyError(r2.error || 'Error');
-            if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
-            return;
-        }
-        try { localStorage.setItem('draft20_bot_' + r.codigo, JSON.stringify({ jugadorId: r2.jugador_id })); } catch (e) { /* ignore */ }
-        state.codigo = r.codigo;
-        state.jugadorId = r.jugador_id;
-        state.jugadorNombre = nombre || 'Jugador 1';
-        saveSession();
-        window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
+        await iniciarPartidaBot(tematica, dificultad, nombre);
+        if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
     }
 
     async function onJoin() {
@@ -562,7 +604,7 @@
     function renderGameShell() {
         const app = $('#app');
         clear(app);
-        app.className = 'flex-1 flex flex-col';
+        app.className = 'flex-1 flex flex-col min-h-0 overflow-hidden';
 
         // Header
         const header = el('header', { class: 'flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700 safe-pt' }, [
@@ -595,11 +637,11 @@
         // Inventory row (flex-shrink-0 garantiza que no se comprima)
         const inventory = el('section', { id: 'inventory', class: 'flex-shrink-0 bg-slate-800 px-4 py-3 border-t border-slate-700' });
 
-        // Emotes rápidos
-        const emoteBar = el('section', { id: 'emoteBar', class: 'flex-shrink-0 bg-slate-800 px-3 pb-1 flex gap-2 justify-center' });
+        // Emotes rápidos (compactos para no empujar la barra de acciones)
+        const emoteBar = el('section', { id: 'emoteBar', class: 'flex-shrink-0 bg-slate-800 px-3 pb-0.5 flex gap-2 justify-center' });
         ['👍', '😂', '🔥', '😭', '🤝', '😱'].forEach(function (code) {
             emoteBar.appendChild(el('button', {
-                class: 'text-xl px-2 py-1 rounded btn-tap opacity-80 hover:opacity-100',
+                class: 'text-lg leading-none px-2 py-0.5 rounded btn-tap opacity-80 hover:opacity-100',
                 'aria-label': 'Emote ' + code,
                 onclick: function () { onEmote(code); },
             }, code));
@@ -645,15 +687,6 @@
         state.rivalAusente = (r.rival_ausente === undefined || r.rival_ausente === null) ? null : r.rival_ausente;
         identifySlots();
 
-        // Detectar cambio de turno (o primer turno) → reiniciar countdown.
-        const turnoActual = state.sala && state.sala.item_actual ? state.sala.item_actual.turno_de : null;
-        if (turnoActual !== state.turnTurnoDe) {
-            state.turnTurnoDe = turnoActual;
-            state.turnStartAt = state.sala ? Math.floor(Date.now() / 1000) : null;
-            state.timeoutEnviado = false;
-            startTurnCountdown();
-        }
-
         detectarAccionesRival(prev, state.sala);
         detectarEmotes(state.sala);
 
@@ -665,24 +698,11 @@
 
         renderGame(prev);
 
-        // Timeout real de turno y bot de práctica.
-        quizasResolverTimeout();
-        if (state.bot) botTick();
-    }
-
-    function quizasResolverTimeout() {
-        const s = state.sala;
-        if (!s || s.estado !== 'jugando' || !s.item_actual || state.actionInFlight) return;
-        const t0 = s.item_actual.turno_iniciado_en || 0;
-        if (!t0) return;
-        const elapsed = Math.floor(Date.now() / 1000) - t0;
-        if (elapsed < TURN_SECONDS) return;
-        const esMiTurno = s.item_actual.turno_de === state.jugadorSlot;
-        const extra = esMiTurno ? 0 : 5; // el rival da 5s de gracia extra
-        if (elapsed < TURN_SECONDS + extra) return;
-        if (state.timeoutEnviado) return;
-        state.timeoutEnviado = true;
-        sendAction('resolver_timeout');
+        // Bot de práctica.
+        if (state.bot) {
+            cargarValoresBotSiToca();
+            botTick();
+        }
     }
 
     function detectarAccionesRival(prev, sala) {
@@ -730,14 +750,21 @@
 
     function mostrarEmote(code, nombre) {
         const b = el('div', {
-            class: 'fixed left-1/2 top-24 -translate-x-1/2 z-40 bg-slate-800 border border-amber-400 rounded-full px-4 py-2 text-2xl pop-emote',
-            'aria-label': nombre,
-        }, code);
+            class: 'fixed left-1/2 top-24 -translate-x-1/2 z-40 flex items-center gap-2 bg-slate-800 border border-amber-400 rounded-full pl-3 pr-4 py-1.5 pop-emote',
+            'aria-label': nombre + ' dice ' + code,
+        }, [
+            el('span', { class: 'text-2xl leading-none' }, code),
+            el('span', { class: 'text-xs font-bold text-amber-300 max-w-[9rem] truncate' }, nombre),
+        ]);
         document.body.appendChild(b);
         setTimeout(function () { b.remove(); }, 2400);
     }
 
     async function onEmote(code) {
+        // Throttle: evita spamear el JSON de la sala a base de toques.
+        const ahora = Date.now();
+        if (ahora - (state.ultimoEmoteEnviado || 0) < 700) return;
+        state.ultimoEmoteEnviado = ahora;
         mostrarEmote(code, 'Tú');
         const r = await api('POST', 'api/accion.php', {
             codigo: state.codigo,
@@ -755,51 +782,48 @@
     async function botTick() {
         const s = state.sala;
         if (!s || !state.bot || s.estado !== 'jugando' || !s.item_actual || state.jugadorSlot === null) return;
+        if (!window.DraftBot) return;
         const botSlot = 1 - state.jugadorSlot;
         const item = s.item_actual;
         const key = s.ronda + ':' + item.id + ':' + item.precio_actual + ':' + item.turno_de + ':' + (item.pujas ? item.pujas.length : 0);
         if (state.botTurnoKey === key) return;
 
-        // Decisión pendiente de deadlock: el bot decide.
-        if (s.decision_pendiente && s.decision_pendiente.para === botSlot) {
-            state.botTurnoKey = key;
-            const dinero = s.jugadores[botSlot].dinero || 0;
-            if (dinero >= 3) {
-                await botAction({ accion: 'asignar_rival', destino: botSlot, precio: 1 });
-            } else {
-                await botAction({ accion: 'asignar_rival', destino: s.decision_pendiente.sobre, precio: 0 });
-            }
+        const dificultad = state.bot.dificultad || 'normal';
+
+        // Delay humano: al empezar una situación nueva, espera un poco.
+        if (state.botKeyDelay !== key) {
+            const cfg = window.DraftBot.config(dificultad);
+            const rango = cfg.delayMs || [700, 1800];
+            state.botKeyDelay = key;
+            state.botWaitUntil = Date.now() + rango[0] + Math.random() * (rango[1] - rango[0]);
             return;
         }
+        if (Date.now() < state.botWaitUntil) return;
 
-        if (item.turno_de !== botSlot) return;
         state.botTurnoKey = key;
-
-        const dinero = s.jugadores[botSlot].dinero || 0;
-        const pujas = item.pujas || [];
-
-        // Sin dinero y sin pujas → pasar.
-        if (dinero === 0 && item.precio_actual === 0 && item.ultimo_pujo === null && !s.decision_pendiente) {
-            await botAction({ accion: 'pasar_deadlock' });
-            return;
-        }
-        // Puja hasta 2 veces si puede; si ya hay puja ajena, se baja.
-        if (item.ultimo_pujo !== null && item.ultimo_pujo !== botSlot) {
-            await botAction({ accion: 'bajar' });
-            return;
-        }
-        if (pujas.length < 2 && (item.precio_actual + 1) <= dinero) {
-            await botAction({ accion: 'pujar', incremento: 1 });
-            return;
-        }
-        if (item.ultimo_pujo === null && (item.precio_actual + 1) <= dinero) {
-            await botAction({ accion: 'pujar', incremento: 1 });
-        }
+        const decision = window.DraftBot.decidir(s, botSlot, dificultad, Math.random, state.botValores || null);
+        if (!decision) return;
+        await botAction(decision);
     }
 
     async function botAction(body) {
         const payload = Object.assign({ codigo: state.codigo, jugador_id: state.bot.jugadorId }, body);
         await api('POST', 'api/accion.php', payload);
+    }
+
+    /**
+     * El bot "difícil" conoce los valores reales: carga el catálogo público de
+     * temáticas una vez conocida la temática de la sala.
+     */
+    async function cargarValoresBotSiToca() {
+        if (!state.bot || state.bot.dificultad !== 'dificil' || state.botValores || !state.sala || !state.sala.tematica) return;
+        try {
+            const resp = await fetch('tematicas/' + encodeURIComponent(state.sala.tematica) + '.json');
+            const data = await resp.json();
+            const map = {};
+            (data.items || []).forEach(function (it) { map[it.id] = it.valor; });
+            state.botValores = map;
+        } catch (e) { state.botValores = null; }
     }
 
     function startPollingGame() {
@@ -844,7 +868,6 @@
 
         // Sala esperando (p.ej. revancha propuesta y aún sin aceptar).
         if (s.estado === 'esperando') {
-            stopTurnCountdown();
             renderEsperandoRival();
             const inv0 = $('#inventory'); if (inv0) clear(inv0);
             const bar0 = $('#actionBar'); if (bar0) clear(bar0);
@@ -854,7 +877,6 @@
 
         // Estado terminal: abandono manda sobre finalización normal.
         if (s.estado === 'abandonada') {
-            stopTurnCountdown();
             renderAbandonedScreen();
             // Vaciar inventarios + bar para que no aparezca UI residual.
             const inv = $('#inventory'); if (inv) clear(inv);
@@ -863,7 +885,6 @@
             return;
         }
         if (s.estado === 'finalizada') {
-            stopTurnCountdown();
             renderFinalScreen();
             const inv = $('#inventory'); if (inv) clear(inv);
             const bar = $('#actionBar'); if (bar) clear(bar);
@@ -969,15 +990,6 @@
         const turnoBanner = el('div', { class: 'mt-4 px-4 py-2 rounded-full text-sm font-bold ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300') }, turnoText);
         card.appendChild(turnoBanner);
 
-        // Cuenta atrás: solo visible si es MI turno. Usa el ts del servidor.
-        if (myTurn) {
-            const t0 = item.turno_iniciado_en || state.turnStartAt || Math.floor(Date.now() / 1000);
-            const remaining = Math.max(0, TURN_SECONDS - (Math.floor(Date.now() / 1000) - t0));
-            const cd = el('div', { id: 'turnCountdown', class: 'mt-3 mx-auto w-fit px-4 py-1 rounded-full text-xs font-mono font-bold ' + (remaining <= 10 ? 'bg-rose-500 text-white' : 'bg-slate-700 text-slate-200') },
-                remaining <= 0 ? t('ui.juego.tiempo_agotado') : t('ui.juego.cuenta_atras', { seg: remaining }));
-            card.appendChild(cd);
-        }
-
         // Banner ámbar si hay decisión pendiente (deadlock sin dinero).
         if (s.decision_pendiente) {
             const dp = s.decision_pendiente;
@@ -997,33 +1009,6 @@
                 : t('ui.juego.msg_esperando_rival_complete', { cap: 4 });
             card.appendChild(el('div', { class: 'mt-3 px-3 py-2 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
         }
-    }
-
-    function startTurnCountdown() {
-        stopTurnCountdown();
-        state.turnTimerId = setInterval(function () {
-            const cd = document.getElementById('turnCountdown');
-            if (!cd || !state.sala || state.sala.estado !== 'jugando' || !state.sala.item_actual) return;
-            const now = Math.floor(Date.now() / 1000);
-            const t0 = state.sala.item_actual.turno_iniciado_en || state.turnStartAt || now;
-            const remaining = Math.max(0, TURN_SECONDS - (now - t0));
-            if (remaining <= 0) {
-                cd.textContent = t('ui.juego.tiempo_agotado');
-                cd.classList.remove('bg-slate-700', 'text-slate-200');
-                cd.classList.add('bg-rose-500', 'text-white');
-                quizasResolverTimeout();
-                return;
-            }
-            cd.textContent = t('ui.juego.cuenta_atras', { seg: remaining });
-            // Color rojo en los últimos 10s.
-            if (remaining <= 10) {
-                cd.classList.remove('bg-slate-700', 'text-slate-200');
-                cd.classList.add('bg-rose-500', 'text-white');
-            }
-        }, 1000);
-    }
-    function stopTurnCountdown() {
-        if (state.turnTimerId) { clearInterval(state.turnTimerId); state.turnTimerId = null; }
     }
 
     function itemTooltip(i) {
@@ -1171,7 +1156,8 @@
         // El server hace el cap-handler que asigna el ítem al rival a precio 0.
         if (capped) {
             const rivalCapped = rivalCount >= 4;
-            const label = canBajar ? t('ui.juego.btn_bajar_pagar', { precio: item.precio_actual }) : t('ui.juego.btn_pasar_turno');
+            // Estando capped el server asigna el ítem al rival a precio 0: no paga nadie.
+            const label = canBajar ? t('ui.juego.btn_bajar') : t('ui.juego.btn_pasar_turno');
             const buttons = el('div', { class: 'flex gap-2' });
             buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-base', onclick: onBajar }, label));
             if (rivalCapped) {
@@ -1188,10 +1174,17 @@
         const canPujar1 = (item.precio_actual + 1) <= myMoney;
         const canPujar3 = (item.precio_actual + 3) <= myMoney;
 
+        // El precio solo lo paga el rival si él es el último pujador y no está capped.
+        const rivalSlot = 1 - state.jugadorSlot;
+        const rivalPaga = canBajar && item.ultimo_pujo === rivalSlot && rivalCount < 4;
+        const bajarLabel = rivalPaga
+            ? t('ui.juego.btn_bajar_rival_paga', { precio: item.precio_actual })
+            : t('ui.juego.btn_bajar');
+
         const buttons = el('div', { class: 'flex gap-2' });
         buttons.appendChild(el('button', { id: 'btnPujar', class: 'flex-1 bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-base disabled:opacity-40', onclick: onPujar, title: canPujar1 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar')));
         buttons.appendChild(el('button', { id: 'btnPujar3', class: 'bg-slate-700 text-slate-100 font-bold py-4 px-4 rounded-lg btn-tap text-sm disabled:opacity-40', onclick: onPujar3, title: canPujar3 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar3')));
-        buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-base disabled:opacity-40', onclick: onBajar }, canBajar ? t('ui.juego.btn_bajar_pagar', { precio: item.precio_actual }) : t('ui.juego.btn_bajar')));
+        buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-sm leading-tight disabled:opacity-40', onclick: onBajar }, bajarLabel));
 
         bar.appendChild(buttons);
 
@@ -1383,17 +1376,17 @@
     // =================== revancha ===================
     function openRevanchaModal() {
         const ctx = {
-            tematicaCategoria: null,
+            tematicaCategoria: 'todas',
             tematicaSeleccionada: (state.sala && state.sala.tematica) || defaultTematica(),
         };
-        const box = el('div', {});
-        const content = el('div', {}, [
-            el('h2', { class: 'text-lg font-bold text-amber-400 mb-3' }, '🔄 ' + t('ui.juego.btn_revancha')),
-            box,
+        const gridBox = el('div', { class: 'flex-1 min-h-0 overflow-y-auto pb-2 pr-1' });
+        const content = el('div', { class: 'flex flex-col max-h-[80vh]' }, [
+            el('h2', { class: 'flex-shrink-0 text-lg font-bold text-amber-400 mb-2' }, '🔄 ' + t('ui.juego.btn_revancha')),
+            gridBox,
         ]);
-        const m = showModal(content);
-        renderTematicaSelector(box, { ctx: ctx });
-        content.appendChild(el('div', { class: 'flex gap-2 mt-4' }, [
+        const m = showModal(content, { lockBody: true });
+        renderTematicaSelector(gridBox, { ctx: ctx });
+        content.appendChild(el('div', { class: 'flex-shrink-0 flex gap-2 mt-3 pt-3 border-t border-slate-700' }, [
             el('button', { class: 'flex-1 bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap', onclick: m.close }, t('ui.reglas.cerrar')),
             el('button', {
                 class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap',
@@ -1403,6 +1396,16 @@
     }
 
     async function proponerRevancha(tematica, closeModal) {
+        const cerrar = function () { if (typeof closeModal === 'function') closeModal(); };
+
+        // Contra bot: nueva partida inmediata con el mismo bot y dificultad.
+        if (state.bot) {
+            const dificultad = state.bot.dificultad || 'normal';
+            const ok = await iniciarPartidaBot(tematica, dificultad, state.jugadorNombre);
+            if (ok) cerrar();
+            return;
+        }
+
         const viejoCodigo = state.codigo;
         const viejoId = state.jugadorId;
         const nombre = state.jugadorNombre || '';
@@ -1415,8 +1418,8 @@
             codigo_nuevo: r.codigo,
             tematica: tematica,
         });
-        if (!r2.ok) { toast(r2.error || 'Error'); }
-        if (typeof closeModal === 'function') closeModal();
+        if (!r2.ok) { toast(r2.error || 'Error'); return; }
+        cerrar();
         state.codigo = r.codigo;
         state.jugadorId = r.jugador_id;
         saveSession();
@@ -1478,11 +1481,6 @@
             }
             state.sala = r.sala;
             identifySlots();
-            const turnoActual = state.sala && state.sala.item_actual ? state.sala.item_actual.turno_de : null;
-            state.turnTurnoDe = turnoActual;
-            state.turnStartAt = Math.floor(Date.now() / 1000);
-            state.timeoutEnviado = false;
-            startTurnCountdown();
             renderGame(null);
         } finally {
             disableActions(false);
@@ -1504,7 +1502,6 @@
             // Notificar abandono al servidor y luego redirigir.
             clearSession(state.codigo);
             stopPollingGame();
-            stopTurnCountdown();
             // Fire-and-forget: la respuesta no importa porque ya estamos saliendo.
             fetch('api/accion.php', {
                 method: 'POST',
@@ -1518,7 +1515,6 @@
         // Estados terminales (abandonada, finalizada, sin sala): salida directa.
         clearSession(state.codigo);
         stopPollingGame();
-        stopTurnCountdown();
         window.location.href = 'index.php';
     }
 

@@ -10,17 +10,30 @@
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 
 #toast {
-    position: fixed; bottom: 6rem; left: 50%;
-    transform: translateX(-50%) translateY(120%);
+    position: fixed; bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px)); left: 50%;
+    transform: translateX(-50%) translateY(calc(100% + 7.5rem));
+    opacity: 0; visibility: hidden;
     background: rgba(15, 23, 42, 0.96); color: white;
     padding: 0.75rem 1.5rem; border-radius: 0.5rem;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, opacity 0.25s ease, visibility 0s linear 0.25s;
     z-index: 60; max-width: 90vw;
     text-align: center; font-size: 0.875rem;
     pointer-events: none;
 }
-#toast.show { transform: translateX(-50%) translateY(0); }
+#toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1; visibility: visible;
+    transition: transform 0.25s ease, opacity 0.25s ease, visibility 0s;
+}
+
+/* Shell del juego: alto de viewport para que las barras inferiores nunca
+   queden bajo el pliegue; solo la tarjeta del ítem scrollea. */
+.app-viewport {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+}
 
 .pulse-win { animation: pulseWin 0.6s ease-out; }
 @keyframes pulseWin {

@@ -2,7 +2,7 @@
  * Shell en network-first (evita servir versiones viejas en desarrollo) con
  * fallback a caché cuando no hay red. La API siempre va a red.
  */
-const CACHE = 'draft20-v1';
+const CACHE = 'draft20-v2';
 const SHELL = [
     './',
     './index.php',
@@ -38,7 +38,8 @@ self.addEventListener('fetch', function (e) {
     if (url.pathname.indexOf('/api/') !== -1) return; // API: siempre red
 
     e.respondWith(
-        fetch(e.request)
+        // 'reload' ignora la caché HTTP (los assets van con ?v=filemtime).
+        fetch(e.request, { cache: 'reload' })
             .then(function (res) {
                 const copy = res.clone();
                 caches.open(CACHE).then(function (c) { c.put(e.request, copy); }).catch(function () {});

@@ -23,6 +23,10 @@
             "categoria_aleatoria": "Aleatoria",
             "btn_reglas": "¿Cómo se juega?",
             "btn_practicar": "Practicar vs 🤖",
+            "bot_dificultad": "Dificultad del bot",
+            "bot_facil": "Fácil",
+            "bot_normal": "Normal",
+            "bot_dificil": "Difícil",
             "stats_record": "Récord: {v}V · {d}D · {e}E"
         },
         "juego": {
@@ -30,7 +34,7 @@
             "turno_rival": "Turno del rival",
             "btn_pujar": "PUJAR +1",
             "btn_bajar": "ME BAJO",
-            "btn_bajar_pagar": "ME BAJO · pagas {precio}🪙",
+            "btn_bajar_rival_paga": "ME BAJO · rival paga {precio}🪙",
             "btn_pujar3": "PUJAR +3",
             "rival_puja": "Tu rival puja +{n}",
             "tu_ultima_puja": "Última puja: tú",
@@ -41,7 +45,6 @@
             "msg_deadlock_decide_corto": "El otro jugador cedió. Decide:",
             "msg_cediste_item": "Cediste el ítem. Esperando decisión…",
             "msg_cede_item": "Cede el ítem al rival pulsando PASAR",
-            "tiempo_agotado": "¡Tiempo agotado!",
             "fin_ganador_desempate": "🏅 {nombre} gana por dinero restante ({puntos} ⭐)",
             "btn_revancha": "REVANCHA",
             "btn_revancha_proponer": "PROPONER REVANCHA",
@@ -85,7 +88,6 @@
             "btn_me_lo_quedo_1": "ME LO QUEDO POR 1 🪙",
             "btn_se_lo_regalo": "SE LO REGALO (0 🪙)",
             "err_no_puedes_pagar_1": "No tienes dinero suficiente para quedártelo",
-            "cuenta_atras": "Tienes {seg}s para actuar",
             "msg_rival_abandono": "Tu rival ha abandonado la partida",
             "submsg_rival_abandono": "La partida ha terminado. Vuelve al lobby para empezar otra.",
             "confirm_salir_jugando": "¿Salir? Tu rival será notificado y la partida terminará."
@@ -107,8 +109,6 @@
             "cap_texto": "Cuando un jugador llega a 4, los ítems restantes pasan al rival.",
             "dead_titulo": "Sin monedas",
             "dead_texto": "Si te toca sin dinero, pasa el ítem y el rival decide: quedárselo por 1 🪙 o regalártelo.",
-            "timeout_titulo": "Tiempo por turno",
-            "timeout_texto": "Tienes 60 s para actuar. Si expira con puja, se la lleva el rival; sin puja, el ítem pasa al rival por 0 🪙.",
             "fin_titulo": "Final",
             "fin_texto": "Gana quien sume más ⭐. Si hay empate, gana quien conserve más monedas. Y siempre puedes pedir la revancha."
         }

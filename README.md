@@ -29,6 +29,7 @@ Abrir `http://127.0.0.1:8000` en el navegador.
 2. Apuntar el document root a la raíz del proyecto (donde está `index.php`).
 3. Asegurar que el directorio `api/salas/` tiene permisos de escritura para el usuario del servidor web.
 4. El directorio `api/salas/` debe estar bloqueado vía `.htaccess` (ya incluido) si usas Apache.
+5. **Caché del CDN**: los assets van versionados con `?v=filemtime(...)`, así que cada deploy genera URLs nuevas y no hace falta purgar caché. Si tras desplegar ves la versión antigua, haz un hard reload una vez (el `sw.js` y el `manifest` van con `no-cache` por `.htaccess`) y, si persiste, purga la caché del CDN una única vez.
 
 ---
 
@@ -50,7 +51,7 @@ Abrir `http://127.0.0.1:8000` en el navegador.
   - Si bajas sin que nadie haya pujado, es un error.
 - **Cap de 4 ítems por jugador**: si alguien llega a 4, los ítems restantes se asignan automáticamente al rival.
 - **Deadlock sin dinero**: si en un ítem fresco te toca a ti y tienes 0 monedas, pulsas **PASAR TURNO** y el rival decide si se lo queda por 1 🪙 o te lo regala por 0 🪙.
-- **Turno con límite real de 60 s**: la cuenta atrás solo se muestra en tu turno y **sí resuelve**: al expirar, si había puja se la lleva el último pujador (paga el precio); si no había puja, el ítem pasa al rival por 0 🪙. Cualquier cliente puede disparar la resolución (`resolver_timeout`), el servidor valida que el turno haya expirado.
+- **Sin límite de tiempo por turno**: la partida espera a que cada jugador decida (el abandono por inactividad se gestiona aparte, ver abandono).
 - **Abandono**: pulsar **Salir al lobby** notifica al rival y termina la partida. Si cierras la pestaña o pierdes conexión, el rival ve un aviso a los **6 s** ("rival desconectado") y la partida se da por **abandonada a los 45 s** sin actividad (margen para cortes móviles).
 - **Victoria**: gana el jugador cuya **colección de ítems tenga mayor valor intrínseco** (suma de `valor`, escala 1-10). En caso de empate a ⭐, gana quien conserve **más monedas**; si también empatan, tablas. El precio pagado es informativo.
 - **Revancha**: al terminar, cualquiera puede proponer revancha eligiendo **nueva temática** (o 🎲 aleatoria). El rival la acepta o rechaza desde la pantalla final.
@@ -70,16 +71,18 @@ draft20/
 ├── api/                   # Backend PHP (todos devuelven JSON)
 │   ├── crear_sala.php     # POST: crea sala + GC oportunista
 │   ├── unirse_sala.php    # POST: J2 entra a sala existente + GC oportunista
-│   ├── accion.php         # POST: pujar / bajar / pasar_deadlock / asignar_rival / abandonar / resolver_timeout / emote
+│   ├── accion.php         # POST: pujar / bajar / pasar_deadlock / asignar_rival / abandonar / emote
 │   ├── revancha.php       # POST: proponer / rechazar revancha al terminar
 │   ├── estado.php         # GET: snapshot + last_seen + aviso rival ausente + abandono
 │   ├── salas_gc.php       # GC: borra salas con >1h sin actividad
 │   ├── salas/             # JSON por sala en runtime (GC a 1h + TTL pasivo 24h)
 │   └── salas/.htaccess    # Bloquea acceso directo
 ├── manifest.webmanifest   # PWA: instalable en móvil
-├── sw.js                  # Service Worker (shell en network-first con fallback)
+├── sw.js                  # Service Worker (network-first con cache:'reload')
+├── .htaccess              # no-cache para sw.js/manifest + MIME del manifest
 ├── icons/                 # Iconos PWA generados (192/512/180)
-├── css/style.css          # Safe-area iOS, animaciones, reduced-motion, scrollbar oculto
+├── css/style.css          # Safe-area iOS, animaciones, reduced-motion, toast, viewport del juego
+├── js/bot_policy.js       # Política del bot (función pura, testeable en Node)
 └── js/app.js              # Toda la lógica del frontend (vanilla JS)
 ```
 
@@ -93,12 +96,13 @@ draft20/
 - **Auto-asignación por cap**: si un jugador llega a 4 ítems, los restantes van al rival a precio 0 (sin más subastas). Acepta pequeños sobre-caps en partidas muy desequilibradas — es un tradeoff de simplicidad para MVP.
 - **Deadlock sin dinero**: si un jugador sin monedas recibe un ítem fresco, pulsa PASAR y el rival decide (quedárselo por 1 🪙 o regalarlo por 0 🪙). Evita bloqueos al final de la partida.
 - **Abandono con gracia**: cada poll actualiza `last_seen[slot]`. A los 6 s sin señales el rival ve un aviso blando (campo `rival_ausente` en la respuesta, sin mutar la sala) y a los 45 s se marca `abandonada`. `visibilitychange` pausa el polling en background y lo reanuda al volver para evitar falsos positivos.
-- **Timeout de turno real**: `item_actual.turno_iniciado_en` marca el inicio del turno. Si pasan 60 s, cualquier cliente dispara `resolver_timeout` (el servidor valida staleness y es idempotente): con puja → auto-bajar al último pujador; sin puja → ítem al rival por 0.
+- **Sin límite de tiempo por turno**: se retiró el timeout real (generaba falsos positivos por desfase reloj cliente/servidor). La inactividad se cubre con el abandono de 45 s.
 - **GC de salas**: al crear o unirse a una sala se ejecutan `limpiar_salas_antiguas()` (best-effort): borra JSON con `filemtime` > 1h con `flock` no bloqueante para no tocar partidas activas. El TTL de 24h queda como red de seguridad.
-- **Revancha sin re-compartir código**: el proponente crea la sala nueva y registra `revancha {por, codigo_nuevo, tematica, ts}` en la vieja (caduca a los 10 min). El rival acepta (unirse) o rechaza desde la pantalla final.
-- **Vibración háptica** en móvil al ganar ítems, recibir pujas del rival y avisos. **Emotes rápidos** (👍😂🔥😭🤝😱) guardados en la sala (máx 10).
-- **Bot de práctica**: desde el lobby, "Practicar vs 🤖" crea la sala y une un bot local que puja 1-2 veces y se baja según presupuesto (no conoce los valores, no hace trampa).
-- **PWA instalable**: manifest + service worker (shell en network-first, API siempre red) + iconos generados por script.
+- **Revancha sin re-compartir código**: el proponente crea la sala nueva y registra `revancha {por, codigo_nuevo, tematica, ts}` en la vieja (caduca a los 10 min). El rival acepta (unirse) o rechaza desde la pantalla final. Contra el bot, la revancha arranca una partida nueva con el **mismo bot y dificultad** al instante.
+- **Vibración háptica** en móvil al ganar ítems, recibir pujas del rival y avisos. **Emotes rápidos** (👍😂🔥😭🤝😱) guardados en la sala (máx 10) y mostrados con el nombre de quien los manda.
+- **Bot de práctica con dificultades** (`js/bot_policy.js`, función pura): Fácil (puja poco y se retira pronto), Normal (valoración secreta por hash del id, presupuesto equilibrado y contra-pujas) y Difícil (conoce los valores reales y puja agresivo). Sin trampas en Fácil/Normal; delays humanos y retiradas no deterministas.
+- **PWA instalable**: manifest + service worker (network-first con `cache: 'reload'`, API siempre red) + iconos generados por script.
+- **Cache-busting de assets**: `index.php`/`juego.php` sirven `js/*.js` y `css/style.css` con `?v=filemtime(...)`. Cada deploy cambia la URL y el CDN de Hostinger no puede servir versiones viejas (no hace falta purgar caché).
 - **Sin login ni cuentas**: cada sala es anónima, ligada al `localStorage` del navegador.
 
 ---
@@ -144,19 +148,24 @@ Snapshot de la sala. Usado por el polling cada 1 s.
 
 Si se pasa `jugador_id`, el servidor:
 1. Actualiza `sala.last_seen[miSlot] = time()`.
-2. Comprueba `last_seen[otroSlot]`: si está stale > 6 s y la sala está `jugando`, la marca como `abandonada` con `abandono_por = otroSlot`.
+2. Devuelve `rival_ausente` (segundos sin señales del rival; `null` si nunca ha polleado).
+3. Si el rival lleva > 45 s sin actividad y la sala está `jugando`, la marca como `abandonada` con `abandono_por = otroSlot`.
 
 ```json
 // 200 OK
 {
   "ok": true,
+  "rival_ausente": 8,             // segundos, o null
   "sala": {
     "codigo": "A8F3X",
     "estado": "jugando",          // esperando | jugando | finalizada | abandonada
     "tematica": "hamburguesa",
     "items_mezclados": [...],
     "indice_item": 2,
-    "item_actual": { "id": "ing_xxx", "emoji": "🍞", "precio_actual": 5, "turno_de": 0, "ultimo_pujo": 0 },
+    "item_actual": {
+      "id": "ing_xxx", "emoji": "🍞", "precio_actual": 5, "turno_de": 0, "ultimo_pujo": 0,
+      "pujas": [{ "por": 0, "incremento": 3, "precio": 5, "ts": 1693574432 }]
+    },
     "jugadores": [
       { "id": "j1_...", "nombre": "Ana", "dinero": 15, "items_ganados": [...] },
       { "id": "j2_...", "nombre": "Bea", "dinero": 17, "items_ganados": [] }
@@ -165,7 +174,9 @@ Si se pasa `jugador_id`, el servidor:
     "asignacion_forzada_a": null,
     "decision_pendiente": null,         // {para, sobre, motivo} si deadlock sin dinero
     "last_seen": [1693574432, 1693574400],
-    "abandono_por": null                // 0 | 1 cuando estado === 'abandonada'
+    "abandono_por": null,               // 0 | 1 cuando estado === 'abandonada'
+    "revancha": null,                   // {por, codigo_nuevo, tematica, ts} al terminar
+    "emotes": [{ "por": 1, "code": "😂", "ts": 1693574432000 }]
   }
 }
 ```
@@ -184,6 +195,9 @@ Realiza una jugada.
 // Request (bajar)
 { "codigo": "A8F3X", "jugador_id": "j2_...", "accion": "bajar" }
 
+// Request (emote — válido en cualquier momento de la partida)
+{ "codigo": "A8F3X", "jugador_id": "j1_...", "accion": "emote", "emote": "😂" }
+
 // Request (abandonar — sin validar turno)
 { "codigo": "A8F3X", "jugador_id": "j1_...", "accion": "abandonar" }
 
@@ -192,14 +206,33 @@ Realiza una jugada.
 
 // Errores frecuentes:
 // 400 - falta campo, código/jugador inválido, acción inválida, incremento inválido,
-//       bajar sin puja previa, dinero insuficiente
+//       emote inválido, bajar sin puja previa, dinero insuficiente
 // 403 - jugador_id no pertenece a esta sala
 // 404 - sala no encontrada
 // 409 - partida no en curso, no es tu turno, ya empezada, sala finalizada
 //
 // Auto-abandono: si al recibir la petición el OTRO jugador tiene last_seen
-// stale > 6 s, la sala se marca como 'abandonada' y se devuelve con la
-// acción del solicitante ya tramitada en segundo plano (sin mutar).
+// stale > 45 s, la sala se marca como 'abandonada' y se devuelve con la
+// acción del solicitante ya tramitada (sin mutar la sala).
+```
+
+### `POST /api/revancha.php`
+
+Propuesta de revancha al terminar la partida (solo estado `finalizada`).
+
+```json
+// Request (proponer; el proponente debe pertenecer también a la sala nueva)
+{ "codigo": "A8F3X", "jugador_id": "j1_...", "accion": "proponer",
+  "codigo_nuevo": "B9G4Y", "tematica": "pizza" }
+
+// Request (rechazar; solo el NO proponente)
+{ "codigo": "A8F3X", "jugador_id": "j2_...", "accion": "rechazar" }
+
+// 200 OK
+{ "ok": true, "sala": { ... } }
+
+// 403 - jugador_id no pertenece a la sala vieja o no es miembro de la nueva
+// 409 - partida no finalizada, propuesta ya activa, nada que rechazar
 ```
 
 ### Códigos HTTP
@@ -233,7 +266,8 @@ Cada sala es un único archivo JSON en `api/salas/<CODIGO>.json`. TTL: 24 h (lim
     "precio_actual": 5,
     "turno_de": 0,
     "ultimo_pujo": 0,
-    "auto_asignado": false
+    "auto_asignado": false,
+    "pujas": [{ "por": 0, "incremento": 3, "precio": 5, "ts": 1693574432 }]
   },
   "jugadores": [
     {
@@ -252,6 +286,8 @@ Cada sala es un único archivo JSON en `api/salas/<CODIGO>.json`. TTL: 24 h (lim
   "decision_pendiente": null,
   "last_seen": [1693574432, 1693574400],
   "abandono_por": null,
+  "revancha": null,
+  "emotes": [],
   "creado_en": 1693574400,
   "actualizado_en": 1693574432
 }

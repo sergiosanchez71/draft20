@@ -393,7 +393,6 @@ try {
             'turno_de'      => 0,          // 0 = J1, 1 = J2
             'ultimo_pujo'   => null,       // índice del último jugador que pujó (null al inicio)
             'auto_asignado' => false,      // true cuando se asigna sin puja (rival ya completó cap)
-            'turno_iniciado_en' => $ahora, // ts del inicio del turno (timeout real a los 60s)
             'pujas'         => [],         // historial de pujas del ítem: {por, incremento, precio, ts}
         ],
         'jugadores' => [

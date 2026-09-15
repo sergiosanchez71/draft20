@@ -163,6 +163,12 @@ try {
             flock($fp, LOCK_UN); fclose($fp);
             responder(['ok' => false, 'error' => 'Ya hay una propuesta de revancha pendiente.'], 409);
         }
+        // La sala nueva debe ser del proponente (evita apuntar a salas ajenas).
+        $salaNueva = leer_sala_bloqueado_sh($codigoNuevo);
+        if ($salaNueva === null || slot_de_jugador($salaNueva, $jugadorId) === null) {
+            flock($fp, LOCK_UN); fclose($fp);
+            responder(['ok' => false, 'error' => 'La sala nueva no pertenece a este jugador.'], 403);
+        }
         $estado['revancha'] = [
             'por'          => $miSlot,
             'codigo_nuevo' => $codigoNuevo,

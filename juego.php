@@ -31,11 +31,12 @@ $categorias = require __DIR__ . '/tematicas_catalogo.php';
     <script src="https://cdn.tailwindcss.com"></script>
     <script>window.LANG = <?= json_encode($LANG, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
     <script>window.__CATEGORIAS = <?= json_encode($categorias, JSON_UNESCAPED_UNICODE) ?>;</script>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=<?= filemtime(__DIR__ . '/css/style.css') ?>">
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+<body class="app-viewport bg-slate-900 text-slate-100 flex flex-col">
     <main id="app" class="flex-1 flex flex-col"></main>
-    <script src="js/app.js"></script>
+    <script src="js/bot_policy.js?v=<?= filemtime(__DIR__ . '/js/bot_policy.js') ?>"></script>
+    <script src="js/app.js?v=<?= filemtime(__DIR__ . '/js/app.js') ?>"></script>
     <script>
         (function () {
             const codigo = <?= json_encode($codigo, JSON_UNESCAPED_UNICODE) ?>;
@@ -43,7 +44,7 @@ $categorias = require __DIR__ . '/tematicas_catalogo.php';
         })();
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('sw.js').catch(function () {});
+                navigator.serviceWorker.register('sw.js?v=<?= filemtime(__DIR__ . '/sw.js') ?>').catch(function () {});
             });
         }
     </script>
