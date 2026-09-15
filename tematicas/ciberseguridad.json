@@ -1,0 +1,25 @@
+{
+    "id": "ciberseguridad",
+    "items": [
+        { "id": "cib_zero_day",         "emoji": "🐞", "valor": 10 },
+        { "id": "cib_vpn_cifrada",      "emoji": "🔐", "valor": 9  },
+        { "id": "cib_firewall_solido",  "emoji": "🧱", "valor": 9  },
+        { "id": "cib_respuesta_rapida", "emoji": "⚡", "valor": 9  },
+        { "id": "cib_honeypot",         "emoji": "🍯", "valor": 8  },
+        { "id": "cib_equipo_soc",       "emoji": "👥", "valor": 8  },
+        { "id": "cib_2fa_activo",       "emoji": "🔑", "valor": 7  },
+        { "id": "cib_backup_semanal",   "emoji": "💽", "valor": 7  },
+        { "id": "cib_password_manager", "emoji": "🗝️", "valor": 6  },
+        { "id": "cib_auditoria_logs",   "emoji": "📋", "valor": 6  },
+        { "id": "cib_concienciacion",   "emoji": "🎣", "valor": 6  },
+        { "id": "cib_antivirus_ok",     "emoji": "🛡️", "valor": 6  },
+        { "id": "cib_parche_al_dia",    "emoji": "🩹", "valor": 5  },
+        { "id": "cib_phishing_exitoso", "emoji": "📧", "valor": 2  },
+        { "id": "cib_wifi_abierta",     "emoji": "📡", "valor": 2  },
+        { "id": "cib_datos_filtrados",  "emoji": "📤", "valor": 2  },
+        { "id": "cib_password_1234",    "emoji": "🔢", "valor": 1  },
+        { "id": "cib_ransomware",       "emoji": "🔒", "valor": 1  },
+        { "id": "cib_usb_desconocida",  "emoji": "💾", "valor": 1  },
+        { "id": "cib_tarjeta_clonada",  "emoji": "💳", "valor": 1  }
+    ]
+}

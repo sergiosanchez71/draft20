@@ -10,6 +10,8 @@
         { "id": "atr_camuflaje",                  "emoji": "🥷", "valor": 7  },
         { "id": "atr_contacto_interno",           "emoji": "🕵️", "valor": 6  },
         { "id": "atr_experto_disfraz",            "emoji": "🎭", "valor": 6  },
+        { "id": "atr_drone_vigilancia",           "emoji": "🚁", "valor": 8  },
+        { "id": "atr_distraccion_magica",         "emoji": "🎩", "valor": 7  },
 
         { "id": "atr_delata_en_5_min",            "emoji": "🤐", "valor": 1  },
         { "id": "atr_disfraz_payaso",             "emoji": "🤡", "valor": 1  },

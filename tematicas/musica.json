@@ -1,0 +1,25 @@
+{
+    "id": "musica",
+    "items": [
+        { "id": "mus_guitarra_les_paul",      "emoji": "🎸", "valor": 10 },
+        { "id": "mus_estudio_grabacion",      "emoji": "🎙️", "valor": 9  },
+        { "id": "mus_productor_leyenda",      "emoji": "🎚️", "valor": 9  },
+        { "id": "mus_estadio_lleno",          "emoji": "🏟️", "valor": 8  },
+        { "id": "mus_banda_epica",            "emoji": "🥁", "valor": 8  },
+        { "id": "mus_oir_absoluto",           "emoji": "👂", "valor": 8  },
+        { "id": "mus_ampli_valvulas",         "emoji": "🔊", "valor": 7  },
+        { "id": "mus_pedalboard",             "emoji": "🎛️", "valor": 7  },
+        { "id": "mus_teclado_sintetizador",   "emoji": "🎹", "valor": 7  },
+        { "id": "mus_micro_calidad",          "emoji": "🎤", "valor": 6  },
+        { "id": "mus_setlist_perfecta",       "emoji": "📜", "valor": 6  },
+        { "id": "mus_roadie_fiel",            "emoji": "🧰", "valor": 5  },
+        { "id": "mus_merch_camisetas",        "emoji": "👕", "valor": 5  },
+        { "id": "mus_playback",               "emoji": "🎭", "valor": 1  },
+        { "id": "mus_autotune_roto",          "emoji": "🤖", "valor": 2  },
+        { "id": "mus_cuerda_floja",           "emoji": "🪕", "valor": 2  },
+        { "id": "mus_instrumento_desafinado", "emoji": "🎺", "valor": 2  },
+        { "id": "mus_letra_olvidada",         "emoji": "📝", "valor": 1  },
+        { "id": "mus_grupo_tributo",          "emoji": "🪗", "valor": 2  },
+        { "id": "mus_vecinos_quejas",         "emoji": "🏠", "valor": 1  }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "id": "selva",
+    "items": [
+        { "id": "sel_jaguar_sigiloso",    "emoji": "🐆", "valor": 10 },
+        { "id": "sel_guia_local",         "emoji": "🧑‍🏫", "valor": 9  },
+        { "id": "sel_canopy_zip",         "emoji": "🪂", "valor": 9  },
+        { "id": "sel_rio_amazonas",       "emoji": "🛶", "valor": 8  },
+        { "id": "sel_medicina_natural",   "emoji": "🍃", "valor": 8  },
+        { "id": "sel_campamento_seguro",  "emoji": "⛺", "valor": 8  },
+        { "id": "sel_machete_afinado",    "emoji": "🔪", "valor": 7  },
+        { "id": "sel_repelente_ok",       "emoji": "🧴", "valor": 7  },
+        { "id": "sel_brujula",            "emoji": "🧭", "valor": 6  },
+        { "id": "sel_linterna",           "emoji": "🔦", "valor": 6  },
+        { "id": "sel_cuerda_trepadora",   "emoji": "🪢", "valor": 6  },
+        { "id": "sel_frutas_exoticas",    "emoji": "🥭", "valor": 6  },
+        { "id": "sel_fotos_increibles",   "emoji": "📸", "valor": 5  },
+        { "id": "sel_serpiente_venenosa", "emoji": "🐍", "valor": 2  },
+        { "id": "sel_barro_traicionero",  "emoji": "🥾", "valor": 2  },
+        { "id": "sel_tormenta_tropical",  "emoji": "🌧️", "valor": 2  },
+        { "id": "sel_mosquitos",          "emoji": "🦟", "valor": 1  },
+        { "id": "sel_arana_gigante",      "emoji": "🕷️", "valor": 1  },
+        { "id": "sel_liana_rota",         "emoji": "🌿", "valor": 1  },
+        { "id": "sel_perdida_mapa",       "emoji": "🗺️", "valor": 1  }
+    ]
+}

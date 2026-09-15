@@ -1,0 +1,25 @@
+{
+    "id": "olimpiadas",
+    "items": [
+        { "id": "oli_antorcha",           "emoji": "🔥", "valor": 10 },
+        { "id": "oli_medalla_oro",        "emoji": "🥇", "valor": 10 },
+        { "id": "oli_podio",              "emoji": "🏅", "valor": 9  },
+        { "id": "oli_villa_olimpica",     "emoji": "🏘️", "valor": 8  },
+        { "id": "oli_ceremonia_apertura", "emoji": "🎆", "valor": 8  },
+        { "id": "oli_juramento",          "emoji": "🤝", "valor": 8  },
+        { "id": "oli_estadio_lleno",      "emoji": "🏟️", "valor": 7  },
+        { "id": "oli_voluntarios",        "emoji": "🦺", "valor": 7  },
+        { "id": "oli_mascota",            "emoji": "🐼", "valor": 6  },
+        { "id": "oli_doping_limpio",      "emoji": "🧪", "valor": 6  },
+        { "id": "oli_banador_nuevo",      "emoji": "🩱", "valor": 6  },
+        { "id": "oli_toalla_equipo",      "emoji": "🧺", "valor": 5  },
+        { "id": "oli_rollo_fotos",        "emoji": "📸", "valor": 5  },
+        { "id": "oli_dopaje_positivo",    "emoji": "💉", "valor": 1  },
+        { "id": "oli_lesion_ultima_hora", "emoji": "🩼", "valor": 1  },
+        { "id": "oli_hotel_cutre",        "emoji": "🏨", "valor": 2  },
+        { "id": "oli_bus_tarde",          "emoji": "🚌", "valor": 1  },
+        { "id": "oli_lluvia_ceremonia",   "emoji": "🌧️", "valor": 2  },
+        { "id": "oli_entradas_caras",     "emoji": "🎟️", "valor": 2  },
+        { "id": "oli_juez_comprado",      "emoji": "🧑‍⚖️", "valor": 1  }
+    ]
+}

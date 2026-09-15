@@ -1,0 +1,25 @@
+{
+    "id": "teatro",
+    "items": [
+        { "id": "tea_actor_protagonista",  "emoji": "🎭", "valor": 10 },
+        { "id": "tea_estreno_mundial",     "emoji": "🌟", "valor": 9  },
+        { "id": "tea_butacas_centro",      "emoji": "💺", "valor": 9  },
+        { "id": "tea_obra_maestra",        "emoji": "🏆", "valor": 8  },
+        { "id": "tea_vestuario_epico",     "emoji": "👗", "valor": 8  },
+        { "id": "tea_direccion_brillante", "emoji": "🎬", "valor": 8  },
+        { "id": "tea_iluminacion",         "emoji": "💡", "valor": 7  },
+        { "id": "tea_ovacion_pie",         "emoji": "👏", "valor": 7  },
+        { "id": "tea_maquillaje_escena",   "emoji": "💄", "valor": 6  },
+        { "id": "tea_vino_entreacto",      "emoji": "🍷", "valor": 6  },
+        { "id": "tea_apuntador",           "emoji": "🗣️", "valor": 5  },
+        { "id": "tea_programa_mano",       "emoji": "📄", "valor": 5  },
+        { "id": "tea_segunda_llamada",     "emoji": "📣", "valor": 5  },
+        { "id": "tea_olvido_texto",        "emoji": "😳", "valor": 1  },
+        { "id": "tea_telon_atascado",      "emoji": "🎪", "valor": 1  },
+        { "id": "tea_vector_apagado",      "emoji": "🔌", "valor": 2  },
+        { "id": "tea_movil_sonando",       "emoji": "📱", "valor": 1  },
+        { "id": "tea_obra_3h",             "emoji": "🕰️", "valor": 2  },
+        { "id": "tea_asiento_pateado",     "emoji": "🦶", "valor": 2  },
+        { "id": "tea_actor_dormido",       "emoji": "😴", "valor": 2  }
+    ]
+}

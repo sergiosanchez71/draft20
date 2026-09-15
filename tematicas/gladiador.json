@@ -1,0 +1,25 @@
+{
+    "id": "gladiador",
+    "items": [
+        { "id": "gla_armadura_retiarius", "emoji": "🛡️", "valor": 10 },
+        { "id": "gla_tridente",           "emoji": "🔱", "valor": 10 },
+        { "id": "gla_patrocinador_rico",  "emoji": "💰", "valor": 9  },
+        { "id": "gla_arena_llena",        "emoji": "🏟️", "valor": 9  },
+        { "id": "gla_red_combate",        "emoji": "🕸️", "valor": 8  },
+        { "id": "gla_casco_brillante",    "emoji": "⛑️", "valor": 8  },
+        { "id": "gla_espada_corta",       "emoji": "⚔️", "valor": 7  },
+        { "id": "gla_escudo_torre",       "emoji": "🪵", "valor": 6  },
+        { "id": "gla_entrenador_ludus",   "emoji": "🧔", "valor": 6  },
+        { "id": "gla_piedra_afilar",      "emoji": "🪨", "valor": 5  },
+        { "id": "gla_racion_extra",       "emoji": "🍖", "valor": 5  },
+        { "id": "gla_aceite_masaje",      "emoji": "🫒", "valor": 5  },
+        { "id": "gla_vendas_manos",       "emoji": "🩹", "valor": 5  },
+        { "id": "gla_rastrillo",          "emoji": "🧹", "valor": 2  },
+        { "id": "gla_tigre_sorpresa",     "emoji": "🐅", "valor": 2  },
+        { "id": "gla_arena_inundada",     "emoji": "🌊", "valor": 2  },
+        { "id": "gla_publico_aburrido",   "emoji": "🥱", "valor": 2  },
+        { "id": "gla_sandalias_rotas",    "emoji": "🩴", "valor": 1  },
+        { "id": "gla_leon_hambriento",    "emoji": "🦁", "valor": 1  },
+        { "id": "gla_pulgar_abajo",       "emoji": "👎", "valor": 1  }
+    ]
+}

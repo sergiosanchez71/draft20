@@ -1,0 +1,25 @@
+{
+    "id": "tenis",
+    "items": [
+        { "id": "ten_saque_ace",         "emoji": "🎾", "valor": 10 },
+        { "id": "ten_winner_punto",      "emoji": "🏆", "valor": 9  },
+        { "id": "ten_raqueta_pro",       "emoji": "🏸", "valor": 9  },
+        { "id": "ten_dropshot",          "emoji": "🪶", "valor": 8  },
+        { "id": "ten_fisico_brutal",     "emoji": "💪", "valor": 8  },
+        { "id": "ten_mental_roca",       "emoji": "🧠", "valor": 8  },
+        { "id": "ten_ojo_halcon",        "emoji": "🦅", "valor": 7  },
+        { "id": "ten_isotonicos",        "emoji": "🥤", "valor": 7  },
+        { "id": "ten_globo_estrategico", "emoji": "🎈", "valor": 6  },
+        { "id": "ten_toalla_botella",    "emoji": "🧺", "valor": 6  },
+        { "id": "ten_pista_tierra",      "emoji": "🟤", "valor": 6  },
+        { "id": "ten_recogepelotas",     "emoji": "🧒", "valor": 5  },
+        { "id": "ten_pelotas_nuevas",    "emoji": "🥎", "valor": 5  },
+        { "id": "ten_doble_falta",       "emoji": "❌", "valor": 1  },
+        { "id": "ten_cuerda_rota",       "emoji": "🪢", "valor": 2  },
+        { "id": "ten_resbalon",          "emoji": "🩹", "valor": 1  },
+        { "id": "ten_sol_lateral",       "emoji": "☀️", "valor": 2  },
+        { "id": "ten_pelota_fuera",      "emoji": "⛔", "valor": 2  },
+        { "id": "ten_partido_5h",        "emoji": "⏰", "valor": 2  },
+        { "id": "ten_rival_muro",        "emoji": "🧱", "valor": 1  }
+    ]
+}

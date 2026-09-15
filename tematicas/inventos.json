@@ -1,0 +1,25 @@
+{
+    "id": "inventos",
+    "items": [
+        { "id": "inv_patente_millonaria",   "emoji": "📜", "valor": 10 },
+        { "id": "inv_premio_nobel",         "emoji": "🏅", "valor": 10 },
+        { "id": "inv_prototipo_estable",    "emoji": "🧪", "valor": 9  },
+        { "id": "inv_impresora_3d",         "emoji": "🖨️", "valor": 9  },
+        { "id": "inv_panel_solar",          "emoji": "🔆", "valor": 8  },
+        { "id": "inv_robot_aspirador",      "emoji": "🧹", "valor": 8  },
+        { "id": "inv_gafas_seguridad",      "emoji": "🥽", "valor": 7  },
+        { "id": "inv_extintor_ok",          "emoji": "🧯", "valor": 7  },
+        { "id": "inv_taladro_percutor",     "emoji": "🔩", "valor": 6  },
+        { "id": "inv_cinta_americana",      "emoji": "🩹", "valor": 6  },
+        { "id": "inv_bridas_metal",         "emoji": "🧷", "valor": 6  },
+        { "id": "inv_multimetro",           "emoji": "📏", "valor": 6  },
+        { "id": "inv_guantes_talla",        "emoji": "🧤", "valor": 5  },
+        { "id": "inv_experimento_fallido",  "emoji": "💥", "valor": 2  },
+        { "id": "inv_cortocircuito",        "emoji": "🔌", "valor": 2  },
+        { "id": "inv_garrafa_inflamable",   "emoji": "⛽", "valor": 2  },
+        { "id": "inv_humo_laboratorio",     "emoji": "🌫️", "valor": 1  },
+        { "id": "inv_pieza_sobrante",       "emoji": "🧩", "valor": 1  },
+        { "id": "inv_instrucciones_chinas", "emoji": "📄", "valor": 1  },
+        { "id": "inv_gato_laboratorio",     "emoji": "🐈", "valor": 1  }
+    ]
+}

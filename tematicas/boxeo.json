@@ -1,0 +1,25 @@
+{
+    "id": "boxeo",
+    "items": [
+        { "id": "box_uppercut",           "emoji": "🥊", "valor": 10 },
+        { "id": "box_entrenador_leyenda", "emoji": "🧠", "valor": 9  },
+        { "id": "box_cinturon_mundial",   "emoji": "🏆", "valor": 9  },
+        { "id": "box_juego_piernas",      "emoji": "🦵", "valor": 8  },
+        { "id": "box_guardia_perfecta",   "emoji": "🛡️", "valor": 8  },
+        { "id": "box_ring_pro",           "emoji": "🥋", "valor": 8  },
+        { "id": "box_vendas_nuevas",      "emoji": "🩹", "valor": 7  },
+        { "id": "box_esponja_entrenador", "emoji": "🧽", "valor": 7  },
+        { "id": "box_casco_proteccion",   "emoji": "⛑️", "valor": 6  },
+        { "id": "box_campana_round",      "emoji": "🔔", "valor": 6  },
+        { "id": "box_publico_animando",   "emoji": "📣", "valor": 6  },
+        { "id": "box_botella_personal",   "emoji": "🚰", "valor": 5  },
+        { "id": "box_peso_pluma",         "emoji": "🪶", "valor": 5  },
+        { "id": "box_ko_10s",             "emoji": "😵", "valor": 1  },
+        { "id": "box_guantes_rotos",      "emoji": "🧤", "valor": 2  },
+        { "id": "box_nariz_rota",         "emoji": "🤕", "valor": 1  },
+        { "id": "box_fuera_forma",        "emoji": "🍩", "valor": 2  },
+        { "id": "box_rival_gigante",      "emoji": "🦍", "valor": 1  },
+        { "id": "box_olvido_vendas",      "emoji": "🩳", "valor": 2  },
+        { "id": "box_toalla_caida",       "emoji": "🧻", "valor": 2  }
+    ]
+}

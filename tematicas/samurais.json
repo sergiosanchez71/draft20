@@ -1,0 +1,25 @@
+{
+    "id": "samurais",
+    "items": [
+        { "id": "sam_katana_forjada",      "emoji": "⚔️", "valor": 10 },
+        { "id": "sam_armadura_bushido",    "emoji": "🥋", "valor": 9  },
+        { "id": "sam_maestro_esgrima",     "emoji": "🧘", "valor": 9  },
+        { "id": "sam_cerezo_flor",         "emoji": "🌸", "valor": 9  },
+        { "id": "sam_castillo_himeji",     "emoji": "🏯", "valor": 8  },
+        { "id": "sam_caballo_fiel",        "emoji": "🐎", "valor": 8  },
+        { "id": "sam_te_ceremonia",        "emoji": "🍵", "valor": 7  },
+        { "id": "sam_arroz_gohan",         "emoji": "🍚", "valor": 6  },
+        { "id": "sam_kimono_seda",         "emoji": "👘", "valor": 6  },
+        { "id": "sam_linterna_papel",      "emoji": "🏮", "valor": 6  },
+        { "id": "sam_pincel_caligrafia",   "emoji": "🖌️", "valor": 6  },
+        { "id": "sam_abanico_guerra",      "emoji": "🎴", "valor": 5  },
+        { "id": "sam_incensario",          "emoji": "🌫️", "valor": 5  },
+        { "id": "sam_armadura_oxidada",    "emoji": "🔩", "valor": 2  },
+        { "id": "sam_sin_honor",           "emoji": "😔", "valor": 2  },
+        { "id": "sam_lluvia_monzon",       "emoji": "🌧️", "valor": 2  },
+        { "id": "sam_ejercito_campesinos", "emoji": "🥷", "valor": 1  },
+        { "id": "sam_seppuku_evitable",    "emoji": "🔪", "valor": 1  },
+        { "id": "sam_zuecos_madera",       "emoji": "🩴", "valor": 1  },
+        { "id": "sam_rito_largo",          "emoji": "⏳", "valor": 1  }
+    ]
+}

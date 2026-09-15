@@ -1,0 +1,25 @@
+{
+    "id": "barbacoa",
+    "items": [
+        { "id": "bar_chuleton_madurado",     "emoji": "🥩", "valor": 10 },
+        { "id": "bar_brisket_ahumado",       "emoji": "🍖", "valor": 9  },
+        { "id": "bar_brasas_roble",          "emoji": "🔥", "valor": 9  },
+        { "id": "bar_chimichurri",           "emoji": "🌿", "valor": 8  },
+        { "id": "bar_costillas_bbq",         "emoji": "🥓", "valor": 8  },
+        { "id": "bar_parrilla_hierro",       "emoji": "♨️", "valor": 8  },
+        { "id": "bar_pinchos_morunos",       "emoji": "🌭", "valor": 7  },
+        { "id": "bar_cerveza_fria",          "emoji": "🍺", "valor": 7  },
+        { "id": "bar_chorizo_criollo",       "emoji": "🌶️", "valor": 6  },
+        { "id": "bar_maiz_asado",            "emoji": "🌽", "valor": 6  },
+        { "id": "bar_pimientos_asados",      "emoji": "🫑", "valor": 6  },
+        { "id": "bar_salsas_caseras",        "emoji": "🥣", "valor": 5  },
+        { "id": "bar_pan_rustico",           "emoji": "🍞", "valor": 5  },
+        { "id": "bar_carbon_humedo",         "emoji": "🪵", "valor": 1  },
+        { "id": "bar_salchichas_precocidas", "emoji": "🍢", "valor": 2  },
+        { "id": "bar_sarten_oxidada",        "emoji": "🍳", "valor": 2  },
+        { "id": "bar_humo_en_ojos",          "emoji": "💨", "valor": 1  },
+        { "id": "bar_carne_carbonizada",     "emoji": "🖤", "valor": 1  },
+        { "id": "bar_mosquitos_terraza",     "emoji": "🦟", "valor": 2  },
+        { "id": "bar_lluvia_domingo",        "emoji": "🌧️", "valor": 2  }
+    ]
+}

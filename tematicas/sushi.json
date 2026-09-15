@@ -1,0 +1,25 @@
+{
+    "id": "sushi",
+    "items": [
+        { "id": "sus_otoro",                 "emoji": "🍣", "valor": 10 },
+        { "id": "sus_maestro_itamae",        "emoji": "👨‍🍳", "valor": 9  },
+        { "id": "sus_wasabi_fresco",         "emoji": "🌱", "valor": 9  },
+        { "id": "sus_sake_premium",          "emoji": "🍶", "valor": 8  },
+        { "id": "sus_arroz_koshihikari",     "emoji": "🌾", "valor": 8  },
+        { "id": "sus_salmon_braseado",       "emoji": "🐟", "valor": 8  },
+        { "id": "sus_gunkan_ikura",          "emoji": "🍥", "valor": 7  },
+        { "id": "sus_california_roll",       "emoji": "🥑", "valor": 6  },
+        { "id": "sus_tamagoyaki",            "emoji": "🥚", "valor": 6  },
+        { "id": "sus_sopa_miso",             "emoji": "🍜", "valor": 6  },
+        { "id": "sus_edamame",               "emoji": "🫛", "valor": 5  },
+        { "id": "sus_te_matcha",             "emoji": "🍵", "valor": 5  },
+        { "id": "sus_jengibre",              "emoji": "🧄", "valor": 5  },
+        { "id": "sus_surimi",                "emoji": "🦀", "valor": 2  },
+        { "id": "sus_wasabi_tubo",           "emoji": "🧪", "valor": 2  },
+        { "id": "sus_arroz_pasado",          "emoji": "🍚", "valor": 1  },
+        { "id": "sus_soja_generica",         "emoji": "🥫", "valor": 1  },
+        { "id": "sus_bandeja_plastico",      "emoji": "🥡", "valor": 1  },
+        { "id": "sus_sobras_nevera",         "emoji": "🧊", "valor": 2  },
+        { "id": "sus_palillos_reutilizados", "emoji": "🥢", "valor": 1  }
+    ]
+}

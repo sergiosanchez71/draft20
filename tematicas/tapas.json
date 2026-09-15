@@ -1,0 +1,25 @@
+{
+    "id": "tapas",
+    "items": [
+        { "id": "tap_jamon_iberico",     "emoji": "🍖", "valor": 10 },
+        { "id": "tap_tortilla_patatas",  "emoji": "🥘", "valor": 9  },
+        { "id": "tap_croquetas_caseras", "emoji": "🥔", "valor": 8  },
+        { "id": "tap_pulpo_feira",       "emoji": "🐙", "valor": 8  },
+        { "id": "tap_gambas_ajillo",     "emoji": "🍤", "valor": 8  },
+        { "id": "tap_queso_manchego",    "emoji": "🧀", "valor": 8  },
+        { "id": "tap_pan_tomate",        "emoji": "🍞", "valor": 7  },
+        { "id": "tap_patatas_bravas",    "emoji": "🌶️", "valor": 7  },
+        { "id": "tap_pimientos_padron",  "emoji": "🫑", "valor": 7  },
+        { "id": "tap_boquerones",        "emoji": "🐟", "valor": 6  },
+        { "id": "tap_tinto_verano",      "emoji": "🍷", "valor": 6  },
+        { "id": "tap_ensaladilla",       "emoji": "🥗", "valor": 6  },
+        { "id": "tap_cana_tirada",       "emoji": "🍺", "valor": 5  },
+        { "id": "tap_pan_duro",          "emoji": "🥖", "valor": 1  },
+        { "id": "tap_calamares_goma",    "emoji": "🦑", "valor": 2  },
+        { "id": "tap_aceituna_sola",     "emoji": "🫒", "valor": 1  },
+        { "id": "tap_sobras_domingo",    "emoji": "🍽️", "valor": 2  },
+        { "id": "tap_vaso_pintalabios",  "emoji": "🥃", "valor": 1  },
+        { "id": "tap_cenicero_lleno",    "emoji": "🚬", "valor": 2  },
+        { "id": "tap_servilleta_usada",  "emoji": "🧻", "valor": 1  }
+    ]
+}

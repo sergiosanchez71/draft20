@@ -1,0 +1,25 @@
+{
+    "id": "desayuno",
+    "items": [
+        { "id": "brk_cafe_especialidad",    "emoji": "☕", "valor": 10 },
+        { "id": "brk_pan_masa_madre",       "emoji": "🍞", "valor": 9  },
+        { "id": "brk_zumo_naranja",         "emoji": "🍊", "valor": 9  },
+        { "id": "brk_churros",              "emoji": "🥖", "valor": 8  },
+        { "id": "brk_huevos_benedict",      "emoji": "🍳", "valor": 8  },
+        { "id": "brk_bacon_crujiente",      "emoji": "🥓", "valor": 8  },
+        { "id": "brk_croissant",            "emoji": "🥐", "valor": 7  },
+        { "id": "brk_pancakes",             "emoji": "🥞", "valor": 7  },
+        { "id": "brk_mermelada_casera",     "emoji": "🍓", "valor": 6  },
+        { "id": "brk_mantequilla_artesana", "emoji": "🧈", "valor": 6  },
+        { "id": "brk_yogur_miel",           "emoji": "🍯", "valor": 6  },
+        { "id": "brk_cereales_avena",       "emoji": "🥣", "valor": 5  },
+        { "id": "brk_queso_fresco",         "emoji": "🧀", "valor": 5  },
+        { "id": "brk_leche_caducada",       "emoji": "🥛", "valor": 1  },
+        { "id": "brk_cereales_azucar",      "emoji": "🍩", "valor": 2  },
+        { "id": "brk_aceite_garrafa",       "emoji": "🛢️", "valor": 1  },
+        { "id": "brk_margarina_sobre",      "emoji": "🟨", "valor": 1  },
+        { "id": "brk_cafe_soluble",         "emoji": "🥄", "valor": 2  },
+        { "id": "brk_zumo_brick",           "emoji": "🧃", "valor": 1  },
+        { "id": "brk_bollo_industrial",     "emoji": "🥮", "valor": 2  }
+    ]
+}

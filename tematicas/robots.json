@@ -1,0 +1,25 @@
+{
+    "id": "robots",
+    "items": [
+        { "id": "rob_ia_consciente",       "emoji": "🧠", "valor": 10 },
+        { "id": "rob_brazo_precision",     "emoji": "🦾", "valor": 10 },
+        { "id": "rob_bateria_infinita",    "emoji": "🔋", "valor": 9  },
+        { "id": "rob_sensor_avanzado",     "emoji": "📡", "valor": 8  },
+        { "id": "rob_autoaprendizaje",     "emoji": "📈", "valor": 8  },
+        { "id": "rob_exoesqueleto",        "emoji": "🦿", "valor": 8  },
+        { "id": "rob_cargador_rapido",     "emoji": "⚡", "valor": 7  },
+        { "id": "rob_ruedas_todo_terreno", "emoji": "🛞", "valor": 6  },
+        { "id": "rob_manual_usuario",      "emoji": "📖", "valor": 6  },
+        { "id": "rob_actualizacion_ok",    "emoji": "⬆️", "valor": 6  },
+        { "id": "rob_piezas_repuesto",     "emoji": "⚙️", "valor": 6  },
+        { "id": "rob_luces_led",           "emoji": "💡", "valor": 5  },
+        { "id": "rob_voz_amigable",        "emoji": "🗣️", "valor": 5  },
+        { "id": "rob_orden_incomprendida", "emoji": "❓", "valor": 2  },
+        { "id": "rob_frenada_brusca",      "emoji": "🛑", "valor": 2  },
+        { "id": "rob_error_404",           "emoji": "🔢", "valor": 2  },
+        { "id": "rob_tornillo_suelto",     "emoji": "🔩", "valor": 1  },
+        { "id": "rob_modo_demo",           "emoji": "🪫", "valor": 1  },
+        { "id": "rob_oxido",               "emoji": "🤖", "valor": 1  },
+        { "id": "rob_bateria_5min",        "emoji": "🔌", "valor": 1  }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "id": "libros",
+    "items": [
+        { "id": "lib_clasico_eterno",       "emoji": "📕", "valor": 10 },
+        { "id": "lib_saga_completa",        "emoji": "📚", "valor": 9  },
+        { "id": "lib_autor_favorito",       "emoji": "✍️", "valor": 9  },
+        { "id": "lib_edicion_aniversario",  "emoji": "🎁", "valor": 8  },
+        { "id": "lib_encuadernacion_cuero", "emoji": "🧵", "valor": 8  },
+        { "id": "lib_marcapaginas_plata",   "emoji": "🔖", "valor": 8  },
+        { "id": "lib_primera_edicion",      "emoji": "📜", "valor": 7  },
+        { "id": "lib_firma_autor",          "emoji": "🖊️", "valor": 7  },
+        { "id": "lib_edicion_bolsillo",     "emoji": "📗", "valor": 6  },
+        { "id": "lib_club_lectura",         "emoji": "☕", "valor": 6  },
+        { "id": "lib_audiolibro_narrador",  "emoji": "🎧", "valor": 6  },
+        { "id": "lib_estanteria",           "emoji": "🪑", "valor": 5  },
+        { "id": "lib_luz_lectura",          "emoji": "💡", "valor": 5  },
+        { "id": "lib_spoiler_amigo",        "emoji": "🤫", "valor": 1  },
+        { "id": "lib_tomo_suelto",          "emoji": "🧩", "valor": 2  },
+        { "id": "lib_letra_minuscula",      "emoji": "👓", "valor": 1  },
+        { "id": "lib_lomo_roto",            "emoji": "🩹", "valor": 1  },
+        { "id": "lib_paginas_amarillas",    "emoji": "🟡", "valor": 1  },
+        { "id": "lib_peso_kg",              "emoji": "💪", "valor": 2  },
+        { "id": "lib_final_abierto",        "emoji": "🤯", "valor": 2  }
+    ]
+}

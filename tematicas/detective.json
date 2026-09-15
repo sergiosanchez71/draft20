@@ -1,0 +1,25 @@
+{
+    "id": "detective",
+    "items": [
+        { "id": "det_lupa_precision",      "emoji": "🔍", "valor": 10 },
+        { "id": "det_instinto_agudo",      "emoji": "🧠", "valor": 9  },
+        { "id": "det_deduccion_brillante", "emoji": "💡", "valor": 9  },
+        { "id": "det_informante_secreto",  "emoji": "🕵️", "valor": 9  },
+        { "id": "det_archivo_completo",    "emoji": "🗂️", "valor": 8  },
+        { "id": "det_prueba_clave",        "emoji": "🧾", "valor": 8  },
+        { "id": "det_gps_seguimiento",     "emoji": "📍", "valor": 7  },
+        { "id": "det_placa_autoridad",     "emoji": "🛡️", "valor": 6  },
+        { "id": "det_linterna_uv",         "emoji": "🔦", "valor": 6  },
+        { "id": "det_contacto_forense",    "emoji": "🧪", "valor": 6  },
+        { "id": "det_libreta_notas",       "emoji": "📓", "valor": 6  },
+        { "id": "det_cafe_ya_frio",        "emoji": "☕", "valor": 5  },
+        { "id": "det_guantes_latex",       "emoji": "🧤", "valor": 5  },
+        { "id": "det_testigo_mudo",        "emoji": "🤐", "valor": 2  },
+        { "id": "det_jefe_impaciente",     "emoji": "😤", "valor": 2  },
+        { "id": "det_pista_borrada",       "emoji": "🧽", "valor": 2  },
+        { "id": "det_pista_falsa",         "emoji": "🧩", "valor": 1  },
+        { "id": "det_sospechoso_huido",    "emoji": "🏃", "valor": 1  },
+        { "id": "det_caso_archivado",      "emoji": "📁", "valor": 1  },
+        { "id": "det_donut_sola",          "emoji": "🍩", "valor": 1  }
+    ]
+}

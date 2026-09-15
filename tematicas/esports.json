@@ -1,0 +1,25 @@
+{
+    "id": "esports",
+    "items": [
+        { "id": "egam_setup_240hz",        "emoji": "🖥️", "valor": 10 },
+        { "id": "egam_main_pro",           "emoji": "🏆", "valor": 10 },
+        { "id": "egam_silla_gaming",       "emoji": "💺", "valor": 9  },
+        { "id": "egam_teclado_mecanico",   "emoji": "⌨️", "valor": 9  },
+        { "id": "egam_equipo_top",         "emoji": "👥", "valor": 8  },
+        { "id": "egam_mentalidad_pro",     "emoji": "🧠", "valor": 8  },
+        { "id": "egam_perifericos_nuevos", "emoji": "🖱️", "valor": 7  },
+        { "id": "egam_buena_conexion",     "emoji": "📶", "valor": 7  },
+        { "id": "egam_torneo_local",       "emoji": "🏟️", "valor": 7  },
+        { "id": "egam_streaming_ok",       "emoji": "📹", "valor": 6  },
+        { "id": "egam_comunidad_sana",     "emoji": "💬", "valor": 6  },
+        { "id": "egam_energia_bebida",     "emoji": "🥤", "valor": 5  },
+        { "id": "egam_alfombrilla_xxl",    "emoji": "🟦", "valor": 5  },
+        { "id": "egam_lag",                "emoji": "📡", "valor": 1  },
+        { "id": "egam_rage_quit",          "emoji": "😡", "valor": 1  },
+        { "id": "egam_manco_equipo",       "emoji": "🎮", "valor": 2  },
+        { "id": "egam_teclado_pegajoso",   "emoji": "🍯", "valor": 1  },
+        { "id": "egam_toxicidad_chat",     "emoji": "☠️", "valor": 2  },
+        { "id": "egam_ping_alto",          "emoji": "📈", "valor": 2  },
+        { "id": "egam_derrota_0_10",       "emoji": "💀", "valor": 2  }
+    ]
+}

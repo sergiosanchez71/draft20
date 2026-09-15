@@ -10,6 +10,11 @@
         { "id": "pod_telepatia",                   "emoji": "📡",  "valor": 8  },
         { "id": "pod_regeneracion",                "emoji": "❤️‍🩹", "valor": 8  },
 
+        { "id": "pod_super_salto",                 "emoji": "🦘",  "valor": 6  },
+        { "id": "pod_escudo_invisible",            "emoji": "🛡️", "valor": 6  },
+        { "id": "pod_vision_nocturna",             "emoji": "🦉",  "valor": 5  },
+        { "id": "pod_control_animales",            "emoji": "🐾",  "valor": 5  },
+
         { "id": "pod_halitosis_perpetua",          "emoji": "🦨",  "valor": 1  },
         { "id": "pod_solo_de_noche",               "emoji": "🌙",  "valor": 3  },
         { "id": "pod_olor_pies_perpetuo",          "emoji": "🦶",  "valor": 1  },

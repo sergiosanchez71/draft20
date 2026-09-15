@@ -1,0 +1,25 @@
+{
+    "id": "medieval",
+    "items": [
+        { "id": "med_excalibur",             "emoji": "🗡️", "valor": 10 },
+        { "id": "med_castillo_foso",         "emoji": "🏰", "valor": 10 },
+        { "id": "med_armadura_placas",       "emoji": "🛡️", "valor": 9  },
+        { "id": "med_caballo_guerra",        "emoji": "🐎", "valor": 9  },
+        { "id": "med_torneo_justa",          "emoji": "🏇", "valor": 8  },
+        { "id": "med_estandarte_reino",      "emoji": "🚩", "valor": 8  },
+        { "id": "med_cocina_castillo",       "emoji": "🍗", "valor": 7  },
+        { "id": "med_escudero_fiel",         "emoji": "🧒", "valor": 6  },
+        { "id": "med_jardin_amurallado",     "emoji": "🌹", "valor": 6  },
+        { "id": "med_herrero_competente",    "emoji": "🔨", "valor": 6  },
+        { "id": "med_biblioteca_monasterio", "emoji": "📚", "valor": 5  },
+        { "id": "med_catapulta_basica",      "emoji": "🪨", "valor": 5  },
+        { "id": "med_bardo_animado",         "emoji": "🎻", "valor": 5  },
+        { "id": "med_campesino_rebelde",     "emoji": "🌾", "valor": 2  },
+        { "id": "med_siervo_sin_tierra",     "emoji": "⛓️", "valor": 2  },
+        { "id": "med_dragon_enfermo",        "emoji": "🐉", "valor": 2  },
+        { "id": "med_asado_quemado",         "emoji": "🔥", "valor": 2  },
+        { "id": "med_peste_negra",           "emoji": "🐀", "valor": 1  },
+        { "id": "med_paja_humeda",           "emoji": "🛏️", "valor": 1  },
+        { "id": "med_lord_impuestos",        "emoji": "💸", "valor": 1  }
+    ]
+}

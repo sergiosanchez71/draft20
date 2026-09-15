@@ -1,0 +1,25 @@
+{
+    "id": "animales",
+    "items": [
+        { "id": "ani_leon_salvaje",        "emoji": "🦁", "valor": 10 },
+        { "id": "ani_aguila_real",         "emoji": "🦅", "valor": 9  },
+        { "id": "ani_orca_libre",          "emoji": "🐋", "valor": 9  },
+        { "id": "ani_tigre_bengala",       "emoji": "🐅", "valor": 8  },
+        { "id": "ani_delfin_inteligente",  "emoji": "🐬", "valor": 8  },
+        { "id": "ani_caballo_pura_sangre", "emoji": "🐎", "valor": 8  },
+        { "id": "ani_perro_fiel",          "emoji": "🐕", "valor": 7  },
+        { "id": "ani_gato_independiente",  "emoji": "🐈", "valor": 6  },
+        { "id": "ani_loro_parlanchin",     "emoji": "🦜", "valor": 6  },
+        { "id": "ani_tortuga_paciente",    "emoji": "🐢", "valor": 5  },
+        { "id": "ani_conejo_veloz",        "emoji": "🐇", "valor": 5  },
+        { "id": "ani_pez_beta",            "emoji": "🐠", "valor": 5  },
+        { "id": "ani_hamster_bolita",      "emoji": "🐹", "valor": 5  },
+        { "id": "ani_paloma_urbana",       "emoji": "🕊️", "valor": 2  },
+        { "id": "ani_huron_mordedor",      "emoji": "🦦", "valor": 2  },
+        { "id": "ani_perro_ladrador",      "emoji": "🐩", "valor": 2  },
+        { "id": "ani_gato_vago",           "emoji": "😾", "valor": 1  },
+        { "id": "ani_cucaracha_mascota",   "emoji": "🪳", "valor": 1  },
+        { "id": "ani_mosquito_zumbador",   "emoji": "🦟", "valor": 1  },
+        { "id": "ani_serpiente_escape",    "emoji": "🐍", "valor": 1  }
+    ]
+}

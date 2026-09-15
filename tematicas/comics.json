@@ -1,0 +1,25 @@
+{
+    "id": "comics",
+    "items": [
+        { "id": "cmx_dibujante_estrella",    "emoji": "🖌️", "valor": 10 },
+        { "id": "cmx_guionista_leyenda",     "emoji": "✍️", "valor": 9  },
+        { "id": "cmx_crossover_epico",       "emoji": "💥", "valor": 9  },
+        { "id": "cmx_edicion_coleccionista", "emoji": "📦", "valor": 8  },
+        { "id": "cmx_paginas_doble",         "emoji": "📖", "valor": 8  },
+        { "id": "cmx_tinta_china",           "emoji": "🖋️", "valor": 8  },
+        { "id": "cmx_variant_portada",       "emoji": "🎨", "valor": 7  },
+        { "id": "cmx_firma_autor",           "emoji": "✒️", "valor": 7  },
+        { "id": "cmx_comic_firmado",         "emoji": "📘", "valor": 6  },
+        { "id": "cmx_estanteria",            "emoji": "🗄️", "valor": 6  },
+        { "id": "cmx_poster_marco",          "emoji": "🖼️", "valor": 6  },
+        { "id": "cmx_club_lectura",          "emoji": "🗣️", "valor": 5  },
+        { "id": "cmx_figura_heroe",          "emoji": "🦸", "valor": 5  },
+        { "id": "cmx_retcon_absurdo",        "emoji": "🔄", "valor": 1  },
+        { "id": "cmx_evento_vacio",          "emoji": "🕳️", "valor": 2  },
+        { "id": "cmx_dibujo_apresurado",     "emoji": "✏️", "valor": 2  },
+        { "id": "cmx_letra_minuscula",       "emoji": "🔍", "valor": 2  },
+        { "id": "cmx_paginas_pegadas",       "emoji": "📄", "valor": 1  },
+        { "id": "cmx_coleccion_incompleta",  "emoji": "🧩", "valor": 2  },
+        { "id": "cmx_precio_desorbitado",    "emoji": "💰", "valor": 2  }
+    ]
+}

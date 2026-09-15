@@ -1,0 +1,25 @@
+{
+    "id": "boda",
+    "items": [
+        { "id": "bod_banquete_estrella",       "emoji": "🍽️", "valor": 10 },
+        { "id": "bod_dj_legendario",           "emoji": "🎧", "valor": 9  },
+        { "id": "bod_tarta_5_pisos",           "emoji": "🎂", "valor": 9  },
+        { "id": "bod_vestido_sonado",          "emoji": "👰", "valor": 9  },
+        { "id": "bod_luna_de_miel",            "emoji": "🌙", "valor": 8  },
+        { "id": "bod_fotografo_pro",           "emoji": "📸", "valor": 8  },
+        { "id": "bod_ramos_flores",            "emoji": "💐", "valor": 7  },
+        { "id": "bod_open_bar",                "emoji": "🍾", "valor": 6  },
+        { "id": "bod_menu_vegetariano",        "emoji": "🥗", "valor": 6  },
+        { "id": "bod_musica_bailable",         "emoji": "🕺", "valor": 6  },
+        { "id": "bod_plan_b_lluvia",           "emoji": "☔", "valor": 6  },
+        { "id": "bod_detalles_personalizados", "emoji": "🎀", "valor": 6  },
+        { "id": "bod_invitados_puntuales",     "emoji": "⏰", "valor": 5  },
+        { "id": "bod_tio_borracho",            "emoji": "🍻", "valor": 2  },
+        { "id": "bod_dj_chungo",               "emoji": "🔊", "valor": 2  },
+        { "id": "bod_primo_karaoke",           "emoji": "😱", "valor": 2  },
+        { "id": "bod_suegra_opinadora",        "emoji": "🗣️", "valor": 1  },
+        { "id": "bod_discurso_45min",          "emoji": "🎤", "valor": 1  },
+        { "id": "bod_tarta_derretida",         "emoji": "🫠", "valor": 1  },
+        { "id": "bod_lluvia_sin_plan",         "emoji": "🌧️", "valor": 2  }
+    ]
+}

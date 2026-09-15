@@ -1,0 +1,25 @@
+{
+    "id": "gimnasio",
+    "items": [
+        { "id": "gim_sentadilla_pesada",   "emoji": "🏋️", "valor": 10 },
+        { "id": "gim_barra_olimpica",      "emoji": "⚙️", "valor": 9  },
+        { "id": "gim_discos_bumper",       "emoji": "🔵", "valor": 9  },
+        { "id": "gim_press_banca",         "emoji": "🛏️", "valor": 8  },
+        { "id": "gim_proteina_whey",       "emoji": "🥛", "valor": 8  },
+        { "id": "gim_entrenador_personal", "emoji": "📋", "valor": 8  },
+        { "id": "gim_botella_agua",        "emoji": "🚰", "valor": 7  },
+        { "id": "gim_playlist_motivadora", "emoji": "🎵", "valor": 7  },
+        { "id": "gim_toalla_propia",       "emoji": "🧺", "valor": 6  },
+        { "id": "gim_auriculares_ok",      "emoji": "🎧", "valor": 6  },
+        { "id": "gim_espejo_libre",        "emoji": "🪞", "valor": 6  },
+        { "id": "gim_agujetas_leves",      "emoji": "🦵", "valor": 5  },
+        { "id": "gim_taquilla_segura",     "emoji": "🔐", "valor": 5  },
+        { "id": "gim_maquina_ocupada",     "emoji": "⏳", "valor": 2  },
+        { "id": "gim_olor_sudor",          "emoji": "🤢", "valor": 2  },
+        { "id": "gim_espejo_selfie",       "emoji": "📸", "valor": 2  },
+        { "id": "gim_cinta_parada",        "emoji": "🚧", "valor": 1  },
+        { "id": "gim_cuota_abusiva",       "emoji": "💸", "valor": 1  },
+        { "id": "gim_proteina_caducada",   "emoji": "🥤", "valor": 1  },
+        { "id": "gim_vestuario_inundado",  "emoji": "🌊", "valor": 1  }
+    ]
+}

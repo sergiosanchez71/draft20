@@ -1,0 +1,25 @@
+{
+    "id": "coches",
+    "items": [
+        { "id": "coc_v12_biturbo",        "emoji": "🏎️", "valor": 10 },
+        { "id": "coc_slicks_competicion", "emoji": "🛞", "valor": 9  },
+        { "id": "coc_tunel_viento",       "emoji": "🌪️", "valor": 9  },
+        { "id": "coc_frenos_ceramicos",   "emoji": "🔴", "valor": 8  },
+        { "id": "coc_asientos_nappa",     "emoji": "💺", "valor": 8  },
+        { "id": "coc_escape_titanio",     "emoji": "🔧", "valor": 8  },
+        { "id": "coc_gps_funciona",       "emoji": "🗺️", "valor": 7  },
+        { "id": "coc_seguro_todo_riesgo", "emoji": "📄", "valor": 6  },
+        { "id": "coc_aire_acondicionado", "emoji": "❄️", "valor": 6  },
+        { "id": "coc_plaza_garaje",       "emoji": "🅿️", "valor": 6  },
+        { "id": "coc_radio_casete",       "emoji": "📻", "valor": 5  },
+        { "id": "coc_limpiaparabrisas",   "emoji": "🧽", "valor": 5  },
+        { "id": "coc_portavasos",         "emoji": "☕", "valor": 4  },
+        { "id": "coc_itv_caducada",       "emoji": "📋", "valor": 1  },
+        { "id": "coc_rueda_pinchada",     "emoji": "⚠️", "valor": 1  },
+        { "id": "coc_humo_negro",         "emoji": "💨", "valor": 1  },
+        { "id": "coc_motor_gripado",      "emoji": "🛠️", "valor": 2  },
+        { "id": "coc_asiento_roto",       "emoji": "🪑", "valor": 2  },
+        { "id": "coc_multas_pendientes",  "emoji": "🎫", "valor": 2  },
+        { "id": "coc_olor_perro",         "emoji": "🐕", "valor": 1  }
+    ]
+}

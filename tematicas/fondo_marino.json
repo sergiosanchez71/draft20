@@ -1,0 +1,25 @@
+{
+    "id": "fondo_marino",
+    "items": [
+        { "id": "mar_ballena_jorobada",   "emoji": "🐋", "valor": 10 },
+        { "id": "mar_arrecife_coral",     "emoji": "🪸", "valor": 9  },
+        { "id": "mar_pulpo_genio",        "emoji": "🐙", "valor": 9  },
+        { "id": "mar_submarino",          "emoji": "🛥️", "valor": 8  },
+        { "id": "mar_buzo_experto",       "emoji": "🤿", "valor": 8  },
+        { "id": "mar_tiburon_ballena",    "emoji": "🦈", "valor": 8  },
+        { "id": "mar_pez_payaso",         "emoji": "🐠", "valor": 6  },
+        { "id": "mar_cangrejo_ermitano",  "emoji": "🦀", "valor": 6  },
+        { "id": "mar_delfin_jugueton",    "emoji": "🐬", "valor": 6  },
+        { "id": "mar_medusa_luminosa",    "emoji": "🪼", "valor": 6  },
+        { "id": "mar_estrella_mar",       "emoji": "🌟", "valor": 5  },
+        { "id": "mar_caballito_mar",      "emoji": "🐴", "valor": 5  },
+        { "id": "mar_alga_fresca",        "emoji": "🌿", "valor": 5  },
+        { "id": "mar_agua_fria",          "emoji": "🥶", "valor": 2  },
+        { "id": "mar_olas_fuertes",       "emoji": "🌊", "valor": 2  },
+        { "id": "mar_sal_en_heridas",     "emoji": "🧂", "valor": 2  },
+        { "id": "mar_bolsa_plastico",     "emoji": "🛍️", "valor": 1  },
+        { "id": "mar_tiburon_hambriento", "emoji": "🦷", "valor": 1  },
+        { "id": "mar_arena_pegada",       "emoji": "🏖️", "valor": 1  },
+        { "id": "mar_ancla_oxidada",      "emoji": "⚓", "valor": 1  }
+    ]
+}

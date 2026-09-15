@@ -11,6 +11,10 @@
         { "id": "vj_studio_rockstar",         "emoji": "🤠", "valor": 10 },
         { "id": "vj_studio_nintendo",         "emoji": "🍄", "valor": 10 },
 
+        { "id": "vj_guardado_automatico",     "emoji": "💾", "valor": 6  },
+        { "id": "vj_accesibilidad_total",     "emoji": "♿", "valor": 6  },
+        { "id": "vj_doblaje_top",             "emoji": "🎙️", "valor": 5  },
+
         { "id": "vj_microtransacciones",      "emoji": "💳", "valor": 2  },
         { "id": "vj_lanzamiento_bug",         "emoji": "🐛", "valor": 1  },
         { "id": "vj_dlc_paywall",             "emoji": "🧱", "valor": 3  },

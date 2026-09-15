@@ -1,0 +1,25 @@
+{
+    "id": "juegos_mesa",
+    "items": [
+        { "id": "jdm_campana_epica",        "emoji": "🗡️", "valor": 10 },
+        { "id": "jdm_meeples_premium",      "emoji": "🪵", "valor": 9  },
+        { "id": "jdm_tablero_modular",      "emoji": "🗺️", "valor": 9  },
+        { "id": "jdm_organizador_insertos", "emoji": "🗃️", "valor": 8  },
+        { "id": "jdm_miniaturas_pintadas",  "emoji": "🎨", "valor": 8  },
+        { "id": "jdm_grupo_fiel",           "emoji": "👥", "valor": 8  },
+        { "id": "jdm_dados_metal",          "emoji": "🎲", "valor": 7  },
+        { "id": "jdm_fundas_cartas",        "emoji": "🃏", "valor": 7  },
+        { "id": "jdm_reglamento_claro",     "emoji": "📜", "valor": 6  },
+        { "id": "jdm_snacks_noche",         "emoji": "🥨", "valor": 6  },
+        { "id": "jdm_tapete_fieltro",       "emoji": "🟩", "valor": 5  },
+        { "id": "jdm_bso_ambiental",        "emoji": "🎶", "valor": 5  },
+        { "id": "jdm_grupo_puntual",        "emoji": "📅", "valor": 5  },
+        { "id": "jdm_manual_300_paginas",   "emoji": "📕", "valor": 2  },
+        { "id": "jdm_piezas_perdidas",      "emoji": "🧩", "valor": 2  },
+        { "id": "jdm_partida_eterna",       "emoji": "⏰", "valor": 1  },
+        { "id": "jdm_reglas_inventadas",    "emoji": "🤥", "valor": 2  },
+        { "id": "jdm_ganador_tramposo",     "emoji": "😈", "valor": 2  },
+        { "id": "jdm_aburrimiento_mortal",  "emoji": "🥱", "valor": 1  },
+        { "id": "jdm_pieza_faltante",       "emoji": "🕳️", "valor": 1  }
+    ]
+}

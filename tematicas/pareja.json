@@ -10,6 +10,8 @@
         { "id": "par_recuerdos_aniversario",   "emoji": "🎂",  "valor": 8  },
         { "id": "par_atleta_overnight",        "emoji": "🏋️", "valor": 7  },
         { "id": "par_acepta_pasatiempo",       "emoji": "🤝",  "valor": 7  },
+        { "id": "par_detalles_sin_fecha",      "emoji": "🎁",  "valor": 7  },
+        { "id": "par_te_defiende",             "emoji": "🦸",  "valor": 7  },
 
         { "id": "par_pierde_llaves_diario",    "emoji": "🔑",  "valor": 1  },
         { "id": "par_puerta_nevera_abierta",   "emoji": "🚪",  "valor": 2  },

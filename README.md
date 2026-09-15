@@ -63,12 +63,7 @@ draft20/
 ├── index.php              # Lobby: crear / unirse a sala
 ├── juego.php              # UI principal del juego
 ├── lang/es.json           # Strings UI + nombres de ítems y temáticas (i18n)
-├── tematicas/             # Definición de las 4 temáticas (ítems por juego)
-│   ├── hamburguesa.json
-│   ├── zombies.json
-│   ├── peliculas.json
-│   ├── vacaciones.json
-│   └── futbol.json
+├── tematicas/             # 59 temáticas (≥20 ítems c/u; id + emoji + valor)
 ├── api/                   # Backend PHP (todos devuelven JSON)
 │   ├── crear_sala.php     # POST: crea sala, devuelve codigo + jugador_id
 │   ├── unirse_sala.php    # POST: J2 entra a sala existente
@@ -305,13 +300,21 @@ Reglas:
 - Mínimo **8 ítems** (se sirven 8 por partida con reparto equilibrado por tiers: ver `seleccionar_items_balanceados()` en `api/crear_sala.php`).
 - Cada `id` debe existir en `lang/<iso>.json::items` para resolverse en UI.
 
-### Temáticas incluidas
+### Temáticas incluidas (59, agrupadas en 9 categorías)
 
-- `hamburguesa` — Ingredientes para la hamburguesa perfecta.
-- `zombies` — Apocalipsis: armas, refugios y compañeros.
-- `peliculas` — Director de cine: actores, géneros y presupuestos.
-- `vacaciones` — Plan de vacaciones: destinos, alojamientos y transporte.
-- `futbol` — Leyendas mundiales (Messi Prime, CR7, Ronaldinho, Zidane, Ronaldo Nazário, Iniesta, Maldini, Haaland, Mbappé, Casillas) vs. jugadores "meme" (Maguire, Antony, Karius, Lord Bendtner, Hazard RM, Dembélé lesionado, Gravesen, Mariano, Chygrynskiy, Ali Dia).
+El lobby las presenta con un selector por categorías: chips horizontales (con "Todas") + grid de tarjetas con emoji y nombre. La estructura vive en `$categorias` de `index.php` (fuente única para el frontend vía `window.__CATEGORIAS`).
+
+- 🍔 **Comida y bebida** — hamburguesa, tapas, pizza, barbacoa, sushi, postres, desayuno, cerveza.
+- 🎬 **Cultura pop** — peliculas, videojuegos, musica, series, anime, comics, juegos_mesa, libros, teatro, karaoke.
+- ⚽ **Deporte y motor** — futbol, coches, baloncesto, tenis, olimpiadas, gimnasio, esports, boxeo.
+- 🐉 **Fantasía y superpoderes** — zombies, poderes, magos, villanos, dragones, fantasmas.
+- 🏴‍☠️ **Historia y aventura** — piratas, medieval, gladiador, vikingos, egipto, romanos, samurais, vaqueros.
+- 🚀 **Ciencia y tecnología** — espacio, robots, inventos, criptos.
+- 🌴 **Naturaleza y viajes** — vacaciones, animales, granja, dinosaurios, fondo_marino, selva, montana, isla_desierta.
+- 🏠 **Vida y sociedad** — pareja, oficina, influencer, boda.
+- 🕵️ **Crimen y misterio** — atraco, detective, ciberseguridad.
+
+Estándar de calidad del catálogo (validado por `test_catalogo.php`): ≥20 ítems por temática, IDs únicos con formato slug, `valor` 1-10, sin prefijos compartidos entre temáticas, y traducción/label para cada ID en `lang/es.json`.
 
 ---
 

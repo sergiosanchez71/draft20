@@ -1,0 +1,25 @@
+{
+    "id": "villanos",
+    "items": [
+        { "id": "vil_plan_maestro",       "emoji": "🧠", "valor": 10 },
+        { "id": "vil_guarida_secreta",    "emoji": "🌋", "valor": 9  },
+        { "id": "vil_rayo_mortal",        "emoji": "⚡", "valor": 9  },
+        { "id": "vil_ejercito_secuaces",  "emoji": "🪖", "valor": 8  },
+        { "id": "vil_disfraz_impecable",  "emoji": "🎭", "valor": 8  },
+        { "id": "vil_risa_malvada",       "emoji": "😈", "valor": 8  },
+        { "id": "vil_gato_blanco",        "emoji": "🐈", "valor": 7  },
+        { "id": "vil_cohete_escape",      "emoji": "🚀", "valor": 7  },
+        { "id": "vil_monologo_preparado", "emoji": "🎤", "valor": 6  },
+        { "id": "vil_silla_giratoria",    "emoji": "💺", "valor": 6  },
+        { "id": "vil_ordenador_hackeo",   "emoji": "💻", "valor": 6  },
+        { "id": "vil_base_subterranea",   "emoji": "🏗️", "valor": 6  },
+        { "id": "vil_secuaz_leal",        "emoji": "🧟", "valor": 5  },
+        { "id": "vil_monologo_eterno",    "emoji": "⏳", "valor": 1  },
+        { "id": "vil_secuaz_torpe",       "emoji": "🤪", "valor": 2  },
+        { "id": "vil_risa_tartamudeo",    "emoji": "😅", "valor": 2  },
+        { "id": "vil_ejercito_huye",      "emoji": "🏃", "valor": 2  },
+        { "id": "vil_derrota_por_heroe",  "emoji": "💀", "valor": 2  },
+        { "id": "vil_plan_filtrado",      "emoji": "🗞️", "valor": 1  },
+        { "id": "vil_capa_atascada",      "emoji": "🧣", "valor": 1  }
+    ]
+}

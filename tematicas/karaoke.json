@@ -1,0 +1,25 @@
+{
+    "id": "karaoke",
+    "items": [
+        { "id": "kar_voz_angelical",      "emoji": "👼", "valor": 10 },
+        { "id": "kar_bohemian_rhapsody",  "emoji": "🎤", "valor": 10 },
+        { "id": "kar_dueto_perfecto",     "emoji": "🎶", "valor": 9  },
+        { "id": "kar_micro_shure",        "emoji": "🎙️", "valor": 9  },
+        { "id": "kar_publico_entregado",  "emoji": "🙌", "valor": 8  },
+        { "id": "kar_tecnica_vibrato",    "emoji": "🎵", "valor": 8  },
+        { "id": "kar_cancion_80s",        "emoji": "🕺", "valor": 7  },
+        { "id": "kar_grupo_amigos",       "emoji": "🧑‍🤝‍🧑", "valor": 6  },
+        { "id": "kar_pandereta",          "emoji": "🪘", "valor": 6  },
+        { "id": "kar_app_puntuacion",     "emoji": "📲", "valor": 6  },
+        { "id": "kar_bailarinas_laser",   "emoji": "🪩", "valor": 5  },
+        { "id": "kar_camarero_rockero",   "emoji": "🍺", "valor": 5  },
+        { "id": "kar_botellin_agua",      "emoji": "🚰", "valor": 5  },
+        { "id": "kar_cancion_8_min",      "emoji": "⏳", "valor": 2  },
+        { "id": "kar_micro_chirria",      "emoji": "🔊", "valor": 2  },
+        { "id": "kar_olvido_letra",       "emoji": "🤔", "valor": 1  },
+        { "id": "kar_voz_ronca",          "emoji": "🐸", "valor": 2  },
+        { "id": "kar_afinacion_cero",     "emoji": "🎯", "valor": 1  },
+        { "id": "kar_borrachera_palabra", "emoji": "🍻", "valor": 2  },
+        { "id": "kar_video_borroso",      "emoji": "📹", "valor": 1  }
+    ]
+}

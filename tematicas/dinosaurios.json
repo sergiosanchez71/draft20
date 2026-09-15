@@ -1,0 +1,25 @@
+{
+    "id": "dinosaurios",
+    "items": [
+        { "id": "dino_trex_alpha",          "emoji": "🦖", "valor": 10 },
+        { "id": "dino_fosil_completo",      "emoji": "🦴", "valor": 9  },
+        { "id": "dino_triceratops",         "emoji": "🦕", "valor": 9  },
+        { "id": "dino_adn_perfecto",        "emoji": "🧬", "valor": 9  },
+        { "id": "dino_huevo_fosilizado",    "emoji": "🥚", "valor": 8  },
+        { "id": "dino_parque_seguro",       "emoji": "🔒", "valor": 8  },
+        { "id": "dino_jeep_safari",         "emoji": "🚙", "valor": 7  },
+        { "id": "dino_camara_vision",       "emoji": "🎥", "valor": 7  },
+        { "id": "dino_guia_experto",        "emoji": "🧑‍🏫", "valor": 6  },
+        { "id": "dino_huellas_fosiles",     "emoji": "👣", "valor": 6  },
+        { "id": "dino_agua_lago",           "emoji": "💧", "valor": 6  },
+        { "id": "dino_dominio_paddock",     "emoji": "🚧", "valor": 6  },
+        { "id": "dino_amigos_vegetarianos", "emoji": "🌿", "valor": 5  },
+        { "id": "dino_mosquitos_ambar",     "emoji": "🦟", "valor": 2  },
+        { "id": "dino_raptores_listos",     "emoji": "🦎", "valor": 2  },
+        { "id": "dino_tormenta_tropical",   "emoji": "🌧️", "valor": 2  },
+        { "id": "dino_comida_escasa",       "emoji": "🍖", "valor": 2  },
+        { "id": "dino_meteorito",           "emoji": "☄️", "valor": 1  },
+        { "id": "dino_jaula_off",           "emoji": "🔌", "valor": 1  },
+        { "id": "dino_volcan_activo",       "emoji": "🌋", "valor": 1  }
+    ]
+}

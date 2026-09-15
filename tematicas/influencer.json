@@ -1,0 +1,25 @@
+{
+    "id": "influencer",
+    "items": [
+        { "id": "inf_camara_4k",         "emoji": "📷", "valor": 10 },
+        { "id": "inf_patrocinio_oro",    "emoji": "💰", "valor": 9  },
+        { "id": "inf_algoritmo_amigo",   "emoji": "📈", "valor": 9  },
+        { "id": "inf_comunidad_fiel",    "emoji": "👥", "valor": 9  },
+        { "id": "inf_iluminacion_ring",  "emoji": "💡", "valor": 8  },
+        { "id": "inf_edicion_pro",       "emoji": "🎬", "valor": 8  },
+        { "id": "inf_colab_marca",       "emoji": "🤝", "valor": 7  },
+        { "id": "inf_guion_preparado",   "emoji": "📝", "valor": 6  },
+        { "id": "inf_hashtags_top",      "emoji": "#️⃣", "valor": 6  },
+        { "id": "inf_musica_trend",      "emoji": "🎵", "valor": 6  },
+        { "id": "inf_filtro_natural",    "emoji": "🪞", "valor": 5  },
+        { "id": "inf_tripode_estable",   "emoji": "🧍", "valor": 5  },
+        { "id": "inf_horario_optimo",    "emoji": "🕗", "valor": 5  },
+        { "id": "inf_drama_twitter",     "emoji": "🐦", "valor": 2  },
+        { "id": "inf_algoritmo_cambio",  "emoji": "📉", "valor": 2  },
+        { "id": "inf_vistas_compradas",  "emoji": "🤖", "valor": 2  },
+        { "id": "inf_shadowban",         "emoji": "👻", "valor": 1  },
+        { "id": "inf_hate_comentarios",  "emoji": "💬", "valor": 1  },
+        { "id": "inf_video_borrado",     "emoji": "🗑️", "valor": 1  },
+        { "id": "inf_movil_sin_bateria", "emoji": "🪫", "valor": 1  }
+    ]
+}

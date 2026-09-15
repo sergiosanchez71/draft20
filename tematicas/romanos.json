@@ -1,0 +1,25 @@
+{
+    "id": "romanos",
+    "items": [
+        { "id": "rom_legion_invicta",      "emoji": "🛡️", "valor": 10 },
+        { "id": "rom_acueducto",           "emoji": "🏛️", "valor": 9  },
+        { "id": "rom_calzada_romana",      "emoji": "🛣️", "valor": 9  },
+        { "id": "rom_gladius_corta",       "emoji": "⚔️", "valor": 8  },
+        { "id": "rom_termas_lujo",         "emoji": "♨️", "valor": 8  },
+        { "id": "rom_senado_respetado",    "emoji": "🗳️", "valor": 8  },
+        { "id": "rom_toga_limpia",         "emoji": "👘", "valor": 7  },
+        { "id": "rom_vino_romano",         "emoji": "🍷", "valor": 6  },
+        { "id": "rom_mosaico_bonito",      "emoji": "🧩", "valor": 6  },
+        { "id": "rom_aceite_oliva",        "emoji": "🫙", "valor": 6  },
+        { "id": "rom_cuadriga",            "emoji": "🐎", "valor": 6  },
+        { "id": "rom_pan_fresco",          "emoji": "🍞", "valor": 5  },
+        { "id": "rom_aceitunas_romanas",   "emoji": "🫒", "valor": 5  },
+        { "id": "rom_conspiracion_senado", "emoji": "🗡️", "valor": 2  },
+        { "id": "rom_tuberias_plomo",      "emoji": "🚱", "valor": 2  },
+        { "id": "rom_inflacion_denarios",  "emoji": "📉", "valor": 2  },
+        { "id": "rom_plebe_cabreada",      "emoji": "😠", "valor": 2  },
+        { "id": "rom_circos_vacio",        "emoji": "🎪", "valor": 1  },
+        { "id": "rom_peste_romana",        "emoji": "🦟", "valor": 1  },
+        { "id": "rom_caida_imperio",       "emoji": "🔥", "valor": 1  }
+    ]
+}

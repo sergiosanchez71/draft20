@@ -21,6 +21,8 @@
         turnTurnoDe: null,
         turnTimerId: null,
         abandonoDetectadoVibrado: false,
+        tematicaSeleccionada: null,
+        tematicaCategoria: null,
     };
 
     const TURN_SECONDS = 60;
@@ -36,6 +38,13 @@
     }
     function tItem(id) { return (window.LANG.items && window.LANG.items[id]) || id; }
     function tTematica(id) { return (window.LANG.tematicas && window.LANG.tematicas[id]) || id; }
+    function catLabel(id) { return (window.LANG.tematicas_categorias && window.LANG.tematicas_categorias[id]) || id; }
+    function categoriasData() { return Array.isArray(window.__CATEGORIAS) ? window.__CATEGORIAS : []; }
+    function defaultTematica() {
+        const cats = categoriasData();
+        if (cats.length && cats[0].tematicas && cats[0].tematicas.length) return cats[0].tematicas[0].id;
+        return 'hamburguesa';
+    }
 
     // =================== fetch helper ===================
     async function api(method, path, body) {
@@ -173,12 +182,11 @@
             el('p', { class: 'text-slate-400 text-sm mt-1' }, t('ui.app.subtitulo_lobby')),
         ]));
 
-        const tematicasOptions = ['hamburguesa', 'zombies', 'peliculas', 'vacaciones', 'futbol', 'videojuegos', 'poderes', 'pareja', 'atraco']
-            .map(function (id) { return el('option', { value: id }, tTematica(id)); });
+        const selectorBox = el('div', { id: 'tematicaSelector', class: 'mb-4' });
 
         const createForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
-            el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.selector_tematica')),
-            el('select', { id: 'tematica', class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }, tematicasOptions),
+            el('label', { class: 'block text-sm text-slate-400 mb-2' }, t('ui.lobby.selector_tematica')),
+            selectorBox,
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
             el('input', { id: 'nameCreate', type: 'text', maxlength: '20', placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
             el('button', { id: 'btnCreate', class: 'w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_crear')),
@@ -201,6 +209,69 @@
 
         $('#btnCreate').addEventListener('click', onCreate);
         $('#btnJoin').addEventListener('click', onJoin);
+
+        renderTematicaSelector(selectorBox);
+    }
+
+    function renderTematicaSelector(container) {
+        const cats = categoriasData();
+        if (state.tematicaCategoria === null) {
+            state.tematicaCategoria = cats.length ? cats[0].id : 'todas';
+        }
+        if (!state.tematicaSeleccionada) state.tematicaSeleccionada = defaultTematica();
+
+        const tabBar = el('div', { class: 'flex gap-2 overflow-x-auto no-scrollbar pb-1 mb-3' });
+        const grid = el('div', { class: 'grid grid-cols-2 gap-2' });
+
+        function chip(id, emoji, label) {
+            const active = state.tematicaCategoria === id;
+            return el('button', {
+                type: 'button',
+                class: 'flex-shrink-0 px-3 py-2 rounded-full text-sm border transition ' +
+                    (active
+                        ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold'
+                        : 'bg-slate-700 text-slate-200 border-slate-600'),
+                onclick: function () {
+                    state.tematicaCategoria = id;
+                    renderTematicaSelector(container);
+                },
+            }, emoji + ' ' + label);
+        }
+
+        tabBar.appendChild(chip('todas', '✨', t('ui.lobby.categoria_todas')));
+        cats.forEach(function (c) {
+            tabBar.appendChild(chip(c.id, c.emoji || '🎲', catLabel(c.id)));
+        });
+
+        let visibles = [];
+        if (state.tematicaCategoria === 'todas') {
+            cats.forEach(function (c) {
+                (c.tematicas || []).forEach(function (tm) { visibles.push(tm); });
+            });
+        } else {
+            const cat = cats.filter(function (c) { return c.id === state.tematicaCategoria; })[0];
+            visibles = cat ? (cat.tematicas || []) : [];
+        }
+
+        visibles.forEach(function (tm) {
+            const active = state.tematicaSeleccionada === tm.id;
+            grid.appendChild(el('button', {
+                type: 'button',
+                class: 'rounded-lg p-3 text-center border transition ' +
+                    (active ? 'bg-amber-400/20 border-amber-400' : 'bg-slate-700 border-slate-600'),
+                onclick: function () {
+                    state.tematicaSeleccionada = tm.id;
+                    renderTematicaSelector(container);
+                },
+            }, [
+                el('span', { class: 'block text-2xl leading-none mb-1' }, tm.emoji || '🎲'),
+                el('span', { class: 'block text-xs leading-tight ' + (active ? 'text-amber-300 font-bold' : 'text-slate-200') }, tTematica(tm.id)),
+            ]));
+        });
+
+        clear(container);
+        container.appendChild(tabBar);
+        container.appendChild(grid);
     }
 
     function renderJoinView(prefilledCode, prefillName) {
@@ -219,7 +290,7 @@
     }
 
     async function onCreate() {
-        const tematica = $('#tematica').value;
+        const tematica = state.tematicaSeleccionada || defaultTematica();
         const nombre = $('#nameCreate').value.trim();
         const btn = $('#btnCreate');
         btn.disabled = true; btn.classList.add('opacity-50');
@@ -256,7 +327,7 @@
         clear(app);
         app.appendChild(el('header', { class: 'p-6 text-center safe-pt' }, [
             el('h1', { class: 'text-3xl font-bold text-amber-400' }, t('ui.app.titulo')),
-            el('p', { class: 'text-slate-400 text-sm mt-1' }, tTematica(state.sala?.tematica || '')),
+            el('p', { class: 'text-slate-400 text-sm mt-1' }, tTematica(state.tematicaSeleccionada || state.sala?.tematica || '')),
         ]));
 
         app.appendChild(el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 text-center fade-in' }, [

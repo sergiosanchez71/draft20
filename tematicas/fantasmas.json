@@ -1,0 +1,25 @@
+{
+    "id": "fantasmas",
+    "items": [
+        { "id": "fan_ectoplasma_puro",      "emoji": "👻", "valor": 10 },
+        { "id": "fan_medium_autentica",     "emoji": "🔮", "valor": 9  },
+        { "id": "fan_libro_espiritus",      "emoji": "📖", "valor": 9  },
+        { "id": "fan_casa_encantada",       "emoji": "🏚️", "valor": 8  },
+        { "id": "fan_ouija_funcional",      "emoji": "🪦", "valor": 8  },
+        { "id": "fan_aparicion_elegante",   "emoji": "🎩", "valor": 8  },
+        { "id": "fan_retrato_que_sigue",    "emoji": "🖼️", "valor": 7  },
+        { "id": "fan_candelabro_antiguo",   "emoji": "🕯️", "valor": 6  },
+        { "id": "fan_espejo_roto",          "emoji": "🪞", "valor": 6  },
+        { "id": "fan_niebla_ambiental",     "emoji": "🌫️", "valor": 6  },
+        { "id": "fan_maullido_misterioso",  "emoji": "🐈", "valor": 5  },
+        { "id": "fan_poltergeist_amistoso", "emoji": "🪑", "valor": 5  },
+        { "id": "fan_radio_estatica",       "emoji": "📻", "valor": 5  },
+        { "id": "fan_sabana_agujeros",      "emoji": "👕", "valor": 2  },
+        { "id": "fan_susto_falso",          "emoji": "🎃", "valor": 2  },
+        { "id": "fan_frio_espiritual",      "emoji": "🥶", "valor": 2  },
+        { "id": "fan_gato_aburrido",        "emoji": "😿", "valor": 2  },
+        { "id": "fan_corriente_aire",       "emoji": "💨", "valor": 1  },
+        { "id": "fan_puerta_chirriando",    "emoji": "🚪", "valor": 1  },
+        { "id": "fan_polvo_siglos",         "emoji": "🧹", "valor": 1  }
+    ]
+}

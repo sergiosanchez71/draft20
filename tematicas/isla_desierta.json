@@ -1,0 +1,25 @@
+{
+    "id": "isla_desierta",
+    "items": [
+        { "id": "isl_refugio_paraiso",    "emoji": "🏝️", "valor": 10 },
+        { "id": "isl_pesca_abundante",    "emoji": "🐟", "valor": 9  },
+        { "id": "isl_fuego_hoguera",      "emoji": "🔥", "valor": 9  },
+        { "id": "isl_coco_fresco",        "emoji": "🥥", "valor": 9  },
+        { "id": "isl_senal_humo",         "emoji": "💨", "valor": 8  },
+        { "id": "isl_bote_salvavidas",    "emoji": "🛶", "valor": 8  },
+        { "id": "isl_hamaca_palmera",     "emoji": "🛖", "valor": 6  },
+        { "id": "isl_cuchillo_multiusos", "emoji": "🔪", "valor": 6  },
+        { "id": "isl_cuerda_palmera",     "emoji": "🪢", "valor": 6  },
+        { "id": "isl_sombrilla_hojas",    "emoji": "🌴", "valor": 6  },
+        { "id": "isl_pez_improvisado",    "emoji": "🍽️", "valor": 6  },
+        { "id": "isl_agua_coco",          "emoji": "🥤", "valor": 5  },
+        { "id": "isl_brujula_simple",     "emoji": "🧭", "valor": 5  },
+        { "id": "isl_cangrejo_ladron",    "emoji": "🦀", "valor": 2  },
+        { "id": "isl_sol_implacable",     "emoji": "☀️", "valor": 2  },
+        { "id": "isl_tormenta",           "emoji": "🌧️", "valor": 2  },
+        { "id": "isl_aislamiento_total",  "emoji": "😵", "valor": 2  },
+        { "id": "isl_arena_en_todo",      "emoji": "🏖️", "valor": 1  },
+        { "id": "isl_sin_agua_dulce",     "emoji": "🚱", "valor": 1  },
+        { "id": "isl_mosquito",           "emoji": "🦟", "valor": 1  }
+    ]
+}
