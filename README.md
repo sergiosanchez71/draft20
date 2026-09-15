@@ -50,9 +50,11 @@ Abrir `http://127.0.0.1:8000` en el navegador.
   - Si bajas sin que nadie haya pujado, es un error.
 - **Cap de 4 ítems por jugador**: si alguien llega a 4, los ítems restantes se asignan automáticamente al rival.
 - **Deadlock sin dinero**: si en un ítem fresco te toca a ti y tienes 0 monedas, pulsas **PASAR TURNO** y el rival decide si se lo queda por 1 🪙 o te lo regala por 0 🪙.
-- **Cuenta atrás 60s**: visible solo durante tu turno para animar a decidir. No fuerza acciones; el abandono real es por polling.
-- **Abandono**: si pulsas **Salir al lobby** durante una partida, se notifica al rival y la partida termina. Si cierras la pestaña o pierdes la conexión durante >6 s, el rival también recibe el aviso automáticamente.
-- **Victoria**: gana el jugador cuya **colección de ítems tenga mayor valor intrínseco** (suma de `valor` de cada ítem, definido en la temática, escala 1-10). El dinero restante y el precio pagado son **informativos**, no determinan el ganador. Esto significa que la estrategia es pujar por ítems de calidad, no acumular dinero.
+- **Turno con límite real de 60 s**: la cuenta atrás solo se muestra en tu turno y **sí resuelve**: al expirar, si había puja se la lleva el último pujador (paga el precio); si no había puja, el ítem pasa al rival por 0 🪙. Cualquier cliente puede disparar la resolución (`resolver_timeout`), el servidor valida que el turno haya expirado.
+- **Abandono**: pulsar **Salir al lobby** notifica al rival y termina la partida. Si cierras la pestaña o pierdes conexión, el rival ve un aviso a los **6 s** ("rival desconectado") y la partida se da por **abandonada a los 45 s** sin actividad (margen para cortes móviles).
+- **Victoria**: gana el jugador cuya **colección de ítems tenga mayor valor intrínseco** (suma de `valor`, escala 1-10). En caso de empate a ⭐, gana quien conserve **más monedas**; si también empatan, tablas. El precio pagado es informativo.
+- **Revancha**: al terminar, cualquiera puede proponer revancha eligiendo **nueva temática** (o 🎲 aleatoria). El rival la acepta o rechaza desde la pantalla final.
+- **Valores ocultos**: el ⭐ de cada ítem es secreto durante la partida (ni en la carta ni en el inventario). Solo se revela en la pantalla final.
 
 ---
 
@@ -62,16 +64,22 @@ Abrir `http://127.0.0.1:8000` en el navegador.
 draft20/
 ├── index.php              # Lobby: crear / unirse a sala
 ├── juego.php              # UI principal del juego
+├── tematicas_catalogo.php # Catálogo de temáticas por categoría (fuente única)
 ├── lang/es.json           # Strings UI + nombres de ítems y temáticas (i18n)
 ├── tematicas/             # 59 temáticas (≥20 ítems c/u; id + emoji + valor)
 ├── api/                   # Backend PHP (todos devuelven JSON)
-│   ├── crear_sala.php     # POST: crea sala, devuelve codigo + jugador_id
-│   ├── unirse_sala.php    # POST: J2 entra a sala existente
-│   ├── accion.php         # POST: pujar / bajar / pasar_deadlock / asignar_rival / abandonar
-│   ├── estado.php         # GET: snapshot actual de la sala (polling + last_seen + timeout)
-│   ├── salas/             # JSON por sala en runtime (auto-limpieza por TTL)
+│   ├── crear_sala.php     # POST: crea sala + GC oportunista
+│   ├── unirse_sala.php    # POST: J2 entra a sala existente + GC oportunista
+│   ├── accion.php         # POST: pujar / bajar / pasar_deadlock / asignar_rival / abandonar / resolver_timeout / emote
+│   ├── revancha.php       # POST: proponer / rechazar revancha al terminar
+│   ├── estado.php         # GET: snapshot + last_seen + aviso rival ausente + abandono
+│   ├── salas_gc.php       # GC: borra salas con >1h sin actividad
+│   ├── salas/             # JSON por sala en runtime (GC a 1h + TTL pasivo 24h)
 │   └── salas/.htaccess    # Bloquea acceso directo
-├── css/style.css          # Safe-area iOS, animaciones, scrollbar oculto
+├── manifest.webmanifest   # PWA: instalable en móvil
+├── sw.js                  # Service Worker (shell en network-first con fallback)
+├── icons/                 # Iconos PWA generados (192/512/180)
+├── css/style.css          # Safe-area iOS, animaciones, reduced-motion, scrollbar oculto
 └── js/app.js              # Toda la lógica del frontend (vanilla JS)
 ```
 
@@ -84,9 +92,13 @@ draft20/
 - **Victoria por valor, no por dinero**: el ganador se determina por la suma de `valor` de su colección. El dinero restante y el `precio` pagado son solo informativos. Esto convierte la subasta en un mecanismo de selección: gana quien mejor identifica y puja por los ítems premium.
 - **Auto-asignación por cap**: si un jugador llega a 4 ítems, los restantes van al rival a precio 0 (sin más subastas). Acepta pequeños sobre-caps en partidas muy desequilibradas — es un tradeoff de simplicidad para MVP.
 - **Deadlock sin dinero**: si un jugador sin monedas recibe un ítem fresco, pulsa PASAR y el rival decide (quedárselo por 1 🪙 o regalarlo por 0 🪙). Evita bloqueos al final de la partida.
-- **Abandono y reconexión mínima**: cada poll actualiza `last_seen[slot]`. Si un jugador deja de aparecer >6 s, el rival recibe la sala en estado `abandonada` con mensaje dedicado. Pulsar **Salir** voluntariamente dispara la misma señal vía acción `abandonar`.
-- **Cuenta atrás 60s**: se muestra solo durante tu turno en la tarjeta del ítem. Es puramente visual — el abandono real sigue siendo el polling timeout. Esto da presión psicológica sin forzar acciones.
-- **Vibración háptica** en móvil cuando ganas un ítem o cuando el rival abandona (sin audio para mantenerlo silencioso).
+- **Abandono con gracia**: cada poll actualiza `last_seen[slot]`. A los 6 s sin señales el rival ve un aviso blando (campo `rival_ausente` en la respuesta, sin mutar la sala) y a los 45 s se marca `abandonada`. `visibilitychange` pausa el polling en background y lo reanuda al volver para evitar falsos positivos.
+- **Timeout de turno real**: `item_actual.turno_iniciado_en` marca el inicio del turno. Si pasan 60 s, cualquier cliente dispara `resolver_timeout` (el servidor valida staleness y es idempotente): con puja → auto-bajar al último pujador; sin puja → ítem al rival por 0.
+- **GC de salas**: al crear o unirse a una sala se ejecutan `limpiar_salas_antiguas()` (best-effort): borra JSON con `filemtime` > 1h con `flock` no bloqueante para no tocar partidas activas. El TTL de 24h queda como red de seguridad.
+- **Revancha sin re-compartir código**: el proponente crea la sala nueva y registra `revancha {por, codigo_nuevo, tematica, ts}` en la vieja (caduca a los 10 min). El rival acepta (unirse) o rechaza desde la pantalla final.
+- **Vibración háptica** en móvil al ganar ítems, recibir pujas del rival y avisos. **Emotes rápidos** (👍😂🔥😭🤝😱) guardados en la sala (máx 10).
+- **Bot de práctica**: desde el lobby, "Practicar vs 🤖" crea la sala y une un bot local que puja 1-2 veces y se baja según presupuesto (no conoce los valores, no hace trampa).
+- **PWA instalable**: manifest + service worker (shell en network-first, API siempre red) + iconos generados por script.
 - **Sin login ni cuentas**: cada sala es anónima, ligada al `localStorage` del navegador.
 
 ---

@@ -40,3 +40,16 @@
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .btn-tap { touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+.pop-emote { animation: popEmote 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+@keyframes popEmote {
+    0%   { opacity: 0; transform: translateX(-50%) scale(0.4); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .pulse-win, .shake, .fade-in, .pop-emote { animation: none !important; }
+    #toast { transition: none; }
+}

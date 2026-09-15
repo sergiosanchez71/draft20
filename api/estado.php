@@ -29,8 +29,9 @@ declare(strict_types=1);
 
 const CHARSET          = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const SALAS_DIR        = __DIR__ . '/salas/';
-const TTL_SEGUNDOS     = 86400; // 24h → limpieza automática de salas inactivas
-const ABANDON_TIMEOUT_S = 6;     // 6s sin poll = jugador se da por abandonado
+const TTL_SEGUNDOS     = 86400; // 24h → red de seguridad pasiva (el GC activo borra a 1h)
+const RIVAL_AUSENTE_S  = 6;      // 6s sin poll → se avisa "rival desconectado" (sin abandonar)
+const ABANDON_TIMEOUT_S = 45;    // 45s sin poll → abandono definitivo
 
 // ============================================================================
 //  Helpers (con guard por si se carga junto a crear_sala.php)
@@ -129,6 +130,7 @@ if (!array_key_exists('abandono_por', $estado)) {
 
 // Si llega jugador_id, resolver slot y actualizar last_seen.
 $miSlot = null;
+$rivalAusente = null;
 if ($jugadorId !== '') {
     foreach ($estado['jugadores'] as $i => $j) {
         if (isset($j['id']) && $j['id'] === $jugadorId) {
@@ -139,7 +141,16 @@ if ($jugadorId !== '') {
     if ($miSlot !== null) {
         $estado['last_seen'][$miSlot] = time();
 
-        // Comprobar timeout del OTRO jugador.
+        // Segundos que lleva el rival sin dar señales (aviso blando en UI).
+        $other = 1 - $miSlot;
+        if (!empty($estado['jugadores'][$other]['id'])) {
+            $otherSeen = $estado['last_seen'][$other] ?? null;
+            if ($otherSeen !== null) {
+                $rivalAusente = max(0, time() - (int) $otherSeen);
+            }
+        }
+
+        // Comprobar timeout del OTRO jugador (abandono definitivo).
         $triggered = check_and_trigger_abandon($estado, $miSlot);
         if ($triggered) {
             $estado['actualizado_en'] = time();
@@ -155,4 +166,4 @@ fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
 fflush($fp);
 flock($fp, LOCK_UN); fclose($fp);
 
-responder(['ok' => true, 'sala' => $estado], 200);
+responder(['ok' => true, 'sala' => $estado, 'rival_ausente' => $rivalAusente], 200);

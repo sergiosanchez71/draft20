@@ -3,8 +3,10 @@
  * Draft 20 — API: accion
  *
  * Procesa una acción de un jugador sobre la partida activa.
- * Acciones válidas: "pujar" (suma 1 al precio, pasa turno), "bajar"
- * (asigna el ítem al último pujador al precio actual y avanza al siguiente).
+ * Acciones válidas: "pujar" (suma al precio, pasa turno), "bajar" (asigna el
+ * ítem al último pujador al precio actual y avanza al siguiente),
+ * "pasar_deadlock", "asignar_rival", "abandonar", "resolver_timeout"
+ * (auto-bajar/pasar al expirar el turno) y "emote".
  *
  * Mecánica del cap:
  *   - Cada jugador puede tener un MÁXIMO de MAX_ITEMS_POR_JUGADOR ítems (4).
@@ -44,7 +46,11 @@ const TEMATICAS_DIR    = __DIR__ . '/../tematicas/';
 const DINERO_INICIAL   = 20;
 const MAX_ITEMS_POR_JUGADOR = 4;   // cap duro por jugador
 const INCREMENTO_PUJA  = 1;          // +1 por puja (UI tiene también botón +3 vía "pujar3")
-const ABANDON_TIMEOUT_S = 6;        // 6s sin poll = abandono por timeout del rival
+const RIVAL_AUSENTE_S  = 6;          // 6s sin poll → aviso blando al rival (sin abandonar)
+const ABANDON_TIMEOUT_S = 45;        // 45s sin poll → abandono definitivo
+const TURNO_MAX_S      = 60;         // timeout real del turno (auto-bajar / pasar ítem)
+const EMOTES_MAX       = 10;         // máximo de emotes guardados en la sala
+const EMOTES_VALIDOS   = ['👍', '😂', '🔥', '😭', '🤝', '😱'];
 
 if (!function_exists('responder')) {
     function responder(array $payload, int $code = 200): void {
@@ -148,9 +154,45 @@ function avanzar_a_siguiente_item(array &$sala, array $emojiMap): void {
         'turno_de'      => $newStart,
         'ultimo_pujo'   => null,
         'auto_asignado' => false,
+        'turno_iniciado_en' => time(),
+        'pujas'         => [],
     ];
     $sala['ronda']++;
     $sala['turno_inicial_ronda'] = $newStart;
+}
+
+/**
+ * Asigna el ítem actual a un ganador (con cap pivot), cobra el precio,
+ * avanza al siguiente ítem, consume auto-asignaciones y finaliza si toca.
+ * La usan bajar() y resolver_timeout() para no duplicar la mecánica.
+ */
+function asignar_item_ganador(array &$sala, int $winner, int $price, array $emojiMap, array $valorMap): void {
+    // Cap pivot: si el destino ya está en el cap, el ítem va al otro a precio 0.
+    if (count($sala['jugadores'][$winner]['items_ganados']) >= MAX_ITEMS_POR_JUGADOR) {
+        $winner = 1 - $winner;
+        $price  = 0;
+    }
+
+    $itemId    = $sala['item_actual']['id'];
+    $itemEmoji = $sala['item_actual']['emoji'];
+    $itemValor = $valorMap[$itemId] ?? 1;
+
+    $sala['jugadores'][$winner]['dinero'] -= $price;
+    push_item($sala['jugadores'][$winner], $itemId, $itemEmoji, $itemValor, $price);
+
+    // Cap cascade: si llega al máximo, forzar al rival los restantes.
+    if (count($sala['jugadores'][$winner]['items_ganados']) >= MAX_ITEMS_POR_JUGADOR) {
+        $sala['asignacion_forzada_a'] = 1 - $winner;
+    }
+
+    avanzar_a_siguiente_item($sala, $emojiMap);
+
+    if ($sala['asignacion_forzada_a'] !== null) {
+        procesar_auto_asignaciones($sala, $emojiMap, $valorMap);
+    }
+    if ($sala['item_actual'] === null) {
+        $sala['estado'] = 'finalizada';
+    }
 }
 
 /**
@@ -204,11 +246,17 @@ if ($codigo === '' || !preg_match($regexCodigo, $codigo)) {
 if ($jugadorId === '' || !preg_match($regexJugador, $jugadorId)) {
     responder(['ok' => false, 'error' => 'jugador_id inválido.'], 400);
 }
-if (!in_array($accion, ['pujar', 'bajar', 'pasar_deadlock', 'asignar_rival', 'abandonar'], true)) {
+if (!in_array($accion, ['pujar', 'bajar', 'pasar_deadlock', 'asignar_rival', 'abandonar', 'resolver_timeout', 'emote'], true)) {
     responder(['ok' => false, 'error' => 'Acción inválida.'], 400);
 }
 if ($accion === 'pujar' && !in_array($incremento, [1, 3], true)) {
     responder(['ok' => false, 'error' => 'Incremento de puja inválido (usa 1 o 3).'], 400);
+}
+if ($accion === 'emote') {
+    $emoteVal = isset($input['emote']) ? (string) $input['emote'] : '';
+    if (!in_array($emoteVal, EMOTES_VALIDOS, true)) {
+        responder(['ok' => false, 'error' => 'Emote inválido.'], 400);
+    }
 }
 if ($accion === 'asignar_rival') {
     if (!isset($input['destino']) || !in_array((int) $input['destino'], [0, 1], true)) {
@@ -261,12 +309,26 @@ try {
         responder(['ok' => false, 'error' => 'No perteneces a esta sala.'], 403);
     }
 
-    // Compatibilidad: salas antiguas sin last_seen/abandono_por.
+    // Compatibilidad: salas antiguas sin last_seen/abandono_por/emotes/pujas.
     if (!isset($estado['last_seen']) || !is_array($estado['last_seen'])) {
         $estado['last_seen'] = [null, null];
     }
     if (!array_key_exists('abandono_por', $estado)) {
         $estado['abandono_por'] = null;
+    }
+    if (!array_key_exists('revancha', $estado)) {
+        $estado['revancha'] = null;
+    }
+    if (!isset($estado['emotes']) || !is_array($estado['emotes'])) {
+        $estado['emotes'] = [];
+    }
+    if (is_array($estado['item_actual'])) {
+        if (!isset($estado['item_actual']['pujas']) || !is_array($estado['item_actual']['pujas'])) {
+            $estado['item_actual']['pujas'] = [];
+        }
+        if (!isset($estado['item_actual']['turno_iniciado_en'])) {
+            $estado['item_actual']['turno_iniciado_en'] = time();
+        }
     }
 
     // Actualizar nuestro last_seen (también nos protege si el otro revisa).
@@ -348,12 +410,17 @@ try {
     //    Excepciones:
     //    - 'asignar_rival': el decisor pendiente puede actuar aunque no sea su turno.
     //    - 'abandonar': cualquiera puede salir en cualquier momento de la partida.
+    //    - 'emote': los emotes no respetan turno.
+    //    - 'resolver_timeout': cualquier cliente puede dispararlo (el server
+    //      valida que el turno haya expirado de verdad).
     $turnoActual = $estado['item_actual']['turno_de'];
     $esDecisor = $accion === 'asignar_rival'
         && is_array($estado['decision_pendiente'] ?? null)
         && (int) ($estado['decision_pendiente']['para'] ?? -1) === $miSlot;
     $esAbandono = $accion === 'abandonar';
-    if ($turnoActual !== $miSlot && !$esDecisor && !$esAbandono) {
+    $esEmote = $accion === 'emote';
+    $esResolucion = $accion === 'resolver_timeout';
+    if ($turnoActual !== $miSlot && !$esDecisor && !$esAbandono && !$esEmote && !$esResolucion) {
         flock($fp, LOCK_UN); fclose($fp);
         responder(['ok' => false, 'error' => 'No es tu turno.'], 409);
     }
@@ -368,6 +435,33 @@ try {
         }
         $estado['estado']       = 'abandonada';
         $estado['abandono_por'] = $miSlot;
+    }
+    else if ($accion === 'emote') {
+        // Los emotes se pueden enviar en cualquier momento de la partida.
+        $estado['emotes'][] = [
+            'por'  => $miSlot,
+            'code' => (string) $input['emote'],
+            'ts'   => time(),
+        ];
+        if (count($estado['emotes']) > EMOTES_MAX) {
+            $estado['emotes'] = array_slice($estado['emotes'], -EMOTES_MAX);
+        }
+    }
+    else if ($accion === 'resolver_timeout') {
+        // El turno expiró (validado por staleness). Con puja previa → auto-bajar
+        // al último pujador; sin puja → el ítem pasa al rival del que tenía el turno.
+        $t0 = (int) ($estado['item_actual']['turno_iniciado_en'] ?? 0);
+        if ($t0 <= 0 || (time() - $t0) < TURNO_MAX_S) {
+            flock($fp, LOCK_UN); fclose($fp);
+            responder(['ok' => false, 'error' => 'El turno aún no ha expirado.'], 409);
+        }
+        $ultimoPujo = $estado['item_actual']['ultimo_pujo'] ?? null;
+        if ($ultimoPujo !== null) {
+            asignar_item_ganador($estado, (int) $ultimoPujo, (int) $estado['item_actual']['precio_actual'], $emojiMap, $valorMap);
+        } else {
+            $ganadorTimeout = 1 - (int) $estado['item_actual']['turno_de'];
+            asignar_item_ganador($estado, $ganadorTimeout, 0, $emojiMap, $valorMap);
+        }
     }
     else if ($accion === 'pasar_deadlock') {
         // El jugador en turno, sin dinero, en un ítem fresco, cede el ítem
@@ -413,6 +507,13 @@ try {
         $estado['item_actual']['precio_actual'] += $incremento;
         $estado['item_actual']['ultimo_pujo']   = $miSlot;
         $estado['item_actual']['turno_de']      = 1 - $miSlot;
+        $estado['item_actual']['turno_iniciado_en'] = time();
+        $estado['item_actual']['pujas'][] = [
+            'por'        => $miSlot,
+            'incremento' => $incremento,
+            'precio'     => (int) $estado['item_actual']['precio_actual'],
+            'ts'         => time(),
+        ];
     }
     else if ($accion === 'asignar_rival') {
         // El rival con monedas decide el destino del ítem cedido.
@@ -474,14 +575,11 @@ try {
             flock($fp, LOCK_UN); fclose($fp);
             responder(['ok' => false, 'error' => 'Primero alguien debe pujar.'], 400);
         }
-        $winner = $ultimo;
+        $winner = (int) $ultimo;
         $price  = (int) $estado['item_actual']['precio_actual'];
-        $itemId = $estado['item_actual']['id'];
-        $itemEmoji = $estado['item_actual']['emoji'];
-        $itemValor = $valorMap[$itemId] ?? 1;
 
         // Si el ganador (último pujador) ya tiene el cap, el ítem va al rival
-        // a precio=0 para no romper el límite.
+        // a precio=0 (validación previa; el helper lo re-aplica de forma idempotente).
         if (count($estado['jugadores'][$winner]['items_ganados']) >= MAX_ITEMS_POR_JUGADOR) {
             $winner = 1 - $winner;
             $price  = 0;
@@ -492,24 +590,7 @@ try {
             responder(['ok' => false, 'error' => 'No tienes dinero suficiente para pagar.'], 400);
         }
 
-        $estado['jugadores'][$winner]['dinero'] -= $price;
-        push_item($estado['jugadores'][$winner], $itemId, $itemEmoji, $itemValor, $price);
-
-        // Cap: si el ganador llega al máximo, forzar al rival los restantes.
-        if (count($estado['jugadores'][$winner]['items_ganados']) >= MAX_ITEMS_POR_JUGADOR) {
-            $estado['asignacion_forzada_a'] = 1 - $winner;
-        }
-
-        // Avanzar al siguiente ítem.
-        avanzar_a_siguiente_item($estado, $emojiMap);
-
-        // Consumir cualquier auto-asignación pendiente encadenada.
-        if ($estado['asignacion_forzada_a'] !== null) {
-            procesar_auto_asignaciones($estado, $emojiMap, $valorMap);
-        }
-        if ($estado['item_actual'] === null) {
-            $estado['estado'] = 'finalizada';
-        }
+        asignar_item_ganador($estado, $winner, $price, $emojiMap, $valorMap);
     }
 
     $estado['actualizado_en'] = time();

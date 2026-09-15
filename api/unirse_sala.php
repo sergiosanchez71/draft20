@@ -23,6 +23,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/salas_gc.php';
+
 // ============================================================================
 //  Config & constantes (idénticas al resto de endpoints — guards evitan colisión)
 // ============================================================================
@@ -160,6 +162,9 @@ try {
     fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     fflush($fp);
     flock($fp, LOCK_UN); fclose($fp);
+
+    // GC oportunista: se ejecuta al iniciar partida de verdad (J2 entra).
+    try { limpiar_salas_antiguas(); } catch (Throwable $e) { /* best-effort */ }
 
     responder([
         'ok'         => true,

@@ -31,6 +31,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/salas_gc.php';
+
 // ============================================================================
 //  Config & constantes
 // ============================================================================
@@ -391,6 +393,8 @@ try {
             'turno_de'      => 0,          // 0 = J1, 1 = J2
             'ultimo_pujo'   => null,       // índice del último jugador que pujó (null al inicio)
             'auto_asignado' => false,      // true cuando se asigna sin puja (rival ya completó cap)
+            'turno_iniciado_en' => $ahora, // ts del inicio del turno (timeout real a los 60s)
+            'pujas'         => [],         // historial de pujas del ítem: {por, incremento, precio, ts}
         ],
         'jugadores' => [
             [
@@ -413,11 +417,16 @@ try {
         'decision_pendiente'   => null, // {para, sobre, motivo} cuando un jugador sin dinero cede el ítem al rival
         'last_seen'            => [null, null], // UNIX ts por slot; el que tenga last_seen[other] > ABANDON_TIMEOUT_S se da por abandonado
         'abandono_por'         => null, // 0 | 1 cuando un jugador abandona (explícito o por timeout)
+        'revancha'             => null, // {por, codigo_nuevo, tematica, ts} cuando alguien propone revancha al acabar
+        'emotes'               => [],   // últimos emotes: {por, code, ts} (máx EMOTES_MAX)
         'creado_en'           => $ahora,
         'actualizado_en'      => $ahora,
     ];
 
     escribir_sala_bloqueado($codigo, $estado);
+
+    // GC oportunista: limpia salas con > 1h sin actividad (nunca bloquea).
+    try { limpiar_salas_antiguas(); } catch (Throwable $e) { /* best-effort */ }
 
     responder([
         'ok'         => true,

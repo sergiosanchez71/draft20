@@ -23,6 +23,14 @@
         abandonoDetectadoVibrado: false,
         tematicaSeleccionada: null,
         tematicaCategoria: null,
+        pollFailures: 0,
+        pollInFlight: false,
+        rivalAusente: null,
+        timeoutEnviado: false,
+        statsRegistradas: false,
+        ultimoEmoteTs: 0,
+        bot: null,
+        botTurnoKey: null,
     };
 
     const TURN_SECONDS = 60;
@@ -45,6 +53,16 @@
         if (cats.length && cats[0].tematicas && cats[0].tematicas.length) return cats[0].tematicas[0].id;
         return 'hamburguesa';
     }
+    function tematicaEmoji(id) {
+        const cats = categoriasData();
+        for (let i = 0; i < cats.length; i++) {
+            const list = cats[i].tematicas || [];
+            for (let j = 0; j < list.length; j++) {
+                if (list[j].id === id) return list[j].emoji || '🎲';
+            }
+        }
+        return '🎲';
+    }
 
     // =================== fetch helper ===================
     async function api(method, path, body) {
@@ -54,10 +72,14 @@
             credentials: 'same-origin',
         };
         if (body !== undefined) opts.body = JSON.stringify(body);
-        const r = await fetch(path, opts);
-        const data = await r.json().catch(function () { return {}; });
-        data._status = r.status;
-        return data;
+        try {
+            const r = await fetch(path, opts);
+            const data = await r.json().catch(function () { return {}; });
+            data._status = r.status;
+            return data;
+        } catch (e) {
+            return { ok: false, _status: 0, error: 'network' };
+        }
     }
 
     // =================== session (localStorage) ===================
@@ -75,6 +97,33 @@
     }
     function clearSession(codigo) { localStorage.removeItem(keyFor(codigo)); }
 
+    // =================== stats locales ===================
+    function loadStats() {
+        try {
+            const raw = JSON.parse(localStorage.getItem('draft20_stats') || 'null');
+            if (raw && typeof raw === 'object') return raw;
+        } catch (e) { /* ignore */ }
+        return { wins: 0, losses: 0, draws: 0, streak: 0, best: 0 };
+    }
+    function saveStats(s) { try { localStorage.setItem('draft20_stats', JSON.stringify(s)); } catch (e) { /* ignore */ } }
+    function registrarResultado(resultado) {
+        if (state.statsRegistradas || state.bot) return;
+        state.statsRegistradas = true;
+        const s = loadStats();
+        if (resultado === 'win') {
+            s.wins = (s.wins || 0) + 1;
+            s.streak = (s.streak || 0) > 0 ? s.streak + 1 : 1;
+        } else if (resultado === 'loss') {
+            s.losses = (s.losses || 0) + 1;
+            s.streak = (s.streak || 0) < 0 ? s.streak - 1 : -1;
+        } else {
+            s.draws = (s.draws || 0) + 1;
+            s.streak = 0;
+        }
+        s.best = Math.max(s.best || 0, s.streak || 0);
+        saveStats(s);
+    }
+
     // =================== url helpers ===================
     function getBasePath() {
         const path = window.location.pathname;
@@ -91,6 +140,8 @@
         if (!el) {
             el = document.createElement('div');
             el.id = 'toast';
+            el.setAttribute('role', 'status');
+            el.setAttribute('aria-live', 'polite');
             document.body.appendChild(el);
         }
         el.textContent = msg;
@@ -158,6 +209,44 @@
     }
     function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
 
+    // =================== modal genérico ===================
+    function showModal(content) {
+        const overlay = el('div', { class: 'fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4' });
+        const box = el('div', { class: 'bg-slate-800 w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl p-5 fade-in' });
+        function close() { overlay.remove(); }
+        overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+        box.appendChild(content);
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+        return { overlay: overlay, close: close };
+    }
+
+    function showRulesModal() {
+        const secs = [
+            ['ui.reglas.obj_titulo', 'ui.reglas.obj_texto'],
+            ['ui.reglas.sub_titulo', 'ui.reglas.sub_texto'],
+            ['ui.reglas.cap_titulo', 'ui.reglas.cap_texto'],
+            ['ui.reglas.dead_titulo', 'ui.reglas.dead_texto'],
+            ['ui.reglas.timeout_titulo', 'ui.reglas.timeout_texto'],
+            ['ui.reglas.fin_titulo', 'ui.reglas.fin_texto'],
+        ];
+        const content = el('div', {}, [
+            el('h2', { class: 'text-xl font-bold text-amber-400 mb-4' }, t('ui.reglas.titulo')),
+            el('div', { class: 'space-y-3' }, secs.map(function (s) {
+                return el('div', {}, [
+                    el('div', { class: 'text-sm font-bold text-slate-100' }, t(s[0])),
+                    el('p', { class: 'text-xs text-slate-400 leading-relaxed' }, t(s[1])),
+                ]);
+            })),
+        ]);
+        const m = showModal(content);
+        content.appendChild(el('button', {
+            class: 'mt-5 w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap',
+            onclick: m.close,
+        }, t('ui.reglas.cerrar')));
+        try { localStorage.setItem('draft20_reglas', '1'); } catch (e) { /* ignore */ }
+    }
+
     // =================== INDEX / LOBBY ===================
     async function indexInit(linkSala) {
         // Si viene ?sala=CODE en URL, mostrar vista "join" con código pre-rellenado
@@ -177,9 +266,20 @@
     function renderInitialView() {
         const app = $('#app');
         clear(app);
-        app.appendChild(el('header', { class: 'p-6 text-center safe-pt' }, [
+        const st = loadStats();
+        const hayStats = (st.wins || st.losses || st.draws);
+        app.appendChild(el('header', { class: 'p-6 text-center safe-pt relative' }, [
             el('h1', { class: 'text-3xl font-bold text-amber-400' }, t('ui.app.titulo')),
             el('p', { class: 'text-slate-400 text-sm mt-1' }, t('ui.app.subtitulo_lobby')),
+            hayStats
+                ? el('p', { class: 'text-amber-300/80 text-xs mt-1 font-mono' }, t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 }))
+                : null,
+            el('button', {
+                class: 'absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-700 text-slate-200 text-sm font-bold btn-tap',
+                'aria-label': t('ui.lobby.btn_reglas'),
+                title: t('ui.lobby.btn_reglas'),
+                onclick: showRulesModal,
+            }, '?'),
         ]));
 
         const selectorBox = el('div', { id: 'tematicaSelector', class: 'mb-4' });
@@ -202,38 +302,58 @@
 
         const errorBox = el('div', { id: 'lobbyError', class: 'hidden bg-rose-500 text-white p-3 rounded-lg mx-4 mb-4 text-sm text-center' });
 
+        const practiceBtn = el('div', { class: 'm-4' }, [
+            el('button', {
+                id: 'btnPractice',
+                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+                onclick: onPractice,
+            }, t('ui.lobby.btn_practicar')),
+        ]);
+
         app.appendChild(errorBox);
         app.appendChild(createForm);
         app.appendChild(el('div', { class: 'text-center text-slate-500 text-xs my-2' }, '— o —'));
         app.appendChild(joinForm);
+        app.appendChild(practiceBtn);
 
         $('#btnCreate').addEventListener('click', onCreate);
         $('#btnJoin').addEventListener('click', onJoin);
 
-        renderTematicaSelector(selectorBox);
+        renderTematicaSelector(selectorBox, { ctx: state });
+
+        // Primer ingreso: mostrar reglas automáticamente.
+        try {
+            if (!localStorage.getItem('draft20_reglas')) showRulesModal();
+        } catch (e) { /* ignore */ }
     }
 
-    function renderTematicaSelector(container) {
+    function renderTematicaSelector(container, opts) {
+        opts = opts || {};
+        const ctx = opts.ctx || state;
         const cats = categoriasData();
-        if (state.tematicaCategoria === null) {
-            state.tematicaCategoria = cats.length ? cats[0].id : 'todas';
+        if (ctx.tematicaCategoria === null || ctx.tematicaCategoria === undefined) {
+            ctx.tematicaCategoria = cats.length ? cats[0].id : 'todas';
         }
-        if (!state.tematicaSeleccionada) state.tematicaSeleccionada = defaultTematica();
+        if (!ctx.tematicaSeleccionada) ctx.tematicaSeleccionada = defaultTematica();
 
         const tabBar = el('div', { class: 'flex gap-2 overflow-x-auto no-scrollbar pb-1 mb-3' });
         const grid = el('div', { class: 'grid grid-cols-2 gap-2' });
+        function rerender() {
+            renderTematicaSelector(container, opts);
+            if (opts.onChange) opts.onChange(ctx);
+        }
 
-        function chip(id, emoji, label) {
-            const active = state.tematicaCategoria === id;
+        function chip(id, emoji, label, onclick) {
+            const active = ctx.tematicaCategoria === id && id !== 'random';
             return el('button', {
                 type: 'button',
                 class: 'flex-shrink-0 px-3 py-2 rounded-full text-sm border transition ' +
                     (active
                         ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold'
                         : 'bg-slate-700 text-slate-200 border-slate-600'),
-                onclick: function () {
-                    state.tematicaCategoria = id;
-                    renderTematicaSelector(container);
+                onclick: onclick || function () {
+                    ctx.tematicaCategoria = id;
+                    rerender();
                 },
             }, emoji + ' ' + label);
         }
@@ -242,26 +362,38 @@
         cats.forEach(function (c) {
             tabBar.appendChild(chip(c.id, c.emoji || '🎲', catLabel(c.id)));
         });
+        // 🎲 Sortea una temática de todo el catálogo y salta a su categoría.
+        tabBar.appendChild(chip('random', '🎲', t('ui.lobby.categoria_aleatoria'), function () {
+            const todas = [];
+            cats.forEach(function (c) {
+                (c.tematicas || []).forEach(function (tm) { todas.push({ cat: c.id, id: tm.id }); });
+            });
+            if (!todas.length) return;
+            const pick = todas[Math.floor(Math.random() * todas.length)];
+            ctx.tematicaCategoria = pick.cat;
+            ctx.tematicaSeleccionada = pick.id;
+            rerender();
+        }));
 
         let visibles = [];
-        if (state.tematicaCategoria === 'todas') {
+        if (ctx.tematicaCategoria === 'todas') {
             cats.forEach(function (c) {
                 (c.tematicas || []).forEach(function (tm) { visibles.push(tm); });
             });
         } else {
-            const cat = cats.filter(function (c) { return c.id === state.tematicaCategoria; })[0];
+            const cat = cats.filter(function (c) { return c.id === ctx.tematicaCategoria; })[0];
             visibles = cat ? (cat.tematicas || []) : [];
         }
 
         visibles.forEach(function (tm) {
-            const active = state.tematicaSeleccionada === tm.id;
+            const active = ctx.tematicaSeleccionada === tm.id;
             grid.appendChild(el('button', {
                 type: 'button',
                 class: 'rounded-lg p-3 text-center border transition ' +
                     (active ? 'bg-amber-400/20 border-amber-400' : 'bg-slate-700 border-slate-600'),
                 onclick: function () {
-                    state.tematicaSeleccionada = tm.id;
-                    renderTematicaSelector(container);
+                    ctx.tematicaSeleccionada = tm.id;
+                    rerender();
                 },
             }, [
                 el('span', { class: 'block text-2xl leading-none mb-1' }, tm.emoji || '🎲'),
@@ -303,6 +435,31 @@
         saveSession();
         renderCreatorView();
         startPollingLobby();
+    }
+
+    async function onPractice() {
+        const tematica = state.tematicaSeleccionada || defaultTematica();
+        const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || 'Tú';
+        const btn = $('#btnPractice');
+        if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
+        const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombre });
+        if (!r.ok) {
+            showLobbyError(r.error || 'Error');
+            if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+            return;
+        }
+        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: '🤖 Bot' });
+        if (!r2.ok) {
+            showLobbyError(r2.error || 'Error');
+            if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+            return;
+        }
+        try { localStorage.setItem('draft20_bot_' + r.codigo, JSON.stringify({ jugadorId: r2.jugador_id })); } catch (e) { /* ignore */ }
+        state.codigo = r.codigo;
+        state.jugadorId = r.jugador_id;
+        state.jugadorNombre = nombre || 'Jugador 1';
+        saveSession();
+        window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
     }
 
     async function onJoin() {
@@ -380,9 +537,26 @@
         state.jugadorId = session.jugadorId;
         state.jugadorNombre = session.jugadorNombre;
 
+        // ¿Partida de práctica contra el bot?
+        try {
+            const botRaw = localStorage.getItem('draft20_bot_' + codigo);
+            state.bot = botRaw ? JSON.parse(botRaw) : null;
+            if (state.bot && !state.bot.jugadorId) state.bot = null;
+        } catch (e) { state.bot = null; }
+
         renderGameShell();
         await pollGameTick();
         startPollingGame();
+
+        // Al volver a la pestaña, poll inmediato (evita last_seen obsoleto).
+        document.addEventListener('visibilitychange', function () {
+            if (!state.codigo) return;
+            if (document.hidden) {
+                stopPollingGame();
+            } else if (document.getElementById('scoreboard')) {
+                pollGameTick().then(function () { startPollingGame(); });
+            }
+        });
     }
 
     function renderGameShell() {
@@ -392,10 +566,25 @@
 
         // Header
         const header = el('header', { class: 'flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700 safe-pt' }, [
-            el('button', { id: 'btnLeave', class: 'text-slate-400 text-sm btn-tap', onclick: onLeave }, '← ' + t('ui.juego.salir_lobby')),
-            el('h1', { class: 'text-lg font-bold text-amber-400' }, t('ui.app.titulo')),
+            el('button', {
+                id: 'btnLeave',
+                class: 'text-slate-400 text-sm btn-tap',
+                onclick: onLeave,
+                'aria-label': t('ui.juego.salir_lobby'),
+            }, '← ' + t('ui.juego.salir_lobby')),
+            el('div', { class: 'text-center flex-1 px-2' }, [
+                el('h1', { class: 'text-base font-bold text-amber-400 leading-tight' }, t('ui.app.titulo')),
+                el('div', { id: 'headerTematica', class: 'text-[11px] text-slate-400 leading-tight truncate' }, ''),
+            ]),
             el('div', { class: 'w-16' }),
         ]);
+
+        // Banner de desconexión (polling caído)
+        const offlineBanner = el('div', {
+            id: 'offlineBanner',
+            class: 'hidden bg-rose-600 text-white text-xs text-center py-2 px-3',
+            role: 'status',
+        }, t('ui.juego.sin_conexion'));
 
         // Scoreboard
         const scoreboard = el('section', { id: 'scoreboard', class: 'bg-slate-800 px-4 py-3 grid grid-cols-2 gap-3 border-b border-slate-700' });
@@ -406,36 +595,211 @@
         // Inventory row (flex-shrink-0 garantiza que no se comprima)
         const inventory = el('section', { id: 'inventory', class: 'flex-shrink-0 bg-slate-800 px-4 py-3 border-t border-slate-700' });
 
+        // Emotes rápidos
+        const emoteBar = el('section', { id: 'emoteBar', class: 'flex-shrink-0 bg-slate-800 px-3 pb-1 flex gap-2 justify-center' });
+        ['👍', '😂', '🔥', '😭', '🤝', '😱'].forEach(function (code) {
+            emoteBar.appendChild(el('button', {
+                class: 'text-xl px-2 py-1 rounded btn-tap opacity-80 hover:opacity-100',
+                'aria-label': 'Emote ' + code,
+                onclick: function () { onEmote(code); },
+            }, code));
+        });
+
         // Action bar (en flujo, no fija — evita tapar inventario en pantallas pequeñas)
         const actionBar = el('section', { id: 'actionBar', class: 'flex-shrink-0 bg-slate-800 border-t border-slate-700 p-3 safe-pb-action z-10' });
 
         app.appendChild(header);
+        app.appendChild(offlineBanner);
         app.appendChild(scoreboard);
         app.appendChild(itemCard);
         app.appendChild(inventory);
+        app.appendChild(emoteBar);
         app.appendChild(actionBar);
     }
 
+    function setOfflineBanner(show) {
+        const b = document.getElementById('offlineBanner');
+        if (!b) return;
+        if (show) b.classList.remove('hidden'); else b.classList.add('hidden');
+    }
+
     async function pollGameTick() {
-        if (!state.codigo) return;
-        const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(state.codigo) + '&jugador_id=' + encodeURIComponent(state.jugadorId) + '&t=' + Date.now());
-        if (!r.ok) return;
+        if (!state.codigo || state.pollInFlight) return;
+        state.pollInFlight = true;
+        let r;
+        try {
+            r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(state.codigo) + '&jugador_id=' + encodeURIComponent(state.jugadorId) + '&t=' + Date.now());
+        } finally {
+            state.pollInFlight = false;
+        }
+        if (!r.ok) {
+            state.pollFailures = (state.pollFailures || 0) + 1;
+            if (state.pollFailures >= 3) setOfflineBanner(true);
+            return;
+        }
+        state.pollFailures = 0;
+        setOfflineBanner(false);
+
         const prev = state.sala;
         state.sala = r.sala;
+        state.rivalAusente = (r.rival_ausente === undefined || r.rival_ausente === null) ? null : r.rival_ausente;
         identifySlots();
+
         // Detectar cambio de turno (o primer turno) → reiniciar countdown.
         const turnoActual = state.sala && state.sala.item_actual ? state.sala.item_actual.turno_de : null;
         if (turnoActual !== state.turnTurnoDe) {
             state.turnTurnoDe = turnoActual;
             state.turnStartAt = state.sala ? Math.floor(Date.now() / 1000) : null;
+            state.timeoutEnviado = false;
             startTurnCountdown();
         }
+
+        detectarAccionesRival(prev, state.sala);
+        detectarEmotes(state.sala);
+
         // Detectar transición a abandono (vibración única).
         if (prev && state.sala.estado === 'abandonada' && prev.estado !== 'abandonada' && !state.abandonoDetectadoVibrado) {
             state.abandonoDetectadoVibrado = true;
             vibrate([200, 100, 200]);
         }
+
         renderGame(prev);
+
+        // Timeout real de turno y bot de práctica.
+        quizasResolverTimeout();
+        if (state.bot) botTick();
+    }
+
+    function quizasResolverTimeout() {
+        const s = state.sala;
+        if (!s || s.estado !== 'jugando' || !s.item_actual || state.actionInFlight) return;
+        const t0 = s.item_actual.turno_iniciado_en || 0;
+        if (!t0) return;
+        const elapsed = Math.floor(Date.now() / 1000) - t0;
+        if (elapsed < TURN_SECONDS) return;
+        const esMiTurno = s.item_actual.turno_de === state.jugadorSlot;
+        const extra = esMiTurno ? 0 : 5; // el rival da 5s de gracia extra
+        if (elapsed < TURN_SECONDS + extra) return;
+        if (state.timeoutEnviado) return;
+        state.timeoutEnviado = true;
+        sendAction('resolver_timeout');
+    }
+
+    function detectarAccionesRival(prev, sala) {
+        if (!prev || !sala || state.jugadorSlot === null) return;
+        const rivalSlot = 1 - state.jugadorSlot;
+        const prevItem = prev.item_actual;
+        const item = sala.item_actual;
+
+        // Puja del rival sobre el mismo ítem.
+        if (prevItem && item && prevItem.id === item.id && (item.precio_actual || 0) > (prevItem.precio_actual || 0)) {
+            const pujas = item.pujas || [];
+            const last = pujas.length ? pujas[pujas.length - 1] : null;
+            if (last && last.por === rivalSlot) {
+                toast(t('ui.juego.rival_puja', { n: last.incremento }));
+                vibrate(30);
+            }
+        }
+
+        // El rival ganó un ítem.
+        const prevCount = (prev.jugadores[rivalSlot]?.items_ganados || []).length;
+        const nowItems = sala.jugadores[rivalSlot]?.items_ganados || [];
+        if (nowItems.length > prevCount) {
+            const nuevo = nowItems[nowItems.length - 1];
+            toast(t('ui.juego.perdio_item', {
+                rival: state.rivalNombre || 'Rival',
+                item: tItem(nuevo.id),
+                precio: (nuevo.precio || 0) + '🪙',
+            }));
+            vibrate([80, 40, 80]);
+        }
+    }
+
+    function detectarEmotes(sala) {
+        if (!sala || !Array.isArray(sala.emotes) || state.jugadorSlot === null) return;
+        let maxTs = state.ultimoEmoteTs || 0;
+        sala.emotes.forEach(function (e) {
+            const ts = e.ts || 0;
+            if (ts > (state.ultimoEmoteTs || 0) && e.por !== state.jugadorSlot) {
+                mostrarEmote(e.code, state.rivalNombre || 'Rival');
+            }
+            if (ts > maxTs) maxTs = ts;
+        });
+        state.ultimoEmoteTs = maxTs;
+    }
+
+    function mostrarEmote(code, nombre) {
+        const b = el('div', {
+            class: 'fixed left-1/2 top-24 -translate-x-1/2 z-40 bg-slate-800 border border-amber-400 rounded-full px-4 py-2 text-2xl pop-emote',
+            'aria-label': nombre,
+        }, code);
+        document.body.appendChild(b);
+        setTimeout(function () { b.remove(); }, 2400);
+    }
+
+    async function onEmote(code) {
+        mostrarEmote(code, 'Tú');
+        const r = await api('POST', 'api/accion.php', {
+            codigo: state.codigo,
+            jugador_id: state.jugadorId,
+            accion: 'emote',
+            emote: code,
+        });
+        if (r && r.ok && r.sala && Array.isArray(r.sala.emotes) && r.sala.emotes.length) {
+            const last = r.sala.emotes[r.sala.emotes.length - 1].ts || 0;
+            if (last > (state.ultimoEmoteTs || 0)) state.ultimoEmoteTs = last;
+        }
+    }
+
+    // =================== bot de práctica ===================
+    async function botTick() {
+        const s = state.sala;
+        if (!s || !state.bot || s.estado !== 'jugando' || !s.item_actual || state.jugadorSlot === null) return;
+        const botSlot = 1 - state.jugadorSlot;
+        const item = s.item_actual;
+        const key = s.ronda + ':' + item.id + ':' + item.precio_actual + ':' + item.turno_de + ':' + (item.pujas ? item.pujas.length : 0);
+        if (state.botTurnoKey === key) return;
+
+        // Decisión pendiente de deadlock: el bot decide.
+        if (s.decision_pendiente && s.decision_pendiente.para === botSlot) {
+            state.botTurnoKey = key;
+            const dinero = s.jugadores[botSlot].dinero || 0;
+            if (dinero >= 3) {
+                await botAction({ accion: 'asignar_rival', destino: botSlot, precio: 1 });
+            } else {
+                await botAction({ accion: 'asignar_rival', destino: s.decision_pendiente.sobre, precio: 0 });
+            }
+            return;
+        }
+
+        if (item.turno_de !== botSlot) return;
+        state.botTurnoKey = key;
+
+        const dinero = s.jugadores[botSlot].dinero || 0;
+        const pujas = item.pujas || [];
+
+        // Sin dinero y sin pujas → pasar.
+        if (dinero === 0 && item.precio_actual === 0 && item.ultimo_pujo === null && !s.decision_pendiente) {
+            await botAction({ accion: 'pasar_deadlock' });
+            return;
+        }
+        // Puja hasta 2 veces si puede; si ya hay puja ajena, se baja.
+        if (item.ultimo_pujo !== null && item.ultimo_pujo !== botSlot) {
+            await botAction({ accion: 'bajar' });
+            return;
+        }
+        if (pujas.length < 2 && (item.precio_actual + 1) <= dinero) {
+            await botAction({ accion: 'pujar', incremento: 1 });
+            return;
+        }
+        if (item.ultimo_pujo === null && (item.precio_actual + 1) <= dinero) {
+            await botAction({ accion: 'pujar', incremento: 1 });
+        }
+    }
+
+    async function botAction(body) {
+        const payload = Object.assign({ codigo: state.codigo, jugador_id: state.bot.jugadorId }, body);
+        await api('POST', 'api/accion.php', payload);
     }
 
     function startPollingGame() {
@@ -471,8 +835,22 @@
             }
         }
 
+        // Header: temática en curso
+        const ht = document.getElementById('headerTematica');
+        if (ht && s.tematica) ht.textContent = tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica);
+
         // Scoreboard
         renderScoreboard();
+
+        // Sala esperando (p.ej. revancha propuesta y aún sin aceptar).
+        if (s.estado === 'esperando') {
+            stopTurnCountdown();
+            renderEsperandoRival();
+            const inv0 = $('#inventory'); if (inv0) clear(inv0);
+            const bar0 = $('#actionBar'); if (bar0) clear(bar0);
+            const eb0 = $('#emoteBar'); if (eb0) clear(eb0);
+            return;
+        }
 
         // Estado terminal: abandono manda sobre finalización normal.
         if (s.estado === 'abandonada') {
@@ -481,6 +859,7 @@
             // Vaciar inventarios + bar para que no aparezca UI residual.
             const inv = $('#inventory'); if (inv) clear(inv);
             const bar = $('#actionBar'); if (bar) clear(bar);
+            const eb = $('#emoteBar'); if (eb) clear(eb);
             return;
         }
         if (s.estado === 'finalizada') {
@@ -488,6 +867,7 @@
             renderFinalScreen();
             const inv = $('#inventory'); if (inv) clear(inv);
             const bar = $('#actionBar'); if (bar) clear(bar);
+            const eb = $('#emoteBar'); if (eb) clear(eb);
             return;
         }
 
@@ -508,6 +888,7 @@
         const s = state.sala;
         const me = s.jugadores[state.jugadorSlot];
         const rival = s.jugadores[1 - state.jugadorSlot];
+        const rivalEsBot = !!(state.bot && rival && state.bot.jugadorId === rival.id);
         const myTurn = s.item_actual && s.item_actual.turno_de === state.jugadorSlot;
         const rivalTurn = s.item_actual && s.item_actual.turno_de === (1 - state.jugadorSlot);
 
@@ -521,7 +902,7 @@
         ]);
 
         const rivalCard = el('div', { class: 'rounded-lg p-3 ' + (rivalTurn ? 'bg-rose-500 text-white' : 'bg-slate-700 text-slate-100') }, [
-            el('div', { class: 'text-xs font-semibold opacity-80' }, t('ui.juego.lbl_rival_dinero') + ' · ' + (rival?.nombre || '')),
+            el('div', { class: 'text-xs font-semibold opacity-80' }, t('ui.juego.lbl_rival_dinero') + ' · ' + (rival?.nombre || '') + (rivalEsBot ? ' 🤖' : '')),
             el('div', { class: 'flex items-baseline gap-1 mt-1' }, [
                 el('span', { class: 'text-2xl font-bold font-mono' }, String(rival?.dinero ?? 0)),
                 el('span', { class: 'text-xs opacity-80' }, t('ui.juego.monedas')),
@@ -544,7 +925,17 @@
         const myTurn = item.turno_de === state.jugadorSlot;
         const turnoText = myTurn ? t('ui.juego.tu_turno') : t('ui.juego.turno_rival');
 
-        card.appendChild(el('div', { class: 'text-xs text-slate-400 mb-2' }, t('ui.juego.ronda') + ' ' + s.ronda + ' / 8'));
+        // Aviso blando: el rival lleva sin responder unos segundos.
+        if (state.rivalAusente !== null && state.rivalAusente >= 6 && s.estado === 'jugando') {
+            card.appendChild(el('div', { class: 'w-full bg-amber-500 text-slate-900 text-xs font-bold text-center py-2 px-3 rounded mb-3' },
+                t('ui.juego.msg_rival_ausente', { nombre: state.rivalNombre || 'Rival', seg: state.rivalAusente })));
+        }
+
+        const totalRondas = (s.items_mezclados && s.items_mezclados.length) ? s.items_mezclados.length : 8;
+        card.appendChild(el('div', { class: 'text-xs text-slate-400 mb-2' }, t('ui.juego.ronda') + ' ' + s.ronda + ' / ' + totalRondas));
+        if (s.ronda >= totalRondas) {
+            card.appendChild(el('div', { class: 'text-xs font-bold text-amber-300 mb-2' }, '🔥 ' + t('ui.juego.ultima_ronda')));
+        }
 
         const emoji = el('div', { class: 'text-8xl mb-3 ' + (myTurn ? 'pulse-win' : '') }, item.emoji);
         card.appendChild(emoji);
@@ -559,13 +950,31 @@
         ]);
         card.appendChild(status);
 
+        // Historial de pujas de la ronda + última puja.
+        const pujas = Array.isArray(item.pujas) ? item.pujas : [];
+        if (pujas.length) {
+            const log = el('div', { class: 'mt-3 text-[11px] text-slate-400 space-y-0.5 text-center' },
+                pujas.slice(-4).map(function (p) {
+                    const nombre = p.por === state.jugadorSlot ? 'Tú' : (state.rivalNombre || 'Rival');
+                    return el('div', {}, nombre + ' +' + p.incremento + ' → ' + p.precio + '🪙');
+                }));
+            card.appendChild(log);
+            const last = pujas[pujas.length - 1];
+            const who = last.por === state.jugadorSlot
+                ? t('ui.juego.tu_ultima_puja')
+                : t('ui.juego.rival_ultima_puja', { nombre: state.rivalNombre || 'Rival' });
+            card.appendChild(el('div', { class: 'mt-1 text-[11px] text-amber-300' }, who));
+        }
+
         const turnoBanner = el('div', { class: 'mt-4 px-4 py-2 rounded-full text-sm font-bold ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300') }, turnoText);
         card.appendChild(turnoBanner);
 
-        // Cuenta atrás: solo visible si es MI turno.
+        // Cuenta atrás: solo visible si es MI turno. Usa el ts del servidor.
         if (myTurn) {
-            const remaining = Math.max(0, TURN_SECONDS - (Math.floor(Date.now() / 1000) - (state.turnStartAt || Math.floor(Date.now() / 1000))));
-            const cd = el('div', { id: 'turnCountdown', class: 'mt-3 mx-auto w-fit px-4 py-1 rounded-full text-xs font-mono font-bold ' + (remaining <= 10 ? 'bg-rose-500 text-white' : 'bg-slate-700 text-slate-200') }, t('ui.juego.cuenta_atras', { seg: remaining }));
+            const t0 = item.turno_iniciado_en || state.turnStartAt || Math.floor(Date.now() / 1000);
+            const remaining = Math.max(0, TURN_SECONDS - (Math.floor(Date.now() / 1000) - t0));
+            const cd = el('div', { id: 'turnCountdown', class: 'mt-3 mx-auto w-fit px-4 py-1 rounded-full text-xs font-mono font-bold ' + (remaining <= 10 ? 'bg-rose-500 text-white' : 'bg-slate-700 text-slate-200') },
+                remaining <= 0 ? t('ui.juego.tiempo_agotado') : t('ui.juego.cuenta_atras', { seg: remaining }));
             card.appendChild(cd);
         }
 
@@ -575,10 +984,8 @@
             const isDecisor = dp.para === state.jugadorSlot;
             const isSobre    = dp.sobre === state.jugadorSlot;
             const msg = isDecisor
-                ? 'El otro jugador cedió. Decide:'
-                : (isSobre
-                    ? 'Cediste el ítem. Esperando decisión…'
-                    : 'Cede el ítem al rival pulsando PASAR');
+                ? t('ui.juego.msg_deadlock_decide_corto')
+                : (isSobre ? t('ui.juego.msg_cediste_item') : t('ui.juego.msg_cede_item'));
             card.appendChild(el('div', { class: 'mt-3 mx-4 px-3 py-2 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
         }
 
@@ -596,9 +1003,17 @@
         stopTurnCountdown();
         state.turnTimerId = setInterval(function () {
             const cd = document.getElementById('turnCountdown');
-            if (!cd || !state.sala || state.sala.estado !== 'jugando') return;
+            if (!cd || !state.sala || state.sala.estado !== 'jugando' || !state.sala.item_actual) return;
             const now = Math.floor(Date.now() / 1000);
-            const remaining = Math.max(0, TURN_SECONDS - (now - (state.turnStartAt || now)));
+            const t0 = state.sala.item_actual.turno_iniciado_en || state.turnStartAt || now;
+            const remaining = Math.max(0, TURN_SECONDS - (now - t0));
+            if (remaining <= 0) {
+                cd.textContent = t('ui.juego.tiempo_agotado');
+                cd.classList.remove('bg-slate-700', 'text-slate-200');
+                cd.classList.add('bg-rose-500', 'text-white');
+                quizasResolverTimeout();
+                return;
+            }
             cd.textContent = t('ui.juego.cuenta_atras', { seg: remaining });
             // Color rojo en los últimos 10s.
             if (remaining <= 10) {
@@ -612,10 +1027,10 @@
     }
 
     function itemTooltip(i) {
+        // El valor (⭐) es secreto hasta la pantalla final: no se revela aquí.
         const name = tItem(i.id);
-        const v = i.valor != null ? i.valor : '?';
         const p = i.precio != null ? i.precio : '?';
-        return name + ' · ⭐' + v + ' · 🪙' + p;
+        return name + ' · 🪙' + p;
     }
 
     function renderInventory() {
@@ -756,7 +1171,7 @@
         // El server hace el cap-handler que asigna el ítem al rival a precio 0.
         if (capped) {
             const rivalCapped = rivalCount >= 4;
-            const label = canBajar ? t('ui.juego.btn_bajar') : t('ui.juego.btn_pasar_turno');
+            const label = canBajar ? t('ui.juego.btn_bajar_pagar', { precio: item.precio_actual }) : t('ui.juego.btn_pasar_turno');
             const buttons = el('div', { class: 'flex gap-2' });
             buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-base', onclick: onBajar }, label));
             if (rivalCapped) {
@@ -776,7 +1191,7 @@
         const buttons = el('div', { class: 'flex gap-2' });
         buttons.appendChild(el('button', { id: 'btnPujar', class: 'flex-1 bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-base disabled:opacity-40', onclick: onPujar, title: canPujar1 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar')));
         buttons.appendChild(el('button', { id: 'btnPujar3', class: 'bg-slate-700 text-slate-100 font-bold py-4 px-4 rounded-lg btn-tap text-sm disabled:opacity-40', onclick: onPujar3, title: canPujar3 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar3')));
-        buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-base disabled:opacity-40', onclick: onBajar }, t('ui.juego.btn_bajar')));
+        buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-base disabled:opacity-40', onclick: onBajar }, canBajar ? t('ui.juego.btn_bajar_pagar', { precio: item.precio_actual }) : t('ui.juego.btn_bajar')));
 
         bar.appendChild(buttons);
 
@@ -859,6 +1274,17 @@
         const rivalScore = sumValor(rivalItems);
         const mySpent = sumPrecio(myItems);
         const rivalSpent = sumPrecio(rivalItems);
+        const myMoney = me?.dinero || 0;
+        const rivalMoney = rival?.dinero || 0;
+
+        // Victoria: más ⭐; empate → más monedas restantes; empate total → tablas.
+        let resultado = 'draw';
+        let porDesempate = false;
+        if (myScore > rivalScore) resultado = 'win';
+        else if (rivalScore > myScore) resultado = 'loss';
+        else if (myMoney > rivalMoney) { resultado = 'win'; porDesempate = true; }
+        else if (rivalMoney > myMoney) { resultado = 'loss'; porDesempate = true; }
+        registrarResultado(resultado);
 
         // Centrar verticalmente el contenido cuando hay espacio; si no, scroll natural.
         card.classList.remove('items-center', 'justify-center');
@@ -871,16 +1297,18 @@
 
         // Bloque resultado
         let resultBlock;
-        if (myScore > rivalScore) {
+        if (resultado === 'win') {
+            const clave = porDesempate ? 'ui.juego.fin_ganador_desempate' : 'ui.juego.fin_ganador_score';
             resultBlock = el('div', { class: 'bg-emerald-500 text-white p-4 rounded-lg mb-4 text-center fade-in' }, [
                 el('div', { class: 'text-3xl mb-1' }, '🏅'),
-                el('p', { class: 'text-base font-bold' }, t('ui.juego.fin_ganador_score', { nombre: me?.nombre || 'Tú', puntos: myScore })),
+                el('p', { class: 'text-base font-bold' }, t(clave, { nombre: me?.nombre || 'Tú', puntos: myScore })),
             ]);
             vibrate([100, 50, 100, 50, 100]);
-        } else if (myScore < rivalScore) {
+        } else if (resultado === 'loss') {
+            const clave = porDesempate ? 'ui.juego.fin_ganador_desempate' : 'ui.juego.fin_ganador_score';
             resultBlock = el('div', { class: 'bg-rose-500 text-white p-4 rounded-lg mb-4 text-center fade-in' }, [
                 el('div', { class: 'text-3xl mb-1' }, '🏅'),
-                el('p', { class: 'text-base font-bold' }, t('ui.juego.fin_ganador_score', { nombre: rival?.nombre || 'Rival', puntos: rivalScore })),
+                el('p', { class: 'text-base font-bold' }, t(clave, { nombre: rival?.nombre || 'Rival', puntos: rivalScore })),
             ]);
         } else {
             resultBlock = el('div', { class: 'bg-slate-700 text-slate-100 p-4 rounded-lg mb-4 text-center fade-in' }, [
@@ -889,20 +1317,136 @@
             ]);
         }
 
+        // Banner de propuesta de revancha del rival (si existe y está fresca).
+        let revanchaBanner = null;
+        const rev = s.revancha;
+        const revFresca = rev && (Math.floor(Date.now() / 1000) - (rev.ts || 0)) <= 600;
+        if (revFresca && rev.por !== state.jugadorSlot) {
+            const tema = rev.tematica ? (tematicaEmoji(rev.tematica) + ' ' + tTematica(rev.tematica)) : '';
+            revanchaBanner = el('div', { class: 'bg-slate-700 border border-amber-400 rounded-lg p-3 mb-4 text-center fade-in' }, [
+                el('p', { class: 'text-sm text-slate-100 mb-3' }, t('ui.juego.msg_revancha_propuesta', { nombre: rival?.nombre || 'Rival', tema: tema })),
+                el('div', { class: 'flex gap-2' }, [
+                    el('button', { class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap', onclick: aceptarRevancha }, t('ui.juego.btn_revancha_unirse')),
+                    el('button', { class: 'flex-1 bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap', onclick: rechazarRevancha }, t('ui.juego.btn_revancha_rechazar')),
+                ]),
+            ]);
+        }
+
+        // Récord local
+        const st = loadStats();
+        const statsLine = el('div', { class: 'text-center text-xs text-slate-400 mt-4 font-mono' },
+            t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 }));
+
         // Lista de items por jugador
         const lists = el('div', { class: 'space-y-4 px-1' }, [
             renderItemList(t('ui.juego.lbl_tu_inv') + ' · ' + (me?.nombre || 'Tú'), 'text-amber-400', myItems, myScore, mySpent),
             renderItemList(t('ui.juego.lbl_rival_inv') + ' · ' + (rival?.nombre || 'Rival'), 'text-rose-400', rivalItems, rivalScore, rivalSpent),
         ]);
 
-        const exitBtn = el('div', { class: 'text-center mt-6 mb-2' }, [
-            el('button', { class: 'bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap', onclick: onLeave }, t('ui.juego.salir_lobby')),
+        const exitBtn = el('div', { class: 'mt-6 mb-2 space-y-2' }, [
+            el('button', {
+                class: 'w-full bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg btn-tap',
+                onclick: openRevanchaModal,
+            }, '🔄 ' + t('ui.juego.btn_revancha')),
+            el('button', { class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap', onclick: onLeave }, t('ui.juego.salir_lobby')),
         ]);
 
         card.appendChild(header);
+        if (revanchaBanner) card.appendChild(revanchaBanner);
         card.appendChild(resultBlock);
         card.appendChild(lists);
+        card.appendChild(statsLine);
         card.appendChild(exitBtn);
+    }
+
+    function renderEsperandoRival() {
+        const card = $('#itemCard');
+        if (!card) return;
+        clear(card);
+        card.classList.remove('items-center', 'justify-center');
+        card.classList.add('items-stretch', 'justify-start');
+        card.appendChild(el('div', { class: 'text-center mt-8 fade-in' }, [
+            el('div', { class: 'text-5xl mb-4' }, '⏳'),
+            el('h2', { class: 'text-xl font-bold text-amber-400 mb-2' }, t('ui.juego.msg_esperando_revancha')),
+            el('div', { class: 'text-3xl font-mono font-bold text-slate-100 tracking-widest my-4' }, state.codigo || ''),
+            el('p', { class: 'text-slate-400 text-xs px-6' }, t('ui.juego.submsg_esperando_revancha')),
+        ]));
+        card.appendChild(el('div', { class: 'flex gap-2 mt-6 px-2' }, [
+            el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
+            el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+        ]));
+        card.appendChild(el('div', { class: 'text-center mt-6' }, [
+            el('button', { class: 'text-slate-400 text-sm btn-tap', onclick: onLeave }, '← ' + t('ui.juego.salir_lobby')),
+        ]));
+    }
+
+    // =================== revancha ===================
+    function openRevanchaModal() {
+        const ctx = {
+            tematicaCategoria: null,
+            tematicaSeleccionada: (state.sala && state.sala.tematica) || defaultTematica(),
+        };
+        const box = el('div', {});
+        const content = el('div', {}, [
+            el('h2', { class: 'text-lg font-bold text-amber-400 mb-3' }, '🔄 ' + t('ui.juego.btn_revancha')),
+            box,
+        ]);
+        const m = showModal(content);
+        renderTematicaSelector(box, { ctx: ctx });
+        content.appendChild(el('div', { class: 'flex gap-2 mt-4' }, [
+            el('button', { class: 'flex-1 bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap', onclick: m.close }, t('ui.reglas.cerrar')),
+            el('button', {
+                class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap',
+                onclick: function () { proponerRevancha(ctx.tematicaSeleccionada, m.close); },
+            }, t('ui.juego.btn_revancha_proponer')),
+        ]));
+    }
+
+    async function proponerRevancha(tematica, closeModal) {
+        const viejoCodigo = state.codigo;
+        const viejoId = state.jugadorId;
+        const nombre = state.jugadorNombre || '';
+        const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombre });
+        if (!r.ok) { toast(r.error || 'Error'); return; }
+        const r2 = await api('POST', 'api/revancha.php', {
+            codigo: viejoCodigo,
+            jugador_id: viejoId,
+            accion: 'proponer',
+            codigo_nuevo: r.codigo,
+            tematica: tematica,
+        });
+        if (!r2.ok) { toast(r2.error || 'Error'); }
+        if (typeof closeModal === 'function') closeModal();
+        state.codigo = r.codigo;
+        state.jugadorId = r.jugador_id;
+        saveSession();
+        window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
+    }
+
+    async function aceptarRevancha() {
+        const rev = state.sala && state.sala.revancha;
+        if (!rev || !rev.codigo_nuevo) return;
+        const r = await api('POST', 'api/unirse_sala.php', { codigo: rev.codigo_nuevo, nombre: state.jugadorNombre || '' });
+        if (!r.ok) { toast(r.error || 'Error'); return; }
+        state.codigo = rev.codigo_nuevo;
+        state.jugadorId = r.jugador_id;
+        saveSession();
+        window.location.href = 'juego.php?codigo=' + encodeURIComponent(rev.codigo_nuevo);
+    }
+
+    async function rechazarRevancha() {
+        const r = await api('POST', 'api/revancha.php', {
+            codigo: state.codigo,
+            jugador_id: state.jugadorId,
+            accion: 'rechazar',
+        });
+        if (r.ok) {
+            state.sala = r.sala;
+            toast(t('ui.juego.msg_revancha_rechazada'));
+            renderGame(null);
+        } else {
+            toast(r.error || 'Error');
+        }
     }
 
     async function onPujar() { await sendAction('pujar', 1); }
@@ -937,6 +1481,7 @@
             const turnoActual = state.sala && state.sala.item_actual ? state.sala.item_actual.turno_de : null;
             state.turnTurnoDe = turnoActual;
             state.turnStartAt = Math.floor(Date.now() / 1000);
+            state.timeoutEnviado = false;
             startTurnCountdown();
             renderGame(null);
         } finally {
