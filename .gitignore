@@ -1,2 +1,4 @@
 api/salas/*.json
 node_modules/
+api/datos/*.jsonl
+api/datos/*.json

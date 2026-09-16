@@ -1,0 +1,5 @@
+# Defensa en profundidad: impide acceso HTTP directo a los datos agregados.
+# Por si el hosting tuviera habilitado Directory Listings o el server no
+# sirviera index.html por defecto. Funciona en Apache (Hostinger).
+Order deny,allow
+Deny from all
