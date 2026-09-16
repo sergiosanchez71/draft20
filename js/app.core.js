@@ -29,6 +29,7 @@
         botWatchStart: 0,
         botKeyDelay: null,
         botValores: null,
+        partidaGuardada: false,
         botDificultad: 'normal',
         mostrarValores: false,
         statsRegistradas: false,

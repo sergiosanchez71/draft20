@@ -264,7 +264,7 @@
         "priv_datos_titulo": "Qué datos usamos",
         "priv_datos_texto": "No hay cuentas ni perfiles. Las salas guardan solo el nombre que escribes (opcional) y el estado de la partida en el servidor, y se borran automáticamente al cabo de unas horas.",
         "priv_local_titulo": "Almacenamiento local",
-        "priv_local_texto": "Tu navegador guarda en localStorage datos del juego (sesión de la sala, récord de victorias y dificultad del bot). No salen de tu dispositivo y puedes borrarlos limpiando los datos del sitio.",
+        "priv_local_texto": "Tu navegador guarda en localStorage datos del juego (sesión de la sala, récord de victorias, dificultad del bot y registro de tus partidas de práctica). No salen de tu dispositivo y puedes borrarlos limpiando los datos del sitio.",
         "priv_terceros_titulo": "Cookies y terceros",
         "priv_terceros_texto": "No usamos cookies de seguimiento ni publicidad. Solo utilizamos herramientas de medición agregada (como Search Console) para saber qué páginas funcionan mejor.",
         "priv_contacto_titulo": "Contacto",

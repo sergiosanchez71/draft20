@@ -49,6 +49,7 @@
             state.bot = botRaw ? JSON.parse(botRaw) : null;
             if (state.bot && !state.bot.jugadorId) state.bot = null;
         } catch (e) { state.bot = null; }
+        state.partidaGuardada = false;
 
         renderGameShell();
         await pollGameTick();
@@ -327,6 +328,55 @@
         } catch (e) { state.botValores = null; }
     }
 
+    /**
+     * Guarda en el dispositivo un registro compacto de la partida de práctica
+     * (secuencia de ítems, quién ganó cada uno, valor y precio) para poder
+     * calibrar el bot después con partidas reales. Conserva las últimas 20.
+     */
+    function guardarPartidaReferenciaSiToca() {
+        if (!state.bot || state.partidaGuardada || state.jugadorSlot === null) return;
+        const s = state.sala;
+        if (!s || (s.estado !== 'finalizada' && s.estado !== 'abandonada')) return;
+        state.partidaGuardada = true;
+        const porItem = {};
+        let valorHumano = 0, valorBot = 0;
+        s.jugadores.forEach(function (j, slot) {
+            (j.items_ganados || []).forEach(function (it) {
+                porItem[it.id] = { por: slot, valor: it.valor, precio: it.precio };
+                if (slot === state.jugadorSlot) valorHumano += it.valor || 0;
+                else valorBot += it.valor || 0;
+            });
+        });
+        const registro = {
+            ts: Date.now(),
+            tematica: s.tematica,
+            dificultad: state.bot.dificultad || 'normal',
+            visibles: !!s.mostrar_valores,
+            humanoSlot: state.jugadorSlot,
+            resultado: {
+                humano: valorHumano,
+                bot: valorBot,
+                gana: valorHumano > valorBot ? 'humano' : (valorHumano < valorBot ? 'bot' : 'empate'),
+            },
+            items: (s.items_mezclados || []).map(function (id) {
+                const d = porItem[id];
+                return { id: id, valor: d ? d.valor : null, por: d ? d.por : null, precio: d ? d.precio : null };
+            }),
+        };
+        try {
+            const raw = localStorage.getItem('draft20_bot_partidas');
+            const prev = raw ? JSON.parse(raw) : [];
+            const lista = Array.isArray(prev) ? prev : [];
+            lista.unshift(registro);
+            localStorage.setItem('draft20_bot_partidas', JSON.stringify(lista.slice(0, 20)));
+        } catch (e) { /* ignore */ }
+    }
+
+    /** Registro de partidas de práctica guardado (para exportar/analizar). */
+    function exportarPartidasReferencia() {
+        try { return localStorage.getItem('draft20_bot_partidas') || '[]'; } catch (e) { return '[]'; }
+    }
+
     function startPollingGame() {
         if (state.pollTimer) return;
         state.pollTimer = setInterval(pollGameTick, POLL_MS);
@@ -378,6 +428,7 @@
 
         // Estado terminal: abandono manda sobre finalización normal.
         if (s.estado === 'abandonada') {
+            guardarPartidaReferenciaSiToca();
             renderAbandonedScreen();
             // Vaciar inventarios + bar para que no aparezca UI residual.
             const inv = $('#inventory'); if (inv) clear(inv);
@@ -386,6 +437,7 @@
             return;
         }
         if (s.estado === 'finalizada') {
+            guardarPartidaReferenciaSiToca();
             renderFinalScreen();
             mostrarPopupUltimoItem();
             const inv = $('#inventory'); if (inv) clear(inv);
@@ -1108,5 +1160,6 @@
     }
 
     // =================== EXPOSE ===================
+    D.exportarPartidas = exportarPartidasReferencia;
     window.__juegoInit = juegoInit;
 })();
