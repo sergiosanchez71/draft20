@@ -93,7 +93,7 @@
         const scoreboard = el('section', { id: 'scoreboard', class: 'bg-slate-800 px-3 py-2 grid grid-cols-2 gap-2 border-b border-slate-700' });
 
         // Item card (min-h-0 permite que se encoja; el historial va en absoluto a la derecha)
-        const itemCard = el('section', { id: 'itemCard', class: 'relative flex-1 min-h-0 flex flex-col items-center justify-center p-3 sm:p-6 bg-slate-900 overflow-y-auto' });
+        const itemCard = el('section', { id: 'itemCard', class: 'relative flex-1 min-h-0 flex flex-col p-3 sm:p-6 bg-slate-900 overflow-y-auto' });
 
         // Inventory row (flex-shrink-0 garantiza que no se comprima)
         const inventory = el('section', { id: 'inventory', class: 'flex-shrink-0 bg-slate-800 px-3 py-2 border-t border-slate-700' });
@@ -444,9 +444,14 @@
 
         const myTurn = item.turno_de === state.jugadorSlot;
 
+        // Wrapper centrado verticalmente: el contenedor tiene scroll, así que en
+        // pantallas cortas el contenido se centra si sobra espacio y se puede
+        // scrollear entero si falta (sin recortar la parte superior).
+        const wrap = el('div', { class: 'w-full my-auto flex flex-col items-center' });
+
         // Aviso blando: el rival lleva sin responder unos segundos.
         if (state.rivalAusente !== null && state.rivalAusente >= 6 && s.estado === 'jugando') {
-            card.appendChild(el('div', { class: 'w-full bg-amber-500 text-slate-900 text-xs font-bold text-center py-2 px-3 rounded mb-3' },
+            wrap.appendChild(el('div', { class: 'w-full bg-amber-500 text-slate-900 text-xs font-bold text-center py-2 px-3 rounded mb-3' },
                 t('ui.juego.msg_rival_ausente', { nombre: state.rivalNombre || 'Rival', seg: state.rivalAusente })));
         }
 
@@ -454,26 +459,26 @@
         const chipTurno = el('div', {
             class: 'text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'),
         }, myTurn ? t('ui.juego.tu_turno') : t('ui.juego.turno_rival'));
-        card.appendChild(el('div', { class: 'w-full flex items-center justify-between gap-2 mb-1' }, [
+        wrap.appendChild(el('div', { class: 'w-full flex items-center justify-between gap-2 mb-1' }, [
             el('div', { class: 'text-xs text-slate-400' }, t('ui.juego.ronda') + ' ' + s.ronda + ' / ' + totalRondas),
             chipTurno,
         ]));
         if (s.ronda >= totalRondas) {
-            card.appendChild(el('div', { class: 'text-[11px] font-bold text-amber-300 mb-1' }, '🔥 ' + t('ui.juego.ultima_ronda')));
+            wrap.appendChild(el('div', { class: 'text-[11px] font-bold text-amber-300 mb-1' }, '🔥 ' + t('ui.juego.ultima_ronda')));
         }
 
-        const emoji = el('div', { class: 'text-[clamp(3rem,13vh,6rem)] mb-2 ' + (myTurn ? 'pulse-win' : '') }, item.emoji);
-        card.appendChild(emoji);
+        const emoji = el('div', { class: 'text-[clamp(3rem,12svh,6rem)] mb-2 ' + (myTurn ? 'pulse-win' : '') }, item.emoji);
+        wrap.appendChild(emoji);
 
         const itemName = tItem(item.id);
-        card.appendChild(el('h2', { class: 'text-lg font-bold text-slate-100 mb-1 text-center px-4' }, itemName));
+        wrap.appendChild(el('h2', { class: 'text-lg font-bold text-slate-100 mb-1 text-center px-4' }, itemName));
 
         // Precio y turno
         const status = el('div', { class: 'mt-2 text-center' }, [
             el('div', { class: 'text-[11px] text-slate-400' }, t('ui.juego.precio_actual')),
             el('div', { class: 'text-3xl font-bold font-mono text-amber-400' }, String(item.precio_actual)),
         ]);
-        card.appendChild(status);
+        wrap.appendChild(status);
 
         // Historial de pujas: espacio SIEMPRE reservado a la derecha para que la
         // primera puja no desplace el emoji/nombre/precio. La más reciente abajo.
@@ -498,6 +503,7 @@
                 el('div', { class: 'font-mono opacity-90' }, '+' + p.incremento + ' · ' + p.precio + '🪙'),
             ]));
         });
+        card.appendChild(wrap);
         card.appendChild(rail);
 
         // Banner ámbar si hay decisión pendiente (deadlock sin dinero).
@@ -508,7 +514,7 @@
             const msg = isDecisor
                 ? t('ui.juego.msg_deadlock_decide_corto')
                 : (isSobre ? t('ui.juego.msg_cediste_item') : t('ui.juego.msg_cede_item'));
-            card.appendChild(el('div', { class: 'mt-2 mx-2 px-3 py-1.5 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
+            wrap.appendChild(el('div', { class: 'mt-2 mx-2 px-3 py-1.5 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
         }
 
         // Si estoy capped, mensaje varía según de quién es el turno
@@ -517,7 +523,7 @@
             const msg = myTurn
                 ? t('ui.juego.msg_pasar_al_rival', { cap: 4 })
                 : t('ui.juego.msg_esperando_rival_complete', { cap: 4 });
-            card.appendChild(el('div', { class: 'mt-2 px-3 py-1.5 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
+            wrap.appendChild(el('div', { class: 'mt-2 px-3 py-1.5 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
         }
     }
 
@@ -776,9 +782,6 @@
             ? t('ui.juego.msg_rival_abandono') + ' (' + rivalName + ')'
             : t('ui.juego.msg_rival_abandono');
 
-        card.classList.remove('items-center', 'justify-center');
-        card.classList.add('items-stretch', 'justify-start');
-
         card.appendChild(el('div', { class: 'text-center mt-4' }, [
             el('div', { class: 'text-6xl mb-4' }, '👋'),
             el('h2', { class: 'text-2xl font-bold text-amber-400 mb-3' }, msg),
@@ -815,10 +818,6 @@
         else if (myMoney > rivalMoney) { resultado = 'win'; porDesempate = true; }
         else if (rivalMoney > myMoney) { resultado = 'loss'; porDesempate = true; }
         registrarResultado(resultado);
-
-        // Centrar verticalmente el contenido cuando hay espacio; si no, scroll natural.
-        card.classList.remove('items-center', 'justify-center');
-        card.classList.add('items-stretch', 'justify-start');
 
         const header = el('div', { class: 'text-center mb-4' }, [
             el('div', { class: 'text-4xl mb-2' }, '🏆'),
@@ -893,21 +892,22 @@
         const card = $('#itemCard');
         if (!card) return;
         clear(card);
-        card.classList.remove('items-center', 'justify-center', 'pr-20', 'sm:pr-24');
-        card.classList.add('items-stretch', 'justify-start');
-        card.appendChild(el('div', { class: 'text-center mt-4 fade-in' }, [
+        card.classList.remove('pr-20', 'sm:pr-24');
+        const wrap = el('div', { class: 'w-full my-auto flex flex-col items-center' });
+        wrap.appendChild(el('div', { class: 'text-center mt-4 fade-in' }, [
             el('div', { class: 'text-5xl mb-4' }, '⏳'),
             el('h2', { class: 'text-xl font-bold text-amber-400 mb-2' }, t('ui.juego.msg_esperando_revancha')),
             el('div', { class: 'text-3xl font-mono font-bold text-slate-100 tracking-widest my-4' }, state.codigo || ''),
             el('p', { class: 'text-slate-400 text-xs px-6' }, t('ui.juego.submsg_esperando_revancha')),
         ]));
-        card.appendChild(el('div', { class: 'flex gap-2 mt-6 px-2' }, [
+        wrap.appendChild(el('div', { class: 'flex gap-2 mt-6 px-2 w-full' }, [
             el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
             el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
         ]));
-        card.appendChild(el('div', { class: 'text-center mt-6' }, [
+        wrap.appendChild(el('div', { class: 'text-center mt-6' }, [
             el('button', { class: 'text-slate-400 text-sm btn-tap', onclick: onLeave }, '← ' + t('ui.juego.salir_lobby')),
         ]));
+        card.appendChild(wrap);
     }
 
     // =================== revancha ===================

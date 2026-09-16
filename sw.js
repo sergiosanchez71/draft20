@@ -4,7 +4,7 @@
  *   así que la caché antigua se sustituye sola al cambiar el archivo).
  * - API: siempre red.
  */
-const CACHE = 'draft20-v3';
+const CACHE = 'draft20-v4';
 const SHELL = ['/', '/index.php'];
 
 self.addEventListener('install', function (e) {
@@ -51,8 +51,10 @@ self.addEventListener('fetch', function (e) {
     }
 
     // Assets: sirve de caché y revalida en segundo plano.
+    // Match EXACTO (sin ignoreSearch): los assets van con ?v=filemtime, así una
+    // versión nueva nunca reutiliza la entrada antigua de la caché.
     e.respondWith(
-        caches.match(req, { ignoreSearch: true }).then(function (cached) {
+        caches.match(req).then(function (cached) {
             const red = fetch(req)
                 .then(function (res) {
                     if (res && res.ok) {

@@ -10,7 +10,7 @@
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 
 #toast {
-    position: fixed; bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px)); left: 50%;
+    position: fixed; bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); left: 50%;
     transform: translateX(-50%) translateY(calc(100% + 7.5rem));
     opacity: 0; visibility: hidden;
     background: rgba(15, 23, 42, 0.96); color: white;
