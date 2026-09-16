@@ -140,7 +140,8 @@ function nav_links(): array
 
 /**
  * Cabecera HTML común.
- * $opts: titulo, descripcion, canonical (ruta), robots, og_image, json_ld (array), body_class
+ * $opts: titulo, descripcion, canonical (ruta), robots, og_image, json_ld (array),
+ *        body_class, css_inline, preload_scripts (rutas relativas)
  */
 function pagina_head(array $opts): void
 {
@@ -176,6 +177,9 @@ function pagina_head(array $opts): void
     <link rel="apple-touch-icon" href="<?= e(asset('icons/icon-180.png')) ?>">
     <link rel="manifest" href="/manifest.webmanifest">
     <?= css_tags($opts['css_inline'] ?? true) ?>
+<?php foreach (($opts['preload_scripts'] ?? []) as $src): ?>
+    <link rel="preload" as="script" href="<?= e(asset_js($src)) ?>">
+<?php endforeach; ?>
 <?php foreach (($opts['json_ld'] ?? []) as $schema): ?>
     <script type="application/ld+json"><?= json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>
 <?php endforeach; ?>
@@ -186,7 +190,7 @@ function pagina_head(array $opts): void
 
 /**
  * Pie + scripts de cierre.
- * $opts: inline_first (HTML crudo antes de los scripts), scripts (rutas relativas), inline (HTML crudo)
+ * $opts: inline_first (HTML crudo antes de los scripts), scripts (rutas relativas), inline (HTML crudo), defer (bool)
  */
 function pagina_foot(array $opts = []): void
 {
@@ -194,8 +198,9 @@ function pagina_foot(array $opts = []): void
     if (!empty($opts['inline_first'])) {
         echo '    <script>' . $opts['inline_first'] . '</script>' . "\n";
     }
+    $defer = !empty($opts['defer']) ? ' defer' : '';
     foreach (($opts['scripts'] ?? []) as $src) {
-        echo '    <script src="' . e(asset_js($src)) . '"></script>' . "\n";
+        echo '    <script src="' . e(asset_js($src)) . '"' . $defer . '></script>' . "\n";
     }
     if (!empty($opts['inline'])) {
         echo '    <script>' . $opts['inline'] . '</script>' . "\n";

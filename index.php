@@ -61,16 +61,20 @@ pagina_head([
     // La vista de unirse por enlace (?sala=CODE) no debe indexarse.
     'robots' => $salaFromLink ? 'noindex, follow' : 'index, follow',
     'json_ld' => $jsonLd,
+    // El bundle del lobby se descubre en el <head> y llega antes (SI/LCP).
+    'preload_scripts' => ['js/app.core.js'],
 ]);
 ?>
-    <header class="px-6 pt-8 pb-2 text-center safe-pt">
-        <h1 class="text-4xl font-bold text-amber-400"><?= e(SITE_NOMBRE) ?></h1>
-        <p class="text-slate-400 text-sm mt-2"><?= e((string) ($LANG['ui']['app']['subtitulo_lobby'] ?? '')) ?></p>
-        <p class="text-slate-300 text-sm mt-4 max-w-xl mx-auto leading-relaxed"><?= e((string) ($SEO['hero_texto'] ?? '')) ?></p>
-        <a href="#app" class="inline-block mt-5 bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
-    </header>
+    <div class="min-h-screen flex flex-col">
+        <header class="px-6 pt-8 pb-2 text-center safe-pt">
+            <h1 class="text-4xl font-bold text-amber-400"><?= e(SITE_NOMBRE) ?></h1>
+            <p class="text-slate-400 text-sm mt-2"><?= e((string) ($LANG['ui']['app']['subtitulo_lobby'] ?? '')) ?></p>
+            <p class="text-slate-300 text-sm mt-4 max-w-xl mx-auto leading-relaxed"><?= e((string) ($SEO['hero_texto'] ?? '')) ?></p>
+            <a href="#app" class="inline-block mt-5 bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
+        </header>
 
-    <main id="app" class="flex-1 flex flex-col"></main>
+        <main id="app" class="flex-1 flex flex-col"></main>
+    </div>
 
     <section class="max-w-3xl mx-auto w-full px-4 mt-10">
         <h2 class="text-2xl font-bold text-slate-100 mb-4"><?= e((string) ($SEO['como_titulo'] ?? '')) ?></h2>
@@ -128,7 +132,8 @@ $inlineFirst = 'window.LANG = ' . json_encode($langCliente, JSON_UNESCAPED_UNICO
 
 $inline = '(function () {'
     . ' const linkSala = ' . json_encode($salaFromLink, JSON_UNESCAPED_UNICODE) . ';'
-    . ' window.__init(linkSala);'
+    // app.core.min.js va con defer: esperamos a que el bundle esté ejecutado.
+    . ' document.addEventListener("DOMContentLoaded", function () { window.__init(linkSala); });'
     . ' if ("serviceWorker" in navigator) { window.addEventListener("load", function () {'
     . ' navigator.serviceWorker.register("/sw.js?v=' . (is_file(__DIR__ . '/sw.js') ? filemtime(__DIR__ . '/sw.js') : '1') . '").catch(function () {});'
     . ' }); }'
@@ -138,4 +143,5 @@ pagina_foot([
     'inline_first' => $inlineFirst,
     'scripts' => ['js/app.core.js'],
     'inline' => $inline,
+    'defer' => true,
 ]);
