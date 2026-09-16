@@ -329,9 +329,24 @@
     }
 
     /**
+     * Versión del bot en uso: el `?v=` (mtime) con el que el navegador cargó
+     * bot_policy(.min).js. Permite comparar mejoras entre versiones en las
+     * estadísticas agregadas.
+     */
+    function versionBot() {
+        try {
+            const el = document.querySelector('script[src*="bot_policy"]');
+            const m = el && el.src.match(/[?&]v=(\d+)/);
+            return m ? m[1] : '0';
+        } catch (e) { return '0'; }
+    }
+
+    /**
      * Guarda en el dispositivo un registro compacto de la partida de práctica
      * (secuencia de ítems, quién ganó cada uno, valor y precio) para poder
      * calibrar el bot después con partidas reales. Conserva las últimas 20.
+     * Si la partida terminó, envía además una copia anónima al servidor
+     * (sin nombres, IDs ni códigos) para las estadísticas de calibración.
      */
     function guardarPartidaReferenciaSiToca() {
         if (!state.bot || state.partidaGuardada || state.jugadorSlot === null) return;
@@ -369,6 +384,36 @@
             const lista = Array.isArray(prev) ? prev : [];
             lista.unshift(registro);
             localStorage.setItem('draft20_bot_partidas', JSON.stringify(lista.slice(0, 20)));
+        } catch (e) { /* ignore */ }
+
+        // Estadísticas anónimas (solo partidas terminadas contra el bot).
+        if (s.estado !== 'finalizada') return;
+        try {
+            const payload = {
+                version: versionBot(),
+                tematica: registro.tematica,
+                dificultad: registro.dificultad,
+                visibles: registro.visibles,
+                resultado: registro.resultado.gana,
+                valorHumano: registro.resultado.humano,
+                valorBot: registro.resultado.bot,
+                items: registro.items
+                    .filter(function (it) { return it.por !== null; })
+                    .map(function (it) {
+                        return {
+                            valor: it.valor,
+                            por: it.por === state.jugadorSlot ? 'humano' : 'bot',
+                            precio: it.precio || 0,
+                        };
+                    }),
+            };
+            fetch('api/registrar_partida.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                keepalive: true,
+                body: JSON.stringify(payload),
+            }).catch(function () { /* best-effort */ });
         } catch (e) { /* ignore */ }
     }
 
