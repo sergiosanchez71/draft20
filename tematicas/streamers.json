@@ -1,0 +1,25 @@
+{
+    "id": "streamers",
+    "items": [
+        { "id": "str_ibai",            "emoji": "🎪", "valor": 10 },
+        { "id": "str_mrbeast",         "emoji": "💵", "valor": 10 },
+        { "id": "str_rubius",          "emoji": "🍑", "valor": 9  },
+        { "id": "str_auronplay",       "emoji": "😈", "valor": 9  },
+        { "id": "str_thegrefg",        "emoji": "🛡️", "valor": 8  },
+        { "id": "str_kaicenat",        "emoji": "🗽", "valor": 8  },
+        { "id": "str_xqc",             "emoji": "💤", "valor": 7  },
+        { "id": "str_ishowspeed",      "emoji": "🐕", "valor": 7  },
+        { "id": "str_chino_mercadona", "emoji": "🧑‍🍳", "valor": 7  },
+        { "id": "str_vegetta",         "emoji": "🟣", "valor": 6  },
+        { "id": "str_willyrex",        "emoji": "🐢", "valor": 6  },
+        { "id": "str_lola_lolita",     "emoji": "💄", "valor": 6  },
+        { "id": "str_escardi",         "emoji": "🐥", "valor": 6  },
+        { "id": "str_5mincrafts",      "emoji": "✂️", "valor": 1  },
+        { "id": "str_troomtroom",      "emoji": "🧵", "valor": 1  },
+        { "id": "str_brightside",      "emoji": "🌈", "valor": 2  },
+        { "id": "str_cocomelon",       "emoji": "🍼", "valor": 2  },
+        { "id": "str_granja_zenon",    "emoji": "🐮", "valor": 2  },
+        { "id": "str_reino_infantil",  "emoji": "🧒", "valor": 2  },
+        { "id": "str_plimplim",        "emoji": "🎈", "valor": 2  }
+    ]
+}

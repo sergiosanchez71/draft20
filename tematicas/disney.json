@@ -1,0 +1,25 @@
+{
+    "id": "disney",
+    "items": [
+        { "id": "dis_mickey",       "emoji": "🐭", "valor": 10 },
+        { "id": "dis_simba",        "emoji": "🦁", "valor": 10 },
+        { "id": "dis_elsa",         "emoji": "❄️", "valor": 9  },
+        { "id": "dis_genio",        "emoji": "🧞", "valor": 9  },
+        { "id": "dis_woody",        "emoji": "🤠", "valor": 8  },
+        { "id": "dis_stitch",       "emoji": "👽", "valor": 8  },
+        { "id": "dis_buzz",         "emoji": "🚀", "valor": 7  },
+        { "id": "dis_moana",        "emoji": "🌊", "valor": 7  },
+        { "id": "dis_rapunzel",     "emoji": "💇", "valor": 6  },
+        { "id": "dis_dumbo",        "emoji": "🐘", "valor": 6  },
+        { "id": "dis_mulan",        "emoji": "⚔️", "valor": 6  },
+        { "id": "dis_pinocho",      "emoji": "🪵", "valor": 5  },
+        { "id": "dis_peter_pan",    "emoji": "🧚", "valor": 5  },
+        { "id": "dis_scar",         "emoji": "🖤", "valor": 3  },
+        { "id": "dis_ursula",       "emoji": "🐙", "valor": 2  },
+        { "id": "dis_gaston",       "emoji": "💪", "valor": 2  },
+        { "id": "dis_jafar",        "emoji": "🐍", "valor": 2  },
+        { "id": "dis_cruella",      "emoji": "🐕", "valor": 2  },
+        { "id": "dis_captain_hook", "emoji": "🪝", "valor": 2  },
+        { "id": "dis_sid",          "emoji": "🔩", "valor": 1  }
+    ]
+}

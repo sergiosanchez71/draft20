@@ -1,0 +1,25 @@
+{
+    "id": "star_wars",
+    "items": [
+        { "id": "sw_vader",           "emoji": "🖤", "valor": 10 },
+        { "id": "sw_yoda",            "emoji": "🐸", "valor": 10 },
+        { "id": "sw_luke",            "emoji": "⭐", "valor": 9  },
+        { "id": "sw_leia",            "emoji": "👑", "valor": 9  },
+        { "id": "sw_han_solo",        "emoji": "🔫", "valor": 8  },
+        { "id": "sw_mandalorian",     "emoji": "🪖", "valor": 8  },
+        { "id": "sw_obi_wan",         "emoji": "🧙", "valor": 7  },
+        { "id": "sw_chewbacca",       "emoji": "🐻", "valor": 7  },
+        { "id": "sw_r2d2",            "emoji": "🤖", "valor": 7  },
+        { "id": "sw_grogu",           "emoji": "👶", "valor": 6  },
+        { "id": "sw_bb8",             "emoji": "⚽", "valor": 6  },
+        { "id": "sw_ahsoka",          "emoji": "🧡", "valor": 6  },
+        { "id": "sw_lando",           "emoji": "🎲", "valor": 5  },
+        { "id": "sw_jar_jar",         "emoji": "🤪", "valor": 2  },
+        { "id": "sw_watto",           "emoji": "🛠️", "valor": 2  },
+        { "id": "sw_jabba",           "emoji": "🐌", "valor": 2  },
+        { "id": "sw_greedo",          "emoji": "🦎", "valor": 1  },
+        { "id": "sw_nute_gunray",     "emoji": "🎩", "valor": 1  },
+        { "id": "sw_anakin_nino",     "emoji": "🏎️", "valor": 2  },
+        { "id": "sw_salacious_crumb", "emoji": "🐒", "valor": 1  }
+    ]
+}

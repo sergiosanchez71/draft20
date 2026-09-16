@@ -1,0 +1,25 @@
+{
+    "id": "cereales",
+    "items": [
+        { "id": "crs_chocapic",         "emoji": "🐯", "valor": 10 },
+        { "id": "crs_frosties",         "emoji": "❄️", "valor": 10 },
+        { "id": "crs_corn_flakes",      "emoji": "🐓", "valor": 9  },
+        { "id": "crs_honey_loops",      "emoji": "🍯", "valor": 9  },
+        { "id": "crs_cookie_crisp",     "emoji": "🍪", "valor": 8  },
+        { "id": "crs_krave",            "emoji": "🍫", "valor": 8  },
+        { "id": "crs_nesquik",          "emoji": "🐰", "valor": 7  },
+        { "id": "crs_cruesli",          "emoji": "🥜", "valor": 7  },
+        { "id": "crs_muesli",           "emoji": "🥣", "valor": 6  },
+        { "id": "crs_golden_grahams",   "emoji": "🌾", "valor": 6  },
+        { "id": "crs_smacks",           "emoji": "🐶", "valor": 6  },
+        { "id": "crs_cheerios",         "emoji": "⭕", "valor": 5  },
+        { "id": "crs_special_k",        "emoji": "🌽", "valor": 5  },
+        { "id": "crs_salvado",          "emoji": "🥬", "valor": 1  },
+        { "id": "crs_cereal_carton",    "emoji": "📦", "valor": 1  },
+        { "id": "crs_cereal_light",     "emoji": "🥼", "valor": 2  },
+        { "id": "crs_avena_sosa",       "emoji": "🌫️", "valor": 2  },
+        { "id": "crs_marca_blanca",     "emoji": "🏷️", "valor": 1  },
+        { "id": "crs_inflado_insipido", "emoji": "🍿", "valor": 2  },
+        { "id": "crs_fruta_escarchada", "emoji": "🍇", "valor": 1  }
+    ]
+}

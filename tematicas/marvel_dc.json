@@ -1,0 +1,25 @@
+{
+    "id": "marvel_dc",
+    "items": [
+        { "id": "mdc_spiderman",        "emoji": "🕷️", "valor": 10 },
+        { "id": "mdc_batman",           "emoji": "🦇", "valor": 10 },
+        { "id": "mdc_ironman",          "emoji": "🦾", "valor": 9  },
+        { "id": "mdc_wolverine",        "emoji": "🗡️", "valor": 9  },
+        { "id": "mdc_thanos",           "emoji": "💜", "valor": 9  },
+        { "id": "mdc_superman",         "emoji": "🦸", "valor": 9  },
+        { "id": "mdc_hulk",             "emoji": "💚", "valor": 7  },
+        { "id": "mdc_capitan_america",  "emoji": "🛡️", "valor": 7  },
+        { "id": "mdc_thor",             "emoji": "🔨", "valor": 7  },
+        { "id": "mdc_joker",            "emoji": "🃏", "valor": 7  },
+        { "id": "mdc_black_widow",      "emoji": "🕸️", "valor": 6  },
+        { "id": "mdc_doctor_strange",   "emoji": "🔮", "valor": 6  },
+        { "id": "mdc_harley_quinn",     "emoji": "🎀", "valor": 6  },
+        { "id": "mdc_kite_man",         "emoji": "🪁", "valor": 1  },
+        { "id": "mdc_condiment_king",   "emoji": "🧂", "valor": 1  },
+        { "id": "mdc_howard_pato",      "emoji": "🦆", "valor": 1  },
+        { "id": "mdc_matter_eater",     "emoji": "🍽️", "valor": 1  },
+        { "id": "mdc_arm_fall_off_boy", "emoji": "🦵", "valor": 1  },
+        { "id": "mdc_polka_dot_man",    "emoji": "⚪", "valor": 2  },
+        { "id": "mdc_egghead",          "emoji": "🥚", "valor": 2  }
+    ]
+}

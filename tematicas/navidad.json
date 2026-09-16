@@ -1,0 +1,25 @@
+{
+    "id": "navidad",
+    "items": [
+        { "id": "nav_loteria",         "emoji": "🎟️", "valor": 10 },
+        { "id": "nav_el_gordo",        "emoji": "💰", "valor": 10 },
+        { "id": "nav_campanadas",      "emoji": "🕰️", "valor": 9  },
+        { "id": "nav_papa_noel",       "emoji": "🎅", "valor": 9  },
+        { "id": "nav_turron",          "emoji": "🍫", "valor": 8  },
+        { "id": "nav_freixenet",       "emoji": "🍾", "valor": 8  },
+        { "id": "nav_reyes_magos",     "emoji": "👑", "valor": 7  },
+        { "id": "nav_mazapan",         "emoji": "🥮", "valor": 7  },
+        { "id": "nav_belen",           "emoji": "🏠", "valor": 7  },
+        { "id": "nav_ramon_garcia",    "emoji": "🧥", "valor": 7  },
+        { "id": "nav_sorteo_nino",     "emoji": "🧒", "valor": 6  },
+        { "id": "nav_villancicos",     "emoji": "🎶", "valor": 6  },
+        { "id": "nav_polvorones",      "emoji": "🍪", "valor": 5  },
+        { "id": "nav_carbon",          "emoji": "🪨", "valor": 1  },
+        { "id": "nav_amigo_invisible", "emoji": "🎁", "valor": 2  },
+        { "id": "nav_cunado",          "emoji": "🤪", "valor": 2  },
+        { "id": "nav_zambomba",        "emoji": "🪘", "valor": 1  },
+        { "id": "nav_jersey_renos",    "emoji": "🦌", "valor": 2  },
+        { "id": "nav_uvas",            "emoji": "🍇", "valor": 1  },
+        { "id": "nav_turron_duro",     "emoji": "🦷", "valor": 2  }
+    ]
+}

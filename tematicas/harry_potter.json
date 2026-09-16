@@ -1,0 +1,25 @@
+{
+    "id": "harry_potter",
+    "items": [
+        { "id": "hp_harry",      "emoji": "⚡", "valor": 10 },
+        { "id": "hp_dumbledore", "emoji": "🧙", "valor": 10 },
+        { "id": "hp_hermione",   "emoji": "📚", "valor": 9  },
+        { "id": "hp_snape",      "emoji": "🧪", "valor": 9  },
+        { "id": "hp_voldemort",  "emoji": "🐍", "valor": 9  },
+        { "id": "hp_hagrid",     "emoji": "🧔", "valor": 8  },
+        { "id": "hp_ron",        "emoji": "🐀", "valor": 7  },
+        { "id": "hp_sirius",     "emoji": "🐺", "valor": 7  },
+        { "id": "hp_mcgonagall", "emoji": "🐈", "valor": 6  },
+        { "id": "hp_dobby",      "emoji": "🧦", "valor": 6  },
+        { "id": "hp_draco",      "emoji": "🐲", "valor": 6  },
+        { "id": "hp_ginny",      "emoji": "🧹", "valor": 5  },
+        { "id": "hp_luna",       "emoji": "🔭", "valor": 5  },
+        { "id": "hp_lockhart",   "emoji": "🪞", "valor": 2  },
+        { "id": "hp_peeves",     "emoji": "👻", "valor": 1  },
+        { "id": "hp_filch",      "emoji": "🔑", "valor": 2  },
+        { "id": "hp_binns",      "emoji": "💤", "valor": 1  },
+        { "id": "hp_aragog",     "emoji": "🕷️", "valor": 2  },
+        { "id": "hp_quirrell",   "emoji": "🧣", "valor": 1  },
+        { "id": "hp_dudley",     "emoji": "🍩", "valor": 2  }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "id": "f1",
+    "items": [
+        { "id": "f1_senna",      "emoji": "🏆", "valor": 10 },
+        { "id": "f1_schumacher", "emoji": "🏎️", "valor": 10 },
+        { "id": "f1_alonso",     "emoji": "🇪🇸", "valor": 10 },
+        { "id": "f1_hamilton",   "emoji": "⚡", "valor": 9  },
+        { "id": "f1_verstappen", "emoji": "🦁", "valor": 9  },
+        { "id": "f1_fangio",     "emoji": "👴", "valor": 8  },
+        { "id": "f1_prost",      "emoji": "🧠", "valor": 7  },
+        { "id": "f1_lauda",      "emoji": "🧢", "valor": 7  },
+        { "id": "f1_vettel",     "emoji": "🏅", "valor": 7  },
+        { "id": "f1_raikkonen",  "emoji": "🍦", "valor": 6  },
+        { "id": "f1_sainz",      "emoji": "🥇", "valor": 6  },
+        { "id": "f1_leclerc",    "emoji": "🍀", "valor": 6  },
+        { "id": "f1_norris",     "emoji": "🧡", "valor": 5  },
+        { "id": "f1_mazepin",    "emoji": "💸", "valor": 1  },
+        { "id": "f1_latifi",     "emoji": "🧱", "valor": 2  },
+        { "id": "f1_sargeant",   "emoji": "🇺🇸", "valor": 2  },
+        { "id": "f1_yuji_ide",   "emoji": "💥", "valor": 1  },
+        { "id": "f1_badoer",     "emoji": "🐌", "valor": 1  },
+        { "id": "f1_taki_inoue", "emoji": "🚧", "valor": 1  },
+        { "id": "f1_deletraz",   "emoji": "🐢", "valor": 2  }
+    ]
+}

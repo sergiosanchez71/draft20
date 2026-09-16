@@ -1,0 +1,25 @@
+{
+    "id": "mercadona",
+    "items": [
+        { "id": "mer_tarta_queso",       "emoji": "🍰", "valor": 10 },
+        { "id": "mer_torrezno",          "emoji": "🥓", "valor": 9  },
+        { "id": "mer_helado_peanut",     "emoji": "🍦", "valor": 9  },
+        { "id": "mer_chino_mercadona",   "emoji": "🧑‍🍳", "valor": 9  },
+        { "id": "mer_pollo_asado",       "emoji": "🍗", "valor": 8  },
+        { "id": "mer_croquetas",         "emoji": "🥔", "valor": 8  },
+        { "id": "mer_gazpacho",          "emoji": "🥤", "valor": 7  },
+        { "id": "mer_chocolate_negro",   "emoji": "🍫", "valor": 7  },
+        { "id": "mer_cerveza_steinburg", "emoji": "🍺", "valor": 7  },
+        { "id": "mer_sushi",             "emoji": "🍣", "valor": 6  },
+        { "id": "mer_pan_brioche",       "emoji": "🥐", "valor": 6  },
+        { "id": "mer_agua_coco",         "emoji": "🥥", "valor": 5  },
+        { "id": "mer_hummus",            "emoji": "🥣", "valor": 5  },
+        { "id": "mer_salchichon",        "emoji": "🍖", "valor": 2  },
+        { "id": "mer_cafe_soluble",      "emoji": "☕", "valor": 1  },
+        { "id": "mer_leche_rara",        "emoji": "🥛", "valor": 2  },
+        { "id": "mer_lasana_congelada",  "emoji": "📦", "valor": 1  },
+        { "id": "mer_producto_light",    "emoji": "🥬", "valor": 2  },
+        { "id": "mer_gelatina_colores",  "emoji": "🍮", "valor": 1  },
+        { "id": "mer_yogur_caducado",    "emoji": "🤢", "valor": 2  }
+    ]
+}

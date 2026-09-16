@@ -1,0 +1,25 @@
+{
+    "id": "dragon_ball",
+    "items": [
+        { "id": "dbz_goku",        "emoji": "🐒", "valor": 10 },
+        { "id": "dbz_vegeta",      "emoji": "👑", "valor": 9  },
+        { "id": "dbz_freezer",     "emoji": "🧊", "valor": 9  },
+        { "id": "dbz_gohan",       "emoji": "🥋", "valor": 8  },
+        { "id": "dbz_cell",        "emoji": "🧬", "valor": 8  },
+        { "id": "dbz_majin_buu",   "emoji": "🍬", "valor": 8  },
+        { "id": "dbz_piccolo",     "emoji": "🧞", "valor": 7  },
+        { "id": "dbz_trunks",      "emoji": "⚔️", "valor": 7  },
+        { "id": "dbz_bulma",       "emoji": "🔧", "valor": 6  },
+        { "id": "dbz_android18",   "emoji": "🤖", "valor": 6  },
+        { "id": "dbz_mr_satan",    "emoji": "🏆", "valor": 5  },
+        { "id": "dbz_krilin",      "emoji": "🥚", "valor": 5  },
+        { "id": "dbz_ten_shinhan", "emoji": "🎩", "valor": 5  },
+        { "id": "dbz_yamcha",      "emoji": "🐺", "valor": 2  },
+        { "id": "dbz_chiaotzu",    "emoji": "🧸", "valor": 1  },
+        { "id": "dbz_yajirobe",    "emoji": "🗡️", "valor": 2  },
+        { "id": "dbz_bacterian",   "emoji": "🦠", "valor": 1  },
+        { "id": "dbz_garlic_jr",   "emoji": "🧄", "valor": 2  },
+        { "id": "dbz_pilaf",       "emoji": "👶", "valor": 2  },
+        { "id": "dbz_ox_king",     "emoji": "🐂", "valor": 2  }
+    ]
+}

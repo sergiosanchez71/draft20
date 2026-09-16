@@ -1,0 +1,25 @@
+{
+    "id": "moviles",
+    "items": [
+        { "id": "mov_nokia_3310",       "emoji": "🪨", "valor": 10 },
+        { "id": "mov_iphone_4",         "emoji": "📱", "valor": 10 },
+        { "id": "mov_razr",             "emoji": "📞", "valor": 9  },
+        { "id": "mov_blackberry",       "emoji": "📧", "valor": 9  },
+        { "id": "mov_iphone_original",  "emoji": "🍎", "valor": 8  },
+        { "id": "mov_galaxy_s2",        "emoji": "🌌", "valor": 8  },
+        { "id": "mov_nokia_1100",       "emoji": "📟", "valor": 7  },
+        { "id": "mov_htc_dream",        "emoji": "💭", "valor": 7  },
+        { "id": "mov_walkman_phone",    "emoji": "🎧", "valor": 6  },
+        { "id": "mov_google_nexus",     "emoji": "📐", "valor": 6  },
+        { "id": "mov_xiaomi_mi1",       "emoji": "🔶", "valor": 6  },
+        { "id": "mov_lg_chocolate",     "emoji": "🍫", "valor": 5  },
+        { "id": "mov_siemens_sl45",     "emoji": "🟠", "valor": 5  },
+        { "id": "mov_galaxy_note_7",    "emoji": "💥", "valor": 1  },
+        { "id": "mov_fire_phone",       "emoji": "🔥", "valor": 1  },
+        { "id": "mov_blackberry_storm", "emoji": "🌩️", "valor": 2  },
+        { "id": "mov_vertu",            "emoji": "💎", "valor": 2  },
+        { "id": "mov_yotaphone",        "emoji": "📵", "valor": 1  },
+        { "id": "mov_essential",        "emoji": "🧩", "valor": 1  },
+        { "id": "mov_windows_phone",    "emoji": "🪟", "valor": 2  }
+    ]
+}

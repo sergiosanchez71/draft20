@@ -1,0 +1,25 @@
+{
+    "id": "dibujos",
+    "items": [
+        { "id": "dib_bob_esponja",     "emoji": "🧽", "valor": 10 },
+        { "id": "dib_tom_jerry",       "emoji": "🐱", "valor": 10 },
+        { "id": "dib_scooby_doo",      "emoji": "🐕", "valor": 9  },
+        { "id": "dib_pato_donald",     "emoji": "🦆", "valor": 9  },
+        { "id": "dib_picapiedra",      "emoji": "🦴", "valor": 8  },
+        { "id": "dib_bugs_bunny",      "emoji": "🥕", "valor": 8  },
+        { "id": "dib_rick_sanchez",    "emoji": "🧪", "valor": 7  },
+        { "id": "dib_patricio",        "emoji": "⭐", "valor": 7  },
+        { "id": "dib_morty",           "emoji": "🧒", "valor": 6  },
+        { "id": "dib_shrek",           "emoji": "🧅", "valor": 6  },
+        { "id": "dib_calamardo",       "emoji": "🦑", "valor": 6  },
+        { "id": "dib_timmy",           "emoji": "🧚", "valor": 5  },
+        { "id": "dib_danny_fantasma",  "emoji": "👻", "valor": 5  },
+        { "id": "dib_caillou",         "emoji": "😭", "valor": 1  },
+        { "id": "dib_barney",          "emoji": "🦖", "valor": 1  },
+        { "id": "dib_teletubbies",     "emoji": "📺", "valor": 2  },
+        { "id": "dib_fanboy_chumchum", "emoji": "🤪", "valor": 1  },
+        { "id": "dib_dora",            "emoji": "🗺️", "valor": 2  },
+        { "id": "dib_peppa_pig",       "emoji": "🐷", "valor": 2  },
+        { "id": "dib_zig_sharko",      "emoji": "🦈", "valor": 1  }
+    ]
+}

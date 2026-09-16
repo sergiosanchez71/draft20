@@ -1,27 +1,25 @@
 {
     "id": "poderes",
     "items": [
-        { "id": "pod_volar",                       "emoji": "🦅",  "valor": 10 },
-        { "id": "pod_viajar_tiempo",               "emoji": "⌛",  "valor": 10 },
-        { "id": "pod_super_inteligencia",          "emoji": "🧠",  "valor": 10 },
-        { "id": "pod_telequinesis",                "emoji": "🫳", "valor": 9  },
-        { "id": "pod_invisibilidad",               "emoji": "👻",  "valor": 9  },
-        { "id": "pod_super_velocidad",             "emoji": "⚡",  "valor": 9  },
-        { "id": "pod_telepatia",                   "emoji": "📡",  "valor": 8  },
-        { "id": "pod_regeneracion",                "emoji": "❤️‍🩹", "valor": 8  },
-
-        { "id": "pod_super_salto",                 "emoji": "🦘",  "valor": 6  },
-        { "id": "pod_escudo_invisible",            "emoji": "🛡️", "valor": 6  },
-        { "id": "pod_vision_nocturna",             "emoji": "🦉",  "valor": 5  },
-        { "id": "pod_control_animales",            "emoji": "🐾",  "valor": 5  },
-
-        { "id": "pod_halitosis_perpetua",          "emoji": "🦨",  "valor": 1  },
-        { "id": "pod_solo_de_noche",               "emoji": "🌙",  "valor": 3  },
-        { "id": "pod_olor_pies_perpetuo",          "emoji": "🦶",  "valor": 1  },
-        { "id": "pod_si_llueve_no_funciona",       "emoji": "☔",  "valor": 2  },
-        { "id": "pod_gritar_para_usarlo",          "emoji": "📢",  "valor": 2  },
-        { "id": "pod_max_15_min",                  "emoji": "⏱️", "valor": 3  },
-        { "id": "pod_siempre_descalzo",            "emoji": "🩴", "valor": 2  },
-        { "id": "pod_solo_mirando_al_norte",       "emoji": "🧭",  "valor": 1  }
+        { "id": "pod_kamehameha",         "emoji": "🔵", "valor": 10 },
+        { "id": "pod_telarana",           "emoji": "🕸️", "valor": 10 },
+        { "id": "pod_rayo_zeus",          "emoji": "⚡", "valor": 9  },
+        { "id": "pod_mjolnir",            "emoji": "🔨", "valor": 9  },
+        { "id": "pod_anillo_unico",       "emoji": "💍", "valor": 9  },
+        { "id": "pod_vuelo_superman",     "emoji": "🦸", "valor": 8  },
+        { "id": "pod_teletransporte",     "emoji": "🌀", "valor": 7  },
+        { "id": "pod_escudo_capitan",     "emoji": "🛡️", "valor": 7  },
+        { "id": "pod_speed_force",        "emoji": "💨", "valor": 7  },
+        { "id": "pod_varita_magica",      "emoji": "🪄", "valor": 6  },
+        { "id": "pod_sable_luz",          "emoji": "✨", "valor": 6  },
+        { "id": "pod_mana_infinito",      "emoji": "♾️", "valor": 6  },
+        { "id": "pod_invisibilidad",      "emoji": "🫥", "valor": 5  },
+        { "id": "pod_amistad",            "emoji": "🤝", "valor": 1  },
+        { "id": "pod_volar_10cm",         "emoji": "🐔", "valor": 2  },
+        { "id": "pod_superlentitud",      "emoji": "🐌", "valor": 1  },
+        { "id": "pod_vision_laser",       "emoji": "🔦", "valor": 2  },
+        { "id": "pod_teletransporte_1cm", "emoji": "📏", "valor": 1  },
+        { "id": "pod_fuerza_5kg",         "emoji": "🏋️", "valor": 2  },
+        { "id": "pod_escudo_papel",       "emoji": "📄", "valor": 1  }
     ]
 }

@@ -1,0 +1,25 @@
+{
+    "id": "one_piece",
+    "items": [
+        { "id": "opc_luffy",       "emoji": "🏴‍☠️", "valor": 10 },
+        { "id": "opc_zoro",        "emoji": "⚔️", "valor": 9  },
+        { "id": "opc_shanks",      "emoji": "🍶", "valor": 9  },
+        { "id": "opc_nami",        "emoji": "🍊", "valor": 8  },
+        { "id": "opc_robin",       "emoji": "📖", "valor": 8  },
+        { "id": "opc_sanji",       "emoji": "🍳", "valor": 8  },
+        { "id": "opc_ace",         "emoji": "🔥", "valor": 7  },
+        { "id": "opc_law",         "emoji": "🩺", "valor": 6  },
+        { "id": "opc_usopp",       "emoji": "🎯", "valor": 6  },
+        { "id": "opc_brook",       "emoji": "💀", "valor": 6  },
+        { "id": "opc_chopper",     "emoji": "🦌", "valor": 5  },
+        { "id": "opc_franky",      "emoji": "🔧", "valor": 5  },
+        { "id": "opc_jinbe",       "emoji": "🦈", "valor": 5  },
+        { "id": "opc_buggy",       "emoji": "🤡", "valor": 2  },
+        { "id": "opc_wapol",       "emoji": "🦛", "valor": 1  },
+        { "id": "opc_foxy",        "emoji": "🦊", "valor": 2  },
+        { "id": "opc_spandam",     "emoji": "🐐", "valor": 1  },
+        { "id": "opc_gecko_moria", "emoji": "🦎", "valor": 2  },
+        { "id": "opc_charloss",    "emoji": "🐷", "valor": 1  },
+        { "id": "opc_caribou",     "emoji": "🐸", "valor": 1  }
+    ]
+}

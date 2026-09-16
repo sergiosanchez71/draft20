@@ -67,7 +67,7 @@ draft20/
 ├── juego.php              # UI principal del juego
 ├── tematicas_catalogo.php # Catálogo de temáticas por categoría (fuente única)
 ├── lang/es.json           # Strings UI + nombres de ítems y temáticas (i18n)
-├── tematicas/             # 59 temáticas (≥20 ítems c/u; id + emoji + valor)
+├── tematicas/             # 72 temáticas (20 ítems c/u; id + emoji + valor)
 ├── api/                   # Backend PHP (todos devuelven JSON)
 │   ├── crear_sala.php     # POST: crea sala + GC oportunista
 │   ├── unirse_sala.php    # POST: J2 entra a sala existente + GC oportunista
@@ -349,21 +349,26 @@ Reglas:
 - Mínimo **8 ítems** (se sirven 8 por partida con reparto equilibrado por tiers: ver `seleccionar_items_balanceados()` en `api/crear_sala.php`).
 - Cada `id` debe existir en `lang/<iso>.json::items` para resolverse en UI.
 
-### Temáticas incluidas (59, agrupadas en 9 categorías)
+### Temáticas incluidas (72, agrupadas en 10 categorías)
+
+El estilo sigue el trend viral del *$20 draft* (["You Have $20!"](https://youhave20.com)): cada ítem es un **nombre propio reconocible** (personaje, obra, modelo, marca) y los “malos” son también cosas concretas (objetos cutres, títulos malos legendarios, personajes ridículos) — nunca acciones ni estados. Las últimas incorporaciones salen de investigar los virales del TikTok español: Mundial 2026, Eurovisión/Benidorm Fest, Mercadona, nostalgia Tuenti/MSN, Navidad, programas de TV y F1.
 
 El lobby y el modal de revancha las presentan con un **desplegable nativo agrupado por categoría** (todas las temáticas visibles, sin menús que se corten). La opción por defecto es **✨ Todas (aleatoria)**: al crear/revancha se sortea una temática del catálogo; el usuario puede fijar una concreta. La estructura vive en `tematicas_catalogo.php` (fuente única vía `window.__CATEGORIAS`).
 
-- 🍔 **Comida y bebida** — hamburguesa, tapas, pizza, barbacoa, sushi, postres, desayuno, cerveza.
-- 🎬 **Cultura pop** — peliculas, videojuegos, musica, series, anime, comics, juegos_mesa, libros, teatro, karaoke.
-- ⚽ **Deporte y motor** — futbol, coches, baloncesto, tenis, olimpiadas, gimnasio, esports, boxeo.
-- 🐉 **Fantasía y superpoderes** — zombies, poderes, magos, villanos, dragones, fantasmas.
-- 🏴‍☠️ **Historia y aventura** — piratas, medieval, gladiador, vikingos, egipto, romanos, samurais, vaqueros.
+- 🍔 **Comida y bebida** — hamburguesa, tapas, pizza, barbacoa, sushi, postres, cerveza, snacks, cereales, mercadona.
+- 🎬 **Cine, series y música** — peliculas, series, anime, comics, libros, musica, karaoke, teatro, villanos, eurovision, programas_tv.
+- 📱 **Viral (personajes)** — simpsons, disney, marvel_dc, dragon_ball, one_piece, harry_potter, star_wars, pokemon, pop_stars, streamers, wwe, dibujos.
+- ⚽ **Deporte y motor** — futbol, nba, tenis, boxeo, esports, coches, olimpiadas, mundial, f1.
+- 🎮 **Ocio y juegos** — videojuegos, juegos_mesa, consolas, moviles, juguetes, nostalgia.
+- 🐉 **Fantasía y aventura** — zombies, piratas, vikingos, romanos, egipto, samurais, vaqueros, poderes.
 - 🚀 **Ciencia y tecnología** — espacio, robots, inventos, criptos.
-- 🌴 **Naturaleza y viajes** — vacaciones, animales, granja, dinosaurios, fondo_marino, selva, montana, isla_desierta.
-- 🏠 **Vida y sociedad** — pareja, oficina, influencer, boda.
-- 🕵️ **Crimen y misterio** — atraco, detective, ciberseguridad.
+- 🌴 **Naturaleza y viajes** — vacaciones, animales, dinosaurios, fondo_marino, granja, selva, montana, isla_desierta.
+- 🏠 **Vida y sociedad** — parejas, navidad.
+- 🕵️ **Crimen y misterio** — atraco, detective.
 
-Estándar de calidad del catálogo (validado por `test_catalogo.php`): ≥20 ítems por temática, IDs únicos con formato slug, `valor` 1-10, sin prefijos compartidos entre temáticas, y traducción/label para cada ID en `lang/es.json`.
+Estándar de calidad del catálogo (validado por `test_catalogo.php`): 20 ítems por temática (6 premium / 7 medios / 7 malos), IDs únicos con formato slug, `valor` 1-10, sin prefijos compartidos entre temáticas, y traducción/label para cada ID en `lang/es.json`.
+
+> Nota legal: los nombres de personajes, obras y marcas se usan con fines de entretenimiento y referencia; el proyecto no está afiliado ni respaldado por sus titulares.
 
 ---
 

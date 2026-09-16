@@ -1,0 +1,25 @@
+{
+    "id": "consolas",
+    "items": [
+        { "id": "con_ps2",         "emoji": "🎮", "valor": 10 },
+        { "id": "con_game_boy",    "emoji": "🕹️", "valor": 10 },
+        { "id": "con_snes",        "emoji": "👾", "valor": 9  },
+        { "id": "con_switch",      "emoji": "🔴", "valor": 9  },
+        { "id": "con_ps1",         "emoji": "💿", "valor": 8  },
+        { "id": "con_n64",         "emoji": "🟡", "valor": 8  },
+        { "id": "con_xbox_360",    "emoji": "🟢", "valor": 7  },
+        { "id": "con_mega_drive",  "emoji": "🦔", "valor": 7  },
+        { "id": "con_psp",         "emoji": "⬛", "valor": 6  },
+        { "id": "con_gamecube",    "emoji": "🧊", "valor": 6  },
+        { "id": "con_dreamcast",   "emoji": "🌐", "valor": 6  },
+        { "id": "con_atari_2600",  "emoji": "📼", "valor": 5  },
+        { "id": "con_steam_deck",  "emoji": "🖥️", "valor": 5  },
+        { "id": "con_virtual_boy", "emoji": "🥽", "valor": 1  },
+        { "id": "con_ouya",        "emoji": "⭕", "valor": 1  },
+        { "id": "con_jaguar",      "emoji": "🐆", "valor": 2  },
+        { "id": "con_n_gage",      "emoji": "📞", "valor": 1  },
+        { "id": "con_cdi",         "emoji": "📀", "valor": 2  },
+        { "id": "con_game_com",    "emoji": "🗑️", "valor": 2  },
+        { "id": "con_pippin",      "emoji": "🍎", "valor": 1  }
+    ]
+}

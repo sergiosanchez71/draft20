@@ -1,0 +1,25 @@
+{
+    "id": "nba",
+    "items": [
+        { "id": "nba_jordan",          "emoji": "🐐", "valor": 10 },
+        { "id": "nba_lebron",          "emoji": "👑", "valor": 10 },
+        { "id": "nba_kobe",            "emoji": "🐍", "valor": 9  },
+        { "id": "nba_curry",           "emoji": "🎯", "valor": 9  },
+        { "id": "nba_magic",           "emoji": "🎩", "valor": 8  },
+        { "id": "nba_bird",            "emoji": "🍀", "valor": 8  },
+        { "id": "nba_shaq",            "emoji": "🦈", "valor": 7  },
+        { "id": "nba_duncan",          "emoji": "🧱", "valor": 7  },
+        { "id": "nba_giannis",         "emoji": "🦌", "valor": 7  },
+        { "id": "nba_jokic",           "emoji": "🐴", "valor": 7  },
+        { "id": "nba_durant",          "emoji": "🔪", "valor": 6  },
+        { "id": "nba_kareem",          "emoji": "🥽", "valor": 6  },
+        { "id": "nba_iverson",         "emoji": "🏆", "valor": 6  },
+        { "id": "nba_kwame_brown",     "emoji": "🐢", "valor": 1  },
+        { "id": "nba_anthony_bennett", "emoji": "🍩", "valor": 1  },
+        { "id": "nba_darko_milicic",   "emoji": "🪵", "valor": 2  },
+        { "id": "nba_adam_morrison",   "emoji": "🥴", "valor": 1  },
+        { "id": "nba_olowokandi",      "emoji": "🗿", "valor": 2  },
+        { "id": "nba_scalabrine",      "emoji": "📋", "valor": 2  },
+        { "id": "nba_jan_vesely",      "emoji": "🧊", "valor": 1  }
+    ]
+}

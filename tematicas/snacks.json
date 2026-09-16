@@ -1,0 +1,25 @@
+{
+    "id": "snacks",
+    "items": [
+        { "id": "snk_kinder_bueno",      "emoji": "🍫", "valor": 10 },
+        { "id": "snk_oreo",              "emoji": "🍪", "valor": 10 },
+        { "id": "snk_doritos",           "emoji": "🔺", "valor": 9  },
+        { "id": "snk_pringles",          "emoji": "🥫", "valor": 9  },
+        { "id": "snk_happy_hippo",       "emoji": "🦛", "valor": 8  },
+        { "id": "snk_kinder_sorpresa",   "emoji": "🥚", "valor": 8  },
+        { "id": "snk_cheetos",           "emoji": "🐆", "valor": 7  },
+        { "id": "snk_lays",              "emoji": "🥔", "valor": 7  },
+        { "id": "snk_bollycao",          "emoji": "🥐", "valor": 6  },
+        { "id": "snk_phoskitos",         "emoji": "🍰", "valor": 6  },
+        { "id": "snk_kitkat",            "emoji": "🍬", "valor": 6  },
+        { "id": "snk_twix",              "emoji": "🍭", "valor": 6  },
+        { "id": "snk_mikado",            "emoji": "🥢", "valor": 6  },
+        { "id": "snk_pipas",             "emoji": "🌻", "valor": 1  },
+        { "id": "snk_regaliz_rojo",      "emoji": "🟥", "valor": 2  },
+        { "id": "snk_chuche_gasolinera", "emoji": "⛽", "valor": 1  },
+        { "id": "snk_peta_zetas",        "emoji": "🎉", "valor": 2  },
+        { "id": "snk_bolsa_caducada",    "emoji": "🗑️", "valor": 1  },
+        { "id": "snk_palotes",           "emoji": "🍂", "valor": 2  },
+        { "id": "snk_chicle_pegado",     "emoji": "👟", "valor": 2  }
+    ]
+}

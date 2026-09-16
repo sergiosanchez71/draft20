@@ -1,0 +1,25 @@
+{
+    "id": "pop_stars",
+    "items": [
+        { "id": "pop_taylor_swift",    "emoji": "🎤", "valor": 10 },
+        { "id": "pop_michael_jackson", "emoji": "🕺", "valor": 10 },
+        { "id": "pop_bad_bunny",       "emoji": "🐰", "valor": 9  },
+        { "id": "pop_madonna",         "emoji": "💃", "valor": 9  },
+        { "id": "pop_beyonce",         "emoji": "👑", "valor": 9  },
+        { "id": "pop_freddie_mercury", "emoji": "🎙️", "valor": 8  },
+        { "id": "pop_rihanna",         "emoji": "💎", "valor": 7  },
+        { "id": "pop_drake",           "emoji": "🦉", "valor": 7  },
+        { "id": "pop_bruno_mars",      "emoji": "🪩", "valor": 6  },
+        { "id": "pop_shakira",         "emoji": "🐺", "valor": 6  },
+        { "id": "pop_rosalia",         "emoji": "🌹", "valor": 6  },
+        { "id": "pop_ariana_grande",   "emoji": "☁️", "valor": 5  },
+        { "id": "pop_billie_eilish",   "emoji": "💚", "valor": 5  },
+        { "id": "pop_rebecca_black",   "emoji": "📅", "valor": 1  },
+        { "id": "pop_vanilla_ice",     "emoji": "🧊", "valor": 2  },
+        { "id": "pop_jedward",         "emoji": "👯", "valor": 1  },
+        { "id": "pop_milli_vanilli",   "emoji": "🎭", "valor": 2  },
+        { "id": "pop_nickelback",      "emoji": "🪨", "valor": 2  },
+        { "id": "pop_pitbull",         "emoji": "🌴", "valor": 2  },
+        { "id": "pop_yoko_ono",        "emoji": "🎨", "valor": 1  }
+    ]
+}

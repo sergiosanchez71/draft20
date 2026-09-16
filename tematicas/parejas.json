@@ -1,0 +1,25 @@
+{
+    "id": "parejas",
+    "items": [
+        { "id": "par_romeo_julieta",        "emoji": "🌹", "valor": 10 },
+        { "id": "par_shrek_fiona",          "emoji": "🧅", "valor": 10 },
+        { "id": "par_bonnie_clyde",         "emoji": "🚗", "valor": 9  },
+        { "id": "par_morticia_gomez",       "emoji": "🕸️", "valor": 9  },
+        { "id": "par_mickey_minnie",        "emoji": "🐭", "valor": 8  },
+        { "id": "par_han_leia",             "emoji": "💫", "valor": 8  },
+        { "id": "par_rick_ilsa",            "emoji": "🕰️", "valor": 7  },
+        { "id": "par_ross_rachel",          "emoji": "☕", "valor": 7  },
+        { "id": "par_homer_marge",          "emoji": "🍩", "valor": 7  },
+        { "id": "par_bella_bestia",         "emoji": "🥀", "valor": 6  },
+        { "id": "par_jane_tarzan",          "emoji": "🌴", "valor": 6  },
+        { "id": "par_popeye_olivia",        "emoji": "💪", "valor": 5  },
+        { "id": "par_pique_shakira",        "emoji": "🐺", "valor": 5  },
+        { "id": "par_joker_harley",         "emoji": "🃏", "valor": 1  },
+        { "id": "par_kanye_kim",            "emoji": "🌪️", "valor": 2  },
+        { "id": "par_kardashian_humphries", "emoji": "⏱️", "valor": 1  },
+        { "id": "par_justin_selena",        "emoji": "💔", "valor": 2  },
+        { "id": "par_bella_edward",         "emoji": "🧛", "valor": 1  },
+        { "id": "par_tom_katie",            "emoji": "⛪", "valor": 1  },
+        { "id": "par_thanos_muerte",        "emoji": "💀", "valor": 2  }
+    ]
+}
