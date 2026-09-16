@@ -235,7 +235,7 @@
         "prep_titulo": "Preparación",
         "prep_texto": "Crea una sala, elige temática (o deja «Todas» para que se sortee) y comparte el código de 5 caracteres con tu rival. También puedes practicar contra el bot en cuatro dificultades.",
         "bot_titulo": "Modo práctica",
-        "bot_texto": "El bot juega con las mismas reglas que tú. En Difícil conoce los valores reales de los ítems y en Extremo además reparte su presupuesto de forma óptima, así que no te confíes.",
+        "bot_texto": "El bot juega con las mismas reglas que tú. Fácil y Normal intuyen los valores de los ítems (con más o menos acierto), Difícil los conoce y administra su presupuesto y Extremo juega con los valores reales de forma agresiva. Cada nivel está calibrado contra un jugador medio (30/50/70/90% de victorias).",
         "revancha_titulo": "Revancha",
         "revancha_texto": "Al terminar, cualquiera de los dos puede proponer revancha con una temática nueva. El rival la acepta o la rechaza desde la pantalla final.",
         "consejos_titulo": "Consejos rápidos",

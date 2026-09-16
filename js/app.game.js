@@ -306,15 +306,15 @@
     }
 
     /**
-     * Los bots con `usaValorReal` (Difícil, Extremo) conocen los valores
-     * reales: carga el catálogo público de temáticas una vez conocida la
-     * temática de la sala.
+     * Los bots que conocen o intuyen los valores (`usaValorReal` o `intuida`)
+     * y el modo "⭐ Valores visibles" necesitan el catálogo público de la
+     * temática; se carga una vez conocida la sala.
      */
     async function cargarValoresSiToca() {
         if (!state.sala || !state.sala.tematica || state.botValores) return;
         const necesitaModo = !!state.sala.mostrar_valores;
         const cfgBot = (state.bot && window.DraftBot && window.DraftBot.config) ? window.DraftBot.config(state.bot.dificultad) : null;
-        if (!necesitaModo && (!cfgBot || !cfgBot.usaValorReal)) return;
+        if (!necesitaModo && (!cfgBot || (!cfgBot.usaValorReal && !cfgBot.intuida))) return;
         try {
             const resp = await fetch('tematicas/' + encodeURIComponent(state.sala.tematica) + '.json');
             const data = await resp.json();

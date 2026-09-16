@@ -1,12 +1,13 @@
 /* Draft 20 - Política del bot de práctica.
  *
  * Función pura y testeable (sin DOM): decide la acción del bot a partir del
- * estado de la sala. Dificultades:
- *   - facil:   sin valoración, puja poco y se retira pronto.
- *   - normal:  valoración secreta (hash del id), presupuesto equilibrado.
- *   - dificil: conoce los valores reales (se los pasa el caller) y es agresivo.
- *   - extremo: valores reales + reparto racional del presupuesto según los
- *              ítems que quedan por salir; sin retiradas al azar.
+ * estado de la sala. Dificultades (calibradas por win rate; ver README):
+ *   - facil:   intuición muy ruidosa (±8), puja poco y se retira pronto.
+ *   - normal:  intuición (±2) y presupuesto equilibrado; partida pareja.
+ *   - dificil: valores reales y reparto racional del presupuesto moderado.
+ *   - extremo: valores reales, reparto agresivo y selectivo por los mejores.
+ * Con "⭐ Valores visibles" todos los niveles ven los valores reales (el
+ * humano también), salvo los ajustes `visible` de cada nivel.
  *
  * Se carga como script normal (window.DraftBot) y también como módulo Node
  * para los tests (module.exports).
@@ -18,9 +19,9 @@
     'use strict';
 
     const CONFIG = {
-        facil:   { usaValorReal: false, factor: 0.60, retirada: 0.40, delayMs: [900, 1600], inc3: 0.10, deadlockMinDinero: 3, deadlockMinVal: 8, reserva: true },
-        normal:  { usaValorReal: false, factor: 1.20, retirada: 0.12, delayMs: [700, 1800], inc3: 0.30, deadlockMinDinero: 2, deadlockMinVal: 5, reserva: true },
-        dificil: { usaValorReal: true,  factor: 1.50, retirada: 0.05, delayMs: [500, 1200], inc3: 0.50, deadlockMinDinero: 1, deadlockMinVal: 4, reserva: false },
+        facil:   { usaValorReal: false, intuida: true, ruido: 8, visible: { usaValorReal: false }, factor: 0.50, retirada: 0.40, delayMs: [900, 1600], inc3: 0.10, deadlockMinDinero: 3, deadlockMinVal: 8, reserva: true },
+        normal:  { usaValorReal: false, intuida: true, factor: 1.30, retirada: 0.12, delayMs: [700, 1800], inc3: 0.30, deadlockMinDinero: 2, deadlockMinVal: 5, reserva: true },
+        dificil: { usaValorReal: true,  factor: 1.15, retirada: 0.05, delayMs: [500, 1200], inc3: 0.50, deadlockMinDinero: 1, deadlockMinVal: 4, reserva: false, racional: true, visible: { factor: 1.25 } },
         extremo: { usaValorReal: true,  factor: 2.00, retirada: 0,    delayMs: [350, 900],  inc3: 0.70, deadlockMinDinero: 1, deadlockMinVal: 1, racional: true },
     };
 
@@ -34,14 +35,38 @@
     function valoracionSecreta(id) { return 2 + (hashId(id) % 9); }
 
     function valorEfectivo(itemId, cfg, valorReal) {
-        if (cfg.usaValorReal && valorReal && valorReal[itemId] != null) {
+        if (valorReal && valorReal[itemId] != null) {
             const v = Number(valorReal[itemId]);
-            if (v >= 1 && v <= 10) return v;
+            if (v >= 1 && v <= 10) {
+                if (cfg.usaValorReal) return v;
+                // Intuición: conoce el valor con ruido determinista (±ruido).
+                if (cfg.intuida) {
+                    const r = cfg.ruido || 2;
+                    return Math.max(1, Math.min(10, v + (hashId('i' + itemId) % (2 * r + 1)) - r));
+                }
+            }
         }
         return valoracionSecreta(itemId);
     }
 
     function config(dificultad) { return CONFIG[dificultad] || CONFIG.normal; }
+
+    /**
+     * Config efectiva de la partida: con "⭐ Valores visibles" el humano ve los
+     * valores reales, así que todos los niveles juegan con ellos (y aplican sus
+     * ajustes `visible`). Sin ese modo, cada nivel mantiene su información.
+     */
+    function configPartida(dificultad, sala) {
+        const base = config(dificultad);
+        if (!sala || !sala.mostrar_valores) return base;
+        const vis = base.visible;
+        if (!vis && base.usaValorReal) return base;
+        const out = {};
+        for (const k in base) out[k] = base[k];
+        if (vis) { for (const k in vis) out[k] = vis[k]; }
+        if (!vis || vis.usaValorReal !== false) out.usaValorReal = true;
+        return out;
+    }
 
     /**
      * Presupuesto racional de "extremo":
@@ -65,8 +90,8 @@
             return Math.max(1, Math.min(val - bestRest, dinero));
         }
         let suma = val;
+        const futuros = [];
         if (ids && cupo > 1) {
-            const futuros = [];
             for (let i = Math.max(0, (sala.indice_item || 0) + 1); i < ids.length; i++) {
                 if (ids[i] !== itemId) futuros.push(valorEfectivo(ids[i], cfg, valorReal));
             }
@@ -135,7 +160,7 @@
      */
     function decidir(sala, botSlot, dificultad, rng, valorReal) {
         rng = rng || Math.random;
-        const cfg = config(dificultad);
+        const cfg = configPartida(dificultad, sala);
         const item = sala && sala.item_actual;
         if (!sala || sala.estado !== 'jugando' || !item) return null;
 
@@ -210,5 +235,5 @@
         return { accion: 'bajar' };
     }
 
-    return { decidir: decidir, respaldo: respaldo, config: config, valoracionSecreta: valoracionSecreta, estadoKey: estadoKey };
+    return { decidir: decidir, respaldo: respaldo, config: config, configPartida: configPartida, valoracionSecreta: valoracionSecreta, estadoKey: estadoKey };
 }));
