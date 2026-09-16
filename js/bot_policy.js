@@ -22,7 +22,7 @@
         facil:   { usaValorReal: false, intuida: true, ruido: 8, visible: { usaValorReal: false }, factor: 0.50, retirada: 0.40, delayMs: [900, 1600], inc3: 0.10, deadlockMinDinero: 3, deadlockMinVal: 8, reserva: true },
         normal:  { usaValorReal: false, intuida: true, factor: 1.30, retirada: 0.12, delayMs: [700, 1800], inc3: 0.30, deadlockMinDinero: 2, deadlockMinVal: 5, reserva: true },
         dificil: { usaValorReal: true,  factor: 1.15, retirada: 0.05, delayMs: [500, 1200], inc3: 0.50, deadlockMinDinero: 1, deadlockMinVal: 4, reserva: false, racional: true, visible: { factor: 1.25 } },
-        extremo: { usaValorReal: true,  factor: 2.00, retirada: 0,    delayMs: [350, 900],  inc3: 0.70, deadlockMinDinero: 1, deadlockMinVal: 1, racional: true },
+        extremo: { usaValorReal: true,  factor: 1.80, retirada: 0,    delayMs: [350, 900],  inc3: 0,    deadlockMinDinero: 1, deadlockMinVal: 1, racional: true },
     };
 
     function hashId(id) {
@@ -81,28 +81,31 @@
      */
     function maxPujaRacional(sala, cfg, itemId, val, dinero, cupo, valorReal) {
         const ids = Array.isArray(sala.items_mezclados) ? sala.items_mezclados : null;
+        let maxPuja;
         if (cupo <= 1 && ids && (sala.indice_item || 0) + 1 < ids.length) {
             let bestRest = 0;
             for (let i = (sala.indice_item || 0) + 1; i < ids.length; i++) {
                 const fv = valorEfectivo(ids[i], cfg, valorReal);
                 if (fv > bestRest) bestRest = fv;
             }
-            return Math.max(1, Math.min(val - bestRest, dinero));
-        }
-        let suma = val;
-        const futuros = [];
-        if (ids && cupo > 1) {
-            for (let i = Math.max(0, (sala.indice_item || 0) + 1); i < ids.length; i++) {
-                if (ids[i] !== itemId) futuros.push(valorEfectivo(ids[i], cfg, valorReal));
+            maxPuja = Math.max(1, Math.min(val - bestRest, dinero));
+        } else {
+            let suma = val;
+            if (ids && cupo > 1) {
+                const futuros = [];
+                for (let i = Math.max(0, (sala.indice_item || 0) + 1); i < ids.length; i++) {
+                    if (ids[i] !== itemId) futuros.push(valorEfectivo(ids[i], cfg, valorReal));
+                }
+                futuros.sort(function (a, b) { return b - a; });
+                for (let i = 0; i < cupo - 1 && i < futuros.length; i++) suma += futuros[i];
+                const kth = futuros[Math.min(cupo - 2, futuros.length - 1)] || 0;
+                if (kth > 0 && val < kth) return 1;
             }
-            futuros.sort(function (a, b) { return b - a; });
-            for (let i = 0; i < cupo - 1 && i < futuros.length; i++) suma += futuros[i];
-            const kth = futuros[Math.min(cupo - 2, futuros.length - 1)] || 0;
-            if (kth > 0 && val < kth) return 1;
+            maxPuja = Math.round(dinero * (val / Math.max(1, suma)) * cfg.factor);
+            maxPuja = Math.max(1, Math.min(maxPuja, dinero));
+            if (cupo > 1) maxPuja = Math.min(maxPuja, Math.max(1, dinero - (cupo - 1)));
+            maxPuja = Math.max(1, Math.min(maxPuja, dinero));
         }
-        let maxPuja = Math.round(dinero * (val / Math.max(1, suma)) * cfg.factor);
-        maxPuja = Math.max(1, Math.min(maxPuja, dinero));
-        if (cupo > 1) maxPuja = Math.min(maxPuja, Math.max(1, dinero - (cupo - 1)));
         return Math.max(1, Math.min(maxPuja, dinero));
     }
 
