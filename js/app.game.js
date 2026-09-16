@@ -1,6 +1,6 @@
-/* Draft 20 - app.js
- * Vanilla JS. Helpers (t, tItem, tTematica, api, toast, vibrate, copyLink, shareWhatsApp)
- * + lobby and game views.
+/* Draft 20 - app.game.js
+ * Vista de juego: shell, renders, acciones, bot de practica y revancha.
+ * Requiere app.core.js (window.DraftApp) y bot_policy.js cargados antes.
  */
 (function () {
     'use strict';
@@ -8,530 +8,22 @@
     const POLL_MS = 1000;
     const BOT_MAX_RESPUESTA_MS = 60000; // watchdog del bot: solo corre en su turno
 
-    const state = {
-        codigo: null,
-        jugadorId: null,
-        jugadorSlot: null,
-        jugadorNombre: null,
-        rivalNombre: null,
-        sala: null,
-        pollTimer: null,
-        isPolling: false,
-        actionInFlight: false,
-        abandonoDetectadoVibrado: false,
-        tematicaSeleccionada: null,
-        tematicaCreada: null,
-        pollFailures: 0,
-        pollInFlight: false,
-        rivalAusente: null,
-        ultimoEmoteEnviado: 0,
-        botWaitUntil: 0,
-        botWatchStart: 0,
-        botKeyDelay: null,
-        botValores: null,
-        botDificultad: 'normal',
-        statsRegistradas: false,
-        ultimoEmoteTs: 0,
-        bot: null,
-        botTurnoKey: null,
-    };
+    const D = window.DraftApp;
+    if (!D) return;
 
-    // =================== i18n ===================
-    function t(key, params) {
-        params = params || {};
-        const parts = key.split('.');
-        let v = window.LANG;
-        for (let i = 0; i < parts.length; i++) v = v && v[parts[i]];
-        if (typeof v !== 'string') return key;
-        return v.replace(/\{(\w+)\}/g, function (_, k) { return params[k] != null ? params[k] : ''; });
-    }
-    function tItem(id) { return (window.LANG.items && window.LANG.items[id]) || id; }
-    function tTematica(id) { return (window.LANG.tematicas && window.LANG.tematicas[id]) || id; }
-    function catLabel(id) { return (window.LANG.tematicas_categorias && window.LANG.tematicas_categorias[id]) || id; }
-    function categoriasData() { return Array.isArray(window.__CATEGORIAS) ? window.__CATEGORIAS : []; }
-
-    function tematicaEmoji(id) {
-        const cats = categoriasData();
-        for (let i = 0; i < cats.length; i++) {
-            const list = cats[i].tematicas || [];
-            for (let j = 0; j < list.length; j++) {
-                if (list[j].id === id) return list[j].emoji || '🎲';
-            }
-        }
-        return '🎲';
-    }
-
-    // =================== fetch helper ===================
-    async function api(method, path, body) {
-        const opts = {
-            method: method,
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'same-origin',
-        };
-        if (body !== undefined) opts.body = JSON.stringify(body);
-        try {
-            const r = await fetch(path, opts);
-            const data = await r.json().catch(function () { return {}; });
-            data._status = r.status;
-            return data;
-        } catch (e) {
-            return { ok: false, _status: 0, error: 'network' };
-        }
-    }
-
-    // =================== session (localStorage) ===================
-    function keyFor(codigo) { return 'draft20_' + codigo; }
-    function saveSession() {
-        if (!state.codigo) return;
-        localStorage.setItem(keyFor(state.codigo), JSON.stringify({
-            jugadorId: state.jugadorId,
-            jugadorNombre: state.jugadorNombre,
-        }));
-    }
-    function loadSession(codigo) {
-        try { return JSON.parse(localStorage.getItem(keyFor(codigo)) || 'null'); }
-        catch (e) { return null; }
-    }
-    function clearSession(codigo) { localStorage.removeItem(keyFor(codigo)); }
-
-    // =================== stats locales ===================
-    function loadStats() {
-        try {
-            const raw = JSON.parse(localStorage.getItem('draft20_stats') || 'null');
-            if (raw && typeof raw === 'object') return raw;
-        } catch (e) { /* ignore */ }
-        return { wins: 0, losses: 0, draws: 0, streak: 0, best: 0 };
-    }
-    function saveStats(s) { try { localStorage.setItem('draft20_stats', JSON.stringify(s)); } catch (e) { /* ignore */ } }
-    function registrarResultado(resultado) {
-        if (state.statsRegistradas || state.bot) return;
-        state.statsRegistradas = true;
-        const s = loadStats();
-        if (resultado === 'win') {
-            s.wins = (s.wins || 0) + 1;
-            s.streak = (s.streak || 0) > 0 ? s.streak + 1 : 1;
-        } else if (resultado === 'loss') {
-            s.losses = (s.losses || 0) + 1;
-            s.streak = (s.streak || 0) < 0 ? s.streak - 1 : -1;
-        } else {
-            s.draws = (s.draws || 0) + 1;
-            s.streak = 0;
-        }
-        s.best = Math.max(s.best || 0, s.streak || 0);
-        saveStats(s);
-    }
-
-    // =================== url helpers ===================
-    function getBasePath() {
-        const path = window.location.pathname;
-        return path.replace(/\/[^/]*$/, '/');
-    }
-    function buildLink(codigo) {
-        return window.location.origin + getBasePath() + '?sala=' + encodeURIComponent(codigo);
-    }
-
-    // =================== toast ===================
-    let toastTimer = null;
-    function toast(msg) {
-        let el = document.getElementById('toast');
-        if (!el) {
-            el = document.createElement('div');
-            el.id = 'toast';
-            el.setAttribute('role', 'status');
-            el.setAttribute('aria-live', 'polite');
-            document.body.appendChild(el);
-        }
-        el.textContent = msg;
-        el.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2000);
-    }
-
-    // =================== vibrate ===================
-    function vibrate(pattern) {
-        if (navigator.vibrate) {
-            try { navigator.vibrate(pattern); } catch (e) { /* ignore */ }
-        }
-    }
-
-    // =================== copy link ===================
-    function copyLink(codigo) {
-        const url = buildLink(codigo);
-        const ok = function () { toast(t('ui.lobby.toast_copiado')); vibrate(20); };
-        const fallback = function () {
-            const ta = document.createElement('textarea');
-            ta.value = url;
-            ta.style.position = 'fixed';
-            ta.style.opacity = '0';
-            document.body.appendChild(ta);
-            ta.select();
-            try {
-                const r = document.execCommand('copy');
-                r ? ok() : toast('No se pudo copiar');
-            } catch (e) { toast('No se pudo copiar'); }
-            ta.remove();
-        };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(url).then(ok, fallback);
-        } else fallback();
-    }
-
-    function shareWhatsApp(codigo) {
-        const url = buildLink(codigo);
-        const msg = t('ui.app.titulo') + ': ' + codigo + '\n' + url;
-        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
-    }
-
-    // =================== DOM helpers ===================
-    function $(sel) { return document.querySelector(sel); }
-    function $$(sel) { return Array.from(document.querySelectorAll(sel)); }
-    function el(tag, attrs, children) {
-        const node = document.createElement(tag);
-        if (attrs) {
-            Object.keys(attrs).forEach(function (k) {
-                if (k === 'class') node.className = attrs[k];
-                else if (k === 'html') node.innerHTML = attrs[k];
-                else if (k.startsWith('on')) node.addEventListener(k.slice(2), attrs[k]);
-                else if (attrs[k] !== null && attrs[k] !== undefined) node.setAttribute(k, attrs[k]);
-            });
-        }
-        if (children) {
-            (Array.isArray(children) ? children : [children]).forEach(function (c) {
-                if (c == null) return;
-                if (typeof c === 'string') node.appendChild(document.createTextNode(c));
-                else node.appendChild(c);
-            });
-        }
-        return node;
-    }
-    function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
-
-    // =================== modal genérico ===================
-    function showModal(content, opts) {
-        opts = opts || {};
-        const overlay = el('div', { class: 'fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4' });
-        const box = el('div', {
-            class: 'bg-slate-800 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 fade-in ' +
-                (opts.lockBody ? 'max-h-[90vh] overflow-hidden' : 'max-h-[85vh] overflow-y-auto'),
-        });
-        function close() { overlay.remove(); }
-        overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
-        box.appendChild(content);
-        overlay.appendChild(box);
-        document.body.appendChild(overlay);
-        return { overlay: overlay, close: close };
-    }
-
-    function showRulesModal() {
-        const secs = [
-            ['ui.reglas.obj_titulo', 'ui.reglas.obj_texto'],
-            ['ui.reglas.sub_titulo', 'ui.reglas.sub_texto'],
-            ['ui.reglas.cap_titulo', 'ui.reglas.cap_texto'],
-            ['ui.reglas.dead_titulo', 'ui.reglas.dead_texto'],
-            ['ui.reglas.fin_titulo', 'ui.reglas.fin_texto'],
-        ];
-        const content = el('div', {}, [
-            el('h2', { class: 'text-xl font-bold text-amber-400 mb-4' }, t('ui.reglas.titulo')),
-            el('div', { class: 'space-y-3' }, secs.map(function (s) {
-                return el('div', {}, [
-                    el('div', { class: 'text-sm font-bold text-slate-100' }, t(s[0])),
-                    el('p', { class: 'text-xs text-slate-400 leading-relaxed' }, t(s[1])),
-                ]);
-            })),
-        ]);
-        const m = showModal(content);
-        content.appendChild(el('button', {
-            class: 'mt-5 w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap',
-            onclick: m.close,
-        }, t('ui.reglas.cerrar')));
-        try { localStorage.setItem('draft20_reglas', '1'); } catch (e) { /* ignore */ }
-    }
-
-    // =================== INDEX / LOBBY ===================
-    async function indexInit(linkSala) {
-        // Si viene ?sala=CODE en URL, mostrar vista "join" con código pre-rellenado
-        if (linkSala) {
-            const session = loadSession(linkSala);
-            if (session && session.jugadorId) {
-                // Ya jugó/creó esta sala, ir al juego
-                window.location.href = 'juego.php?codigo=' + encodeURIComponent(linkSala);
-                return;
-            }
-            renderJoinView(linkSala, '');
-        } else {
-            renderInitialView();
-        }
-    }
-
-    function renderInitialView() {
-        const app = $('#app');
-        clear(app);
-        const st = loadStats();
-        const hayStats = (st.wins || st.losses || st.draws);
-        app.appendChild(el('header', { class: 'p-6 text-center safe-pt relative' }, [
-            el('h1', { class: 'text-3xl font-bold text-amber-400' }, t('ui.app.titulo')),
-            el('p', { class: 'text-slate-400 text-sm mt-1' }, t('ui.app.subtitulo_lobby')),
-            hayStats
-                ? el('p', { class: 'text-amber-300/80 text-xs mt-1 font-mono' }, t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 }))
-                : null,
-            el('button', {
-                class: 'absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-700 text-slate-200 text-sm font-bold btn-tap',
-                'aria-label': t('ui.lobby.btn_reglas'),
-                title: t('ui.lobby.btn_reglas'),
-                onclick: showRulesModal,
-            }, '?'),
-        ]));
-
-        const selectorBox = el('div', { id: 'tematicaSelector', class: 'mb-4' });
-
-        const createForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
-            el('label', { class: 'block text-sm text-slate-400 mb-2' }, t('ui.lobby.selector_tematica')),
-            selectorBox,
-            el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
-            el('input', { id: 'nameCreate', type: 'text', maxlength: '20', placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
-            el('button', { id: 'btnCreate', class: 'w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_crear')),
-        ]);
-
-        const joinForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
-            el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.label_unirse')),
-            el('input', { id: 'codeJoin', type: 'text', maxlength: '5', minlength: '5', placeholder: t('ui.lobby.placeholder_codigo'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base uppercase tracking-widest text-center text-2xl font-mono' }),
-            el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
-            el('input', { id: 'nameJoin', type: 'text', maxlength: '20', placeholder: 'Jugador 2', class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
-            el('button', { id: 'btnJoin', class: 'w-full bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_unirse')),
-        ]);
-
-        const errorBox = el('div', { id: 'lobbyError', class: 'hidden bg-rose-500 text-white p-3 rounded-lg mx-4 mb-4 text-sm text-center' });
-
-        // Dificultad del bot (persistida entre sesiones).
-        try {
-            const difGuardada = localStorage.getItem('draft20_bot_dificultad');
-            if (difGuardada) state.botDificultad = difGuardada;
-        } catch (e) { /* ignore */ }
-        const difOpciones = [['facil', 'ui.lobby.bot_facil'], ['normal', 'ui.lobby.bot_normal'], ['dificil', 'ui.lobby.bot_dificil']];
-        const difBtns = [];
-        const difWrap = el('div', { class: 'flex gap-2 justify-center mt-2' });
-        function pintarDificultad() {
-            difBtns.forEach(function (b, i) {
-                const activo = state.botDificultad === difOpciones[i][0];
-                b.className = 'px-3 py-1.5 rounded-full text-xs border btn-tap ' +
-                    (activo ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
-            });
-        }
-        difOpciones.forEach(function (d) {
-            const b = el('button', {
-                type: 'button',
-                onclick: function () {
-                    state.botDificultad = d[0];
-                    try { localStorage.setItem('draft20_bot_dificultad', d[0]); } catch (e) { /* ignore */ }
-                    pintarDificultad();
-                },
-            }, t(d[1]));
-            difBtns.push(b);
-            difWrap.appendChild(b);
-        });
-        pintarDificultad();
-
-        const practiceBtn = el('div', { class: 'm-4' }, [
-            el('button', {
-                id: 'btnPractice',
-                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
-                onclick: onPractice,
-            }, t('ui.lobby.btn_practicar')),
-            el('div', { class: 'text-center text-[11px] text-slate-500 mt-3' }, t('ui.lobby.bot_dificultad')),
-            difWrap,
-        ]);
-
-        app.appendChild(errorBox);
-        app.appendChild(createForm);
-        app.appendChild(el('div', { class: 'text-center text-slate-500 text-xs my-2' }, '— o —'));
-        app.appendChild(joinForm);
-        app.appendChild(practiceBtn);
-
-        $('#btnCreate').addEventListener('click', onCreate);
-        $('#btnJoin').addEventListener('click', onJoin);
-
-        renderTematicaSelector(selectorBox, { ctx: state });
-
-        // Primer ingreso: mostrar reglas automáticamente.
-        try {
-            if (!localStorage.getItem('draft20_reglas')) showRulesModal();
-        } catch (e) { /* ignore */ }
-    }
-
-    const TEMATICA_RANDOM = '__random__';
-
-    /**
-     * Selector de temática: desplegable nativo con todas las temáticas
-     * agrupadas por categoría. Por defecto "✨ Todas (aleatoria)".
-     */
-    function renderTematicaSelector(container, opts) {
-        opts = opts || {};
-        const ctx = opts.ctx || state;
-        const cats = categoriasData();
-        if (!ctx.tematicaSeleccionada) ctx.tematicaSeleccionada = TEMATICA_RANDOM;
-
-        const select = el('select', {
-            class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 text-base',
-            'aria-label': t('ui.lobby.selector_tematica'),
-            onchange: function () {
-                ctx.tematicaSeleccionada = select.value;
-                if (opts.onChange) opts.onChange(ctx);
-            },
-        });
-        select.appendChild(el('option', { value: TEMATICA_RANDOM }, t('ui.lobby.tematica_aleatoria')));
-        cats.forEach(function (c) {
-            const group = el('optgroup', { label: (c.emoji || '🎲') + ' ' + catLabel(c.id) });
-            (c.tematicas || []).forEach(function (tm) {
-                group.appendChild(el('option', { value: tm.id }, (tm.emoji || '🎲') + ' ' + tTematica(tm.id)));
-            });
-            select.appendChild(group);
-        });
-        select.value = ctx.tematicaSeleccionada || TEMATICA_RANDOM;
-
-        clear(container);
-        container.appendChild(select);
-    }
-
-    /**
-     * Resuelve la temática elegida: si es "Todas (aleatoria)", sortea una del
-     * catálogo completo; si no, devuelve el id seleccionado.
-     */
-    function resolverTematica(ctx) {
-        const sel = ctx && ctx.tematicaSeleccionada;
-        if (sel && sel !== TEMATICA_RANDOM) return sel;
-        const todas = [];
-        categoriasData().forEach(function (c) {
-            (c.tematicas || []).forEach(function (tm) { todas.push(tm.id); });
-        });
-        if (!todas.length) return 'hamburguesa';
-        return todas[Math.floor(Math.random() * todas.length)];
-    }
-
-    function renderJoinView(prefilledCode, prefillName) {
-        renderInitialView();
-        $('#codeJoin').value = prefilledCode;
-        if (prefillName) $('#nameJoin').value = prefillName;
-        $('#codeJoin').focus();
-    }
-
-    function showLobbyError(msg) {
-        const box = $('#lobbyError');
-        if (!box) return;
-        box.textContent = msg;
-        box.classList.remove('hidden');
-        setTimeout(function () { box.classList.add('hidden'); }, 4000);
-    }
-
-    async function onCreate() {
-        const tematica = resolverTematica(state);
-        const nombre = $('#nameCreate').value.trim();
-        const btn = $('#btnCreate');
-        btn.disabled = true; btn.classList.add('opacity-50');
-        const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombre });
-        btn.disabled = false; btn.classList.remove('opacity-50');
-        if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
-        state.codigo = r.codigo;
-        state.jugadorId = r.jugador_id;
-        state.jugadorNombre = (nombre || '').trim() || ('Jugador 1');
-        state.tematicaCreada = tematica;
-        saveSession();
-        renderCreatorView();
-        startPollingLobby();
-    }
-
-    /**
-     * Crea una partida de práctica: sala nueva + bot sentado como J2.
-     * Usada por "Practicar vs 🤖" y por la revancha contra bot (misma dificultad).
-     */
-    async function iniciarPartidaBot(tematica, dificultad, nombre) {
-        const nombreFinal = (nombre && nombre.trim()) || state.jugadorNombre || 'Tú';
-        const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombreFinal });
-        if (!r.ok) { toast(r.error || 'Error'); return false; }
-        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: '🤖 Bot', bot: true });
-        if (!r2.ok) { toast(r2.error || 'Error'); return false; }
-        try {
-            localStorage.setItem('draft20_bot_' + r.codigo, JSON.stringify({
-                jugadorId: r2.jugador_id,
-                dificultad: dificultad || 'normal',
-            }));
-        } catch (e) { /* ignore */ }
-        state.codigo = r.codigo;
-        state.jugadorId = r.jugador_id;
-        state.jugadorNombre = nombreFinal;
-        saveSession();
-        window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
-        return true;
-    }
-
-    async function onPractice() {
-        const tematica = resolverTematica(state);
-        const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || 'Tú';
-        const dificultad = state.botDificultad || 'normal';
-        const btn = $('#btnPractice');
-        if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
-        await iniciarPartidaBot(tematica, dificultad, nombre);
-        if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
-    }
-
-    async function onJoin() {
-        const codigo = $('#codeJoin').value.trim().toUpperCase();
-        const nombre = $('#nameJoin').value.trim();
-        if (!/^[A-Z0-9]{5}$/.test(codigo)) { showLobbyError(t('ui.lobby.error_codigo_invalido')); vibrate([80, 40, 80]); return; }
-        const btn = $('#btnJoin');
-        btn.disabled = true; btn.classList.add('opacity-50');
-        const r = await api('POST', 'api/unirse_sala.php', { codigo: codigo, nombre: nombre });
-        btn.disabled = false; btn.classList.remove('opacity-50');
-        if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
-        state.codigo = codigo;
-        state.jugadorId = r.jugador_id;
-        state.jugadorNombre = (nombre || '').trim() || ('Jugador 2');
-        saveSession();
-        // J2 entra directamente al juego
-        window.location.href = 'juego.php?codigo=' + encodeURIComponent(codigo);
-    }
-
-    function renderCreatorView() {
-        const app = $('#app');
-        clear(app);
-        app.appendChild(el('header', { class: 'p-6 text-center safe-pt' }, [
-            el('h1', { class: 'text-3xl font-bold text-amber-400' }, t('ui.app.titulo')),
-            el('p', { class: 'text-slate-400 text-sm mt-1' }, tTematica(state.sala?.tematica || state.tematicaCreada || '')),
-        ]));
-
-        app.appendChild(el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 text-center fade-in' }, [
-            el('p', { class: 'text-sm text-slate-400 mb-2' }, t('ui.lobby.lbl_invitacion')),
-            el('div', { class: 'text-5xl font-mono font-bold text-amber-400 tracking-widest my-4' }, state.codigo),
-            el('div', { class: 'flex gap-2 mt-4' }, [
-                el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
-                el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
-            ]),
-        ]));
-
-        app.appendChild(el('section', { id: 'waitingBox', class: 'bg-slate-800 p-6 rounded-lg m-4 text-center fade-in' }, [
-            el('div', { class: 'inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-600 border-t-amber-400 mb-3' }),
-            el('p', { class: 'text-slate-300 text-sm' }, t('ui.lobby.esperando_rival_join')),
-        ]));
-    }
-
-    async function pollLobbyTick() {
-        if (!state.codigo) return;
-        const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(state.codigo) + '&t=' + Date.now());
-        if (!r.ok) return;
-        state.sala = r.sala;
-        if (r.sala.estado === 'jugando' || r.sala.estado === 'finalizada') {
-            stopPollingLobby();
-            window.location.href = 'juego.php?codigo=' + encodeURIComponent(state.codigo);
-        }
-    }
-
-    function startPollingLobby() {
-        if (state.pollTimer) return;
-        state.pollTimer = setInterval(pollLobbyTick, POLL_MS);
-        pollLobbyTick();
-    }
-    function stopPollingLobby() {
-        if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
-    }
+    const state = D.state;
+    const t = D.t, tItem = D.tItem, tTematica = D.tTematica;
+    const tematicaEmoji = D.tematicaEmoji;
+    const api = D.api, toast = D.toast, vibrate = D.vibrate;
+    const copyLink = D.copyLink, shareWhatsApp = D.shareWhatsApp;
+    const el = D.el, clear = D.clear, showModal = D.showModal;
+    const $ = D.$;
+    const loadSession = D.loadSession, saveSession = D.saveSession, clearSession = D.clearSession;
+    const loadStats = D.loadStats, registrarResultado = D.registrarResultado;
+    const TEMATICA_RANDOM = D.TEMATICA_RANDOM;
+    const resolverTematica = D.resolverTematica;
+    const renderTematicaSelector = D.renderTematicaSelector;
+    const iniciarPartidaBot = D.iniciarPartidaBot;
 
     // =================== JUEGO ===================
     async function juegoInit(codigo) {
@@ -576,18 +68,18 @@
         app.className = 'flex-1 flex flex-col min-h-0 overflow-hidden';
 
         // Header
-        const header = el('header', { class: 'flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700 safe-pt' }, [
+        const header = el('header', { class: 'flex items-center justify-between px-3 py-1.5 bg-slate-800 border-b border-slate-700 safe-pt' }, [
             el('button', {
                 id: 'btnLeave',
-                class: 'text-slate-400 text-sm btn-tap',
+                class: 'text-slate-400 text-xs btn-tap',
                 onclick: onLeave,
                 'aria-label': t('ui.juego.salir_lobby'),
             }, '← ' + t('ui.juego.salir_lobby')),
             el('div', { class: 'text-center flex-1 px-2' }, [
-                el('h1', { class: 'text-base font-bold text-amber-400 leading-tight' }, t('ui.app.titulo')),
-                el('div', { id: 'headerTematica', class: 'text-[11px] text-slate-400 leading-tight truncate' }, ''),
+                el('h1', { class: 'text-sm font-bold text-amber-400 leading-tight' }, t('ui.app.titulo')),
+                el('div', { id: 'headerTematica', class: 'text-[10px] text-slate-400 leading-tight truncate' }, ''),
             ]),
-            el('div', { class: 'w-16' }),
+            el('div', { class: 'w-14' }),
         ]);
 
         // Banner de desconexión (polling caído)
@@ -598,26 +90,26 @@
         }, t('ui.juego.sin_conexion'));
 
         // Scoreboard
-        const scoreboard = el('section', { id: 'scoreboard', class: 'bg-slate-800 px-4 py-3 grid grid-cols-2 gap-3 border-b border-slate-700' });
+        const scoreboard = el('section', { id: 'scoreboard', class: 'bg-slate-800 px-3 py-2 grid grid-cols-2 gap-2 border-b border-slate-700' });
 
         // Item card (min-h-0 permite que se encoja; el historial va en absoluto a la derecha)
-        const itemCard = el('section', { id: 'itemCard', class: 'relative flex-1 min-h-0 flex flex-col items-center justify-center p-6 bg-slate-900 overflow-y-auto' });
+        const itemCard = el('section', { id: 'itemCard', class: 'relative flex-1 min-h-0 flex flex-col items-center justify-center p-3 sm:p-6 bg-slate-900 overflow-y-auto' });
 
         // Inventory row (flex-shrink-0 garantiza que no se comprima)
-        const inventory = el('section', { id: 'inventory', class: 'flex-shrink-0 bg-slate-800 px-4 py-3 border-t border-slate-700' });
+        const inventory = el('section', { id: 'inventory', class: 'flex-shrink-0 bg-slate-800 px-3 py-2 border-t border-slate-700' });
 
         // Emotes rápidos (compactos para no empujar la barra de acciones)
-        const emoteBar = el('section', { id: 'emoteBar', class: 'flex-shrink-0 bg-slate-800 px-3 pb-0.5 flex gap-2 justify-center' });
+        const emoteBar = el('section', { id: 'emoteBar', class: 'flex-shrink-0 bg-slate-800 px-2 pb-0.5 flex gap-1 justify-center' });
         ['👍', '😂', '🔥', '😭', '🤝', '😱'].forEach(function (code) {
             emoteBar.appendChild(el('button', {
-                class: 'text-lg leading-none px-2 py-0.5 rounded btn-tap opacity-80 hover:opacity-100',
+                class: 'text-base leading-none px-1.5 py-0.5 rounded btn-tap opacity-80 hover:opacity-100',
                 'aria-label': 'Emote ' + code,
                 onclick: function () { onEmote(code); },
             }, code));
         });
 
         // Action bar (en flujo, no fija — evita tapar inventario en pantallas pequeñas)
-        const actionBar = el('section', { id: 'actionBar', class: 'flex-shrink-0 bg-slate-800 border-t border-slate-700 p-3 safe-pb-action z-10' });
+        const actionBar = el('section', { id: 'actionBar', class: 'flex-shrink-0 bg-slate-800 border-t border-slate-700 p-2 safe-pb-action z-10' });
 
         app.appendChild(header);
         app.appendChild(offlineBanner);
@@ -665,7 +157,12 @@
             vibrate([200, 100, 200]);
         }
 
-        renderGame(prev);
+        // Evita reconstruir el DOM si nada relevante cambió (el poll va cada 1s).
+        const sig = salaSignature(state.sala);
+        if (sig !== state.lastRenderSig) {
+            state.lastRenderSig = sig;
+            renderGame(prev);
+        }
 
         // Bot de práctica.
         if (state.bot) {
@@ -719,7 +216,7 @@
 
     function mostrarEmote(code, nombre) {
         const b = el('div', {
-            class: 'fixed left-1/2 top-24 -translate-x-1/2 z-40 flex items-center gap-2 bg-slate-800 border border-amber-400 rounded-full pl-3 pr-4 py-1.5 pop-emote',
+            class: 'fixed left-1/2 top-16 -translate-x-1/2 z-40 flex items-center gap-2 bg-slate-800 border border-amber-400 rounded-full pl-3 pr-4 py-1.5 pop-emote',
             'aria-label': nombre + ' dice ' + code,
         }, [
             el('span', { class: 'text-2xl leading-none' }, code),
@@ -907,22 +404,30 @@
         const myTurn = s.item_actual && s.item_actual.turno_de === state.jugadorSlot;
         const rivalTurn = s.item_actual && s.item_actual.turno_de === (1 - state.jugadorSlot);
 
-        const myCard = el('div', { class: 'rounded-lg p-3 ' + (myTurn ? 'bg-amber-400 text-slate-900' : 'bg-slate-700 text-slate-100') }, [
-            el('div', { class: 'text-xs font-semibold opacity-80' }, t('ui.juego.lbl_mi_dinero') + ' · ' + (me?.nombre || '')),
-            el('div', { class: 'flex items-baseline gap-1 mt-1' }, [
-                el('span', { class: 'text-2xl font-bold font-mono' }, String(me?.dinero ?? 0)),
-                el('span', { class: 'text-xs opacity-80' }, t('ui.juego.monedas')),
+        const myNombre = me?.nombre || '';
+        const myLabel = (myNombre && myNombre !== t('ui.juego.lbl_mi_dinero'))
+            ? t('ui.juego.lbl_mi_dinero') + ' · ' + myNombre
+            : t('ui.juego.lbl_mi_dinero');
+        const rivalNombre = rival?.nombre || '';
+        const rivalLabel = (rivalNombre ? t('ui.juego.lbl_rival_dinero') + ' · ' + rivalNombre : t('ui.juego.lbl_rival_dinero'))
+            + (rivalEsBot && rivalNombre.indexOf('🤖') === -1 ? ' 🤖' : '');
+
+        const myCard = el('div', { class: 'rounded-lg p-2 ' + (myTurn ? 'bg-amber-400 text-slate-900' : 'bg-slate-700 text-slate-100') }, [
+            el('div', { class: 'text-[11px] font-semibold opacity-80 truncate' }, myLabel),
+            el('div', { class: 'flex items-baseline gap-1 mt-0.5' }, [
+                el('span', { class: 'text-xl font-bold font-mono' }, String(me?.dinero ?? 0)),
+                el('span', { class: 'text-[11px] opacity-80' }, t('ui.juego.monedas')),
             ]),
-            el('div', { class: 'text-xs mt-1 opacity-80' }, (me?.items_ganados?.length || 0) + '/4'),
+            el('div', { class: 'text-[11px] mt-0.5 opacity-80' }, (me?.items_ganados?.length || 0) + '/4'),
         ]);
 
-        const rivalCard = el('div', { class: 'rounded-lg p-3 ' + (rivalTurn ? 'bg-rose-500 text-white' : 'bg-slate-700 text-slate-100') }, [
-            el('div', { class: 'text-xs font-semibold opacity-80' }, t('ui.juego.lbl_rival_dinero') + ' · ' + (rival?.nombre || '') + (rivalEsBot ? ' 🤖' : '')),
-            el('div', { class: 'flex items-baseline gap-1 mt-1' }, [
-                el('span', { class: 'text-2xl font-bold font-mono' }, String(rival?.dinero ?? 0)),
-                el('span', { class: 'text-xs opacity-80' }, t('ui.juego.monedas')),
+        const rivalCard = el('div', { class: 'rounded-lg p-2 ' + (rivalTurn ? 'bg-rose-500 text-white' : 'bg-slate-700 text-slate-100') }, [
+            el('div', { class: 'text-[11px] font-semibold opacity-80 truncate' }, rivalLabel),
+            el('div', { class: 'flex items-baseline gap-1 mt-0.5' }, [
+                el('span', { class: 'text-xl font-bold font-mono' }, String(rival?.dinero ?? 0)),
+                el('span', { class: 'text-[11px] opacity-80' }, t('ui.juego.monedas')),
             ]),
-            el('div', { class: 'text-xs mt-1 opacity-80' }, (rival?.items_ganados?.length || 0) + '/4'),
+            el('div', { class: 'text-[11px] mt-0.5 opacity-80' }, (rival?.items_ganados?.length || 0) + '/4'),
         ]);
 
         sb.appendChild(myCard);
@@ -938,7 +443,6 @@
         if (!item) return;
 
         const myTurn = item.turno_de === state.jugadorSlot;
-        const turnoText = myTurn ? t('ui.juego.tu_turno') : t('ui.juego.turno_rival');
 
         // Aviso blando: el rival lleva sin responder unos segundos.
         if (state.rivalAusente !== null && state.rivalAusente >= 6 && s.estado === 'jugando') {
@@ -947,21 +451,27 @@
         }
 
         const totalRondas = (s.items_mezclados && s.items_mezclados.length) ? s.items_mezclados.length : 8;
-        card.appendChild(el('div', { class: 'text-xs text-slate-400 mb-2' }, t('ui.juego.ronda') + ' ' + s.ronda + ' / ' + totalRondas));
+        const chipTurno = el('div', {
+            class: 'text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'),
+        }, myTurn ? t('ui.juego.tu_turno') : t('ui.juego.turno_rival'));
+        card.appendChild(el('div', { class: 'w-full flex items-center justify-between gap-2 mb-1' }, [
+            el('div', { class: 'text-xs text-slate-400' }, t('ui.juego.ronda') + ' ' + s.ronda + ' / ' + totalRondas),
+            chipTurno,
+        ]));
         if (s.ronda >= totalRondas) {
-            card.appendChild(el('div', { class: 'text-xs font-bold text-amber-300 mb-2' }, '🔥 ' + t('ui.juego.ultima_ronda')));
+            card.appendChild(el('div', { class: 'text-[11px] font-bold text-amber-300 mb-1' }, '🔥 ' + t('ui.juego.ultima_ronda')));
         }
 
-        const emoji = el('div', { class: 'text-8xl mb-3 ' + (myTurn ? 'pulse-win' : '') }, item.emoji);
+        const emoji = el('div', { class: 'text-[clamp(3rem,13vh,6rem)] mb-2 ' + (myTurn ? 'pulse-win' : '') }, item.emoji);
         card.appendChild(emoji);
 
         const itemName = tItem(item.id);
-        card.appendChild(el('h2', { class: 'text-xl font-bold text-slate-100 mb-2 text-center px-4' }, itemName));
+        card.appendChild(el('h2', { class: 'text-lg font-bold text-slate-100 mb-1 text-center px-4' }, itemName));
 
         // Precio y turno
-        const status = el('div', { class: 'mt-4 text-center' }, [
-            el('div', { class: 'text-xs text-slate-400' }, t('ui.juego.precio_actual')),
-            el('div', { class: 'text-4xl font-bold font-mono text-amber-400' }, String(item.precio_actual)),
+        const status = el('div', { class: 'mt-2 text-center' }, [
+            el('div', { class: 'text-[11px] text-slate-400' }, t('ui.juego.precio_actual')),
+            el('div', { class: 'text-3xl font-bold font-mono text-amber-400' }, String(item.precio_actual)),
         ]);
         card.appendChild(status);
 
@@ -971,7 +481,7 @@
         card.classList.add('pr-20', 'sm:pr-24');
         const rail = el('div', {
             id: 'bidHistory',
-            class: 'absolute right-2 top-16 bottom-24 w-20 sm:w-24 flex flex-col justify-end gap-1 overflow-hidden pointer-events-none',
+            class: 'absolute right-2 top-12 bottom-12 w-20 sm:w-24 flex flex-col justify-end gap-1 overflow-hidden pointer-events-none',
         });
         const visibles = pujas.slice(-6);
         visibles.forEach(function (p, idx) {
@@ -990,9 +500,6 @@
         });
         card.appendChild(rail);
 
-        const turnoBanner = el('div', { class: 'mt-4 px-4 py-2 rounded-full text-sm font-bold ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300') }, turnoText);
-        card.appendChild(turnoBanner);
-
         // Banner ámbar si hay decisión pendiente (deadlock sin dinero).
         if (s.decision_pendiente) {
             const dp = s.decision_pendiente;
@@ -1001,7 +508,7 @@
             const msg = isDecisor
                 ? t('ui.juego.msg_deadlock_decide_corto')
                 : (isSobre ? t('ui.juego.msg_cediste_item') : t('ui.juego.msg_cede_item'));
-            card.appendChild(el('div', { class: 'mt-3 mx-4 px-3 py-2 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
+            card.appendChild(el('div', { class: 'mt-2 mx-2 px-3 py-1.5 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
         }
 
         // Si estoy capped, mensaje varía según de quién es el turno
@@ -1010,7 +517,7 @@
             const msg = myTurn
                 ? t('ui.juego.msg_pasar_al_rival', { cap: 4 })
                 : t('ui.juego.msg_esperando_rival_complete', { cap: 4 });
-            card.appendChild(el('div', { class: 'mt-3 px-3 py-2 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
+            card.appendChild(el('div', { class: 'mt-2 px-3 py-1.5 rounded bg-amber-400 text-slate-900 text-xs font-semibold text-center' }, msg));
         }
     }
 
@@ -1029,37 +536,37 @@
         const myItems = s.jugadores[state.jugadorSlot]?.items_ganados || [];
         const rivalItems = s.jugadores[1 - state.jugadorSlot]?.items_ganados || [];
 
-        const myRow = el('div', { class: 'mb-3' }, [
-            el('div', { class: 'text-xs text-slate-400 mb-1 flex items-center gap-1' }, [
+        const myRow = el('div', { class: 'mb-2' }, [
+            el('div', { class: 'text-[11px] text-slate-400 mb-1 flex items-center gap-1' }, [
                 el('span', { class: 'inline-block w-1.5 h-1.5 rounded-full bg-amber-400' }),
                 t('ui.juego.lbl_tu_inv') + ' · ' + (myItems.length) + '/4',
             ]),
-            el('div', { class: 'flex gap-1 overflow-x-auto no-scrollbar pb-1 min-h-[44px]' },
+            el('div', { class: 'flex gap-1 overflow-x-auto no-scrollbar pb-1 min-h-[36px]' },
                 myItems.length === 0
                     ? [el('span', { class: 'text-slate-500 text-xs italic' }, t('ui.juego.sin_items'))]
                     : myItems.map(function (i) {
-                        const wrap = el('div', { class: 'flex-shrink-0 w-10 h-12 flex flex-col items-center' }, [
-                            el('div', { class: 'w-10 h-10 bg-slate-700 border-l-2 border-amber-400 rounded flex items-center justify-center text-2xl', title: itemTooltip(i) }, i.emoji),
+                        const wrap = el('div', { class: 'flex-shrink-0 w-9 h-10 flex flex-col items-center' }, [
+                            el('div', { class: 'w-9 h-9 bg-slate-700 border-l-2 border-amber-400 rounded flex items-center justify-center text-xl', title: itemTooltip(i) }, i.emoji),
                         ]);
-                        if (i.precio != null) wrap.appendChild(el('div', { class: 'text-[10px] text-amber-400 leading-none mt-0.5 font-mono' }, i.precio + '🪙'));
+                        if (i.precio != null) wrap.appendChild(el('div', { class: 'text-[9px] text-amber-400 leading-none mt-0.5 font-mono' }, i.precio + '🪙'));
                         return wrap;
                     })
             ),
         ]);
 
-        const rivalRow = el('div', { class: 'pt-2 border-t border-slate-700' }, [
-            el('div', { class: 'text-xs text-slate-400 mb-1 flex items-center gap-1' }, [
+        const rivalRow = el('div', { class: 'pt-1.5 border-t border-slate-700' }, [
+            el('div', { class: 'text-[11px] text-slate-400 mb-1 flex items-center gap-1' }, [
                 el('span', { class: 'inline-block w-1.5 h-1.5 rounded-full bg-rose-500' }),
                 (t('ui.juego.lbl_rival_inv') + ' · ' + (s.jugadores[1 - state.jugadorSlot]?.nombre || 'Rival') + ' · ' + (rivalItems.length) + '/4'),
             ]),
-            el('div', { class: 'flex gap-1 overflow-x-auto no-scrollbar pb-1 min-h-[44px]' },
+            el('div', { class: 'flex gap-1 overflow-x-auto no-scrollbar pb-1 min-h-[36px]' },
                 rivalItems.length === 0
                     ? [el('span', { class: 'text-slate-500 text-xs italic' }, t('ui.juego.sin_items'))]
                     : rivalItems.map(function (i) {
-                        const wrap = el('div', { class: 'flex-shrink-0 w-10 h-12 flex flex-col items-center' }, [
-                            el('div', { class: 'w-10 h-10 bg-slate-700 border-l-2 border-rose-500 rounded flex items-center justify-center text-2xl', title: itemTooltip(i) }, i.emoji),
+                        const wrap = el('div', { class: 'flex-shrink-0 w-9 h-10 flex flex-col items-center' }, [
+                            el('div', { class: 'w-9 h-9 bg-slate-700 border-l-2 border-rose-500 rounded flex items-center justify-center text-xl', title: itemTooltip(i) }, i.emoji),
                         ]);
-                        if (i.precio != null) wrap.appendChild(el('div', { class: 'text-[10px] text-rose-300 leading-none mt-0.5 font-mono' }, i.precio + '🪙'));
+                        if (i.precio != null) wrap.appendChild(el('div', { class: 'text-[9px] text-rose-300 leading-none mt-0.5 font-mono' }, i.precio + '🪙'));
                         return wrap;
                     })
             ),
@@ -1101,13 +608,13 @@
             const buttons = el('div', { class: 'flex gap-2' });
             buttons.appendChild(el('button', {
                 id: 'btnAsignarKeep',
-                class: 'flex-1 bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-base disabled:opacity-40',
+                class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap text-base disabled:opacity-40',
                 onclick: function () { onAsignarRival(state.jugadorSlot, 1); },
                 title: canKeep ? '' : t('ui.juego.err_no_puedes_pagar_1'),
             }, t('ui.juego.btn_me_lo_quedo_1')));
             buttons.appendChild(el('button', {
                 id: 'btnAsignarGift',
-                class: 'flex-1 bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-base',
+                class: 'flex-1 bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap text-base',
                 onclick: function () { onAsignarRival(sobre, 0); },
             }, t('ui.juego.btn_se_lo_regalo')));
             bar.appendChild(buttons);
@@ -1148,7 +655,7 @@
             && !s.decision_pendiente) {
             bar.appendChild(el('button', {
                 id: 'btnPasarDeadlock',
-                class: 'w-full bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-base',
+                class: 'w-full bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap text-base',
                 onclick: onPasarDeadlock,
             }, t('ui.juego.btn_pasar_turno')));
             bar.appendChild(el('div', { class: 'text-center text-amber-300 text-xs mt-2' }, t('ui.juego.msg_deadlock_sin_dinero')));
@@ -1162,9 +669,9 @@
             // Estando capped el server asigna el ítem al rival a precio 0: no paga nadie.
             const label = canBajar ? t('ui.juego.btn_bajar') : t('ui.juego.btn_pasar_turno');
             const buttons = el('div', { class: 'flex gap-2' });
-            buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-base', onclick: onBajar }, label));
+            buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap text-base', onclick: onBajar }, label));
             if (rivalCapped) {
-                buttons.appendChild(el('button', { id: 'btnPujar3', class: 'bg-slate-700 text-slate-100 font-bold py-4 px-4 rounded-lg btn-tap text-sm', onclick: onPujar3 }, t('ui.juego.btn_pujar3')));
+                buttons.appendChild(el('button', { id: 'btnPujar3', class: 'bg-slate-700 text-slate-100 font-bold py-3 px-4 rounded-lg btn-tap text-sm', onclick: onPujar3 }, t('ui.juego.btn_pujar3')));
             }
             bar.appendChild(buttons);
             bar.appendChild(el('div', { class: 'text-center text-amber-300 text-xs mt-2' }, t('ui.juego.msg_cap_accion', { cap: 4 })));
@@ -1185,9 +692,9 @@
             : t('ui.juego.btn_bajar');
 
         const buttons = el('div', { class: 'flex gap-2' });
-        buttons.appendChild(el('button', { id: 'btnPujar', class: 'flex-1 bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-base disabled:opacity-40', onclick: onPujar, title: canPujar1 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar')));
-        buttons.appendChild(el('button', { id: 'btnPujar3', class: 'bg-slate-700 text-slate-100 font-bold py-4 px-4 rounded-lg btn-tap text-sm disabled:opacity-40', onclick: onPujar3, title: canPujar3 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar3')));
-        buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-sm leading-tight disabled:opacity-40', onclick: onBajar }, bajarLabel));
+        buttons.appendChild(el('button', { id: 'btnPujar', class: 'flex-1 bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap text-base disabled:opacity-40', onclick: onPujar, title: canPujar1 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar')));
+        buttons.appendChild(el('button', { id: 'btnPujar3', class: 'bg-slate-700 text-slate-100 font-bold py-3 px-4 rounded-lg btn-tap text-sm disabled:opacity-40', onclick: onPujar3, title: canPujar3 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar3')));
+        buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap text-sm leading-tight disabled:opacity-40', onclick: onBajar }, bajarLabel));
 
         bar.appendChild(buttons);
 
@@ -1207,6 +714,31 @@
 
     function sumValor(items) { return (items || []).reduce(function (acc, i) { return acc + (i.valor || 0); }, 0); }
     function sumPrecio(items) { return (items || []).reduce(function (acc, i) { return acc + (i.precio || 0); }, 0); }
+
+    /**
+     * Firma del estado visible: si no cambia, el poll no vuelve a pintar el DOM.
+     * Incluye lo que afecta a la UI (incluido el aviso de rival ausente ≥6s).
+     */
+    function salaSignature(s) {
+        if (!s) return '';
+        const it = s.item_actual;
+        return [
+            s.estado,
+            s.ronda,
+            s.tematica,
+            s.abandono_por,
+            s.decision_pendiente ? (s.decision_pendiente.para + ':' + s.decision_pendiente.sobre) : '',
+            it ? [it.id, it.precio_actual, it.turno_de, it.ultimo_pujo, (it.pujas || []).length].join(':') : '',
+            (s.jugadores || []).map(function (p) {
+                if (!p) return '';
+                const inv = (p.items_ganados || []).map(function (i) { return i.id + i.precio; }).join('+');
+                return p.dinero + ':' + inv;
+            }).join('|'),
+            s.revancha ? [s.revancha.por, s.revancha.codigo_nuevo, s.revancha.ts].join(':') : '',
+            state.rivalNombre || '',
+            (state.rivalAusente !== null && state.rivalAusente >= 6) ? state.rivalAusente : '',
+        ].join('#');
+    }
 
     function renderItemList(label, color, items, totalValor, totalPrecio) {
         const header = el('div', { class: 'flex justify-between items-baseline mb-2 px-1' }, [
@@ -1247,13 +779,13 @@
         card.classList.remove('items-center', 'justify-center');
         card.classList.add('items-stretch', 'justify-start');
 
-        card.appendChild(el('div', { class: 'text-center mt-8' }, [
+        card.appendChild(el('div', { class: 'text-center mt-4' }, [
             el('div', { class: 'text-6xl mb-4' }, '👋'),
             el('h2', { class: 'text-2xl font-bold text-amber-400 mb-3' }, msg),
             el('p', { class: 'text-slate-400 text-sm px-6' }, t('ui.juego.submsg_rival_abandono')),
         ]));
 
-        card.appendChild(el('div', { class: 'text-center mt-8' }, [
+        card.appendChild(el('div', { class: 'text-center mt-4' }, [
             el('button', { class: 'bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap', onclick: onLeave }, t('ui.juego.salir_lobby')),
         ]));
     }
@@ -1363,7 +895,7 @@
         clear(card);
         card.classList.remove('items-center', 'justify-center', 'pr-20', 'sm:pr-24');
         card.classList.add('items-stretch', 'justify-start');
-        card.appendChild(el('div', { class: 'text-center mt-8 fade-in' }, [
+        card.appendChild(el('div', { class: 'text-center mt-4 fade-in' }, [
             el('div', { class: 'text-5xl mb-4' }, '⏳'),
             el('h2', { class: 'text-xl font-bold text-amber-400 mb-2' }, t('ui.juego.msg_esperando_revancha')),
             el('div', { class: 'text-3xl font-mono font-bold text-slate-100 tracking-widest my-4' }, state.codigo || ''),
@@ -1448,6 +980,7 @@
         if (r.ok) {
             state.sala = r.sala;
             toast(t('ui.juego.msg_revancha_rechazada'));
+            state.lastRenderSig = salaSignature(state.sala);
             renderGame(null);
         } else {
             toast(r.error || 'Error');
@@ -1483,6 +1016,7 @@
             }
             state.sala = r.sala;
             identifySlots();
+            state.lastRenderSig = salaSignature(state.sala);
             renderGame(null);
         } finally {
             disableActions(false);
@@ -1521,6 +1055,5 @@
     }
 
     // =================== EXPOSE ===================
-    window.__init = indexInit;
     window.__juegoInit = juegoInit;
 })();

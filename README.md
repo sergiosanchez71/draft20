@@ -2,7 +2,7 @@
 
 Juego de **subasta por turnos para 2 jugadores** en tiempo real, optimizado para móvil. Cada jugador empieza con **20 monedas** y 8 ítems se subastan en rondas alternas. Gana quien reúne la colección de mayor **valor intrínseco** (suma de `valor` de sus ítems).
 
-> Stack: PHP 8 (sin frameworks) + JavaScript vanilla + Tailwind CDN. Persistencia en archivos JSON. Cero dependencias externas en backend.
+> Stack: PHP 8 (sin frameworks) + JavaScript vanilla + Tailwind CSS 3.4 compilado (build local). Persistencia en archivos JSON. Cero dependencias en runtime: el build (Tailwind + terser) solo se necesita en desarrollo.
 
 ---
 
@@ -23,13 +23,26 @@ php -S 127.0.0.1:8000
 
 Abrir `http://127.0.0.1:8000` en el navegador.
 
+### Build (CSS y JS)
+
+Tailwind se compila a `css/tailwind.css` y los JS se minifican a `js/*.min.js` (las páginas usan `asset_js()`, que prefiere la versión minificada si existe):
+
+```bash
+npm install     # solo la primera vez
+npm run build   # build:css (Tailwind) + build:js (terser)
+```
+
+> Tras cambiar clases de Tailwind en PHP/JS, vuelve a ejecutar `npm run build`. Los archivos generados (`css/tailwind.css`, `js/*.min.js`) se commitean: Hostinger no compila en el deploy.
+
 ### Despliegue en producción
 
-1. Subir todo el contenido a un servidor con PHP 8+.
+1. Subir todo el contenido a un servidor con PHP 8+ (en Hostinger: auto-deploy desde GitHub a `public_html`).
 2. Apuntar el document root a la raíz del proyecto (donde está `index.php`).
 3. Asegurar que el directorio `api/salas/` tiene permisos de escritura para el usuario del servidor web.
 4. El directorio `api/salas/` debe estar bloqueado vía `.htaccess` (ya incluido) si usas Apache.
-5. **Caché del CDN**: los assets van versionados con `?v=filemtime(...)`, así que cada deploy genera URLs nuevas y no hace falta purgar caché. Si tras desplegar ves la versión antigua, haz un hard reload una vez (el `sw.js` y el `manifest` van con `no-cache` por `.htaccess`) y, si persiste, purga la caché del CDN una única vez.
+5. **Dominio**: `https://draft20.es` (Hostinger, SSL + CDN). El `.htaccess` fuerza HTTPS, redirige `www` → sin `www` y aplica las URLs limpias; configura la versión PHP 8.2 en el panel.
+6. **Search Console**: verificar la propiedad (DNS TXT) y enviar `https://draft20.es/sitemap.xml`.
+7. **Caché del CDN**: los assets van versionados con `?v=filemtime(...)`, así que cada deploy genera URLs nuevas y no hace falta purgar caché. Si tras desplegar ves la versión antigua, haz un hard reload una vez (el `sw.js` y el `manifest` van con `no-cache` por `.htaccess`) y, si persiste, purga la caché del CDN una única vez.
 
 ---
 
@@ -63,10 +76,19 @@ Abrir `http://127.0.0.1:8000` en el navegador.
 
 ```
 draft20/
-├── index.php              # Lobby: crear / unirse a sala
-├── juego.php              # UI principal del juego
+├── index.php              # Landing SEO + lobby: crear / unirse a sala
+├── juego.php              # UI principal del juego (noindex)
+├── tematica.php           # Ficha SEO de temática (/tematica/<id>, 72 URLs)
+├── como_jugar.php         # Guía completa (/como-jugar)
+├── acerca.php             # Acerca de (/acerca)
+├── contacto.php           # Contacto (/contacto)
+├── privacidad.php         # Privacidad (/privacidad)
+├── 404.php                # Página no encontrada (ErrorDocument)
+├── sitemap.php            # sitemap.xml dinámico (home + soporte + 72 fichas)
+├── robots.txt             # Allow / · Disallow /api/ y /juego.php
+├── inc/layout.php         # Helpers SEO: metas, canonical, OG, JSON-LD, footer, assets
 ├── tematicas_catalogo.php # Catálogo de temáticas por categoría (fuente única)
-├── lang/es.json           # Strings UI + nombres de ítems y temáticas (i18n)
+├── lang/es.json           # Strings UI + temáticas + ítems + textos SEO (i18n)
 ├── tematicas/             # 72 temáticas (20 ítems c/u; id + emoji + valor)
 ├── api/                   # Backend PHP (todos devuelven JSON)
 │   ├── crear_sala.php     # POST: crea sala + GC oportunista
@@ -78,12 +100,20 @@ draft20/
 │   ├── salas/             # JSON por sala en runtime (GC a 1h + TTL pasivo 24h)
 │   └── salas/.htaccess    # Bloquea acceso directo
 ├── manifest.webmanifest   # PWA: instalable en móvil
-├── sw.js                  # Service Worker (network-first con cache:'reload')
-├── .htaccess              # no-cache para sw.js/manifest + MIME del manifest
+├── sw.js                  # Service Worker v3 (navegación red-first, assets SWR)
+├── .htaccess              # HTTPS + www→sin www, URLs limpias, deflate, caché, 404
+├── favicon.ico            # Icono (PNG embebido 16+32)
+├── og-image.png           # Imagen para compartir (1200x630)
 ├── icons/                 # Iconos PWA generados (192/512/180)
+├── css/tailwind.src.css   # Entrada de Tailwind (@tailwind base/components/utilities)
+├── css/tailwind.css       # Tailwind compilado y minificado (generado, commiteado)
 ├── css/style.css          # Safe-area iOS, animaciones, reduced-motion, toast, viewport del juego
+├── tailwind.config.js     # Content: ./*.php, inc/**, js/**
+├── package.json           # Scripts de build (tailwindcss + terser)
+├── js/app.core.js         # Helpers + lobby (se carga también en la landing)
+├── js/app.game.js         # Vista de juego (solo en juego.php)
 ├── js/bot_policy.js       # Política del bot (función pura, testeable en Node)
-└── js/app.js              # Toda la lógica del frontend (vanilla JS)
+└── js/*.min.js            # Versiones minificadas (generadas, commiteadas)
 ```
 
 ### Decisiones de diseño
@@ -101,8 +131,10 @@ draft20/
 - **Revancha sin re-compartir código**: el proponente crea la sala nueva y registra `revancha {por, codigo_nuevo, tematica, ts}` en la vieja (caduca a los 10 min). El rival acepta (unirse) o rechaza desde la pantalla final. Contra el bot, la revancha arranca una partida nueva con el **mismo bot y dificultad** al instante.
 - **Vibración háptica** en móvil al ganar ítems, recibir pujas del rival y avisos. **Emotes rápidos** (👍😂🔥😭🤝😱) guardados en la sala (máx 10) y mostrados con el nombre de quien los manda.
 - **Bot de práctica con dificultades** (`js/bot_policy.js`, función pura): Fácil (puja poco y se retira pronto), Normal (valoración secreta por hash del id, presupuesto equilibrado y contra-pujas) y Difícil (conoce los valores reales y puja agresivo). Sin trampas en Fácil/Normal; delays humanos y retiradas no deterministas. El bot se marca en la sala (`bot_slot`) y **nunca cuenta como ausente**; su watchdog de 60 s solo corre en su turno (con acción de respaldo garantizada), así que puedes pensar sin prisa.
-- **PWA instalable**: manifest + service worker (network-first con `cache: 'reload'`, API siempre red) + iconos generados por script.
-- **Cache-busting de assets**: `index.php`/`juego.php` sirven `js/*.js` y `css/style.css` con `?v=filemtime(...)`. Cada deploy cambia la URL y el CDN de Hostinger no puede servir versiones viejas (no hace falta purgar caché).
+- **PWA instalable**: manifest + service worker v3 (navegación red-first con fallback a la home cacheada, assets stale-while-revalidate con `ignoreSearch`, API siempre red) + iconos generados por script.
+- **Cache-busting de assets**: `inc/layout.php::asset()` sirve `js/*`, `css/*` e imágenes con `?v=filemtime(...)`. Cada deploy cambia la URL y el CDN de Hostinger no puede servir versiones viejas (no hace falta purgar caché).
+- **SEO**: dominio `https://draft20.es` (canonical sin www; 301 de `www` y HTTPS forzado en `.htaccess`), URLs limpias (`/tematica/<id>`, `/como-jugar`, `/sitemap.xml`), landing server-side con H1/intro/categorías/FAQ, 72 fichas de temática (ítems sin valores ⭐) con `BreadcrumbList`+`ItemList`, JSON-LD `WebApplication`+`FAQPage` en la home, OG/Twitter cards (`og-image.png`), `juego.php` y `?sala=` con `noindex`, `robots.txt` + sitemap dinámico.
+- **Rendimiento**: Tailwind compilado (14 KB) e **inline en las páginas SEO** (cero CSS render-blocking), JS dividido (`app.core.min.js` 14 KB en la landing; `app.game.min.js` 27 KB solo en `juego.php`), `window.LANG` recortado en la landing (solo `ui` + temáticas), service worker v3 sin `cache:'reload'`, redirecciones a 1 salto y render del juego por **firma de estado** (el poll de 1 s no reconstruye el DOM si nada cambió). La landing puede cachearse 10 min en el CDN (`s-maxage=600`, sin query).
 - **Sin login ni cuentas**: cada sala es anónima, ligada al `localStorage` del navegador.
 
 ---

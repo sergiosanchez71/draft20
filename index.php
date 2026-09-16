@@ -1,50 +1,141 @@
 <?php
+/**
+ * Draft 20 — Landing + lobby.
+ *
+ * La parte SEO (H1, texto, cómo se juega, temáticas y FAQ) se renderiza en
+ * servidor; el lobby interactivo (crear/unirse/practicar) lo pinta app.core.js
+ * dentro de <main id="app">.
+ */
 declare(strict_types=1);
 
-$langFile = __DIR__ . '/lang/es.json';
-$LANG = json_decode((string) file_get_contents($langFile), true);
-if (!is_array($LANG)) {
-    http_response_code(500);
-    echo 'Error cargando i18n';
-    exit;
-}
+require __DIR__ . '/inc/layout.php';
+
+$LANG = cargar_lang();
+$SEO  = is_array($LANG['seo'] ?? null) ? $LANG['seo'] : [];
 
 $salaFromLink = $_GET['sala'] ?? null;
 if (!is_string($salaFromLink) || !preg_match('/^[A-Z0-9]{5}$/', $salaFromLink)) {
     $salaFromLink = null;
 }
 
-// Catálogo de temáticas agrupadas por categoría (fuente única compartida).
-$categorias = require __DIR__ . '/tematicas_catalogo.php';
-?><!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-    <meta name="theme-color" content="#0f172a">
-    <title>Draft 20</title>
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="apple-touch-icon" href="icons/icon-180.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>window.LANG = <?= json_encode($LANG, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
-    <script>window.__CATEGORIAS = <?= json_encode($categorias, JSON_UNESCAPED_UNICODE) ?>;</script>
-    <link rel="stylesheet" href="css/style.css?v=<?= filemtime(__DIR__ . '/css/style.css') ?>">
-</head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+$tematicaPre = $_GET['tematica'] ?? null;
+if (!is_string($tematicaPre) || !isset(mapa_tematicas()[$tematicaPre])) {
+    $tematicaPre = null;
+}
+
+$categorias = categorias();
+$faq = is_array($SEO['faq'] ?? null) ? $SEO['faq'] : [];
+$descripcion = (string) ($SEO['home_desc'] ?? '');
+
+$jsonLd = [
+    [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebApplication',
+        'name' => SITE_NOMBRE,
+        'url' => SITE_URL . '/',
+        'description' => $descripcion,
+        'applicationCategory' => 'GameApplication',
+        'operatingSystem' => 'Web',
+        'inLanguage' => 'es',
+        'offers' => ['@type' => 'Offer', 'price' => '0', 'priceCurrency' => 'EUR'],
+    ],
+];
+if ($faq !== []) {
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'FAQPage',
+        'mainEntity' => array_map(static function (array $f): array {
+            return [
+                '@type' => 'Question',
+                'name' => (string) ($f['q'] ?? ''),
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => (string) ($f['a'] ?? '')],
+            ];
+        }, $faq),
+    ];
+}
+
+pagina_head([
+    'titulo' => (string) ($SEO['home_titulo'] ?? SITE_NOMBRE),
+    'descripcion' => $descripcion,
+    'canonical' => '/',
+    // La vista de unirse por enlace (?sala=CODE) no debe indexarse.
+    'robots' => $salaFromLink ? 'noindex, follow' : 'index, follow',
+    'json_ld' => $jsonLd,
+]);
+?>
+    <header class="px-6 pt-8 pb-2 text-center safe-pt">
+        <h1 class="text-4xl font-bold text-amber-400"><?= e(SITE_NOMBRE) ?></h1>
+        <p class="text-slate-400 text-sm mt-2"><?= e((string) ($LANG['ui']['app']['subtitulo_lobby'] ?? '')) ?></p>
+        <p class="text-slate-300 text-sm mt-4 max-w-xl mx-auto leading-relaxed"><?= e((string) ($SEO['hero_texto'] ?? '')) ?></p>
+        <a href="#app" class="inline-block mt-5 bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
+    </header>
+
     <main id="app" class="flex-1 flex flex-col"></main>
-    <script src="js/app.js?v=<?= filemtime(__DIR__ . '/js/app.js') ?>"></script>
-    <script>
-        (function () {
-            const linkSala = <?= json_encode($salaFromLink, JSON_UNESCAPED_UNICODE) ?>;
-            window.__init(linkSala);
-        })();
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function () {
-                navigator.serviceWorker.register('sw.js?v=<?= filemtime(__DIR__ . '/sw.js') ?>').catch(function () {});
-            });
-        }
-    </script>
-</body>
-</html>
+
+    <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+        <h2 class="text-2xl font-bold text-slate-100 mb-4"><?= e((string) ($SEO['como_titulo'] ?? '')) ?></h2>
+        <ol class="space-y-2 text-slate-300 text-sm list-decimal list-inside leading-relaxed">
+            <?php foreach (['como_paso1', 'como_paso2', 'como_paso3', 'como_paso4'] as $clave): ?>
+            <li><?= e((string) ($SEO[$clave] ?? '')) ?></li>
+            <?php endforeach; ?>
+        </ol>
+        <a href="/como-jugar" class="inline-block mt-4 text-amber-400 hover:text-amber-300 text-sm font-semibold"><?= e((string) ($SEO['como_mas'] ?? '')) ?> →</a>
+    </section>
+
+    <section id="tematicas" class="max-w-5xl mx-auto w-full px-4 mt-10">
+        <h2 class="text-2xl font-bold text-slate-100 mb-2"><?= e((string) ($SEO['tematicas_titulo'] ?? '')) ?></h2>
+        <p class="text-slate-400 text-sm mb-6"><?= e((string) ($SEO['tematicas_sub'] ?? '')) ?></p>
+        <?php foreach ($categorias as $cat): ?>
+        <h3 class="text-lg font-bold text-amber-300 mt-6 mb-3"><?= e($cat['emoji'] . ' ' . nombre_categoria($cat['id'])) ?></h3>
+        <ul class="flex flex-wrap gap-2">
+            <?php foreach ($cat['tematicas'] as $tm): ?>
+            <li>
+                <a href="/tematica/<?= e($tm['id']) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($tm['emoji'] . ' ' . nombre_tematica($tm['id'])) ?></a>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+        <?php endforeach; ?>
+    </section>
+
+    <?php if ($faq !== []): ?>
+    <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+        <h2 class="text-2xl font-bold text-slate-100 mb-4"><?= e((string) ($SEO['faq_titulo'] ?? '')) ?></h2>
+        <?php foreach ($faq as $f): ?>
+        <details class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-2">
+            <summary class="font-semibold text-slate-100 cursor-pointer"><?= e((string) ($f['q'] ?? '')) ?></summary>
+            <p class="text-sm text-slate-300 mt-2 leading-relaxed"><?= e((string) ($f['a'] ?? '')) ?></p>
+        </details>
+        <?php endforeach; ?>
+    </section>
+    <?php endif; ?>
+
+    <section class="text-center mt-10 px-4">
+        <a href="#app" class="inline-block bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['cta_final'] ?? '')) ?></a>
+    </section>
+<?php
+
+// i18n del cliente: el lobby solo necesita ui + nombres de temáticas/categorías.
+// Los nombres de los ítems (pesados) se quedan fuera de la landing.
+$langCliente = [
+    'ui' => $LANG['ui'] ?? [],
+    'tematicas' => $LANG['tematicas'] ?? [],
+    'tematicas_categorias' => $LANG['tematicas_categorias'] ?? [],
+];
+
+$inlineFirst = 'window.LANG = ' . json_encode($langCliente, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . ';'
+    . 'window.__CATEGORIAS = ' . json_encode($categorias, JSON_UNESCAPED_UNICODE) . ';'
+    . ($tematicaPre !== null ? 'window.__tematicaPre = ' . json_encode($tematicaPre) . ';' : '');
+
+$inline = '(function () {'
+    . ' const linkSala = ' . json_encode($salaFromLink, JSON_UNESCAPED_UNICODE) . ';'
+    . ' window.__init(linkSala);'
+    . ' if ("serviceWorker" in navigator) { window.addEventListener("load", function () {'
+    . ' navigator.serviceWorker.register("/sw.js?v=' . (is_file(__DIR__ . '/sw.js') ? filemtime(__DIR__ . '/sw.js') : '1') . '").catch(function () {});'
+    . ' }); }'
+    . '})();';
+
+pagina_foot([
+    'inline_first' => $inlineFirst,
+    'scripts' => ['js/app.core.js'],
+    'inline' => $inline,
+]);

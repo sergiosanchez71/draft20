@@ -1,18 +1,11 @@
-/* Draft 20 - Service Worker
- * Shell en network-first (evita servir versiones viejas en desarrollo) con
- * fallback a caché cuando no hay red. La API siempre va a red.
+/* Draft 20 - Service Worker (v3)
+ * - Navegación: network-first con fallback a la home cacheada.
+ * - Assets: stale-while-revalidate (los assets van versionados con ?v=filemtime,
+ *   así que la caché antigua se sustituye sola al cambiar el archivo).
+ * - API: siempre red.
  */
-const CACHE = 'draft20-v2';
-const SHELL = [
-    './',
-    './index.php',
-    './juego.php',
-    './css/style.css',
-    './js/app.js',
-    './manifest.webmanifest',
-    './icons/icon-192.png',
-    './icons/icon-512.png',
-];
+const CACHE = 'draft20-v3';
+const SHELL = ['/', '/index.php'];
 
 self.addEventListener('install', function (e) {
     e.waitUntil(
@@ -33,22 +26,43 @@ self.addEventListener('activate', function (e) {
 });
 
 self.addEventListener('fetch', function (e) {
-    const url = new URL(e.request.url);
-    if (e.request.method !== 'GET') return;
-    if (url.pathname.indexOf('/api/') !== -1) return; // API: siempre red
+    const req = e.request;
+    if (req.method !== 'GET') return;
 
+    const url = new URL(req.url);
+    if (url.origin !== self.location.origin) return;
+    if (url.pathname.indexOf('/api/') === 0) return;
+
+    // Navegación: red primero (HTML siempre fresco), caché como respaldo offline.
+    if (req.mode === 'navigate') {
+        e.respondWith(
+            fetch(req)
+                .then(function (res) {
+                    const copy = res.clone();
+                    caches.open(CACHE).then(function (c) { c.put('/', copy); }).catch(function () {});
+                    return res;
+                })
+                .catch(function () {
+                    return caches.match('/', { ignoreSearch: true })
+                        .then(function (r) { return r || caches.match('/index.php'); });
+                })
+        );
+        return;
+    }
+
+    // Assets: sirve de caché y revalida en segundo plano.
     e.respondWith(
-        // 'reload' ignora la caché HTTP (los assets van con ?v=filemtime).
-        fetch(e.request, { cache: 'reload' })
-            .then(function (res) {
-                const copy = res.clone();
-                caches.open(CACHE).then(function (c) { c.put(e.request, copy); }).catch(function () {});
-                return res;
-            })
-            .catch(function () {
-                return caches.match(e.request).then(function (r) {
-                    return r || caches.match('./index.php');
-                });
-            })
+        caches.match(req, { ignoreSearch: true }).then(function (cached) {
+            const red = fetch(req)
+                .then(function (res) {
+                    if (res && res.ok) {
+                        const copy = res.clone();
+                        caches.open(CACHE).then(function (c) { c.put(req, copy); }).catch(function () {});
+                    }
+                    return res;
+                })
+                .catch(function () { return cached; });
+            return cached || red;
+        })
     );
 });

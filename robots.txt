@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /juego.php
+
+Sitemap: https://draft20.es/sitemap.xml

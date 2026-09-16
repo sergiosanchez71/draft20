@@ -3,7 +3,7 @@
     .safe-pb { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
     .safe-pl { padding-left: max(1rem, env(safe-area-inset-left)); }
     .safe-pr { padding-right: max(1rem, env(safe-area-inset-right)); }
-    .safe-pb-action { padding-bottom: max(5rem, calc(5rem + env(safe-area-inset-bottom))); }
+    .safe-pb-action { padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); }
 }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }

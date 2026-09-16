@@ -1,9 +1,14 @@
 <?php
+/**
+ * Draft 20 — Shell de la partida.
+ * Página de juego: noindex (solo accesible por código de sala).
+ */
 declare(strict_types=1);
 
-$langFile = __DIR__ . '/lang/es.json';
-$LANG = json_decode((string) file_get_contents($langFile), true);
-if (!is_array($LANG)) {
+require __DIR__ . '/inc/layout.php';
+
+$LANG = cargar_lang();
+if ($LANG === []) {
     http_response_code(500);
     echo 'Error cargando i18n';
     exit;
@@ -11,32 +16,34 @@ if (!is_array($LANG)) {
 
 $codigo = $_GET['codigo'] ?? null;
 if (!is_string($codigo) || !preg_match('/^[A-Z0-9]{5}$/', $codigo)) {
-    header('Location: index.php');
+    header('Location: /');
     exit;
 }
 
 // Catálogo compartido: lo usan el header (temática) y el modal de revancha.
-$categorias = require __DIR__ . '/tematicas_catalogo.php';
+$categorias = categorias();
 ?><!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>Draft 20 — Juego</title>
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <title>Draft 20 — Partida</title>
+    <meta name="robots" content="noindex, follow">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="<?= e(asset('icons/icon-180.png')) ?>">
+    <link rel="manifest" href="/manifest.webmanifest">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <?= tailwind_tag() ?><link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
     <script>window.LANG = <?= json_encode($LANG, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
     <script>window.__CATEGORIAS = <?= json_encode($categorias, JSON_UNESCAPED_UNICODE) ?>;</script>
-    <link rel="stylesheet" href="css/style.css?v=<?= filemtime(__DIR__ . '/css/style.css') ?>">
 </head>
 <body class="app-viewport bg-slate-900 text-slate-100 flex flex-col">
     <main id="app" class="flex-1 flex flex-col"></main>
-    <script src="js/bot_policy.js?v=<?= filemtime(__DIR__ . '/js/bot_policy.js') ?>"></script>
-    <script src="js/app.js?v=<?= filemtime(__DIR__ . '/js/app.js') ?>"></script>
+    <script src="<?= e(asset_js('js/bot_policy.js')) ?>"></script>
+    <script src="<?= e(asset_js('js/app.core.js')) ?>"></script>
+    <script src="<?= e(asset_js('js/app.game.js')) ?>"></script>
     <script>
         (function () {
             const codigo = <?= json_encode($codigo, JSON_UNESCAPED_UNICODE) ?>;
@@ -44,7 +51,7 @@ $categorias = require __DIR__ . '/tematicas_catalogo.php';
         })();
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('sw.js?v=<?= filemtime(__DIR__ . '/sw.js') ?>').catch(function () {});
+                navigator.serviceWorker.register('/sw.js?v=<?= is_file(__DIR__ . '/sw.js') ? filemtime(__DIR__ . '/sw.js') : '1' ?>').catch(function () {});
             });
         }
     </script>
