@@ -9,6 +9,13 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 
+/* Acordeones de la landing (temáticas y "cómo se juega"): sin triángulo nativo
+   y chevron que gira al abrir. */
+.acordeon > summary { list-style: none; }
+.acordeon > summary::-webkit-details-marker { display: none; }
+.acordeon > summary .chev { transition: transform 0.15s ease; display: inline-block; }
+.acordeon[open] > summary .chev { transform: rotate(180deg); }
+
 #toast {
     position: fixed; bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); left: 50%;
     transform: translateX(-50%) translateY(calc(100% + 7.5rem));
@@ -65,4 +72,5 @@
 @media (prefers-reduced-motion: reduce) {
     .pulse-win, .shake, .fade-in, .pop-emote { animation: none !important; }
     #toast { transition: none; }
+    .acordeon > summary .chev { transition: none; }
 }

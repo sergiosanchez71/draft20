@@ -304,11 +304,41 @@
 
         const selectorBox = el('div', { id: 'tematicaSelector', class: 'mb-4' });
 
+        // Modo "⭐ Valores visibles" (persistido; se comparte con la sala).
+        // Se muestra en Crear Sala y en Practicar: ambas instancias van sincronizadas.
+        try {
+            if (localStorage.getItem('draft20_mostrar_valores') === '1') state.mostrarValores = true;
+        } catch (e) { /* ignore */ }
+        const mvPintores = [];
+        function crearToggleValores(claseWrapper) {
+            const btn = el('button', {
+                type: 'button',
+                'aria-pressed': state.mostrarValores ? 'true' : 'false',
+                onclick: function () {
+                    state.mostrarValores = !state.mostrarValores;
+                    try { localStorage.setItem('draft20_mostrar_valores', state.mostrarValores ? '1' : '0'); } catch (e) { /* ignore */ }
+                    mvPintores.forEach(function (p) { p(); });
+                },
+            }, t('ui.lobby.mostrar_valores'));
+            function pintar() {
+                btn.className = 'px-4 py-2 rounded-full text-xs border btn-tap ' +
+                    (state.mostrarValores ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
+                btn.setAttribute('aria-pressed', state.mostrarValores ? 'true' : 'false');
+            }
+            mvPintores.push(pintar);
+            pintar();
+            return el('div', { class: claseWrapper }, [
+                btn,
+                el('div', { class: 'text-[11px] text-slate-500 mt-2' }, t('ui.lobby.mostrar_valores_ayuda')),
+            ]);
+        }
+
         const createForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
             el('label', { class: 'block text-sm text-slate-400 mb-2' }, t('ui.lobby.selector_tematica')),
             selectorBox,
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
             el('input', { id: 'nameCreate', type: 'text', maxlength: '20', placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
+            crearToggleValores('text-center mb-4'),
             el('button', { id: 'btnCreate', class: 'w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_crear')),
         ]);
 
@@ -351,46 +381,25 @@
         });
         pintarDificultad();
 
-        // Modo "⭐ Valores visibles" (persistido; se comparte con la sala).
-        try {
-            if (localStorage.getItem('draft20_mostrar_valores') === '1') state.mostrarValores = true;
-        } catch (e) { /* ignore */ }
-        const mvBtn = el('button', {
-            type: 'button',
-            class: 'px-4 py-2 rounded-full text-xs border btn-tap',
-            'aria-pressed': state.mostrarValores ? 'true' : 'false',
-            onclick: function () {
-                state.mostrarValores = !state.mostrarValores;
-                try { localStorage.setItem('draft20_mostrar_valores', state.mostrarValores ? '1' : '0'); } catch (e) { /* ignore */ }
-                pintarValores();
-            },
-        }, t('ui.lobby.mostrar_valores'));
-        function pintarValores() {
-            mvBtn.className = 'px-4 py-2 rounded-full text-xs border btn-tap ' +
-                (state.mostrarValores ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
-            mvBtn.setAttribute('aria-pressed', state.mostrarValores ? 'true' : 'false');
-        }
-        pintarValores();
+        // Modo "⭐ Valores visibles": los toggles ya se crean en las tarjetas.
 
-        const practiceBtn = el('div', { class: 'm-4' }, [
+        const practiceCard = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
+            el('label', { class: 'block text-sm text-slate-400 mb-2 text-center' }, t('ui.lobby.bot_dificultad')),
+            difWrap,
+            crearToggleValores('text-center mt-4'),
             el('button', {
                 id: 'btnPractice',
-                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm mt-4',
                 onclick: onPractice,
             }, t('ui.lobby.btn_practicar')),
-            el('div', { class: 'text-center text-[11px] text-slate-500 mt-3' }, t('ui.lobby.bot_dificultad')),
-            difWrap,
-            el('div', { class: 'text-center mt-3' }, [
-                mvBtn,
-                el('div', { class: 'text-[11px] text-slate-500 mt-2' }, t('ui.lobby.mostrar_valores_ayuda')),
-            ]),
         ]);
 
         app.appendChild(errorBox);
         app.appendChild(createForm);
         app.appendChild(el('div', { class: 'text-center text-slate-500 text-xs my-2' }, '— o —'));
         app.appendChild(joinForm);
-        app.appendChild(practiceBtn);
+        app.appendChild(el('div', { class: 'text-center text-slate-500 text-xs my-2' }, '— o —'));
+        app.appendChild(practiceCard);
 
         $('#btnCreate').addEventListener('click', onCreate);
         $('#btnJoin').addEventListener('click', onJoin);

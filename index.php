@@ -24,8 +24,16 @@ if (!is_string($tematicaPre) || !isset(mapa_tematicas()[$tematicaPre])) {
 }
 
 $categorias = categorias();
+$numTematicas = count(mapa_tematicas());
+$num = static fn(string $s): string => str_replace('{n}', (string) $numTematicas, $s);
+
 $faq = is_array($SEO['faq'] ?? null) ? $SEO['faq'] : [];
-$descripcion = (string) ($SEO['home_desc'] ?? '');
+$faq = array_map(static function (array $f) use ($num): array {
+    $f['q'] = $num((string) ($f['q'] ?? ''));
+    $f['a'] = $num((string) ($f['a'] ?? ''));
+    return $f;
+}, $faq);
+$descripcion = $num((string) ($SEO['home_desc'] ?? ''));
 
 $jsonLd = [
     [
@@ -73,49 +81,66 @@ pagina_head([
             <a href="#app" class="inline-block mt-5 bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
         </header>
 
-        <main id="app" class="flex-1 flex flex-col"></main>
+        <main class="flex-1 flex flex-col">
+            <div id="app" class="flex flex-col"></div>
+
+            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+                <details class="acordeon bg-slate-800 border border-slate-700 rounded-lg">
+                    <summary class="flex items-center justify-between gap-2 px-4 py-3 cursor-pointer font-bold text-xl text-slate-100">
+                        <span><?= e((string) ($SEO['como_titulo'] ?? '')) ?></span>
+                        <span class="chev text-base text-slate-400" aria-hidden="true">▾</span>
+                    </summary>
+                    <div class="px-4 pb-4">
+                        <ol class="space-y-2 text-slate-300 text-sm list-decimal list-inside leading-relaxed">
+                            <?php foreach (['como_paso1', 'como_paso2', 'como_paso3', 'como_paso4'] as $clave): ?>
+                            <li><?= e($num((string) ($SEO[$clave] ?? ''))) ?></li>
+                            <?php endforeach; ?>
+                        </ol>
+                        <a href="/como-jugar" class="inline-block mt-4 text-amber-400 hover:text-amber-300 text-sm font-semibold"><?= e((string) ($SEO['como_mas'] ?? '')) ?> →</a>
+                    </div>
+                </details>
+            </section>
+
+            <section id="tematicas" class="max-w-5xl mx-auto w-full px-4 mt-10">
+                <h2 class="text-2xl font-bold text-slate-100 mb-2"><?= e((string) ($SEO['tematicas_titulo'] ?? '')) ?></h2>
+                <p class="text-slate-400 text-sm mb-6"><?= e($num((string) ($SEO['tematicas_sub'] ?? ''))) ?></p>
+                <?php foreach ($categorias as $cat): ?>
+                <details class="acordeon bg-slate-800 border border-slate-700 rounded-lg mb-2">
+                    <summary class="flex items-center justify-between gap-2 px-4 py-3 cursor-pointer font-bold text-amber-300">
+                        <span><?= e($cat['emoji'] . ' ' . nombre_categoria($cat['id'])) ?></span>
+                        <span class="flex items-center gap-2 text-xs font-normal text-slate-400">
+                            <?= e($num((string) ($SEO['tematicas_contador'] ?? ''))) ?>
+                            <span class="chev" aria-hidden="true">▾</span>
+                        </span>
+                    </summary>
+                    <ul class="flex flex-wrap gap-2 px-4 pb-4">
+                        <?php foreach ($cat['tematicas'] as $tm): ?>
+                        <li>
+                            <a href="/tematica/<?= e($tm['id']) ?>" class="inline-block bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($tm['emoji'] . ' ' . nombre_tematica($tm['id'])) ?></a>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </details>
+                <?php endforeach; ?>
+            </section>
+
+            <?php if ($faq !== []): ?>
+            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+                <h2 class="text-2xl font-bold text-slate-100 mb-4"><?= e((string) ($SEO['faq_titulo'] ?? '')) ?></h2>
+                <?php foreach ($faq as $f): ?>
+                <details class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-2">
+                    <summary class="font-semibold text-slate-100 cursor-pointer"><?= e((string) ($f['q'] ?? '')) ?></summary>
+                    <p class="text-sm text-slate-300 mt-2 leading-relaxed"><?= e((string) ($f['a'] ?? '')) ?></p>
+                </details>
+                <?php endforeach; ?>
+            </section>
+            <?php endif; ?>
+
+            <section class="text-center mt-10 px-4">
+                <a href="#app" class="inline-block bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['cta_final'] ?? '')) ?></a>
+            </section>
+        </main>
     </div>
-
-    <section class="max-w-3xl mx-auto w-full px-4 mt-10">
-        <h2 class="text-2xl font-bold text-slate-100 mb-4"><?= e((string) ($SEO['como_titulo'] ?? '')) ?></h2>
-        <ol class="space-y-2 text-slate-300 text-sm list-decimal list-inside leading-relaxed">
-            <?php foreach (['como_paso1', 'como_paso2', 'como_paso3', 'como_paso4'] as $clave): ?>
-            <li><?= e((string) ($SEO[$clave] ?? '')) ?></li>
-            <?php endforeach; ?>
-        </ol>
-        <a href="/como-jugar" class="inline-block mt-4 text-amber-400 hover:text-amber-300 text-sm font-semibold"><?= e((string) ($SEO['como_mas'] ?? '')) ?> →</a>
-    </section>
-
-    <section id="tematicas" class="max-w-5xl mx-auto w-full px-4 mt-10">
-        <h2 class="text-2xl font-bold text-slate-100 mb-2"><?= e((string) ($SEO['tematicas_titulo'] ?? '')) ?></h2>
-        <p class="text-slate-400 text-sm mb-6"><?= e((string) ($SEO['tematicas_sub'] ?? '')) ?></p>
-        <?php foreach ($categorias as $cat): ?>
-        <h3 class="text-lg font-bold text-amber-300 mt-6 mb-3"><?= e($cat['emoji'] . ' ' . nombre_categoria($cat['id'])) ?></h3>
-        <ul class="flex flex-wrap gap-2">
-            <?php foreach ($cat['tematicas'] as $tm): ?>
-            <li>
-                <a href="/tematica/<?= e($tm['id']) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($tm['emoji'] . ' ' . nombre_tematica($tm['id'])) ?></a>
-            </li>
-            <?php endforeach; ?>
-        </ul>
-        <?php endforeach; ?>
-    </section>
-
-    <?php if ($faq !== []): ?>
-    <section class="max-w-3xl mx-auto w-full px-4 mt-10">
-        <h2 class="text-2xl font-bold text-slate-100 mb-4"><?= e((string) ($SEO['faq_titulo'] ?? '')) ?></h2>
-        <?php foreach ($faq as $f): ?>
-        <details class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-2">
-            <summary class="font-semibold text-slate-100 cursor-pointer"><?= e((string) ($f['q'] ?? '')) ?></summary>
-            <p class="text-sm text-slate-300 mt-2 leading-relaxed"><?= e((string) ($f['a'] ?? '')) ?></p>
-        </details>
-        <?php endforeach; ?>
-    </section>
-    <?php endif; ?>
-
-    <section class="text-center mt-10 px-4">
-        <a href="#app" class="inline-block bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['cta_final'] ?? '')) ?></a>
-    </section>
 <?php
 
 // i18n del cliente: el lobby solo necesita ui + nombres de temáticas/categorías.
