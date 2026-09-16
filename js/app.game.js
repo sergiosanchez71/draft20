@@ -25,6 +25,9 @@
     const renderTematicaSelector = D.renderTematicaSelector;
     const iniciarPartidaBot = D.iniciarPartidaBot;
 
+    // El popup del último ítem se muestra una sola vez por carga de página.
+    let ultimoItemPopupMostrado = false;
+
     // =================== JUEGO ===================
     async function juegoInit(codigo) {
         if (!codigo || !/^[A-Z0-9]{5}$/.test(codigo)) {
@@ -384,6 +387,7 @@
         }
         if (s.estado === 'finalizada') {
             renderFinalScreen();
+            mostrarPopupUltimoItem();
             const inv = $('#inventory'); if (inv) clear(inv);
             const bar = $('#actionBar'); if (bar) clear(bar);
             const eb = $('#emoteBar'); if (eb) clear(eb);
@@ -783,6 +787,33 @@
             ? el('div', { class: 'text-xs text-slate-500 mt-2 px-1 text-right font-mono' }, t('ui.juego.total_gastado') + ': ' + totalPrecio + ' 🪙')
             : null;
         return el('div', { class: 'mb-4' }, [header, list, footer].filter(Boolean));
+    }
+
+    /**
+     * Popup del 8º ítem: se asigna en la misma acción que finaliza la partida,
+     * así que la carta nunca llega a pintarlo. Se muestra una vez al terminar.
+     */
+    function mostrarPopupUltimoItem() {
+        if (ultimoItemPopupMostrado) return;
+        const s = state.sala;
+        const ult = s && s.ultimo_item;
+        if (!ult || !ult.id) return;
+        ultimoItemPopupMostrado = true;
+        const ganador = (s.jugadores && s.jugadores[ult.ganador]) || null;
+        const content = el('div', { class: 'text-center' }, [
+            el('div', { class: 'text-5xl mb-1' }, ult.emoji || '🎲'),
+            el('div', { class: 'text-xs uppercase tracking-wide text-slate-400 mb-3' }, t('ui.juego.ultimo_item_titulo')),
+            el('p', { class: 'text-base text-slate-100 leading-relaxed' }, t('ui.juego.msg_ultimo_item', {
+                item: tItem(ult.id),
+                nombre: (ganador && ganador.nombre) ? ganador.nombre : '—',
+                precio: (ult.precio || 0) + '🪙',
+            })),
+        ]);
+        const m = showModal(content);
+        content.appendChild(el('button', {
+            class: 'mt-5 w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap',
+            onclick: m.close,
+        }, t('ui.juego.btn_ver_resultado')));
     }
 
     function renderAbandonedScreen() {

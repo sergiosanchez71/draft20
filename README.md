@@ -69,6 +69,7 @@ npm run build   # build:css (Tailwind) + build:js (terser)
 - **Victoria**: gana el jugador cuya **colección de ítems tenga mayor valor intrínseco** (suma de `valor`, escala 1-10). En caso de empate a ⭐, gana quien conserve **más monedas**; si también empatan, tablas. El precio pagado es informativo.
 - **Revancha**: al terminar, cualquiera puede proponer revancha eligiendo **nueva temática** (o 🎲 aleatoria). El rival la acepta o rechaza desde la pantalla final.
 - **Valores ocultos**: el ⭐ de cada ítem es secreto durante la partida (ni en la carta ni en el inventario). Solo se revela en la pantalla final. Con el modo **⭐ Valores visibles** (opcional, lo fija quien crea la sala) el ⭐ del ítem en juego y el de los ítems del inventario se muestran a ambos jugadores.
+- **Último ítem**: al terminar la partida se muestra un popup con el 8º ítem (el que ya no llega a pintarse en la carta): quién se lo llevó y por cuántas monedas.
 
 ---
 

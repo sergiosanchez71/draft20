@@ -188,6 +188,7 @@ function asignar_item_ganador(array &$sala, int $winner, int $price, array $emoj
     }
     if ($sala['item_actual'] === null) {
         $sala['estado'] = 'finalizada';
+        registrar_ultimo_item($sala);
     }
 }
 
@@ -216,6 +217,31 @@ function procesar_auto_asignaciones(array &$sala, array $emojiMap, array $valorM
     }
     if ($sala['item_actual'] === null) {
         $sala['estado'] = 'finalizada';
+        registrar_ultimo_item($sala);
+    }
+}
+
+/**
+ * Guarda en la sala el último ítem de la partida (quién se lo llevó y por
+ * cuánto) justo al finalizar. El 8º ítem se asigna en la misma acción que
+ * cierra la partida, así que la carta nunca llega a pintarlo: el cliente lo
+ * muestra en un popup leyendo este campo.
+ */
+function registrar_ultimo_item(array &$sala): void {
+    if (empty($sala['items_mezclados'])) return;
+    $ultimoId = (string) $sala['items_mezclados'][count($sala['items_mezclados']) - 1];
+    foreach ($sala['jugadores'] as $slot => $jugador) {
+        foreach (($jugador['items_ganados'] ?? []) as $it) {
+            if (($it['id'] ?? null) !== $ultimoId) continue;
+            $sala['ultimo_item'] = [
+                'id'      => $ultimoId,
+                'emoji'   => (string) ($it['emoji'] ?? ''),
+                'valor'   => (int) ($it['valor'] ?? 0),
+                'precio'  => (int) ($it['precio'] ?? 0),
+                'ganador' => (int) $slot,
+            ];
+            return;
+        }
     }
 }
 
@@ -391,6 +417,7 @@ try {
         }
         if ($estado['item_actual'] === null) {
             $estado['estado'] = 'finalizada';
+            registrar_ultimo_item($estado);
         }
         $estado['actualizado_en'] = time();
         ftruncate($fp, 0); rewind($fp);
@@ -542,6 +569,7 @@ try {
         }
         if ($estado['item_actual'] === null) {
             $estado['estado'] = 'finalizada';
+            registrar_ultimo_item($estado);
         }
     }
     else { // bajar
