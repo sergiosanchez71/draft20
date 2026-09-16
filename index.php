@@ -109,7 +109,7 @@ pagina_head([
                     <summary class="flex items-center justify-between gap-2 px-4 py-3 cursor-pointer font-bold text-amber-300">
                         <span><?= e($cat['emoji'] . ' ' . nombre_categoria($cat['id'])) ?></span>
                         <span class="flex items-center gap-2 text-xs font-normal text-slate-400">
-                            <?= e($num((string) ($SEO['tematicas_contador'] ?? ''))) ?>
+                            <?= e(str_replace('{n}', (string) count($cat['tematicas']), (string) ($SEO['tematicas_contador'] ?? ''))) ?>
                             <span class="chev" aria-hidden="true">▾</span>
                         </span>
                     </summary>
