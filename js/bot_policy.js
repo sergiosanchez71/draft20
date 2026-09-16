@@ -41,6 +41,33 @@
     function config(dificultad) { return CONFIG[dificultad] || CONFIG.normal; }
 
     /**
+     * Acción de respaldo segura: garantiza que el bot SIEMPRE responda en su
+     * turno (o como decisor) aunque `decidir` devuelva null por un estado raro.
+     */
+    function respaldo(sala, botSlot) {
+        const item = sala && sala.item_actual;
+        if (!sala || sala.estado !== 'jugando' || !item) return null;
+        const yo = sala.jugadores && sala.jugadores[botSlot];
+        if (!yo) return null;
+        const dinero = yo.dinero || 0;
+        const misItems = (yo.items_ganados || []).length;
+
+        if (sala.decision_pendiente) {
+            if (sala.decision_pendiente.para !== botSlot) return null;
+            // Regala (0 🪙) para no romper el deadlock.
+            return { accion: 'asignar_rival', destino: sala.decision_pendiente.sobre, precio: 0 };
+        }
+        if (item.turno_de !== botSlot) return null;
+        if (misItems >= 4) {
+            return { accion: (item.ultimo_pujo !== null && item.ultimo_pujo !== undefined) ? 'bajar' : 'pasar_deadlock' };
+        }
+        const hayPuja = item.ultimo_pujo !== null && item.ultimo_pujo !== undefined;
+        if (hayPuja) return { accion: 'bajar' };
+        if (dinero <= 0) return { accion: 'pasar_deadlock' };
+        return { accion: 'pujar', incremento: 1 };
+    }
+
+    /**
      * Clave de la situación de juego. El bot no re-evalúa mientras la clave no
      * cambie; por eso incluye el estado de decision_pendiente (si no, el bot se
      * quedaría colgado cuando el humano le pasa el ítem sin cambiar el resto).
@@ -137,5 +164,5 @@
         return { accion: 'bajar' };
     }
 
-    return { decidir: decidir, config: config, valoracionSecreta: valoracionSecreta, estadoKey: estadoKey };
+    return { decidir: decidir, respaldo: respaldo, config: config, valoracionSecreta: valoracionSecreta, estadoKey: estadoKey };
 }));

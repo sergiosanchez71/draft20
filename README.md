@@ -100,7 +100,7 @@ draft20/
 - **GC de salas**: al crear o unirse a una sala se ejecutan `limpiar_salas_antiguas()` (best-effort): borra JSON con `filemtime` > 1h con `flock` no bloqueante para no tocar partidas activas. El TTL de 24h queda como red de seguridad.
 - **Revancha sin re-compartir código**: el proponente crea la sala nueva y registra `revancha {por, codigo_nuevo, tematica, ts}` en la vieja (caduca a los 10 min). El rival acepta (unirse) o rechaza desde la pantalla final. Contra el bot, la revancha arranca una partida nueva con el **mismo bot y dificultad** al instante.
 - **Vibración háptica** en móvil al ganar ítems, recibir pujas del rival y avisos. **Emotes rápidos** (👍😂🔥😭🤝😱) guardados en la sala (máx 10) y mostrados con el nombre de quien los manda.
-- **Bot de práctica con dificultades** (`js/bot_policy.js`, función pura): Fácil (puja poco y se retira pronto), Normal (valoración secreta por hash del id, presupuesto equilibrado y contra-pujas) y Difícil (conoce los valores reales y puja agresivo). Sin trampas en Fácil/Normal; delays humanos y retiradas no deterministas.
+- **Bot de práctica con dificultades** (`js/bot_policy.js`, función pura): Fácil (puja poco y se retira pronto), Normal (valoración secreta por hash del id, presupuesto equilibrado y contra-pujas) y Difícil (conoce los valores reales y puja agresivo). Sin trampas en Fácil/Normal; delays humanos y retiradas no deterministas. El bot se marca en la sala (`bot_slot`) y **nunca cuenta como ausente**; su watchdog de 60 s solo corre en su turno (con acción de respaldo garantizada), así que puedes pensar sin prisa.
 - **PWA instalable**: manifest + service worker (network-first con `cache: 'reload'`, API siempre red) + iconos generados por script.
 - **Cache-busting de assets**: `index.php`/`juego.php` sirven `js/*.js` y `css/style.css` con `?v=filemtime(...)`. Cada deploy cambia la URL y el CDN de Hostinger no puede servir versiones viejas (no hace falta purgar caché).
 - **Sin login ni cuentas**: cada sala es anónima, ligada al `localStorage` del navegador.
@@ -288,6 +288,7 @@ Cada sala es un único archivo JSON en `api/salas/<CODIGO>.json`. TTL: 24 h (lim
   "abandono_por": null,
   "revancha": null,
   "emotes": [],
+  "bot_slot": null,
   "creado_en": 1693574400,
   "actualizado_en": 1693574432
 }

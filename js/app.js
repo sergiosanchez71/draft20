@@ -6,6 +6,7 @@
     'use strict';
 
     const POLL_MS = 1000;
+    const BOT_MAX_RESPUESTA_MS = 60000; // watchdog del bot: solo corre en su turno
 
     const state = {
         codigo: null,
@@ -25,6 +26,7 @@
         rivalAusente: null,
         ultimoEmoteEnviado: 0,
         botWaitUntil: 0,
+        botWatchStart: 0,
         botKeyDelay: null,
         botValores: null,
         botDificultad: 'normal',
@@ -445,7 +447,7 @@
         const nombreFinal = (nombre && nombre.trim()) || state.jugadorNombre || 'Tú';
         const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombreFinal });
         if (!r.ok) { toast(r.error || 'Error'); return false; }
-        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: '🤖 Bot' });
+        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: '🤖 Bot', bot: true });
         if (!r2.ok) { toast(r2.error || 'Error'); return false; }
         try {
             localStorage.setItem('draft20_bot_' + r.codigo, JSON.stringify({
@@ -751,6 +753,18 @@
         if (!s || !state.bot || s.estado !== 'jugando' || !s.item_actual || state.jugadorSlot === null) return;
         if (!window.DraftBot || !window.DraftBot.estadoKey) return;
         const botSlot = 1 - state.jugadorSlot;
+
+        // El tiempo del bot SOLO corre en su turno (o si le toca decidir un deadlock).
+        // Cuando es tu turno no cuenta nada suyo.
+        const esTurnoBot = s.item_actual.turno_de === botSlot;
+        const esDecisor = !!(s.decision_pendiente && s.decision_pendiente.para === botSlot);
+        if (!esTurnoBot && !esDecisor) {
+            state.botWaitUntil = 0;
+            state.botKeyDelay = null;
+            state.botWatchStart = 0;
+            return;
+        }
+
         // La key incluye decision_pendiente: si no, el bot no reaccionaría al
         // PASAR del humano (mismo ítem/precio/turno/pujas) y la partida se colgaría.
         const key = window.DraftBot.estadoKey(s);
@@ -758,18 +772,23 @@
 
         const dificultad = state.bot.dificultad || 'normal';
 
-        // Delay humano: al empezar una situación nueva, espera un poco.
+        // Delay humano: arranca al empezar SU turno, nunca antes.
         if (state.botKeyDelay !== key) {
             const cfg = window.DraftBot.config(dificultad);
             const rango = cfg.delayMs || [700, 1800];
             state.botKeyDelay = key;
             state.botWaitUntil = Date.now() + rango[0] + Math.random() * (rango[1] - rango[0]);
+            state.botWatchStart = Date.now(); // watchdog de 60s desde su turno
             return;
         }
-        if (Date.now() < state.botWaitUntil) return;
 
-        const decision = window.DraftBot.decidir(s, botSlot, dificultad, Math.random, state.botValores || null);
-        if (!decision) return; // sin acción: NO marcar la situación como resuelta
+        // Watchdog: si en 60s no ha resuelto, fuerza una acción de respaldo.
+        const watchdog = state.botWatchStart > 0 && (Date.now() - state.botWatchStart) > BOT_MAX_RESPUESTA_MS;
+        if (!watchdog && Date.now() < state.botWaitUntil) return;
+
+        let decision = window.DraftBot.decidir(s, botSlot, dificultad, Math.random, state.botValores || null);
+        if (!decision) decision = window.DraftBot.respaldo(s, botSlot); // garantía de respuesta
+        if (!decision) return; // sin acción legal: no marcar la situación
 
         const r = await botAction(decision);
         if (r && r.ok) {
@@ -946,32 +965,30 @@
         ]);
         card.appendChild(status);
 
-        // Historial de pujas: barra a la derecha, la más reciente abajo (las viejas suben).
+        // Historial de pujas: espacio SIEMPRE reservado a la derecha para que la
+        // primera puja no desplace el emoji/nombre/precio. La más reciente abajo.
         const pujas = Array.isArray(item.pujas) ? item.pujas : [];
-        card.classList.toggle('pr-20', pujas.length > 0);
-        card.classList.toggle('sm:pr-24', pujas.length > 0);
-        if (pujas.length) {
-            const rail = el('div', {
-                id: 'bidHistory',
-                class: 'absolute right-2 top-16 bottom-24 w-20 sm:w-24 flex flex-col justify-end gap-1 overflow-hidden pointer-events-none',
-            });
-            const visibles = pujas.slice(-6);
-            visibles.forEach(function (p, idx) {
-                const esUltima = idx === visibles.length - 1;
-                const soyYo = p.por === state.jugadorSlot;
-                const nombre = soyYo ? 'Tú' : (state.rivalNombre || 'Rival');
-                rail.appendChild(el('div', {
-                    class: 'rounded px-1.5 py-1 text-right text-[10px] leading-tight bg-slate-800/95 border ' +
-                        (esUltima
-                            ? 'border-amber-400 ' + (soyYo ? 'text-emerald-300' : 'text-rose-300') + ' fade-in'
-                            : 'border-slate-700 text-slate-300'),
-                }, [
-                    el('div', { class: 'font-bold truncate' }, nombre),
-                    el('div', { class: 'font-mono opacity-90' }, '+' + p.incremento + ' · ' + p.precio + '🪙'),
-                ]));
-            });
-            card.appendChild(rail);
-        }
+        card.classList.add('pr-20', 'sm:pr-24');
+        const rail = el('div', {
+            id: 'bidHistory',
+            class: 'absolute right-2 top-16 bottom-24 w-20 sm:w-24 flex flex-col justify-end gap-1 overflow-hidden pointer-events-none',
+        });
+        const visibles = pujas.slice(-6);
+        visibles.forEach(function (p, idx) {
+            const esUltima = idx === visibles.length - 1;
+            const soyYo = p.por === state.jugadorSlot;
+            const nombre = soyYo ? 'Tú' : (state.rivalNombre || 'Rival');
+            rail.appendChild(el('div', {
+                class: 'rounded px-1.5 py-1 text-right text-[10px] leading-tight bg-slate-800/95 border ' +
+                    (esUltima
+                        ? 'border-amber-400 ' + (soyYo ? 'text-emerald-300' : 'text-rose-300')
+                        : 'border-slate-700 text-slate-300'),
+            }, [
+                el('div', { class: 'font-bold truncate' }, nombre),
+                el('div', { class: 'font-mono opacity-90' }, '+' + p.incremento + ' · ' + p.precio + '🪙'),
+            ]));
+        });
+        card.appendChild(rail);
 
         const turnoBanner = el('div', { class: 'mt-4 px-4 py-2 rounded-full text-sm font-bold ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300') }, turnoText);
         card.appendChild(turnoBanner);

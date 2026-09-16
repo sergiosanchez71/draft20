@@ -328,9 +328,10 @@ try {
     $estado['last_seen'][$miSlot] = time();
 
     // Si el OTRO jugador lleva > ABANDON_TIMEOUT_S sin aparecer y la partida
-    // está en curso, marcamos su abandono.
+    // está en curso, marcamos su abandono. Los bots no pollean: se excluyen.
     $other = 1 - $miSlot;
-    if (!empty($estado['jugadores'][$other]['id'])) {
+    $otherEsBot = isset($estado['bot_slot']) && (int) $estado['bot_slot'] === $other;
+    if (!$otherEsBot && !empty($estado['jugadores'][$other]['id'])) {
         $otherSeen = $estado['last_seen'][$other] ?? null;
         if ($otherSeen !== null
             && (time() - (int) $otherSeen) > ABANDON_TIMEOUT_S

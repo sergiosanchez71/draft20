@@ -106,6 +106,11 @@ $input    = leer_input_json();
 $codigo   = isset($input['codigo']) ? strtoupper(trim((string) $input['codigo'])) : '';
 $nombreJ2 = isset($input['nombre']) ? trim((string) $input['nombre']) : '';
 
+// Unión marcada como bot (partida de práctica): el slot no pollea, así que
+// no debe contar para abandono ni para el aviso de "rival desconectado".
+$esBot = isset($input['bot'])
+    && ($input['bot'] === true || $input['bot'] === 1 || $input['bot'] === '1' || $input['bot'] === 'true');
+
 $regexCodigo = '/^[' . CHARSET . ']{5}$/';
 if ($codigo === '' || !preg_match($regexCodigo, $codigo)) {
     responder(['ok' => false, 'error' => 'Código de sala inválido.'], 400);
@@ -157,6 +162,9 @@ try {
     ];
     $estado['estado']         = 'jugando';
     $estado['actualizado_en'] = time();
+    if ($esBot) {
+        $estado['bot_slot'] = 1;
+    }
 
     ftruncate($fp, 0); rewind($fp);
     fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));

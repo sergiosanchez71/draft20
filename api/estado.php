@@ -60,6 +60,8 @@ function check_and_trigger_abandon(array &$sala, int $callingSlot): bool {
     if (!isset($sala['last_seen']) || !is_array($sala['last_seen'])) return false;
     $other = 1 - $callingSlot;
     if (empty($sala['jugadores'][$other]['id'])) return false; // J2 no unido todavía
+    // Los bots no pollean: nunca se consideran ausentes ni abandonan.
+    if (isset($sala['bot_slot']) && (int) $sala['bot_slot'] === $other) return false;
     $otherSeen = $sala['last_seen'][$other] ?? null;
     if ($otherSeen === null) return false;
     if ((time() - (int) $otherSeen) <= ABANDON_TIMEOUT_S) return false;
@@ -142,8 +144,10 @@ if ($jugadorId !== '') {
         $estado['last_seen'][$miSlot] = time();
 
         // Segundos que lleva el rival sin dar señales (aviso blando en UI).
+        // Si el rival es un bot local no aplica: no pollea por diseño.
         $other = 1 - $miSlot;
-        if (!empty($estado['jugadores'][$other]['id'])) {
+        $otherEsBot = isset($estado['bot_slot']) && (int) $estado['bot_slot'] === $other;
+        if (!$otherEsBot && !empty($estado['jugadores'][$other]['id'])) {
             $otherSeen = $estado['last_seen'][$other] ?? null;
             if ($otherSeen !== null) {
                 $rivalAusente = max(0, time() - (int) $otherSeen);

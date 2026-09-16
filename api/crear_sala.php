@@ -418,6 +418,7 @@ try {
         'abandono_por'         => null, // 0 | 1 cuando un jugador abandona (explícito o por timeout)
         'revancha'             => null, // {por, codigo_nuevo, tematica, ts} cuando alguien propone revancha al acabar
         'emotes'               => [],   // últimos emotes: {por, code, ts} (máx EMOTES_MAX)
+        'bot_slot'             => null, // 0 | 1 si ese slot es un bot local (no pollea: sin abandono ni aviso)
         'creado_en'           => $ahora,
         'actualizado_en'      => $ahora,
     ];
