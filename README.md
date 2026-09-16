@@ -100,7 +100,7 @@ draft20/
 │   ├── salas/             # JSON por sala en runtime (GC a 1h + TTL pasivo 24h)
 │   └── salas/.htaccess    # Bloquea acceso directo
 ├── manifest.webmanifest   # PWA: instalable en móvil
-├── sw.js                  # Service Worker v3 (navegación red-first, assets SWR)
+├── sw.js                  # Service Worker v4 (navegación red-first, assets SWR con match exacto)
 ├── .htaccess              # HTTPS + www→sin www, URLs limpias, deflate, caché, 404
 ├── favicon.ico            # Icono (PNG embebido 16+32)
 ├── og-image.png           # Imagen para compartir (1200x630)
@@ -131,10 +131,10 @@ draft20/
 - **Revancha sin re-compartir código**: el proponente crea la sala nueva y registra `revancha {por, codigo_nuevo, tematica, ts}` en la vieja (caduca a los 10 min). El rival acepta (unirse) o rechaza desde la pantalla final. Contra el bot, la revancha arranca una partida nueva con el **mismo bot y dificultad** al instante.
 - **Vibración háptica** en móvil al ganar ítems, recibir pujas del rival y avisos. **Emotes rápidos** (👍😂🔥😭🤝😱) guardados en la sala (máx 10) y mostrados con el nombre de quien los manda.
 - **Bot de práctica con dificultades** (`js/bot_policy.js`, función pura): Fácil (puja poco y se retira pronto), Normal (valoración secreta por hash del id, presupuesto equilibrado y contra-pujas) y Difícil (conoce los valores reales y puja agresivo). Sin trampas en Fácil/Normal; delays humanos y retiradas no deterministas. El bot se marca en la sala (`bot_slot`) y **nunca cuenta como ausente**; su watchdog de 60 s solo corre en su turno (con acción de respaldo garantizada), así que puedes pensar sin prisa.
-- **PWA instalable**: manifest + service worker v3 (navegación red-first con fallback a la home cacheada, assets stale-while-revalidate con `ignoreSearch`, API siempre red) + iconos generados por script.
+- **PWA instalable**: manifest + service worker v4 (navegación red-first con fallback a la home cacheada, assets stale-while-revalidate con **match exacto** para que un `?v=` nuevo nunca reutilice caché antigua, API siempre red) + iconos generados por script.
 - **Cache-busting de assets**: `inc/layout.php::asset()` sirve `js/*`, `css/*` e imágenes con `?v=filemtime(...)`. Cada deploy cambia la URL y el CDN de Hostinger no puede servir versiones viejas (no hace falta purgar caché).
 - **SEO**: dominio `https://draft20.es` (canonical sin www; 301 de `www` y HTTPS forzado en `.htaccess`), URLs limpias (`/tematica/<id>`, `/como-jugar`, `/sitemap.xml`), landing server-side con H1/intro/categorías/FAQ, 72 fichas de temática (ítems sin valores ⭐) con `BreadcrumbList`+`ItemList`, JSON-LD `WebApplication`+`FAQPage` en la home, OG/Twitter cards (`og-image.png`), `juego.php` y `?sala=` con `noindex`, `robots.txt` + sitemap dinámico.
-- **Rendimiento**: Tailwind compilado (14 KB) e **inline en las páginas SEO** (cero CSS render-blocking), JS dividido (`app.core.min.js` 14 KB en la landing; `app.game.min.js` 27 KB solo en `juego.php`), `window.LANG` recortado en la landing (solo `ui` + temáticas), service worker v3 sin `cache:'reload'`, redirecciones a 1 salto y render del juego por **firma de estado** (el poll de 1 s no reconstruye el DOM si nada cambió). La landing puede cachearse 10 min en el CDN (`s-maxage=600`, sin query).
+- **Rendimiento**: Tailwind compilado (14 KB) e **inline en las páginas SEO** (cero CSS render-blocking), JS dividido (`app.core.min.js` 14 KB en la landing; `app.game.min.js` 27 KB solo en `juego.php`), `window.LANG` recortado en la landing (solo `ui` + temáticas), service worker v4 sin `cache:'reload'`, redirecciones a 1 salto y render del juego por **firma de estado** (el poll de 1 s no reconstruye el DOM si nada cambió). La landing puede cachearse 10 min en el CDN (`s-maxage=600`, sin query).
 - **Sin login ni cuentas**: cada sala es anónima, ligada al `localStorage` del navegador.
 
 ---
