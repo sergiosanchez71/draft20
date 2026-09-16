@@ -51,9 +51,19 @@
      *     a la suma de los mejores ítems restantes, con un factor de agresión
      *     (el dinero sobrante al final no da puntos) y reservando 1 🪙 por
      *     cada hueco futuro (salvo si es el último que necesita).
+     *   - En el último hueco, si aún quedan ítems, no sobrepuja: este ítem
+     *     solo aporta su valor frente al mejor de los que quedan.
      */
     function maxPujaRacional(sala, cfg, itemId, val, dinero, cupo, valorReal) {
         const ids = Array.isArray(sala.items_mezclados) ? sala.items_mezclados : null;
+        if (cupo <= 1 && ids && (sala.indice_item || 0) + 1 < ids.length) {
+            let bestRest = 0;
+            for (let i = (sala.indice_item || 0) + 1; i < ids.length; i++) {
+                const fv = valorEfectivo(ids[i], cfg, valorReal);
+                if (fv > bestRest) bestRest = fv;
+            }
+            return Math.max(1, Math.min(val - bestRest, dinero));
+        }
         let suma = val;
         if (ids && cupo > 1) {
             const futuros = [];
