@@ -21,7 +21,7 @@
         facil:   { usaValorReal: false, factor: 0.60, retirada: 0.40, delayMs: [900, 1600], inc3: 0.10, deadlockMinDinero: 3, deadlockMinVal: 8, reserva: true },
         normal:  { usaValorReal: false, factor: 1.20, retirada: 0.12, delayMs: [700, 1800], inc3: 0.30, deadlockMinDinero: 2, deadlockMinVal: 5, reserva: true },
         dificil: { usaValorReal: true,  factor: 1.50, retirada: 0.05, delayMs: [500, 1200], inc3: 0.50, deadlockMinDinero: 1, deadlockMinVal: 4, reserva: false },
-        extremo: { usaValorReal: true,  factor: 1.00, retirada: 0,    delayMs: [350, 900],  inc3: 0.70, deadlockMinDinero: 1, deadlockMinVal: 1, reserva: true, racional: true },
+        extremo: { usaValorReal: true,  factor: 2.00, retirada: 0,    delayMs: [350, 900],  inc3: 0.70, deadlockMinDinero: 1, deadlockMinVal: 1, racional: true },
     };
 
     function hashId(id) {
@@ -44,10 +44,13 @@
     function config(dificultad) { return CONFIG[dificultad] || CONFIG.normal; }
 
     /**
-     * Presupuesto racional de "extremo": reparte el dinero en proporción al
-     * valor del ítem actual frente a los mejores ítems que quedan por salir
-     * (sala.items_mezclados + indice_item). Reserva al menos 1 🪙 por hueco
-     * futuro (salvo si es el último que necesita) y nunca paga más de val+1.
+     * Presupuesto racional de "extremo":
+     *   - Solo se pelea por los "cupo" ítems de mayor valor que quedan
+     *     (incluido el actual); por los mediocres puja el mínimo y se retira.
+     *   - Para un objetivo reparte el dinero en proporción a su valor frente
+     *     a la suma de los mejores ítems restantes, con un factor de agresión
+     *     (el dinero sobrante al final no da puntos) y reservando 1 🪙 por
+     *     cada hueco futuro (salvo si es el último que necesita).
      */
     function maxPujaRacional(sala, cfg, itemId, val, dinero, cupo, valorReal) {
         const ids = Array.isArray(sala.items_mezclados) ? sala.items_mezclados : null;
@@ -59,10 +62,11 @@
             }
             futuros.sort(function (a, b) { return b - a; });
             for (let i = 0; i < cupo - 1 && i < futuros.length; i++) suma += futuros[i];
+            const kth = futuros[Math.min(cupo - 2, futuros.length - 1)] || 0;
+            if (kth > 0 && val < kth) return 1;
         }
         let maxPuja = Math.round(dinero * (val / Math.max(1, suma)) * cfg.factor);
         maxPuja = Math.max(1, Math.min(maxPuja, dinero));
-        maxPuja = Math.min(maxPuja, val + (cfg.margen || 1));
         if (cupo > 1) maxPuja = Math.min(maxPuja, Math.max(1, dinero - (cupo - 1)));
         return Math.max(1, Math.min(maxPuja, dinero));
     }
