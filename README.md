@@ -350,7 +350,7 @@ Reglas:
 
 ### Temáticas incluidas (59, agrupadas en 9 categorías)
 
-El lobby las presenta con un selector por categorías: chips horizontales (con "Todas") + grid de tarjetas con emoji y nombre. La estructura vive en `$categorias` de `index.php` (fuente única para el frontend vía `window.__CATEGORIAS`).
+El lobby y el modal de revancha las presentan con un **desplegable nativo agrupado por categoría** (todas las temáticas visibles, sin menús que se corten). La opción por defecto es **✨ Todas (aleatoria)**: al crear/revancha se sortea una temática del catálogo; el usuario puede fijar una concreta. La estructura vive en `tematicas_catalogo.php` (fuente única vía `window.__CATEGORIAS`).
 
 - 🍔 **Comida y bebida** — hamburguesa, tapas, pizza, barbacoa, sushi, postres, desayuno, cerveza.
 - 🎬 **Cultura pop** — peliculas, videojuegos, musica, series, anime, comics, juegos_mesa, libros, teatro, karaoke.

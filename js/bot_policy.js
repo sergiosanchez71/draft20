@@ -41,6 +41,22 @@
     function config(dificultad) { return CONFIG[dificultad] || CONFIG.normal; }
 
     /**
+     * Clave de la situación de juego. El bot no re-evalúa mientras la clave no
+     * cambie; por eso incluye el estado de decision_pendiente (si no, el bot se
+     * quedaría colgado cuando el humano le pasa el ítem sin cambiar el resto).
+     */
+    function estadoKey(sala) {
+        const item = sala && sala.item_actual;
+        if (!sala || !item) return 'none';
+        const dp = sala.decision_pendiente;
+        const dpKey = (dp && typeof dp === 'object')
+            ? 'D' + (dp.para === undefined ? '?' : dp.para) + '_' + (dp.sobre === undefined ? '?' : dp.sobre)
+            : 'D-';
+        const pujas = Array.isArray(item.pujas) ? item.pujas.length : 0;
+        return [sala.ronda, item.id, item.precio_actual, item.turno_de, pujas, dpKey].join(':');
+    }
+
+    /**
      * Decide la acción del bot.
      * @param {object} sala      - estado completo de la sala
      * @param {number} botSlot   - 0 | 1
@@ -60,8 +76,9 @@
         const dinero = yo.dinero || 0;
         const misItems = (yo.items_ganados || []).length;
 
-        // Decisión pendiente de deadlock: quedárselo por 1 o regalarlo.
-        if (sala.decision_pendiente && sala.decision_pendiente.para === botSlot) {
+        // Decisión pendiente de deadlock: solo actúa el decisor; el resto espera.
+        if (sala.decision_pendiente) {
+            if (sala.decision_pendiente.para !== botSlot) return null;
             const val = valorEfectivo(item.id, cfg, valorReal);
             if (dinero >= cfg.deadlockMinDinero && val >= cfg.deadlockMinVal) {
                 return { accion: 'asignar_rival', destino: botSlot, precio: 1 };
@@ -120,5 +137,5 @@
         return { accion: 'bajar' };
     }
 
-    return { decidir: decidir, config: config, valoracionSecreta: valoracionSecreta };
+    return { decidir: decidir, config: config, valoracionSecreta: valoracionSecreta, estadoKey: estadoKey };
 }));

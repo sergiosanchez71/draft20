@@ -19,7 +19,7 @@
         actionInFlight: false,
         abandonoDetectadoVibrado: false,
         tematicaSeleccionada: null,
-        tematicaCategoria: null,
+        tematicaCreada: null,
         pollFailures: 0,
         pollInFlight: false,
         rivalAusente: null,
@@ -47,11 +47,7 @@
     function tTematica(id) { return (window.LANG.tematicas && window.LANG.tematicas[id]) || id; }
     function catLabel(id) { return (window.LANG.tematicas_categorias && window.LANG.tematicas_categorias[id]) || id; }
     function categoriasData() { return Array.isArray(window.__CATEGORIAS) ? window.__CATEGORIAS : []; }
-    function defaultTematica() {
-        const cats = categoriasData();
-        if (cats.length && cats[0].tematicas && cats[0].tematicas.length) return cats[0].tematicas[0].id;
-        return 'hamburguesa';
-    }
+
     function tematicaEmoji(id) {
         const cats = categoriasData();
         for (let i = 0; i < cats.length; i++) {
@@ -360,83 +356,53 @@
         } catch (e) { /* ignore */ }
     }
 
+    const TEMATICA_RANDOM = '__random__';
+
+    /**
+     * Selector de temática: desplegable nativo con todas las temáticas
+     * agrupadas por categoría. Por defecto "✨ Todas (aleatoria)".
+     */
     function renderTematicaSelector(container, opts) {
         opts = opts || {};
         const ctx = opts.ctx || state;
         const cats = categoriasData();
-        if (ctx.tematicaCategoria === null || ctx.tematicaCategoria === undefined) {
-            ctx.tematicaCategoria = cats.length ? cats[0].id : 'todas';
-        }
-        if (!ctx.tematicaSeleccionada) ctx.tematicaSeleccionada = defaultTematica();
+        if (!ctx.tematicaSeleccionada) ctx.tematicaSeleccionada = TEMATICA_RANDOM;
 
-        const tabBar = el('div', { class: 'flex gap-2 overflow-x-auto no-scrollbar pb-1 mb-3' });
-        const grid = el('div', { class: 'grid grid-cols-2 gap-2' });
-        function rerender() {
-            renderTematicaSelector(container, opts);
-            if (opts.onChange) opts.onChange(ctx);
-        }
-
-        function chip(id, emoji, label, onclick) {
-            const active = ctx.tematicaCategoria === id && id !== 'random';
-            return el('button', {
-                type: 'button',
-                class: 'flex-shrink-0 px-3 py-2 rounded-full text-sm border transition ' +
-                    (active
-                        ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold'
-                        : 'bg-slate-700 text-slate-200 border-slate-600'),
-                onclick: onclick || function () {
-                    ctx.tematicaCategoria = id;
-                    rerender();
-                },
-            }, emoji + ' ' + label);
-        }
-
-        tabBar.appendChild(chip('todas', '✨', t('ui.lobby.categoria_todas')));
+        const select = el('select', {
+            class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 text-base',
+            'aria-label': t('ui.lobby.selector_tematica'),
+            onchange: function () {
+                ctx.tematicaSeleccionada = select.value;
+                if (opts.onChange) opts.onChange(ctx);
+            },
+        });
+        select.appendChild(el('option', { value: TEMATICA_RANDOM }, t('ui.lobby.tematica_aleatoria')));
         cats.forEach(function (c) {
-            tabBar.appendChild(chip(c.id, c.emoji || '🎲', catLabel(c.id)));
-        });
-        // 🎲 Sortea una temática de todo el catálogo y salta a su categoría.
-        tabBar.appendChild(chip('random', '🎲', t('ui.lobby.categoria_aleatoria'), function () {
-            const todas = [];
-            cats.forEach(function (c) {
-                (c.tematicas || []).forEach(function (tm) { todas.push({ cat: c.id, id: tm.id }); });
+            const group = el('optgroup', { label: (c.emoji || '🎲') + ' ' + catLabel(c.id) });
+            (c.tematicas || []).forEach(function (tm) {
+                group.appendChild(el('option', { value: tm.id }, (tm.emoji || '🎲') + ' ' + tTematica(tm.id)));
             });
-            if (!todas.length) return;
-            const pick = todas[Math.floor(Math.random() * todas.length)];
-            ctx.tematicaCategoria = pick.cat;
-            ctx.tematicaSeleccionada = pick.id;
-            rerender();
-        }));
-
-        let visibles = [];
-        if (ctx.tematicaCategoria === 'todas') {
-            cats.forEach(function (c) {
-                (c.tematicas || []).forEach(function (tm) { visibles.push(tm); });
-            });
-        } else {
-            const cat = cats.filter(function (c) { return c.id === ctx.tematicaCategoria; })[0];
-            visibles = cat ? (cat.tematicas || []) : [];
-        }
-
-        visibles.forEach(function (tm) {
-            const active = ctx.tematicaSeleccionada === tm.id;
-            grid.appendChild(el('button', {
-                type: 'button',
-                class: 'rounded-lg p-3 text-center border transition ' +
-                    (active ? 'bg-amber-400/20 border-amber-400' : 'bg-slate-700 border-slate-600'),
-                onclick: function () {
-                    ctx.tematicaSeleccionada = tm.id;
-                    rerender();
-                },
-            }, [
-                el('span', { class: 'block text-2xl leading-none mb-1' }, tm.emoji || '🎲'),
-                el('span', { class: 'block text-xs leading-tight ' + (active ? 'text-amber-300 font-bold' : 'text-slate-200') }, tTematica(tm.id)),
-            ]));
+            select.appendChild(group);
         });
+        select.value = ctx.tematicaSeleccionada || TEMATICA_RANDOM;
 
         clear(container);
-        container.appendChild(tabBar);
-        container.appendChild(grid);
+        container.appendChild(select);
+    }
+
+    /**
+     * Resuelve la temática elegida: si es "Todas (aleatoria)", sortea una del
+     * catálogo completo; si no, devuelve el id seleccionado.
+     */
+    function resolverTematica(ctx) {
+        const sel = ctx && ctx.tematicaSeleccionada;
+        if (sel && sel !== TEMATICA_RANDOM) return sel;
+        const todas = [];
+        categoriasData().forEach(function (c) {
+            (c.tematicas || []).forEach(function (tm) { todas.push(tm.id); });
+        });
+        if (!todas.length) return 'hamburguesa';
+        return todas[Math.floor(Math.random() * todas.length)];
     }
 
     function renderJoinView(prefilledCode, prefillName) {
@@ -455,7 +421,7 @@
     }
 
     async function onCreate() {
-        const tematica = state.tematicaSeleccionada || defaultTematica();
+        const tematica = resolverTematica(state);
         const nombre = $('#nameCreate').value.trim();
         const btn = $('#btnCreate');
         btn.disabled = true; btn.classList.add('opacity-50');
@@ -465,6 +431,7 @@
         state.codigo = r.codigo;
         state.jugadorId = r.jugador_id;
         state.jugadorNombre = (nombre || '').trim() || ('Jugador 1');
+        state.tematicaCreada = tematica;
         saveSession();
         renderCreatorView();
         startPollingLobby();
@@ -495,7 +462,7 @@
     }
 
     async function onPractice() {
-        const tematica = state.tematicaSeleccionada || defaultTematica();
+        const tematica = resolverTematica(state);
         const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || 'Tú';
         const dificultad = state.botDificultad || 'normal';
         const btn = $('#btnPractice');
@@ -526,7 +493,7 @@
         clear(app);
         app.appendChild(el('header', { class: 'p-6 text-center safe-pt' }, [
             el('h1', { class: 'text-3xl font-bold text-amber-400' }, t('ui.app.titulo')),
-            el('p', { class: 'text-slate-400 text-sm mt-1' }, tTematica(state.tematicaSeleccionada || state.sala?.tematica || '')),
+            el('p', { class: 'text-slate-400 text-sm mt-1' }, tTematica(state.sala?.tematica || state.tematicaCreada || '')),
         ]));
 
         app.appendChild(el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 text-center fade-in' }, [
@@ -631,8 +598,8 @@
         // Scoreboard
         const scoreboard = el('section', { id: 'scoreboard', class: 'bg-slate-800 px-4 py-3 grid grid-cols-2 gap-3 border-b border-slate-700' });
 
-        // Item card (min-h-0 permite que se encoqueja y no empuje al inventario fuera del viewport)
-        const itemCard = el('section', { id: 'itemCard', class: 'flex-1 min-h-0 flex flex-col items-center justify-center p-6 bg-slate-900 overflow-y-auto' });
+        // Item card (min-h-0 permite que se encoja; el historial va en absoluto a la derecha)
+        const itemCard = el('section', { id: 'itemCard', class: 'relative flex-1 min-h-0 flex flex-col items-center justify-center p-6 bg-slate-900 overflow-y-auto' });
 
         // Inventory row (flex-shrink-0 garantiza que no se comprima)
         const inventory = el('section', { id: 'inventory', class: 'flex-shrink-0 bg-slate-800 px-4 py-3 border-t border-slate-700' });
@@ -782,10 +749,11 @@
     async function botTick() {
         const s = state.sala;
         if (!s || !state.bot || s.estado !== 'jugando' || !s.item_actual || state.jugadorSlot === null) return;
-        if (!window.DraftBot) return;
+        if (!window.DraftBot || !window.DraftBot.estadoKey) return;
         const botSlot = 1 - state.jugadorSlot;
-        const item = s.item_actual;
-        const key = s.ronda + ':' + item.id + ':' + item.precio_actual + ':' + item.turno_de + ':' + (item.pujas ? item.pujas.length : 0);
+        // La key incluye decision_pendiente: si no, el bot no reaccionaría al
+        // PASAR del humano (mismo ítem/precio/turno/pujas) y la partida se colgaría.
+        const key = window.DraftBot.estadoKey(s);
         if (state.botTurnoKey === key) return;
 
         const dificultad = state.bot.dificultad || 'normal';
@@ -800,15 +768,22 @@
         }
         if (Date.now() < state.botWaitUntil) return;
 
-        state.botTurnoKey = key;
         const decision = window.DraftBot.decidir(s, botSlot, dificultad, Math.random, state.botValores || null);
-        if (!decision) return;
-        await botAction(decision);
+        if (!decision) return; // sin acción: NO marcar la situación como resuelta
+
+        const r = await botAction(decision);
+        if (r && r.ok) {
+            state.botTurnoKey = key;
+        } else {
+            // Falló (carrera, estado cambiado): reintentar con delay humano.
+            state.botTurnoKey = null;
+            state.botKeyDelay = null;
+        }
     }
 
     async function botAction(body) {
         const payload = Object.assign({ codigo: state.codigo, jugador_id: state.bot.jugadorId }, body);
-        await api('POST', 'api/accion.php', payload);
+        return await api('POST', 'api/accion.php', payload);
     }
 
     /**
@@ -971,20 +946,31 @@
         ]);
         card.appendChild(status);
 
-        // Historial de pujas de la ronda + última puja.
+        // Historial de pujas: barra a la derecha, la más reciente abajo (las viejas suben).
         const pujas = Array.isArray(item.pujas) ? item.pujas : [];
+        card.classList.toggle('pr-20', pujas.length > 0);
+        card.classList.toggle('sm:pr-24', pujas.length > 0);
         if (pujas.length) {
-            const log = el('div', { class: 'mt-3 text-[11px] text-slate-400 space-y-0.5 text-center' },
-                pujas.slice(-4).map(function (p) {
-                    const nombre = p.por === state.jugadorSlot ? 'Tú' : (state.rivalNombre || 'Rival');
-                    return el('div', {}, nombre + ' +' + p.incremento + ' → ' + p.precio + '🪙');
-                }));
-            card.appendChild(log);
-            const last = pujas[pujas.length - 1];
-            const who = last.por === state.jugadorSlot
-                ? t('ui.juego.tu_ultima_puja')
-                : t('ui.juego.rival_ultima_puja', { nombre: state.rivalNombre || 'Rival' });
-            card.appendChild(el('div', { class: 'mt-1 text-[11px] text-amber-300' }, who));
+            const rail = el('div', {
+                id: 'bidHistory',
+                class: 'absolute right-2 top-16 bottom-24 w-20 sm:w-24 flex flex-col justify-end gap-1 overflow-hidden pointer-events-none',
+            });
+            const visibles = pujas.slice(-6);
+            visibles.forEach(function (p, idx) {
+                const esUltima = idx === visibles.length - 1;
+                const soyYo = p.por === state.jugadorSlot;
+                const nombre = soyYo ? 'Tú' : (state.rivalNombre || 'Rival');
+                rail.appendChild(el('div', {
+                    class: 'rounded px-1.5 py-1 text-right text-[10px] leading-tight bg-slate-800/95 border ' +
+                        (esUltima
+                            ? 'border-amber-400 ' + (soyYo ? 'text-emerald-300' : 'text-rose-300') + ' fade-in'
+                            : 'border-slate-700 text-slate-300'),
+                }, [
+                    el('div', { class: 'font-bold truncate' }, nombre),
+                    el('div', { class: 'font-mono opacity-90' }, '+' + p.incremento + ' · ' + p.precio + '🪙'),
+                ]));
+            });
+            card.appendChild(rail);
         }
 
         const turnoBanner = el('div', { class: 'mt-4 px-4 py-2 rounded-full text-sm font-bold ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300') }, turnoText);
@@ -1230,6 +1216,7 @@
         const card = $('#itemCard');
         if (!card) return;
         clear(card);
+        card.classList.remove('pr-20', 'sm:pr-24');
         const s = state.sala;
         const por = s.abandono_por;
         const rivalSlot = state.jugadorSlot !== null ? (1 - state.jugadorSlot) : null;
@@ -1258,6 +1245,7 @@
         const card = $('#itemCard');
         if (!card) return;
         clear(card);
+        card.classList.remove('pr-20', 'sm:pr-24');
         const s = state.sala;
         const me = s.jugadores[state.jugadorSlot];
         const rival = s.jugadores[1 - state.jugadorSlot];
@@ -1356,7 +1344,7 @@
         const card = $('#itemCard');
         if (!card) return;
         clear(card);
-        card.classList.remove('items-center', 'justify-center');
+        card.classList.remove('items-center', 'justify-center', 'pr-20', 'sm:pr-24');
         card.classList.add('items-stretch', 'justify-start');
         card.appendChild(el('div', { class: 'text-center mt-8 fade-in' }, [
             el('div', { class: 'text-5xl mb-4' }, '⏳'),
@@ -1375,22 +1363,19 @@
 
     // =================== revancha ===================
     function openRevanchaModal() {
-        const ctx = {
-            tematicaCategoria: 'todas',
-            tematicaSeleccionada: (state.sala && state.sala.tematica) || defaultTematica(),
-        };
-        const gridBox = el('div', { class: 'flex-1 min-h-0 overflow-y-auto pb-2 pr-1' });
-        const content = el('div', { class: 'flex flex-col max-h-[80vh]' }, [
-            el('h2', { class: 'flex-shrink-0 text-lg font-bold text-amber-400 mb-2' }, '🔄 ' + t('ui.juego.btn_revancha')),
-            gridBox,
+        const ctx = { tematicaSeleccionada: (state.sala && state.sala.tematica) || TEMATICA_RANDOM };
+        const box = el('div', {});
+        const content = el('div', {}, [
+            el('h2', { class: 'text-lg font-bold text-amber-400 mb-3' }, '🔄 ' + t('ui.juego.btn_revancha')),
+            box,
         ]);
-        const m = showModal(content, { lockBody: true });
-        renderTematicaSelector(gridBox, { ctx: ctx });
-        content.appendChild(el('div', { class: 'flex-shrink-0 flex gap-2 mt-3 pt-3 border-t border-slate-700' }, [
+        const m = showModal(content);
+        renderTematicaSelector(box, { ctx: ctx });
+        content.appendChild(el('div', { class: 'flex gap-2 mt-4' }, [
             el('button', { class: 'flex-1 bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap', onclick: m.close }, t('ui.reglas.cerrar')),
             el('button', {
                 class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap',
-                onclick: function () { proponerRevancha(ctx.tematicaSeleccionada, m.close); },
+                onclick: function () { proponerRevancha(resolverTematica(ctx), m.close); },
             }, t('ui.juego.btn_revancha_proponer')),
         ]));
     }
