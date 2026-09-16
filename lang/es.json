@@ -26,6 +26,9 @@
             "bot_facil": "Fácil",
             "bot_normal": "Normal",
             "bot_dificil": "Difícil",
+            "bot_extremo": "Extremo",
+            "mostrar_valores": "⭐ Valores visibles",
+            "mostrar_valores_ayuda": "Ver el ⭐ de cada ítem durante la partida (afecta a los dos jugadores)",
             "stats_record": "Récord: {v}V · {d}D · {e}E"
         },
         "juego": {
@@ -216,7 +219,7 @@
             { "q": "¿Qué es Draft 20?", "a": "Draft 20 es un juego de subasta por turnos para dos jugadores. Cada partida tiene 8 rondas y una temática (fútbol, anime, comida, streamers…): pujáis por ítems con 20 monedas y gana quien consiga más ⭐." },
             { "q": "¿Cuánto dura una partida?", "a": "Una partida completa son 8 rondas, unos 5 minutos. Podéis encadenar varias seguidas con el botón de revancha." },
             { "q": "¿Hace falta registrarse o descargar algo?", "a": "No. Draft 20 es gratis, se juega en el navegador del móvil y no necesita cuenta: crea una sala y comparte el código o el enlace con tu rival." },
-            { "q": "¿Puedo jugar solo contra la máquina?", "a": "Sí. El modo práctica te enfrenta a un bot con tres dificultades: Fácil, Normal y Difícil." },
+            { "q": "¿Puedo jugar solo contra la máquina?", "a": "Sí. El modo práctica te enfrenta a un bot con cuatro dificultades: Fácil, Normal, Difícil y Extremo." },
             { "q": "¿Cuántas temáticas hay?", "a": "72 temáticas con 20 ítems cada una, de Fútbol o Anime a Mercadona, Eurovisión o Nostalgia. Si eliges «Todas», se sortea una al azar." }
         ],
         "cta_final": "¿Preparado para pujar? Crea una sala gratis",
@@ -230,9 +233,9 @@
         "como_jugar_desc": "Guía completa de Draft 20: objetivo, turnos, pujas, máximo de 4 ítems, desempates y revancha. Aprende a jugar en 2 minutos.",
         "como_jugar_intro": "Draft 20 se juega en el móvil, por turnos y contra otra persona (o contra el bot). Estas son las reglas completas.",
         "prep_titulo": "Preparación",
-        "prep_texto": "Crea una sala, elige temática (o deja «Todas» para que se sortee) y comparte el código de 5 caracteres con tu rival. También puedes practicar contra el bot en tres dificultades.",
+        "prep_texto": "Crea una sala, elige temática (o deja «Todas» para que se sortee) y comparte el código de 5 caracteres con tu rival. También puedes practicar contra el bot en cuatro dificultades.",
         "bot_titulo": "Modo práctica",
-        "bot_texto": "El bot juega con las mismas reglas que tú. En difícil conoce los valores reales de los ítems, así que no te confíes.",
+        "bot_texto": "El bot juega con las mismas reglas que tú. En Difícil conoce los valores reales de los ítems y en Extremo además reparte su presupuesto de forma óptima, así que no te confíes.",
         "revancha_titulo": "Revancha",
         "revancha_texto": "Al terminar, cualquiera de los dos puede proponer revancha con una temática nueva. El rival la acepta o la rechaza desde la pantalla final.",
         "consejos_titulo": "Consejos rápidos",

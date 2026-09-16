@@ -166,9 +166,12 @@
 
         // Bot de práctica.
         if (state.bot) {
-            cargarValoresBotSiToca();
             botTick();
         }
+
+        // Valores de la temática: los necesita el bot con valor real y el modo
+        // "⭐ Valores visibles" (partidas humanas incluidas).
+        cargarValoresSiToca();
     }
 
     function detectarAccionesRival(prev, sala) {
@@ -303,11 +306,15 @@
     }
 
     /**
-     * El bot "difícil" conoce los valores reales: carga el catálogo público de
-     * temáticas una vez conocida la temática de la sala.
+     * Los bots con `usaValorReal` (Difícil, Extremo) conocen los valores
+     * reales: carga el catálogo público de temáticas una vez conocida la
+     * temática de la sala.
      */
-    async function cargarValoresBotSiToca() {
-        if (!state.bot || state.bot.dificultad !== 'dificil' || state.botValores || !state.sala || !state.sala.tematica) return;
+    async function cargarValoresSiToca() {
+        if (!state.sala || !state.sala.tematica || state.botValores) return;
+        const necesitaModo = !!state.sala.mostrar_valores;
+        const cfgBot = (state.bot && window.DraftBot && window.DraftBot.config) ? window.DraftBot.config(state.bot.dificultad) : null;
+        if (!necesitaModo && (!cfgBot || !cfgBot.usaValorReal)) return;
         try {
             const resp = await fetch('tematicas/' + encodeURIComponent(state.sala.tematica) + '.json');
             const data = await resp.json();
@@ -444,34 +451,43 @@
 
         const myTurn = item.turno_de === state.jugadorSlot;
 
-        // Wrapper centrado verticalmente: el contenedor tiene scroll, así que en
-        // pantallas cortas el contenido se centra si sobra espacio y se puede
-        // scrollear entero si falta (sin recortar la parte superior).
-        const wrap = el('div', { class: 'w-full my-auto flex flex-col items-center' });
-
-        // Aviso blando: el rival lleva sin responder unos segundos.
-        if (state.rivalAusente !== null && state.rivalAusente >= 6 && s.estado === 'jugando') {
-            wrap.appendChild(el('div', { class: 'w-full bg-amber-500 text-slate-900 text-xs font-bold text-center py-2 px-3 rounded mb-3' },
-                t('ui.juego.msg_rival_ausente', { nombre: state.rivalNombre || 'Rival', seg: state.rivalAusente })));
-        }
-
+        // Barra superior pegada a las esquinas de la tarjeta.
         const totalRondas = (s.items_mezclados && s.items_mezclados.length) ? s.items_mezclados.length : 8;
         const chipTurno = el('div', {
             class: 'text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'),
         }, myTurn ? t('ui.juego.tu_turno') : t('ui.juego.turno_rival'));
-        wrap.appendChild(el('div', { class: 'w-full flex items-center justify-between gap-2 mb-1' }, [
+        card.appendChild(el('div', { class: 'w-full flex-shrink-0 flex items-center justify-between gap-2' }, [
             el('div', { class: 'text-xs text-slate-400' }, t('ui.juego.ronda') + ' ' + s.ronda + ' / ' + totalRondas),
             chipTurno,
         ]));
-        if (s.ronda >= totalRondas) {
-            wrap.appendChild(el('div', { class: 'text-[11px] font-bold text-amber-300 mb-1' }, '🔥 ' + t('ui.juego.ultima_ronda')));
+
+        // Aviso blando: el rival lleva sin responder unos segundos.
+        if (state.rivalAusente !== null && state.rivalAusente >= 6 && s.estado === 'jugando') {
+            card.appendChild(el('div', { class: 'w-full flex-shrink-0 bg-amber-500 text-slate-900 text-xs font-bold text-center py-2 px-3 rounded mt-2' },
+                t('ui.juego.msg_rival_ausente', { nombre: state.rivalNombre || 'Rival', seg: state.rivalAusente })));
         }
+        if (s.ronda >= totalRondas) {
+            card.appendChild(el('div', { class: 'w-full flex-shrink-0 text-[11px] font-bold text-amber-300 mt-1' }, '🔥 ' + t('ui.juego.ultima_ronda')));
+        }
+
+        // Zona central: el ítem se centra en el espacio libre con auto-márgenes
+        // (sin justify-center en el contenedor con scroll) y se puede scrollear
+        // entero si no cabe, sin recortar la parte superior.
+        const centro = el('div', { class: 'w-full flex-1 flex flex-col justify-center' });
+        const wrap = el('div', { class: 'w-full my-auto flex flex-col items-center' });
+        centro.appendChild(wrap);
 
         const emoji = el('div', { class: 'text-[clamp(3rem,12svh,6rem)] mb-2 ' + (myTurn ? 'pulse-win' : '') }, item.emoji);
         wrap.appendChild(emoji);
 
         const itemName = tItem(item.id);
         wrap.appendChild(el('h2', { class: 'text-lg font-bold text-slate-100 mb-1 text-center px-4' }, itemName));
+
+        // Modo "⭐ Valores visibles": valor real del ítem en juego (compartido por sala).
+        const valorItem = state.botValores ? state.botValores[item.id] : undefined;
+        if (s.mostrar_valores && valorItem != null) {
+            wrap.appendChild(el('div', { class: 'bg-slate-800 border border-amber-400 rounded-full px-3 py-0.5 text-sm font-bold text-amber-300 mb-1' }, '⭐ ' + valorItem));
+        }
 
         // Precio y turno
         const status = el('div', { class: 'mt-2 text-center' }, [
@@ -503,7 +519,7 @@
                 el('div', { class: 'font-mono opacity-90' }, '+' + p.incremento + ' · ' + p.precio + '🪙'),
             ]));
         });
-        card.appendChild(wrap);
+        card.appendChild(centro);
         card.appendChild(rail);
 
         // Banner ámbar si hay decisión pendiente (deadlock sin dinero).
@@ -528,10 +544,11 @@
     }
 
     function itemTooltip(i) {
-        // El valor (⭐) es secreto hasta la pantalla final: no se revela aquí.
+        // El ⭐ solo se revela con el modo "Valores visibles" o en la pantalla final.
         const name = tItem(i.id);
         const p = i.precio != null ? i.precio : '?';
-        return name + ' · 🪙' + p;
+        const v = (state.sala && state.sala.mostrar_valores && i.valor != null) ? ' · ⭐' + i.valor : '';
+        return name + ' · 🪙' + p + v;
     }
 
     function renderInventory() {
@@ -743,6 +760,7 @@
             s.revancha ? [s.revancha.por, s.revancha.codigo_nuevo, s.revancha.ts].join(':') : '',
             state.rivalNombre || '',
             (state.rivalAusente !== null && state.rivalAusente >= 6) ? state.rivalAusente : '',
+            state.botValores ? 'val' : '', // el ⭐ aparece en cuanto cargan los valores
         ].join('#');
     }
 
@@ -935,7 +953,7 @@
         // Contra bot: nueva partida inmediata con el mismo bot y dificultad.
         if (state.bot) {
             const dificultad = state.bot.dificultad || 'normal';
-            const ok = await iniciarPartidaBot(tematica, dificultad, state.jugadorNombre);
+            const ok = await iniciarPartidaBot(tematica, dificultad, state.jugadorNombre, !!(state.sala && state.sala.mostrar_valores));
             if (ok) cerrar();
             return;
         }
@@ -943,7 +961,11 @@
         const viejoCodigo = state.codigo;
         const viejoId = state.jugadorId;
         const nombre = state.jugadorNombre || '';
-        const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombre });
+        const r = await api('POST', 'api/crear_sala.php', {
+            tematica: tematica,
+            nombre: nombre,
+            mostrar_valores: !!(state.sala && state.sala.mostrar_valores),
+        });
         if (!r.ok) { toast(r.error || 'Error'); return; }
         const r2 = await api('POST', 'api/revancha.php', {
             codigo: viejoCodigo,

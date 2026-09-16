@@ -5,6 +5,8 @@
  *   - facil:   sin valoración, puja poco y se retira pronto.
  *   - normal:  valoración secreta (hash del id), presupuesto equilibrado.
  *   - dificil: conoce los valores reales (se los pasa el caller) y es agresivo.
+ *   - extremo: valores reales + reparto racional del presupuesto según los
+ *              ítems que quedan por salir; sin retiradas al azar.
  *
  * Se carga como script normal (window.DraftBot) y también como módulo Node
  * para los tests (module.exports).
@@ -16,9 +18,10 @@
     'use strict';
 
     const CONFIG = {
-        facil:   { usaValorReal: false, factor: 0.60, retirada: 0.40, delayMs: [900, 1600], inc3: 0.10, deadlockMinDinero: 3, deadlockMinVal: 8 },
-        normal:  { usaValorReal: false, factor: 1.20, retirada: 0.12, delayMs: [700, 1800], inc3: 0.30, deadlockMinDinero: 2, deadlockMinVal: 5 },
-        dificil: { usaValorReal: true,  factor: 1.50, retirada: 0.05, delayMs: [500, 1200], inc3: 0.50, deadlockMinDinero: 1, deadlockMinVal: 4 },
+        facil:   { usaValorReal: false, factor: 0.60, retirada: 0.40, delayMs: [900, 1600], inc3: 0.10, deadlockMinDinero: 3, deadlockMinVal: 8, reserva: true },
+        normal:  { usaValorReal: false, factor: 1.20, retirada: 0.12, delayMs: [700, 1800], inc3: 0.30, deadlockMinDinero: 2, deadlockMinVal: 5, reserva: true },
+        dificil: { usaValorReal: true,  factor: 1.50, retirada: 0.05, delayMs: [500, 1200], inc3: 0.50, deadlockMinDinero: 1, deadlockMinVal: 4, reserva: false },
+        extremo: { usaValorReal: true,  factor: 1.00, retirada: 0,    delayMs: [350, 900],  inc3: 0.70, deadlockMinDinero: 1, deadlockMinVal: 1, reserva: true, racional: true },
     };
 
     function hashId(id) {
@@ -39,6 +42,30 @@
     }
 
     function config(dificultad) { return CONFIG[dificultad] || CONFIG.normal; }
+
+    /**
+     * Presupuesto racional de "extremo": reparte el dinero en proporción al
+     * valor del ítem actual frente a los mejores ítems que quedan por salir
+     * (sala.items_mezclados + indice_item). Reserva al menos 1 🪙 por hueco
+     * futuro (salvo si es el último que necesita) y nunca paga más de val+1.
+     */
+    function maxPujaRacional(sala, cfg, itemId, val, dinero, cupo, valorReal) {
+        const ids = Array.isArray(sala.items_mezclados) ? sala.items_mezclados : null;
+        let suma = val;
+        if (ids && cupo > 1) {
+            const futuros = [];
+            for (let i = Math.max(0, (sala.indice_item || 0) + 1); i < ids.length; i++) {
+                if (ids[i] !== itemId) futuros.push(valorEfectivo(ids[i], cfg, valorReal));
+            }
+            futuros.sort(function (a, b) { return b - a; });
+            for (let i = 0; i < cupo - 1 && i < futuros.length; i++) suma += futuros[i];
+        }
+        let maxPuja = Math.round(dinero * (val / Math.max(1, suma)) * cfg.factor);
+        maxPuja = Math.max(1, Math.min(maxPuja, dinero));
+        maxPuja = Math.min(maxPuja, val + (cfg.margen || 1));
+        if (cupo > 1) maxPuja = Math.min(maxPuja, Math.max(1, dinero - (cupo - 1)));
+        return Math.max(1, Math.min(maxPuja, dinero));
+    }
 
     /**
      * Acción de respaldo segura: garantiza que el bot SIEMPRE responda en su
@@ -89,7 +116,7 @@
      * @param {number} botSlot   - 0 | 1
      * @param {string} dificultad
      * @param {function} rng     - generador aleatorio [0,1) (inyectable en tests)
-     * @param {object|null} valorReal - mapa id->valor (solo para 'dificil')
+     * @param {object|null} valorReal - mapa id->valor (dificultades con usaValorReal)
      * @returns {{accion:string, incremento?:number, destino?:number, precio?:number}|null}
      */
     function decidir(sala, botSlot, dificultad, rng, valorReal) {
@@ -127,14 +154,19 @@
 
         const val = valorEfectivo(item.id, cfg, valorReal);
         const cupo = Math.max(1, 4 - misItems);
-        const medio = Math.floor(dinero / cupo);
-        let maxPuja = Math.round(medio * (val / 6) * cfg.factor);
-        maxPuja = Math.max(1, Math.min(maxPuja, dinero));
-        if (dificultad !== 'dificil') {
-            // Reserva al menos 1 moneda por ronda restante.
-            maxPuja = Math.min(maxPuja, Math.max(1, dinero - (cupo - 1)));
+        let maxPuja;
+        if (cfg.racional) {
+            maxPuja = maxPujaRacional(sala, cfg, item.id, val, dinero, cupo, valorReal);
+        } else {
+            const medio = Math.floor(dinero / cupo);
+            maxPuja = Math.round(medio * (val / 6) * cfg.factor);
+            maxPuja = Math.max(1, Math.min(maxPuja, dinero));
+            if (cfg.reserva) {
+                // Reserva al menos 1 moneda por ronda restante.
+                maxPuja = Math.min(maxPuja, Math.max(1, dinero - (cupo - 1)));
+            }
+            if (maxPuja < 1) maxPuja = 1;
         }
-        if (maxPuja < 1) maxPuja = 1;
 
         const pujas = Array.isArray(item.pujas) ? item.pujas.length : 0;
         const inc = (rng() < cfg.inc3) ? 3 : 1;

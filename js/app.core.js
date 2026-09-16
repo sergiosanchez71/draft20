@@ -30,6 +30,7 @@
         botKeyDelay: null,
         botValores: null,
         botDificultad: 'normal',
+        mostrarValores: false,
         statsRegistradas: false,
         ultimoEmoteTs: 0,
         bot: null,
@@ -326,9 +327,9 @@
             const difGuardada = localStorage.getItem('draft20_bot_dificultad');
             if (difGuardada) state.botDificultad = difGuardada;
         } catch (e) { /* ignore */ }
-        const difOpciones = [['facil', 'ui.lobby.bot_facil'], ['normal', 'ui.lobby.bot_normal'], ['dificil', 'ui.lobby.bot_dificil']];
+        const difOpciones = [['facil', 'ui.lobby.bot_facil'], ['normal', 'ui.lobby.bot_normal'], ['dificil', 'ui.lobby.bot_dificil'], ['extremo', 'ui.lobby.bot_extremo']];
         const difBtns = [];
-        const difWrap = el('div', { class: 'flex gap-2 justify-center mt-2' });
+        const difWrap = el('div', { class: 'flex flex-wrap gap-2 justify-center mt-2' });
         function pintarDificultad() {
             difBtns.forEach(function (b, i) {
                 const activo = state.botDificultad === difOpciones[i][0];
@@ -350,6 +351,27 @@
         });
         pintarDificultad();
 
+        // Modo "⭐ Valores visibles" (persistido; se comparte con la sala).
+        try {
+            if (localStorage.getItem('draft20_mostrar_valores') === '1') state.mostrarValores = true;
+        } catch (e) { /* ignore */ }
+        const mvBtn = el('button', {
+            type: 'button',
+            class: 'px-4 py-2 rounded-full text-xs border btn-tap',
+            'aria-pressed': state.mostrarValores ? 'true' : 'false',
+            onclick: function () {
+                state.mostrarValores = !state.mostrarValores;
+                try { localStorage.setItem('draft20_mostrar_valores', state.mostrarValores ? '1' : '0'); } catch (e) { /* ignore */ }
+                pintarValores();
+            },
+        }, t('ui.lobby.mostrar_valores'));
+        function pintarValores() {
+            mvBtn.className = 'px-4 py-2 rounded-full text-xs border btn-tap ' +
+                (state.mostrarValores ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
+            mvBtn.setAttribute('aria-pressed', state.mostrarValores ? 'true' : 'false');
+        }
+        pintarValores();
+
         const practiceBtn = el('div', { class: 'm-4' }, [
             el('button', {
                 id: 'btnPractice',
@@ -358,6 +380,10 @@
             }, t('ui.lobby.btn_practicar')),
             el('div', { class: 'text-center text-[11px] text-slate-500 mt-3' }, t('ui.lobby.bot_dificultad')),
             difWrap,
+            el('div', { class: 'text-center mt-3' }, [
+                mvBtn,
+                el('div', { class: 'text-[11px] text-slate-500 mt-2' }, t('ui.lobby.mostrar_valores_ayuda')),
+            ]),
         ]);
 
         app.appendChild(errorBox);
@@ -446,7 +472,11 @@
         const nombre = $('#nameCreate').value.trim();
         const btn = $('#btnCreate');
         btn.disabled = true; btn.classList.add('opacity-50');
-        const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombre });
+        const r = await api('POST', 'api/crear_sala.php', {
+            tematica: tematica,
+            nombre: nombre,
+            mostrar_valores: !!state.mostrarValores,
+        });
         btn.disabled = false; btn.classList.remove('opacity-50');
         if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
         state.codigo = r.codigo;
@@ -462,9 +492,14 @@
      * Crea una partida de práctica: sala nueva + bot sentado como J2.
      * Usada por "Practicar vs 🤖" y por la revancha contra bot (misma dificultad).
      */
-    async function iniciarPartidaBot(tematica, dificultad, nombre) {
+    async function iniciarPartidaBot(tematica, dificultad, nombre, mostrarValores) {
         const nombreFinal = (nombre && nombre.trim()) || state.jugadorNombre || 'Tú';
-        const r = await api('POST', 'api/crear_sala.php', { tematica: tematica, nombre: nombreFinal });
+        const mv = (mostrarValores === undefined) ? !!state.mostrarValores : !!mostrarValores;
+        const r = await api('POST', 'api/crear_sala.php', {
+            tematica: tematica,
+            nombre: nombreFinal,
+            mostrar_valores: mv,
+        });
         if (!r.ok) { toast(r.error || 'Error'); return false; }
         const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: 'Bot', bot: true });
         if (!r2.ok) { toast(r2.error || 'Error'); return false; }

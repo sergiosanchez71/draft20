@@ -18,7 +18,7 @@
  *
  * --- Petición ---
  *   POST  application/json
- *   Body: { "tematica": "hamburguesa", "nombre": "Opcional" }
+ *   Body: { "tematica": "hamburguesa", "nombre": "Opcional", "mostrar_valores": false }
  *
  * --- Respuesta 200 ---
  *   { "ok": true, "codigo": "A8F3X", "jugador_id": "j1_<uuid>" }
@@ -351,6 +351,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 $input      = leer_input_json();
 $tematicaId = isset($input['tematica']) ? (string) $input['tematica'] : '';
 $nombreJ1   = isset($input['nombre'])   ? trim((string) $input['nombre']) : '';
+// Modo "⭐ Valores visibles": se comparte con toda la sala (lo fija quien crea).
+$mostrarValores = !empty($input['mostrar_valores']);
 
 if ($tematicaId === '') {
     responder(['ok' => false, 'error' => 'Falta el campo "tematica".'], 400);
@@ -419,6 +421,7 @@ try {
         'revancha'             => null, // {por, codigo_nuevo, tematica, ts} cuando alguien propone revancha al acabar
         'emotes'               => [],   // últimos emotes: {por, code, ts} (máx EMOTES_MAX)
         'bot_slot'             => null, // 0 | 1 si ese slot es un bot local (no pollea: sin abandono ni aviso)
+        'mostrar_valores'      => $mostrarValores, // true = mostrar ⭐ de cada ítem durante la partida
         'creado_en'           => $ahora,
         'actualizado_en'      => $ahora,
     ];
