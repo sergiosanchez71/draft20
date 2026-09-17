@@ -10,6 +10,7 @@ declare(strict_types=1);
 const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
+const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 
 function e(?string $s): string
 {
@@ -151,9 +152,20 @@ function csp_headers(): void
 function csp_policy(): string
 {
     $n = csp_nonce();
-    return "default-src 'self'; script-src 'self' 'nonce-" . $n . "'; " .
-        "style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; " .
-        "object-src 'none'; base-uri 'self'; form-action 'self'";
+    return "default-src 'self'; " .
+        "script-src 'self' 'nonce-" . $n . "' https://pagead2.googlesyndication.com https://partner.googleadservices.com " .
+        "https://tpc.googlesyndication.com https://googleads.g.doubleclick.net https://adservice.google.com " .
+        "https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
+        "style-src 'self' 'unsafe-inline'; " .
+        "img-src 'self' data: https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net " .
+        "https://tpc.googlesyndication.com https://www.google.com https://www.gstatic.com " .
+        "https://ep1.adtrafficquality.google https://www.googleadservices.com; " .
+        "connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net " .
+        "https://ep1.adtrafficquality.google https://csi.gstatic.com https://www.google.com https://adservice.google.com " .
+        "https://fundingchoicesmessages.google.com; " .
+        "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com " .
+        "https://www.gstatic.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com; " .
+        "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
 }
 
 /** Meta CSP para el <head>: el hosting puede reescribir la cabecera HTTP. */
@@ -323,6 +335,9 @@ function pagina_head(array $opts): void
 <?php foreach (($opts['prefetch'] ?? []) as $pf): ?>
     <link rel="prefetch" href="<?= e($pf) ?>">
 <?php endforeach; ?>
+<?php if (ADSENSE_CLIENT !== ''): ?>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?= e(ADSENSE_CLIENT) ?>" crossorigin="anonymous"></script>
+<?php endif; ?>
     <?= css_tags($opts['css_inline'] ?? true) ?>
 <?php foreach (($opts['preload_scripts'] ?? []) as $src): ?>
     <link rel="preload" as="script" href="<?= e(asset_js($src)) ?>">

@@ -256,6 +256,10 @@ try {
         'guía: Article con publisher de organización');
     $rLlms = http_req('GET', $base . '/llms.txt');
     check($rLlms['code'] === 200 && strpos((string) $rLlms['raw'], '# Draft 20') === 0, 'llms.txt servido con H1');
+    check(strpos((string) $rSeoHome['raw'], 'adsbygoogle.js?client=ca-pub-9504493922636861') !== false, 'home: script de AdSense en el head');
+    check(strpos($hcsp, 'pagead2.googlesyndication.com') !== false, 'CSP: dominios de AdSense permitidos');
+    $rAds = http_req('GET', $base . '/ads.txt');
+    check($rAds['code'] === 200 && strpos((string) $rAds['raw'], 'pub-9504493922636861') !== false, 'ads.txt servido con el publisher');
     $rSitemap = http_req('GET', $base . '/sitemap.php');
     $mSitemap = [];
     check($rSitemap['code'] === 200
