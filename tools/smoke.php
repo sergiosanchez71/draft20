@@ -239,6 +239,12 @@ try {
     $n2 = $mCsp2[1] ?? '';
     check(strpos((string) $rcsp2['raw'], 'application/ld+json" nonce="' . $n2 . '"') !== false, 'JSON-LD firmado con el nonce');
     check(strpos($hcsp, "object-src 'none'") !== false, 'CSP: object-src none');
+    // El hosting puede reescribir la cabecera HTTP: la política también va en <meta>.
+    $mMeta = [];
+    check((bool) preg_match('/<meta http-equiv="Content-Security-Policy" content="([^"]+)"/', (string) $rcsp['raw'], $mMeta), 'meta CSP presente');
+    $metaCsp = $mMeta[1] ?? '';
+    check($nonce !== '' && $metaCsp !== '' && strpos($metaCsp, $nonce) !== false, 'el meta CSP usa el mismo nonce');
+    check(strpos($metaCsp, 'object-src') !== false && strpos($metaCsp, 'default-src') !== false, 'meta CSP completa');
 
     // 11) Contador anónimo de eventos + beacon en las páginas SEO.
     $rEv = http_req('POST', $base . '/api/evento.php', ['evento' => 'page:home']);

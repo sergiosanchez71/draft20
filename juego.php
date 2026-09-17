@@ -28,6 +28,7 @@ csp_headers();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <?= csp_meta() ?>
     <meta name="theme-color" content="#0f172a">
     <title>Draft 20 — Partida</title>
     <meta name="robots" content="noindex, follow">

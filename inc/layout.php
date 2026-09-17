@@ -144,12 +144,22 @@ function csp_headers(): void
     if (headers_sent()) {
         return;
     }
+    header('Content-Security-Policy: ' . csp_policy());
+}
+
+/** Política CSP (sin frame-ancestors: va en meta y ahí se ignora; cubre XFO). */
+function csp_policy(): string
+{
     $n = csp_nonce();
-    header(
-        "Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-" . $n . "'; " .
+    return "default-src 'self'; script-src 'self' 'nonce-" . $n . "'; " .
         "style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; " .
-        "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
-    );
+        "object-src 'none'; base-uri 'self'; form-action 'self'";
+}
+
+/** Meta CSP para el <head>: el hosting puede reescribir la cabecera HTTP. */
+function csp_meta(): string
+{
+    return '<meta http-equiv="Content-Security-Policy" content="' . e(csp_policy()) . '">';
 }
 
 /** Evento de página para el contador anónimo (según el script que la sirve). */
@@ -257,6 +267,7 @@ function pagina_head(array $opts): void
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <?= csp_meta() ?>
     <meta name="theme-color" content="#0f172a">
     <title><?= e($titulo) ?></title>
     <meta name="description" content="<?= e($descripcion) ?>">
