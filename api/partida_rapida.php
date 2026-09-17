@@ -2,20 +2,24 @@
 /**
  * Draft 20 — API: partida rápida (matchmaking sin enlace).
  *
- * Empareja al jugador con el primero que también pulse "Partida rápida":
- *   - Si hay alguien esperando (entrada viva en la cola) → se une a su sala.
- *   - Si no → crea una sala con temática aleatoria y espera en la cola.
+ * Empareja al jugador con el primero que también pulse "Partida rápida" y
+ * tenga SU MISMO modo de "⭐ Valores visibles" (emparejamiento estricto):
+ *   - Si hay alguien esperando con el mismo modo → se une a su sala.
+ *   - Si no → crea una sala con temática aleatoria y su modo, y espera en la
+ *     cola (puede haber una entrada esperando por cada modo).
  *
  * La cola vive en api/datos/cola_rapida.json (directorio bloqueado por HTTP)
  * y se purga en cada llamada: salas inexistentes, ya empezadas, con rival, o
- * cuyo creador lleva > 15 s sin pollear (cerró la pestaña).
+ * cuyo creador lleva > COLA_STALE_S sin pollear (cerró la pestaña).
  *
  * --- Petición ---
- *   POST  { "nombre": "Opcional" }
+ *   POST  { "nombre": "Opcional", "mostrar_valores": false }
  *   POST  { "accion": "cancelar", "codigo": "ABCDE", "jugador_id": "j1_..." }
+ *   POST  { "accion": "cola", "jugador_id": "j1_..." }   // listado saneado
  *
  * --- Respuesta 200 ---
- *   { "ok": true, "rol": "creador"|"rival", "codigo": "ABCDE", "jugador_id": "..." }
+ *   { "ok": true, "rol": "creador"|"rival", "codigo": "ABCDE",
+ *     "jugador_id": "...", "mostrar_valores": false }
  */
 declare(strict_types=1);
 
@@ -305,17 +309,15 @@ try {
         ];
     }, $vivas);
 
-    // 1) Hay alguien esperando → nos unimos a su sala. Se prefiere a alguien con
-    //    el mismo modo de ⭐; si no hay nadie, se empareja igual (modo mixto).
+    // 1) Hay alguien esperando CON TU MISMO modo de ⭐ → nos unimos a su sala.
+    //    Emparejamiento estricto: si el que espera tiene otro modo, no se
+    //    empareja (se crea sala propia y cada modo espera al suyo).
     $elegida = null;
     foreach ($vivas as $v) {
         if ((bool) $v['visible'] === $mvBuscador) {
             $elegida = $v;
             break;
         }
-    }
-    if ($elegida === null && $vivas !== []) {
-        $elegida = $vivas[0];
     }
 
     if ($elegida !== null) {

@@ -302,13 +302,25 @@ try {
     $rqColaYo = http_req('POST', $base . '/api/partida_rapida.php', ['accion' => 'cola', 'jugador_id' => (string) ($rq1['json']['jugador_id'] ?? '')]);
     check(count($rqColaYo['json']['espera'] ?? []) === 1, 'cola: el listado excluye tu propia entrada');
 
-    // Preferencia: buscar con ⭐ debe emparejar con la sala B (aunque A espere antes).
+    // Preferencia/estricto: buscar con ⭐ debe emparejar con la sala B (aunque A espere antes).
     $rqMatch = http_req('POST', $base . '/api/partida_rapida.php', ['nombre' => 'RapidaC', 'mostrar_valores' => true]);
     check($rqMatch['code'] === 200 && ($rqMatch['json']['codigo'] ?? '') === $codB && ($rqMatch['json']['mostrar_valores'] ?? null) === true,
-        'emparejamiento: prefiere el mismo modo de ⭐');
+        'emparejamiento: mismo modo de ⭐');
     check(($rqMatch['json']['rol'] ?? '') === 'rival', 'emparejamiento: entra como rival');
+
+    // Estricto: ahora solo queda A (sin ⭐); buscar CON ⭐ no debe emparejar con ella.
+    $rqEstricto = http_req('POST', $base . '/api/partida_rapida.php', ['nombre' => 'RapidaE', 'mostrar_valores' => true]);
+    check($rqEstricto['code'] === 200 && ($rqEstricto['json']['rol'] ?? '') === 'creador'
+        && ($rqEstricto['json']['codigo'] ?? '') !== $codA && ($rqEstricto['json']['mostrar_valores'] ?? null) === true,
+        'emparejamiento estricto: con otro modo se crea sala nueva');
+    $codE = (string) ($rqEstricto['json']['codigo'] ?? '');
+    $codigos[] = $codE;
+    check(count(http_req('POST', $base . '/api/partida_rapida.php', ['accion' => 'cola'])['json']['espera'] ?? []) === 2,
+        'cola: ahora espera una entrada por modo');
+
+    // Y quien llega sin ⭐ empareja con la que espera sin ⭐.
     $rqMatch2 = http_req('POST', $base . '/api/partida_rapida.php', ['nombre' => 'RapidaD', 'mostrar_valores' => false]);
-    check(($rqMatch2['json']['codigo'] ?? '') === $codA, 'emparejamiento: el resto cae en la sala que queda');
+    check(($rqMatch2['json']['codigo'] ?? '') === $codA, 'emparejamiento: el que llega sin ⭐ cae en la sala sin ⭐');
 } finally {
     foreach ($codigos as $c) {
         if ($c !== '') {
