@@ -152,6 +152,32 @@ function csp_headers(): void
     );
 }
 
+/** Evento de página para el contador anónimo (según el script que la sirve). */
+function evento_pagina_actual(): string
+{
+    $mapa = [
+        'index.php' => 'page:home',
+        'tematica.php' => 'page:tematica',
+        'categoria.php' => 'page:categoria',
+        'guia.php' => 'page:guia',
+        'guias.php' => 'page:guias',
+        'glosario.php' => 'page:glosario',
+        'como_jugar.php' => 'page:como-jugar',
+    ];
+    $script = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+    return $mapa[$script] ?? '';
+}
+
+/** Heurística de UA: los crawlers no cuentan en las métricas. */
+function es_crawler(): bool
+{
+    $ua = strtolower((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
+    if ($ua === '') {
+        return true;
+    }
+    return (bool) preg_match('/bot|crawl|spider|slurp|bing|google|yandex|baidu|duckduck|facebook|ahrefs|semrush|uptime|pingdom|monitor/', $ua);
+}
+
 /** Tailwind: usa el CSS compilado si existe; si no, cae al CDN (desarrollo). */
 function tailwind_tag(): string
 {
@@ -282,6 +308,13 @@ function pagina_foot(array $opts = []): void
     }
     if (!empty($opts['inline'])) {
         echo '    <script nonce="' . e(csp_nonce()) . '">' . $opts['inline'] . '</script>' . "\n";
+    }
+    // Contador anónimo de páginas (sin cookies ni identificadores).
+    $eventoPagina = evento_pagina_actual();
+    if ($eventoPagina !== '' && !es_crawler()) {
+        echo '    <script nonce="' . e(csp_nonce()) . '">'
+            . 'if(!window.__ev){window.__ev=1;try{navigator.sendBeacon("/api/evento.php",JSON.stringify({evento:"' . $eventoPagina . '"}))}catch(e){}}'
+            . '</script>' . "\n";
     }
     ?>
 </body>

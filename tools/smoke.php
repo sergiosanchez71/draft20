@@ -44,7 +44,7 @@ function http_req(string $method, string $url, ?array $body = null): array
 {
     $ctx = stream_context_create(['http' => [
         'method' => $method,
-        'header' => "Content-Type: application/json\r\n",
+        'header' => "Content-Type: application/json\r\nUser-Agent: Draft20Smoke/1.0\r\n",
         'content' => $body === null ? '' : json_encode($body),
         'ignore_errors' => true,
         'timeout' => 15,
@@ -239,6 +239,29 @@ try {
     $n2 = $mCsp2[1] ?? '';
     check(strpos((string) $rcsp2['raw'], 'application/ld+json" nonce="' . $n2 . '"') !== false, 'JSON-LD firmado con el nonce');
     check(strpos($hcsp, "object-src 'none'") !== false, 'CSP: object-src none');
+
+    // 11) Contador anónimo de eventos + beacon en las páginas SEO.
+    $rEv = http_req('POST', $base . '/api/evento.php', ['evento' => 'page:home']);
+    check($rEv['code'] === 204, 'evento válido → 204');
+    $rEv2 = http_req('POST', $base . '/api/evento.php', ['evento' => 'evento:inventado']);
+    check($rEv2['code'] === 400, 'evento fuera de la lista blanca → 400');
+    $rEv3 = http_req('GET', $base . '/api/evento.php');
+    check($rEv3['code'] === 405, 'evento por GET → 405');
+    $statsFile = $root . '/api/datos/stats/' . date('Y-m-d') . '.json';
+    $nAntes = 0;
+    if (is_file($statsFile)) {
+        $prev = json_decode((string) file_get_contents($statsFile), true);
+        $nAntes = (int) (is_array($prev) ? ($prev['page:home'] ?? 0) : 0);
+    }
+    http_req('POST', $base . '/api/evento.php', ['evento' => 'page:home']);
+    $nDespues = 0;
+    if (is_file($statsFile)) {
+        $post = json_decode((string) file_get_contents($statsFile), true);
+        $nDespues = (int) (is_array($post) ? ($post['page:home'] ?? 0) : 0);
+    }
+    check($nDespues === $nAntes + 1, 'el contador diario incrementa');
+    $rHomeEv = http_req('GET', $base . '/index.php');
+    check(strpos((string) $rHomeEv['raw'], '/api/evento.php') !== false, 'las páginas SEO incluyen el beacon');
 } finally {
     foreach ($codigos as $c) {
         if ($c !== '') {

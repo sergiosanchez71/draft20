@@ -262,6 +262,16 @@
         } catch (e) { /* ignore */ }
     }
 
+    // =================== contador anónimo ===================
+    /** Incrementa un contador agregado (sin cookies ni identificadores). */
+    function evento(nombre) {
+        try {
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon('/api/evento.php', JSON.stringify({ evento: nombre }));
+            }
+        } catch (e) { /* ignore */ }
+    }
+
     // =================== sonido (WebAudio, sin ficheros) ===================
     let audioCtx = null;
 
@@ -326,6 +336,7 @@
         deferredPrompt = null;
         const b = document.getElementById('btnInstalar');
         if (b) b.classList.add('hidden');
+        evento('pwa:install');
         toast(t('ui.lobby.pwa_instalada'));
     });
 
@@ -947,6 +958,7 @@
         guardarNombre(state.jugadorNombre);
         state.tematicaCreada = tematica;
         saveSession();
+        evento('game:creada');
         renderCreatorView();
         startPollingLobby();
     }
@@ -984,6 +996,7 @@
         state.jugadorNombre = nombreFinal;
         guardarNombre(nombreFinal);
         saveSession();
+        evento('game:bot');
         window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
         return true;
     }
@@ -1089,6 +1102,7 @@
         state.jugadorNombre = nombre || (r.rol === 'creador' ? 'Jugador 1' : 'Jugador 2');
         state.tematicaCreada = null;
         saveSession();
+        evento('game:rapida');
 
         if (r.rol === 'rival') {
             window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
@@ -1213,6 +1227,7 @@
         sfx: sfx,
         toggleSonido: toggleSonido,
         showRulesModal: showRulesModal,
+        evento: evento,
         iniciarPartidaBot: iniciarPartidaBot,
     };
 })();

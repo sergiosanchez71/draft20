@@ -12,6 +12,7 @@ $SEO  = is_array($LANG['seo'] ?? null) ? $LANG['seo'] : [];
 $secciones = [
     ['priv_datos_titulo', 'priv_datos_texto'],
     ['priv_local_titulo', 'priv_local_texto'],
+    ['priv_metricas_titulo', 'priv_metricas_texto'],
     ['priv_terceros_titulo', 'priv_terceros_texto'],
     ['priv_contacto_titulo', 'priv_contacto_texto'],
 ];

@@ -28,6 +28,7 @@
     const iniciarPartidaBot = D.iniciarPartidaBot;
     const sfx = D.sfx, leerSerie = D.leerSerie, registrarHistorial = D.registrarHistorial, logroIcono = D.logroIcono;
     const showRulesModal = D.showRulesModal;
+    const evento = D.evento;
 
     // El aviso del último ítem y el de la temática se muestran una sola vez
     // por partida (la carga de página va por partida).
@@ -1223,6 +1224,7 @@
             state.serieFinal = D.actualizarSerie(resultado);
             registrarHistorial(resultado); // antes de evaluar logros: 'explorador' cuenta la de hoy
             state.logrosFinal = evaluarLogros(resultado, myItems, rivalItems, mySpent);
+            evento('game:fin');
         }
         const serie = state.serieFinal || { mio: 0, rivalPuntos: 0, ganada: '' };
         const logrosNuevos = state.logrosFinal || [];
