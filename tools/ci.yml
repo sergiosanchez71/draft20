@@ -1,0 +1,54 @@
+# CI de Draft 20 (GitHub Actions).
+# Para activarlo: copia este fichero a .github/workflows/ci.yml y haz push
+# con un token que tenga el scope workflow (el actual no lo permite).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring
+          tools: none
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Lint PHP
+        run: |
+          fail=0
+          while IFS= read -r f; do
+            php -l "$f" > /dev/null || fail=1
+          done < <(git ls-files '*.php')
+          exit $fail
+
+      - name: Test catálogo
+        run: php tools/test_catalogo.php
+
+      - name: Test política del bot
+        run: node tests/bot_policy.test.js
+
+      - name: Smoke E2E
+        run: php tools/smoke.php
+
+      - name: Instalar dependencias y build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build commiteado (drift)
+        run: git diff --exit-code -- js/app.core.min.js js/app.game.min.js js/bot_policy.min.js css/tailwind.css
