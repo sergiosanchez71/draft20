@@ -320,32 +320,41 @@
         } catch (e) { /* sin audio */ }
     }
 
-    // =================== PWA (instalar app) ===================
+    // =================== PWA (añadir a pantalla de inicio) ===================
     let deferredPrompt = null;
     const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || '');
-    let pwaDescartada = false;
-    try { pwaDescartada = localStorage.getItem('draft20_pwa_oculto') === '1'; } catch (e) { /* ignore */ }
 
     window.addEventListener('beforeinstallprompt', function (e) {
         e.preventDefault();
         deferredPrompt = e;
-        const b = document.getElementById('btnInstalar');
-        if (b) b.classList.remove('hidden');
     });
     window.addEventListener('appinstalled', function () {
         deferredPrompt = null;
-        const b = document.getElementById('btnInstalar');
-        if (b) b.classList.add('hidden');
         evento('pwa:install');
         toast(t('ui.lobby.pwa_instalada'));
     });
 
-    function pwaDisponible() {
-        if (deferredPrompt) return true;
-        if (!esIOS || pwaDescartada) return false;
-        const standalone = window.navigator.standalone === true
-            || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
-        return !standalone;
+    /** Pasos manuales (iOS y navegadores sin prompt nativo). */
+    function mostrarPasosInstalar() {
+        const pasos = [];
+        const android = el('li', {}, t('ui.lobby.pwa_paso_android'));
+        const ios = el('li', {}, t('ui.lobby.pwa_paso_ios'));
+        const pc = el('li', {}, t('ui.lobby.pwa_paso_pc'));
+        if (esIOS) {
+            pasos.push(ios, android, pc);
+        } else {
+            pasos.push(android, ios, pc);
+        }
+        const content = el('div', {}, [
+            el('h2', { class: 'text-lg font-bold text-amber-400 mb-2' }, t('ui.lobby.pwa_titulo')),
+            el('p', { class: 'text-xs text-slate-400 mb-3' }, t('ui.lobby.pwa_nota')),
+            el('ul', { class: 'list-disc list-inside space-y-2 text-sm text-slate-200' }, pasos),
+        ]);
+        const m = showModal(content);
+        content.appendChild(el('button', {
+            class: 'mt-4 w-full bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap',
+            onclick: m.close,
+        }, t('ui.reglas.cerrar')));
     }
 
     async function pwaInstalar() {
@@ -355,13 +364,9 @@
                 await deferredPrompt.userChoice;
             } catch (e) { /* ignore */ }
             deferredPrompt = null;
-            const b = document.getElementById('btnInstalar');
-            if (b) b.classList.add('hidden');
             return;
         }
-        // iOS no tiene prompt: se explican los pasos.
-        try { localStorage.setItem('draft20_pwa_oculto', '1'); } catch (e) { /* ignore */ }
-        toast(t('ui.lobby.pwa_ios'), 6000);
+        mostrarPasosInstalar();
     }
 
     // =================== Mi progreso ===================
@@ -384,11 +389,15 @@
         }
 
         filas.push(el('div', { class: 'text-xs uppercase tracking-wide text-slate-400 mb-2' }, t('ui.lobby.progreso_logros') + ' · ' + desbloqueados.length + '/' + LOGROS_IDS.length));
-        filas.push(el('div', { class: 'grid grid-cols-2 gap-2 mb-4' }, LOGROS_META.map(function (l) {
+        filas.push(el('div', { class: 'space-y-2 mb-4' }, LOGROS_META.map(function (l) {
             const ok = desbloqueados.indexOf(l.id) !== -1;
-            return el('div', { class: 'flex items-center gap-2 rounded bg-slate-700/60 px-2 py-1.5 ' + (ok ? '' : 'opacity-40') }, [
-                el('span', { class: 'text-xl' }, l.icono),
-                el('span', { class: 'text-xs ' + (ok ? 'text-slate-100' : 'text-slate-400') }, t('ui.juego.logros.' + l.id)),
+            return el('div', { class: 'flex items-start gap-2 rounded bg-slate-700/60 px-3 py-2 ' + (ok ? '' : 'opacity-50') }, [
+                el('span', { class: 'text-xl leading-none' }, l.icono),
+                el('div', { class: 'min-w-0' }, [
+                    el('div', { class: 'text-xs font-bold ' + (ok ? 'text-amber-300' : 'text-slate-300') },
+                        t('ui.juego.logros.' + l.id) + (ok ? ' ✓' : '')),
+                    el('div', { class: 'text-[11px] text-slate-400 leading-snug' }, t('ui.juego.logros_desc.' + l.id)),
+                ]),
             ]);
         })));
 
@@ -703,7 +712,7 @@
         const hayStats = (st.wins || st.losses || st.draws);
         const btnInstalar = el('button', {
             id: 'btnInstalar',
-            class: 'w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500 text-white text-base font-bold btn-tap' + (pwaDisponible() ? '' : ' hidden'),
+            class: 'w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500 text-white text-base font-bold btn-tap',
             'aria-label': t('ui.lobby.pwa_instalar'),
             title: t('ui.lobby.pwa_instalar'),
             onclick: pwaInstalar,
