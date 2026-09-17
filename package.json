@@ -11,6 +11,8 @@
         "test:php": "php tools/test_catalogo.php && php tests/rate_limit.test.php",
         "test:node": "node tests/bot_policy.test.js && node tests/a11y.test.js",
         "smoke": "php tools/smoke.php",
+        "warmup": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/warmup.ps1",
+        "latencia": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/warmup.ps1 -Medir",
         "gen:assets": "node tools/gen_emoji.js && node tools/gen_flags.js && svgo --folder img/emoji --multipass"
     },
     "devDependencies": {

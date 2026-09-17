@@ -58,6 +58,7 @@ CI lista en **`tools/ci.yml`** (GitHub Actions: `php -l` de todo el repo, los tr
 5. **Dominio**: `https://draft20.es` (Hostinger, SSL + CDN). El `.htaccess` fuerza HTTPS, redirige `www` → sin `www` y aplica las URLs limpias; configura la versión PHP 8.2 en el panel.
 6. **Search Console**: verificar la propiedad (DNS TXT) y enviar `https://draft20.es/sitemap.xml`.
 7. **Caché del CDN**: los assets van versionados con `?v=filemtime(...)`, así que cada deploy genera URLs nuevas y no hace falta purgar caché. Si tras desplegar ves la versión antigua, haz un hard reload una vez (el `sw.js` y el `manifest` van con `no-cache` por `.htaccess`) y, si persiste, purga la caché del CDN una única vez.
+8. **Precalentado tras cada deploy**: `npm run warmup` (recorre HTML, fichas, assets versionados, sitemap, sw… para calentar origen y CDN y evitar la ráfaga de la primera oleada). Si algo va lento: `npm run latencia` (mediana/p95 por endpoint; picos al minuto del deploy y normales a los 10 min = arranque en frío).
 
 ---
 

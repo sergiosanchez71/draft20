@@ -183,7 +183,10 @@
             "msg_rival_abandono": "Tu rival ha abandonado la partida",
             "msg_abandono_propio": "Abandonaste por inactividad",
             "submsg_rival_abandono": "La partida ha terminado. Vuelve al lobby para empezar otra.",
-            "toque_otra_vez_salir": "Toca otra vez para salir · perderás la partida"
+            "btn_salir_confirmar": "SALIR",
+            "btn_cancelar": "CANCELAR",
+            "confirm_salir_titulo": "¿Seguro que quieres salir?",
+            "confirm_salir_texto": "Tu rival será notificado y la partida terminará."
         },
         "estados_sala": {
             "esperando": "Esperando jugador…",

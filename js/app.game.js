@@ -1635,30 +1635,47 @@
         }
     }
 
+    /** Salir de una partida en curso: modal de confirmación (cancelar por defecto). */
+    function confirmarSalida() {
+        const content = el('div', {}, [
+            el('h2', { class: 'text-lg font-bold text-amber-400 mb-2' }, t('ui.juego.confirm_salir_titulo')),
+            el('p', { class: 'text-sm text-slate-300 leading-relaxed' }, t('ui.juego.confirm_salir_texto')),
+        ]);
+        const m = showModal(content);
+        content.appendChild(el('div', { class: 'flex gap-2 mt-5' }, [
+            el('button', {
+                class: 'flex-1 bg-slate-600 text-slate-100 font-bold py-3 rounded-lg btn-tap',
+                onclick: m.close,
+            }, t('ui.juego.btn_cancelar')),
+            el('button', {
+                class: 'flex-1 bg-rose-500 text-white font-bold py-3 rounded-lg btn-tap',
+                onclick: function () { m.close(); salirYa(); },
+            }, t('ui.juego.btn_salir_confirmar')),
+        ]));
+    }
+
+    /** Salida confirmada: avisa el abandono y vuelve al lobby. */
+    function salirYa() {
+        vibrate([120, 60, 120]);
+        limpiarEsperaPendiente();
+        clearSession(state.codigo);
+        stopPollingGame();
+        // Fire-and-forget: la respuesta no importa porque ya estamos saliendo.
+        fetch('api/accion.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            keepalive: true,
+            body: JSON.stringify({ codigo: state.codigo, jugador_id: state.jugadorId, accion: 'abandonar' }),
+        }).catch(function () { /* ignore */ });
+        window.location.href = 'index.php';
+    }
+
     function onLeave() {
         const s = state.sala;
         const enJuego = s && s.estado === 'jugando';
         if (enJuego) {
-            // Doble toque: el primero avisa, el segundo (en 3 s) sale de verdad.
-            const ahora = Date.now();
-            if (!state.salirArmadoHasta || ahora > state.salirArmadoHasta) {
-                state.salirArmadoHasta = ahora + 3000;
-                toast(t('ui.juego.toque_otra_vez_salir'), 2000);
-                return;
-            }
-            limpiarEsperaPendiente();
-            // Notificar abandono al servidor y luego redirigir.
-            clearSession(state.codigo);
-            stopPollingGame();
-            // Fire-and-forget: la respuesta no importa porque ya estamos saliendo.
-            fetch('api/accion.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                keepalive: true,
-                body: JSON.stringify({ codigo: state.codigo, jugador_id: state.jugadorId, accion: 'abandonar' }),
-            }).catch(function () { /* ignore */ });
-            window.location.href = 'index.php';
+            confirmarSalida();
             return;
         }
         // Estados terminales (abandonada, finalizada, sin sala): salida directa.
