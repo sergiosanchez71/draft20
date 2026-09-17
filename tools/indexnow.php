@@ -25,10 +25,19 @@ $ctx = stream_context_create(['http' => [
     'user_agent' => 'Draft20-IndexNow/1.0',
 ]]);
 
+$dryRun = in_array('--dry-run', $argv ?? [], true);
+
 $xml = @file_get_contents($sitemapUrl, false, $ctx);
 if ($xml === false || $xml === '') {
-    fwrite(STDERR, "ERROR: no se pudo leer {$sitemapUrl}\n");
-    exit(1);
+    // Fallback: genera el sitemap desde el propio código (útil sin openssl).
+    ob_start();
+    require __DIR__ . '/../sitemap.php';
+    $xml = (string) ob_get_clean();
+    if ($xml === '') {
+        fwrite(STDERR, "ERROR: no se pudo leer {$sitemapUrl} ni generar el sitemap local\n");
+        exit(1);
+    }
+    echo "AVISO: sitemap leído en local (sin HTTPS en este PHP).\n";
 }
 
 preg_match_all('#<loc>(.*?)</loc>#', $xml, $m);
@@ -44,6 +53,12 @@ $payload = json_encode([
     'keyLocation' => 'https://' . $host . '/' . $key . '.txt',
     'urlList' => $urls,
 ], JSON_UNESCAPED_SLASHES);
+
+if ($dryRun) {
+    echo 'Dry-run: ' . count($urls) . " URLs preparadas (sin enviar).\n";
+    echo substr((string) $payload, 0, 300) . "...\n";
+    exit(0);
+}
 
 $post = stream_context_create(['http' => [
     'method' => 'POST',
@@ -64,6 +79,10 @@ foreach ($http_response_header ?? [] as $h) {
 
 echo 'URLs enviadas: ' . count($urls) . "\n";
 echo 'HTTP IndexNow: ' . $status . "\n";
+if ($status === 0) {
+    echo "AVISO: no se pudo conectar; normalmente falta la extensión openssl en este PHP.\n";
+    echo "Alternativa: lanza el ping desde el servidor o con curl/PowerShell.\n";
+}
 echo $status >= 200 && $status < 300
     ? "OK: Bing/Yandex recibirán el ping.\n"
     : "AVISO: respuesta inesperada (" . trim((string) $resp) . ")\n";
