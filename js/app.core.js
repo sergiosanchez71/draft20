@@ -146,7 +146,7 @@
         try { localStorage.setItem('draft20_nombre', (nombre || '').trim()); } catch (e) { /* ignore */ }
     }
 
-    const LOGROS_IDS = ['coleccionista', 'cazador', 'austero', 'derrochador', 'racha', 'veterano'];
+    const LOGROS_IDS = ['coleccionista', 'cazador', 'austero', 'derrochador', 'racha', 'veterano', 'primera_victoria', 'serie_ganada', 'explorador', 'verdugo'];
 
     /** Slug del icono: codepoints en hex sin FE0F, unidos por '-'. */
     function emojiSlug(emoji) {
@@ -197,6 +197,10 @@
         { id: 'derrochador', icono: '💸' },
         { id: 'racha', icono: '🔥' },
         { id: 'veterano', icono: '🎖️' },
+        { id: 'primera_victoria', icono: '🥇' },
+        { id: 'serie_ganada', icono: '🏆' },
+        { id: 'explorador', icono: '🗺️' },
+        { id: 'verdugo', icono: '⚔️' },
     ];
     function logroIcono(id) {
         for (let i = 0; i < LOGROS_META.length; i++) {
@@ -587,8 +591,17 @@
             for (let j = 0; j < codigos.length; j++) {
                 const codigo = codigos[j];
                 const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(codigo) + '&t=' + Date.now());
-                if (r.ok && r.sala && (r.sala.estado === 'jugando' || r.sala.estado === 'esperando')) {
-                    return { codigo: codigo, estado: r.sala.estado };
+                if (r.ok && r.sala) {
+                    const estado = r.sala.estado;
+                    if (estado === 'jugando' || estado === 'esperando') {
+                        return { codigo: codigo, estado: estado, revancha: false };
+                    }
+                    // Sala terminada con revancha fresca del rival: se puede volver.
+                    const rev = r.sala.revancha;
+                    const fresca = rev && (Math.floor(Date.now() / 1000) - (rev.ts || 0)) <= 600;
+                    if (estado === 'finalizada' && fresca) {
+                        return { codigo: codigo, estado: estado, revancha: true };
+                    }
                 }
                 clearSession(codigo);
                 try { localStorage.removeItem('draft20_bot_' + codigo); } catch (e) { /* ignore */ }
@@ -648,13 +661,13 @@
         const app = $('#app');
         if (!app || $('#partidaEnCurso')) return;
         const card = el('section', { id: 'partidaEnCurso', class: 'bg-amber-400 text-slate-900 p-4 rounded-lg m-4 fade-in' }, [
-            el('p', { class: 'text-sm font-bold' }, t('ui.lobby.partida_en_curso')),
+            el('p', { class: 'text-sm font-bold' }, partida.revancha ? t('ui.lobby.revancha_pendiente') : t('ui.lobby.partida_en_curso')),
             el('div', { class: 'flex items-center justify-between gap-3 mt-2' }, [
                 el('span', { class: 'text-2xl font-mono font-bold tracking-widest' }, partida.codigo),
                 el('a', {
                     class: 'bg-slate-900 text-amber-300 font-bold py-2 px-4 rounded-lg btn-tap',
                     href: 'juego.php?codigo=' + encodeURIComponent(partida.codigo),
-                }, t('ui.lobby.continuar')),
+                }, partida.revancha ? t('ui.lobby.revancha_ver') : t('ui.lobby.continuar')),
             ]),
         ]);
         app.insertBefore(card, app.firstChild);
@@ -942,6 +955,13 @@
      * Crea una partida de práctica: sala nueva + bot sentado como J2.
      * Usada por "Practicar vs 🤖" y por la revancha contra bot (misma dificultad).
      */
+    // Nombres del bot: aleatorios por partida; el 🤖 delante lo identifica siempre.
+    const BOT_NOMBRES = ['Botín', 'Doña Subasta', 'El Martillo', 'Chollo', 'La Puja', 'Remate', 'Subastín', 'Doña Puja'];
+
+    function nombreBot() {
+        return '🤖 ' + BOT_NOMBRES[Math.floor(Math.random() * BOT_NOMBRES.length)];
+    }
+
     async function iniciarPartidaBot(tematica, dificultad, nombre, mostrarValores) {
         const nombreFinal = (nombre && nombre.trim()) || state.jugadorNombre || 'Tú';
         const mv = (mostrarValores === undefined) ? !!state.mostrarValores : !!mostrarValores;
@@ -951,7 +971,7 @@
             mostrar_valores: mv,
         });
         if (!r.ok) { toast(r.error || 'Error'); return false; }
-        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: 'Bot', bot: true, creador_id: r.jugador_id });
+        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: nombreBot(), bot: true, creador_id: r.jugador_id });
         if (!r2.ok) { toast(r2.error || 'Error'); return false; }
         try {
             localStorage.setItem('draft20_bot_' + r.codigo, JSON.stringify({
@@ -1192,6 +1212,7 @@
         registrarHistorial: registrarHistorial,
         sfx: sfx,
         toggleSonido: toggleSonido,
+        showRulesModal: showRulesModal,
         iniciarPartidaBot: iniciarPartidaBot,
     };
 })();

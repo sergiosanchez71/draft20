@@ -27,6 +27,7 @@
     const renderTematicaSelector = D.renderTematicaSelector;
     const iniciarPartidaBot = D.iniciarPartidaBot;
     const sfx = D.sfx, leerSerie = D.leerSerie, registrarHistorial = D.registrarHistorial, logroIcono = D.logroIcono;
+    const showRulesModal = D.showRulesModal;
 
     // El aviso del último ítem y el de la temática se muestran una sola vez
     // por partida (la carga de página va por partida).
@@ -109,7 +110,12 @@
                 el('div', { id: 'headerTematica', class: 'text-[10px] text-slate-400 leading-tight truncate' }, ''),
                 el('div', { id: 'headerSerie', class: 'hidden text-[10px] font-bold text-amber-300/90 leading-tight' }, ''),
             ]),
-            el('div', { class: 'w-14' }),
+            el('button', {
+                class: 'w-14 text-right text-slate-400 text-sm font-bold btn-tap',
+                'aria-label': t('ui.lobby.btn_reglas'),
+                title: t('ui.lobby.btn_reglas'),
+                onclick: showRulesModal,
+            }, '?'),
         ]);
 
         // Banner de desconexión (polling caído)
@@ -557,6 +563,22 @@
             tematicaAvisada = true;
             if (s.tematica) {
                 toast(t('ui.juego.aviso_tematica', { tema: tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica) }), 4000);
+            }
+        }
+
+        // Aviso blando si te quedas 20 s sin actuar en tu turno (una vez por partida).
+        if (s.estado === 'jugando' && s.item_actual && s.item_actual.turno_de === state.jugadorSlot) {
+            const firmaTurno = s.item_actual.id + ':' + state.jugadorSlot;
+            if (state.turnoFirma !== firmaTurno) {
+                state.turnoFirma = firmaTurno;
+                if (state.turnoAvisoTimer) clearTimeout(state.turnoAvisoTimer);
+                state.turnoAvisoTimer = setTimeout(function () {
+                    const s2 = state.sala;
+                    if (!s2 || s2.estado !== 'jugando' || !s2.item_actual || s2.item_actual.turno_de !== state.jugadorSlot) return;
+                    if (state.avisoTurnoVisto) return;
+                    state.avisoTurnoVisto = true;
+                    toast(t('ui.juego.aviso_turno'), 6000);
+                }, 20000);
             }
         }
 
@@ -1167,6 +1189,16 @@
         { id: 'derrochador', icono: '💸', test: function (r, mi, ri, gasto) { return r === 'win' && gasto >= 18; } },
         { id: 'racha', icono: '🔥', test: function () { return (loadStats().streak || 0) >= 3; } },
         { id: 'veterano', icono: '🎖️', test: function () { const s = loadStats(); return ((s.wins || 0) + (s.losses || 0) + (s.draws || 0)) >= 10; } },
+        { id: 'primera_victoria', icono: '🥇', test: function (r) { return r === 'win'; } },
+        { id: 'serie_ganada', icono: '🏆', test: function () { return !!(state.serieFinal && state.serieFinal.ganada === 'mio'); } },
+        { id: 'explorador', icono: '🗺️', test: function () {
+            let h = [];
+            try { h = JSON.parse(localStorage.getItem('draft20_historial') || '[]') || []; } catch (e) { /* ignore */ }
+            const temas = {};
+            (Array.isArray(h) ? h : []).forEach(function (x) { if (x && x.tema) temas[x.tema] = 1; });
+            return Object.keys(temas).length >= 5;
+        } },
+        { id: 'verdugo', icono: '⚔️', test: function (r) { return r === 'win' && !!state.bot && state.bot.dificultad === 'extremo'; } },
     ];
 
     /** Serie al mejor de 3 con el mismo rival: lógica en app.core.js. */
@@ -1189,8 +1221,8 @@
         if (!state.finalRegistrada) {
             state.finalRegistrada = true;
             state.serieFinal = D.actualizarSerie(resultado);
+            registrarHistorial(resultado); // antes de evaluar logros: 'explorador' cuenta la de hoy
             state.logrosFinal = evaluarLogros(resultado, myItems, rivalItems, mySpent);
-            registrarHistorial(resultado);
         }
         const serie = state.serieFinal || { mio: 0, rivalPuntos: 0, ganada: '' };
         const logrosNuevos = state.logrosFinal || [];
