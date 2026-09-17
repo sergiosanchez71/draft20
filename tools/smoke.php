@@ -129,6 +129,41 @@ try {
     check($n0 + $n1 === 8, '8 ítems repartidos (' . $n0 . '+' . $n1 . ')');
     check($n0 === 4 && $n1 === 4, 'reparto 4-4');
     check(!isset($sala['jugadores'][0]['id']) && !isset($sala['jugadores'][1]['id']), 'respuesta final sin ids');
+
+    // 6) Revancha real: el proponente crea la sala nueva y prueba su id nuevo
+    $rn = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'pizza', 'nombre' => 'Smoke1']);
+    check($rn['code'] === 200, 'crear sala de revancha → 200');
+    $codNuevo = (string) ($rn['json']['codigo'] ?? '');
+    $codigos[] = $codNuevo;
+    $rev = http_req('POST', $base . '/api/revancha.php', [
+        'codigo' => $cod,
+        'jugador_id' => $j1,
+        'accion' => 'proponer',
+        'codigo_nuevo' => $codNuevo,
+        'jugador_id_nuevo' => (string) ($rn['json']['jugador_id'] ?? ''),
+        'tematica' => 'pizza',
+    ]);
+    check($rev['code'] === 200 && (($rev['json']['sala']['revancha']['por'] ?? null) === 0), 'proponer revancha → 200');
+    $revSinId = http_req('POST', $base . '/api/revancha.php', [
+        'codigo' => $cod,
+        'jugador_id' => $j1,
+        'accion' => 'proponer',
+        'codigo_nuevo' => $codNuevo,
+        'tematica' => 'pizza',
+    ]);
+    check($revSinId['code'] === 400, 'proponer sin jugador_id_nuevo → 400');
+    $acep = http_req('POST', $base . '/api/unirse_sala.php', ['codigo' => $codNuevo, 'nombre' => 'Smoke2']);
+    check($acep['code'] === 200 && (($acep['json']['sala']['estado'] ?? '') === 'jugando'), 'aceptar revancha → 200');
+
+    // 7) Bot: solo el creador de la sala puede sentarlo
+    $rb = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'futbol', 'nombre' => 'SmokeBot']);
+    $codB = (string) ($rb['json']['codigo'] ?? '');
+    $codigos[] = $codB;
+    $j1b = (string) ($rb['json']['jugador_id'] ?? '');
+    $mal = http_req('POST', $base . '/api/unirse_sala.php', ['codigo' => $codB, 'nombre' => 'Intruso', 'bot' => true]);
+    check($mal['code'] === 403, 'bot sin creador_id → 403');
+    $bien = http_req('POST', $base . '/api/unirse_sala.php', ['codigo' => $codB, 'nombre' => 'Bot', 'bot' => true, 'creador_id' => $j1b]);
+    check($bien['code'] === 200 && (($bien['json']['sala']['bot_slot'] ?? null) === 1), 'bot con creador_id → 200');
 } finally {
     foreach ($codigos as $c) {
         if ($c !== '') {

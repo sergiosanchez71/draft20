@@ -123,7 +123,11 @@ if (!function_exists('generar_codigo_unico')) {
             for ($j = 0; $j < $longitud; $j++) {
                 $codigo .= $charset[random_int(0, $max)];
             }
-            if (!file_exists(SALAS_DIR . $codigo . '.json')) {
+            // Reserva atómica con 'x+b': si el fichero ya existe, fopen falla.
+            $path = SALAS_DIR . $codigo . '.json';
+            $fp = @fopen($path, 'x+b');
+            if ($fp !== false) {
+                fclose($fp);
                 return $codigo;
             }
         }
@@ -413,7 +417,7 @@ if (!function_exists('crear_sala_nueva')) {
             'ronda'               => 1,
             'asignacion_forzada_a' => null, // 0 | 1 cuando un jugador llega al cap; el otro recibe el resto
             'decision_pendiente'   => null, // {para, sobre, motivo} cuando un jugador sin dinero cede el ítem al rival
-            'last_seen'            => [null, null], // UNIX ts por slot; el que tenga last_seen[other] > ABANDON_TIMEOUT_S se da por abandonado
+            'last_seen'            => [$ahora, null], // J1 ya está "vivo" al crear; J2 al unirse
             'abandono_por'         => null, // 0 | 1 cuando un jugador abandona (explícito o por timeout)
             'revancha'             => null, // {por, codigo_nuevo, tematica, ts} cuando alguien propone revancha al acabar
             'emotes'               => [],   // últimos emotes: {por, code, ts} (máx EMOTES_MAX)
@@ -451,8 +455,8 @@ api_guard_origen();
 rl_guard('crear', 20, 3600);
 
 $input      = leer_input_json();
-$tematicaId = isset($input['tematica']) ? (string) $input['tematica'] : '';
-$nombreJ1   = isset($input['nombre'])   ? trim((string) $input['nombre']) : '';
+$tematicaId = isset($input['tematica']) && is_string($input['tematica']) ? $input['tematica'] : '';
+$nombreJ1   = isset($input['nombre']) && is_string($input['nombre']) ? trim($input['nombre']) : '';
 // Modo "⭐ Valores visibles": se comparte con toda la sala (lo fija quien crea).
 $mostrarValores = !empty($input['mostrar_valores']);
 

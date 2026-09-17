@@ -108,13 +108,16 @@ api_guard_origen();
 rl_guard('unirse', 60, 3600);
 
 $input    = leer_input_json();
-$codigo   = isset($input['codigo']) ? strtoupper(trim((string) $input['codigo'])) : '';
-$nombreJ2 = isset($input['nombre']) ? trim((string) $input['nombre']) : '';
+$codigo   = isset($input['codigo']) && is_string($input['codigo']) ? strtoupper(trim($input['codigo'])) : '';
+$nombreJ2 = isset($input['nombre']) && is_string($input['nombre']) ? trim($input['nombre']) : '';
 
 // Unión marcada como bot (partida de práctica): el slot no pollea, así que
 // no debe contar para abandono ni para el aviso de "rival desconectado".
+// Solo el creador de la sala puede sentar un bot: hay que probar el id de J1
+// (si no, cualquiera podría marcarse como bot y ver ⭐/ítems ocultos).
 $esBot = isset($input['bot'])
     && ($input['bot'] === true || $input['bot'] === 1 || $input['bot'] === '1' || $input['bot'] === 'true');
+$creadorId = isset($input['creador_id']) && is_string($input['creador_id']) ? trim($input['creador_id']) : '';
 
 $regexCodigo = '/^[' . CHARSET . ']{5}$/';
 if ($codigo === '' || !preg_match($regexCodigo, $codigo)) {
@@ -140,6 +143,9 @@ try {
     if (!isset($estado['jugadores'][1]) || ($estado['jugadores'][1]['id'] ?? null) !== null) {
         responder(['ok' => false, 'error' => 'El slot del segundo jugador ya está ocupado.'], 409);
     }
+    if ($esBot && ($creadorId === '' || $creadorId !== ($estado['jugadores'][0]['id'] ?? null))) {
+        responder(['ok' => false, 'error' => 'Solo el creador de la sala puede añadir un bot.'], 403);
+    }
 
     // Bloqueo exclusivo y re-leo por si hubo carrera entre SH y EX.
     $path = SALAS_DIR . $codigo . '.json';
@@ -147,6 +153,11 @@ try {
     if ($fp === false) throw new RuntimeException('No se pudo abrir la sala para bloquear.');
     if (!flock($fp, LOCK_EX)) { fclose($fp); throw new RuntimeException('No LOCK_EX.'); }
     $raw = stream_get_contents($fp);
+    // Sala borrada/recreada vacía entre el SH y el lock.
+    if ($raw === false || $raw === '') {
+        flock($fp, LOCK_UN); fclose($fp);
+        responder(['ok' => false, 'error' => 'Sala no encontrada o expirada.'], 404);
+    }
     $estado = json_decode($raw, true);
     if (!is_array($estado)) {
         flock($fp, LOCK_UN); fclose($fp);
@@ -167,6 +178,11 @@ try {
     ];
     $estado['estado']         = 'jugando';
     $estado['actualizado_en'] = time();
+    // El reloj de abandono arranca al unirse (aunque aún no haya polleado).
+    if (!isset($estado['last_seen']) || !is_array($estado['last_seen'])) {
+        $estado['last_seen'] = [null, null];
+    }
+    $estado['last_seen'][1] = time();
     if ($esBot) {
         $estado['bot_slot'] = 1;
     }

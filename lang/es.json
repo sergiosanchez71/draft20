@@ -2,7 +2,8 @@
     "ui": {
         "app": {
             "titulo": "Draft 20",
-            "subtitulo_lobby": "Subasta por turnos · 2 jugadores"
+            "subtitulo_lobby": "Subasta por turnos · 2 jugadores",
+            "sala_expirada": "La partida ya no está disponible"
         },
         "lobby": {
             "btn_crear": "Crear Sala",
@@ -123,6 +124,7 @@
             "btn_se_lo_regalo": "SE LO REGALO (0 🪙)",
             "err_no_puedes_pagar_1": "No tienes dinero suficiente para quedártelo",
             "msg_rival_abandono": "Tu rival ha abandonado la partida",
+            "msg_abandono_propio": "Abandonaste por inactividad",
             "submsg_rival_abandono": "La partida ha terminado. Vuelve al lobby para empezar otra.",
             "confirm_salir_jugando": "¿Salir? Tu rival será notificado y la partida terminará."
         },

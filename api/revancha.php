@@ -87,9 +87,9 @@ api_guard_origen();
 rl_guard('revancha', 60, 3600);
 
 $input     = leer_input_json();
-$codigo    = isset($input['codigo'])     ? strtoupper(trim((string) $input['codigo'])) : '';
-$jugadorId = isset($input['jugador_id']) ? trim((string) $input['jugador_id']) : '';
-$accion    = isset($input['accion'])     ? trim((string) $input['accion']) : '';
+$codigo    = isset($input['codigo']) && is_string($input['codigo']) ? strtoupper(trim($input['codigo'])) : '';
+$jugadorId = isset($input['jugador_id']) && is_string($input['jugador_id']) ? trim($input['jugador_id']) : '';
+$accion    = isset($input['accion']) && is_string($input['accion']) ? trim($input['accion']) : '';
 
 $regexCodigo  = '/^[' . CHARSET . ']{5}$/';
 $regexJugador = '/^j[12]_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/';
@@ -105,11 +105,18 @@ if (!in_array($accion, ['proponer', 'rechazar'], true)) {
 }
 
 $codigoNuevo = '';
+$idNuevo     = '';
 $tematica    = null;
 if ($accion === 'proponer') {
-    $codigoNuevo = isset($input['codigo_nuevo']) ? strtoupper(trim((string) $input['codigo_nuevo'])) : '';
+    $codigoNuevo = isset($input['codigo_nuevo']) && is_string($input['codigo_nuevo']) ? strtoupper(trim($input['codigo_nuevo'])) : '';
+    // Id del proponente EN LA SALA NUEVA (la creó él con crear_sala.php): es la
+    // prueba de propiedad; el id de la sala vieja ya no sirve para validarla.
+    $idNuevo = isset($input['jugador_id_nuevo']) ? trim((string) $input['jugador_id_nuevo']) : '';
     if ($codigoNuevo === '' || !preg_match($regexCodigo, $codigoNuevo)) {
         responder(['ok' => false, 'error' => 'Código de la sala nueva inválido.'], 400);
+    }
+    if ($idNuevo === '' || !preg_match($regexJugador, $idNuevo)) {
+        responder(['ok' => false, 'error' => 'Falta el jugador_id de la sala nueva.'], 400);
     }
     if (!is_file(SALAS_DIR . $codigoNuevo . '.json')) {
         responder(['ok' => false, 'error' => 'La sala nueva no existe.'], 404);
@@ -117,8 +124,8 @@ if ($accion === 'proponer') {
     if ($codigoNuevo === $codigo) {
         responder(['ok' => false, 'error' => 'La sala nueva no puede ser la misma.'], 400);
     }
-    if (isset($input['tematica'])) {
-        $tematica = trim((string) $input['tematica']);
+    if (isset($input['tematica']) && is_string($input['tematica'])) {
+        $tematica = trim($input['tematica']);
         if (!preg_match('/^[a-z0-9_]+$/', $tematica)) {
             responder(['ok' => false, 'error' => 'Temática inválida.'], 400);
         }
@@ -143,6 +150,11 @@ try {
     if ($fp === false) throw new RuntimeException('No se pudo abrir la sala para bloquear.');
     if (!flock($fp, LOCK_EX)) { fclose($fp); throw new RuntimeException('No LOCK_EX.'); }
     $raw = stream_get_contents($fp);
+    if ($raw === false || $raw === '') {
+        flock($fp, LOCK_UN); fclose($fp);
+        @unlink($path);
+        responder(['ok' => false, 'error' => 'Sala no encontrada o expirada.'], 404);
+    }
     $estado = json_decode($raw, true);
     if (!is_array($estado)) {
         flock($fp, LOCK_UN); fclose($fp);
@@ -169,11 +181,17 @@ try {
             flock($fp, LOCK_UN); fclose($fp);
             responder(['ok' => false, 'error' => 'Ya hay una propuesta de revancha pendiente.'], 409);
         }
-        // La sala nueva debe ser del proponente (evita apuntar a salas ajenas).
+        // La sala nueva debe ser del proponente y seguir disponible:
+        // - existe y pertenece a $idNuevo (el id que devolvió crear_sala),
+        // - sigue en 'esperando' y con el slot J2 libre.
         $salaNueva = leer_sala_bloqueado_sh($codigoNuevo);
-        if ($salaNueva === null || slot_de_jugador($salaNueva, $jugadorId) === null) {
+        if ($salaNueva === null || slot_de_jugador($salaNueva, $idNuevo) === null) {
             flock($fp, LOCK_UN); fclose($fp);
             responder(['ok' => false, 'error' => 'La sala nueva no pertenece a este jugador.'], 403);
+        }
+        if (($salaNueva['estado'] ?? '') !== 'esperando' || ($salaNueva['jugadores'][1]['id'] ?? null) !== null) {
+            flock($fp, LOCK_UN); fclose($fp);
+            responder(['ok' => false, 'error' => 'La sala nueva ya está en juego.'], 409);
         }
         $estado['revancha'] = [
             'por'          => $miSlot,

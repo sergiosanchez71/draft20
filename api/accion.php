@@ -257,9 +257,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 }
 
 $input     = leer_input_json();
-$codigo    = isset($input['codigo'])     ? strtoupper(trim((string) $input['codigo'])) : '';
-$jugadorId = isset($input['jugador_id']) ? trim((string) $input['jugador_id']) : '';
-$accion    = isset($input['accion'])     ? trim((string) $input['accion']) : '';
+$codigo    = isset($input['codigo']) && is_string($input['codigo']) ? strtoupper(trim($input['codigo'])) : '';
+$jugadorId = isset($input['jugador_id']) && is_string($input['jugador_id']) ? trim($input['jugador_id']) : '';
+$accion    = isset($input['accion']) && is_string($input['accion']) ? trim($input['accion']) : '';
 $incremento= isset($input['incremento']) ? (int) $input['incremento'] : INCREMENTO_PUJA;
 
 $regexCodigo = '/^[' . CHARSET . ']{5}$/';
@@ -278,7 +278,7 @@ if ($accion === 'pujar' && !in_array($incremento, [1, 3], true)) {
     responder(['ok' => false, 'error' => 'Incremento de puja inválido (usa 1 o 3).'], 400);
 }
 if ($accion === 'emote') {
-    $emoteVal = isset($input['emote']) ? (string) $input['emote'] : '';
+    $emoteVal = isset($input['emote']) && is_string($input['emote']) ? $input['emote'] : '';
     if (!in_array($emoteVal, EMOTES_VALIDOS, true)) {
         responder(['ok' => false, 'error' => 'Emote inválido.'], 400);
     }
@@ -320,6 +320,12 @@ try {
     if ($fp === false) throw new RuntimeException('No se pudo abrir la sala para bloquear.');
     if (!flock($fp, LOCK_EX)) { fclose($fp); throw new RuntimeException('No LOCK_EX.'); }
     $raw = stream_get_contents($fp);
+    // Fichero recreado vacío (carrera con GC): sala no encontrada.
+    if ($raw === false || $raw === '') {
+        flock($fp, LOCK_UN); fclose($fp);
+        @unlink($path);
+        responder(['ok' => false, 'error' => 'Sala no encontrada o expirada.'], 404);
+    }
     $estado = json_decode($raw, true);
     if (!is_array($estado)) {
         flock($fp, LOCK_UN); fclose($fp);
@@ -354,6 +360,35 @@ try {
         if (!isset($estado['item_actual']['pujas']) || !is_array($estado['item_actual']['pujas'])) {
             $estado['item_actual']['pujas'] = [];
         }
+    }
+
+    // 0) Acciones que no dependen del turno ni del cap. Se procesan aquí para
+    //    que el handler de cap (1b) no se las trague (p. ej. salir estando capped).
+    if ($accion === 'abandonar') {
+        $estado['estado']         = 'abandonada';
+        $estado['abandono_por']   = $miSlot;
+        $estado['actualizado_en'] = time();
+        ftruncate($fp, 0); rewind($fp);
+        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        fflush($fp);
+        flock($fp, LOCK_UN); fclose($fp);
+        responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
+    }
+    if ($accion === 'emote') {
+        $estado['emotes'][] = [
+            'por'  => $miSlot,
+            'code' => (string) $input['emote'],
+            'ts'   => (int) round(microtime(true) * 1000),
+        ];
+        if (count($estado['emotes']) > EMOTES_MAX) {
+            $estado['emotes'] = array_slice($estado['emotes'], -EMOTES_MAX);
+        }
+        $estado['actualizado_en'] = time();
+        ftruncate($fp, 0); rewind($fp);
+        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        fflush($fp);
+        flock($fp, LOCK_UN); fclose($fp);
+        responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
     }
 
     // Actualizar nuestro last_seen (también nos protege si el otro revisa).
@@ -450,29 +485,7 @@ try {
     }
 
     // 3) Procesar la acción.
-    if ($accion === 'abandonar') {
-        // El jugador notifica al servidor que sale. No validamos turno: puede
-        // abandonar en cualquier momento mientras la partida esté en curso.
-        if ($estado['estado'] !== 'jugando') {
-            flock($fp, LOCK_UN); fclose($fp);
-            responder(['ok' => false, 'error' => 'La partida no está en curso.'], 409);
-        }
-        $estado['estado']       = 'abandonada';
-        $estado['abandono_por'] = $miSlot;
-    }
-    else if ($accion === 'emote') {
-        // Los emotes se pueden enviar en cualquier momento de la partida.
-        // ts en milisegundos para que el cliente no pierda emotes consecutivos.
-        $estado['emotes'][] = [
-            'por'  => $miSlot,
-            'code' => (string) $input['emote'],
-            'ts'   => (int) round(microtime(true) * 1000),
-        ];
-        if (count($estado['emotes']) > EMOTES_MAX) {
-            $estado['emotes'] = array_slice($estado['emotes'], -EMOTES_MAX);
-        }
-    }
-    else if ($accion === 'pasar_deadlock') {
+    if ($accion === 'pasar_deadlock') {
         // El jugador en turno, sin dinero, en un ítem fresco, cede el ítem
         // al rival para que este decida (quedárselo por 1 o regalarlo por 0).
         // Validaciones (algunas ya cubiertas por el check de turno arriba):

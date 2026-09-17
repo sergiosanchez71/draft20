@@ -81,8 +81,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
     responder(['ok' => false, 'error' => 'Método no permitido. Usa GET.'], 405);
 }
 
-$codigo    = isset($_GET['codigo'])     ? strtoupper(trim((string) $_GET['codigo'])) : '';
-$jugadorId = isset($_GET['jugador_id']) ? trim((string) $_GET['jugador_id']) : '';
+$codigo    = isset($_GET['codigo']) && is_string($_GET['codigo']) ? strtoupper(trim($_GET['codigo'])) : '';
+$jugadorId = isset($_GET['jugador_id']) && is_string($_GET['jugador_id']) ? trim($_GET['jugador_id']) : '';
 
 $regexCodigo  = '/^[' . CHARSET . ']{5}$/';
 $regexJugador = '/^j[12]_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/';
@@ -110,6 +110,12 @@ if ($fp === false) {
 if (!flock($fp, LOCK_EX)) { fclose($fp); responder(['ok' => false, 'error' => 'No LOCK_EX.'], 500); }
 
 $raw = stream_get_contents($fp);
+// Fichero recreado vacío (carrera con GC): equivale a sala no encontrada.
+if ($raw === false || $raw === '') {
+    flock($fp, LOCK_UN); fclose($fp);
+    @unlink($path);
+    responder(['ok' => false, 'error' => 'Sala no encontrada o expirada.'], 404);
+}
 $estado = json_decode($raw, true);
 if (!is_array($estado)) {
     flock($fp, LOCK_UN); fclose($fp);

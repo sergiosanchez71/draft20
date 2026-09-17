@@ -61,7 +61,10 @@
             if (document.hidden) {
                 stopPollingGame();
             } else if (document.getElementById('scoreboard')) {
-                pollGameTick().then(function () { startPollingGame(); });
+                pollGameTick().then(function () {
+                    // En estado terminal (revancha) o con bot no se relanza a 1s.
+                    if (!state.pollTerminal) startPollingGame();
+                });
             }
         });
     }
@@ -140,6 +143,14 @@
             state.pollInFlight = false;
         }
         if (!r.ok) {
+            // Sala borrada (TTL/GC) o sin permiso: no tiene sentido seguir.
+            if (r._status === 404 || r._status === 403) {
+                stopPollingGame();
+                clearSession(state.codigo);
+                toast(t('ui.app.sala_expirada'));
+                window.location.href = 'index.php';
+                return;
+            }
             // Solo cuenta como "sin conexión" un fallo de red real (status 0);
             // un 4xx/5xx del servidor no debe mostrar el banner offline.
             if (r._status === 0) {
@@ -1029,9 +1040,12 @@
         const rivalName = (por !== null && por !== undefined && rivalSlot !== null && por !== state.jugadorSlot)
             ? (s.jugadores[por]?.nombre || '')
             : (s.jugadores[rivalSlot]?.nombre || '');
-        const msg = rivalName
-            ? t('ui.juego.msg_rival_abandono') + ' (' + rivalName + ')'
-            : t('ui.juego.msg_rival_abandono');
+        const yoAbandone = por !== null && por !== undefined && por === state.jugadorSlot;
+        const msg = yoAbandone
+            ? t('ui.juego.msg_abandono_propio')
+            : (rivalName
+                ? t('ui.juego.msg_rival_abandono') + ' (' + rivalName + ')'
+                : t('ui.juego.msg_rival_abandono'));
 
         card.appendChild(el('div', { class: 'text-center mt-4' }, [
             el('div', { class: 'text-6xl mb-4' }, '👋'),
@@ -1282,6 +1296,7 @@
             jugador_id: viejoId,
             accion: 'proponer',
             codigo_nuevo: r.codigo,
+            jugador_id_nuevo: r.jugador_id,
             tematica: tematica,
         });
         if (!r2.ok) { toast(r2.error || 'Error'); return; }
@@ -1339,6 +1354,7 @@
         if (incremento !== undefined) body.incremento = incremento;
         state.actionInFlight = true;
         disableActions(true);
+        let completada = false;
         try {
             const r = await api('POST', 'api/accion.php', body);
             if (!r.ok) {
@@ -1350,8 +1366,11 @@
             identifySlots();
             state.lastRenderSig = salaSignature(state.sala);
             renderGame(null);
+            completada = true;
         } finally {
-            disableActions(false);
+            // Tras un OK manda el re-render (deja deshabilitado lo que no proceda);
+            // solo re-habilitamos si la acción falló.
+            if (!completada) disableActions(false);
             state.actionInFlight = false;
         }
     }
@@ -1375,6 +1394,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'same-origin',
+                keepalive: true,
                 body: JSON.stringify({ codigo: state.codigo, jugador_id: state.jugadorId, accion: 'abandonar' }),
             }).catch(function () { /* ignore */ });
             window.location.href = 'index.php';

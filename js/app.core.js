@@ -655,7 +655,7 @@
             mostrar_valores: mv,
         });
         if (!r.ok) { toast(r.error || 'Error'); return false; }
-        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: 'Bot', bot: true });
+        const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: 'Bot', bot: true, creador_id: r.jugador_id });
         if (!r2.ok) { toast(r2.error || 'Error'); return false; }
         try {
             localStorage.setItem('draft20_bot_' + r.codigo, JSON.stringify({
@@ -728,7 +728,18 @@
         const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(state.codigo)
             + (state.jugadorId ? '&jugador_id=' + encodeURIComponent(state.jugadorId) : '')
             + '&t=' + Date.now());
-        if (!r.ok) return;
+        if (!r.ok) {
+            // Sala borrada o sin permiso: volvemos al lobby con aviso.
+            if (r._status === 404 || r._status === 403) {
+                stopPollingLobby();
+                clearSession(state.codigo);
+                state.codigo = null;
+                state.jugadorId = null;
+                toast(t('ui.app.sala_expirada'));
+                renderInitialView();
+            }
+            return;
+        }
         state.sala = r.sala;
         if (r.sala.estado === 'jugando' || r.sala.estado === 'finalizada') {
             stopPollingLobby();

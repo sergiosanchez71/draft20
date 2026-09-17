@@ -149,7 +149,7 @@ api_guard_origen();
 rl_guard('rapida', 30, 3600);
 
 $input  = leer_input_json();
-$accion = isset($input['accion']) ? (string) $input['accion'] : 'buscar';
+$accion = isset($input['accion']) && is_string($input['accion']) ? $input['accion'] : 'buscar';
 
 $regexCodigo  = '/^[' . CHARSET . ']{5}$/';
 $regexJugador = '/^j[12]_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/';
@@ -159,27 +159,43 @@ $regexJugador = '/^j[12]_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9
 // ============================================================================
 
 if ($accion === 'cancelar') {
-    $codigo    = isset($input['codigo']) ? strtoupper(trim((string) $input['codigo'])) : '';
-    $jugadorId = isset($input['jugador_id']) ? trim((string) $input['jugador_id']) : '';
+    $codigo    = isset($input['codigo']) && is_string($input['codigo']) ? strtoupper(trim($input['codigo'])) : '';
+    $jugadorId = isset($input['jugador_id']) && is_string($input['jugador_id']) ? trim($input['jugador_id']) : '';
     if (!preg_match($regexCodigo, $codigo) || !preg_match($regexJugador, $jugadorId)) {
         responder(['ok' => false, 'error' => 'Parámetros inválidos.'], 400);
     }
 
     try {
         $fp = cola_abrir();
+        $esMia = false;
         if (flock($fp, LOCK_EX)) {
             $cola = cola_leer($fp);
-            $cola['espera'] = array_values(array_filter(
-                $cola['espera'],
-                static fn(array $e): bool => (string) ($e['codigo'] ?? '') !== $codigo
-            ));
+            $resto = [];
+            foreach ($cola['espera'] as $e) {
+                if ((string) ($e['codigo'] ?? '') === $codigo) {
+                    // Solo el dueño de la entrada puede quitarla.
+                    if ((string) ($e['jugador_id'] ?? '') === $jugadorId) {
+                        $esMia = true;
+                        continue;
+                    }
+                    $resto[] = $e;
+                    continue;
+                }
+                $resto[] = $e;
+            }
+            $cola['espera'] = $resto;
             cola_guardar($fp, $cola);
             flock($fp, LOCK_UN);
         }
         fclose($fp);
 
-        // Borra la sala solo si sigue esperando y es de quien cancela.
+        // Si ya no hay entrada (p. ej. te emparejaron), basta con ser el J1.
         $sala = cola_sh($codigo);
+        if (!$esMia && ($sala['jugadores'][0]['id'] ?? null) !== $jugadorId) {
+            responder(['ok' => false, 'error' => 'Esa búsqueda no es tuya.'], 403);
+        }
+
+        // Borra la sala solo si sigue esperando y es de quien cancela.
         if ($sala !== null
             && ($sala['estado'] ?? '') === 'esperando'
             && ($sala['jugadores'][0]['id'] ?? null) === $jugadorId
@@ -196,7 +212,7 @@ if ($accion === 'cancelar') {
 //  Buscar rival
 // ============================================================================
 
-$nombre = isset($input['nombre']) ? trim((string) $input['nombre']) : '';
+$nombre = isset($input['nombre']) && is_string($input['nombre']) ? trim($input['nombre']) : '';
 if (mb_strlen($nombre, 'UTF-8') > 20) {
     responder(['ok' => false, 'error' => 'Nombre demasiado largo (máx 20 caracteres).'], 400);
 }
@@ -226,7 +242,8 @@ try {
             responder(['ok' => false, 'error' => 'La sala ya no está disponible. Vuelve a intentarlo.'], 409);
         }
         flock($fpSala, LOCK_EX);
-        $sala = json_decode((string) stream_get_contents($fpSala), true);
+        $rawSala = stream_get_contents($fpSala);
+        $sala = ($rawSala === false || $rawSala === '') ? null : json_decode($rawSala, true);
 
         if (!is_array($sala)
             || ($sala['estado'] ?? '') !== 'esperando'
@@ -247,6 +264,10 @@ try {
         ];
         $sala['estado'] = 'jugando';
         $sala['actualizado_en'] = time();
+        if (!isset($sala['last_seen']) || !is_array($sala['last_seen'])) {
+            $sala['last_seen'] = [null, null];
+        }
+        $sala['last_seen'][1] = time();
         ftruncate($fpSala, 0);
         rewind($fpSala);
         fwrite($fpSala, json_encode($sala, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
