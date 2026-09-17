@@ -21,9 +21,17 @@ $urls = [
 ];
 
 foreach (categorias() as $cat) {
+    // Frescura real del hub: la fecha del JSON más reciente de la categoría.
+    $mtimeCat = 0;
+    foreach ($cat['tematicas'] as $tm) {
+        $fileTm = __DIR__ . '/tematicas/' . $tm['id'] . '.json';
+        if (is_file($fileTm)) {
+            $mtimeCat = max($mtimeCat, (int) filemtime($fileTm));
+        }
+    }
     $urls[] = [
         'loc' => SITE_URL . '/categoria/' . $cat['id'],
-        'lastmod' => $hoy,
+        'lastmod' => $mtimeCat > 0 ? date('Y-m-d', $mtimeCat) : $hoy,
         'changefreq' => 'monthly',
         'priority' => '0.8',
     ];

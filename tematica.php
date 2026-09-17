@@ -89,6 +89,9 @@ pagina_head([
         <?php else: ?>
         <p class="text-slate-300 text-sm leading-relaxed mt-4 mb-6"><?= e(str_replace('{t}', $nombre, (string) ($SEO['tematica_intro'] ?? ''))) ?></p>
         <?php endif; ?>
+        <?php $jsonTema = __DIR__ . '/tematicas/' . $id . '.json'; if (is_file($jsonTema)): ?>
+        <p class="text-xs text-slate-500 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', (int) filemtime($jsonTema))) ?></p>
+        <?php endif; ?>
 
         <a href="/?tematica=<?= e($id) ?>#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8"><?= e((string) ($SEO['tematica_cta'] ?? 'Jugar')) ?></a>
 
@@ -140,6 +143,28 @@ pagina_head([
             ?>
         </ul>
         <a href="/categoria/<?= e($tm['categoria_id']) ?>" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold mb-8"><?= e('Ver todas las temáticas de ' . $categoria) ?> →</a>
+
+        <h2 class="text-xl font-bold text-slate-100 mb-4">También te puede interesar</h2>
+        <ul class="flex flex-wrap gap-2 mb-8">
+            <?php
+            $otras = 0;
+            foreach (categorias() as $cat) {
+                if ($cat['id'] === $tm['categoria_id']) {
+                    continue;
+                }
+                $otra = $cat['tematicas'][0] ?? null;
+                if ($otra === null) {
+                    continue;
+                }
+                ?>
+            <li><a href="/tematica/<?= e($otra['id']) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($otra['emoji'] . ' ' . nombre_tematica($otra['id'])) ?></a></li>
+                <?php
+                if (++$otras >= 3) {
+                    break;
+                }
+            }
+            ?>
+        </ul>
 
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(seo_ui('guia_enlaces_titulo')) ?></h2>
         <ul class="space-y-2 mb-6">

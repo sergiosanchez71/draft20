@@ -132,10 +132,10 @@ pagina_head([
                 <h2 class="text-2xl font-bold text-slate-100 mb-2"><?= e(seo_ui('guias_titulo')) ?></h2>
                 <p class="text-slate-400 text-sm mb-6"><?= e(seo_ui('guias_sub')) ?></p>
                 <ul class="space-y-3 mb-4">
-                    <?php foreach (array_slice(guias_ordenadas(), 0, 3, true) as $gSlug => $g): ?>
+                    <?php foreach (array_slice(guias_ordenadas(), 0, 6, true) as $gSlug => $g): ?>
                     <li class="bg-slate-800 border border-slate-700 rounded-lg p-4">
                         <a class="font-bold text-amber-300 hover:text-amber-200" href="/guia/<?= e($gSlug) ?>"><?= e((string) $g['titulo']) ?></a>
-                        <p class="text-sm text-slate-300 leading-relaxed mt-1"><?= e(recortar((string) ($g['desc'] ?? ''), 160)) ?></p>
+                        <p class="text-sm text-slate-300 leading-relaxed mt-1"><?= e(recortar((string) ($g['desc'] ?? ''), 120)) ?></p>
                     </li>
                     <?php endforeach; ?>
                 </ul>

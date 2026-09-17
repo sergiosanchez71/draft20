@@ -29,6 +29,7 @@ Options -Indexes
     RewriteRule ^contacto/?$ contacto.php [L]
     RewriteRule ^privacidad/?$ privacidad.php [L]
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
+    RewriteRule ^feed\.xml$ feed.php [L]
 </IfModule>
 
 ErrorDocument 404 /404.php

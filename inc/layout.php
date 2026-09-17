@@ -196,6 +196,7 @@ function pagina_head(array $opts): void
     <link rel="icon" type="image/png" href="<?= e(asset('icons/icon-192.png')) ?>">
     <link rel="apple-touch-icon" href="<?= e(asset('icons/icon-180.png')) ?>">
     <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="alternate" type="application/rss+xml" title="Draft 20 — Guías" href="/feed.xml">
     <?= css_tags($opts['css_inline'] ?? true) ?>
 <?php foreach (($opts['preload_scripts'] ?? []) as $src): ?>
     <link rel="preload" as="script" href="<?= e(asset_js($src)) ?>">

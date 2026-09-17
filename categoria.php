@@ -32,6 +32,15 @@ $nombreCat = nombre_categoria($cat['id']);
 $titulo = (string) $cont['titulo'];
 $descripcion = recortar(implode(' ', array_map('strval', $cont['intro'])), 155);
 
+// Frescura real: la fecha del JSON más reciente de la categoría.
+$mtimeCat = 0;
+foreach ($cat['tematicas'] as $tmx) {
+    $fileTmx = __DIR__ . '/tematicas/' . $tmx['id'] . '.json';
+    if (is_file($fileTmx)) {
+        $mtimeCat = max($mtimeCat, (int) filemtime($fileTmx));
+    }
+}
+
 $itemList = [];
 $pos = 1;
 foreach ($cat['tematicas'] as $tm) {
@@ -86,6 +95,9 @@ pagina_head([
         <?php foreach ($cont['intro'] as $parrafo): ?>
         <p class="text-sm text-slate-300 leading-relaxed mb-4"><?= e((string) $parrafo) ?></p>
         <?php endforeach; ?>
+        <?php if ($mtimeCat > 0): ?>
+        <p class="text-xs text-slate-500 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', $mtimeCat)) ?></p>
+        <?php endif; ?>
 
         <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
 
@@ -111,6 +123,12 @@ pagina_head([
                 <a href="/categoria/<?= e($otra['id']) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($otra['emoji'] . ' ' . nombre_categoria($otra['id'])) ?></a>
             </li>
             <?php endforeach; ?>
+        </ul>
+
+        <h2 class="text-xl font-bold text-slate-100 mb-4">Guías relacionadas</h2>
+        <ul class="space-y-2 mb-6">
+            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="/guia/mejores-tematicas">Las 10 temáticas más divertidas de Draft 20 →</a></li>
+            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="/guia/como-ganar-draft-20">Cómo ganar en Draft 20: tácticas de subasta →</a></li>
         </ul>
 
         <a href="/guias" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold mb-6"><?= e(seo_ui('guias_ver_todas')) ?> →</a>
