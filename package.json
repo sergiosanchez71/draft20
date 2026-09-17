@@ -9,7 +9,7 @@
         "build": "npm run build:css && npm run build:js",
         "test": "npm run test:php && npm run test:node",
         "test:php": "php tools/test_catalogo.php && php tests/rate_limit.test.php",
-        "test:node": "node tests/bot_policy.test.js && node tests/a11y.test.js",
+        "test:node": "node tests/bot_policy.test.js && node tests/a11y.test.js && node tests/ssr_lobby.test.js",
         "smoke": "php tools/smoke.php",
         "warmup": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/warmup.ps1",
         "latencia": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/warmup.ps1 -Medir",

@@ -73,7 +73,7 @@ pagina_head([
             </p>
         </section>
 
-        <p class="text-xs text-slate-500 mt-8 mb-6">Última actualización: <?= e(date('m/Y')) ?></p>
+        <p class="text-xs text-slate-400 mt-8 mb-6">Última actualización: <?= e(date('m/Y')) ?></p>
     </main>
 <?php
 pagina_foot();

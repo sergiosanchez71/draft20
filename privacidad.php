@@ -32,7 +32,7 @@ pagina_head([
             <p class="text-sm text-slate-300 leading-relaxed"><?= e((string) ($SEO[$s[1]] ?? '')) ?></p>
         </section>
         <?php endforeach; ?>
-        <p class="text-xs text-slate-500 mt-8 mb-6">Última actualización: <?= e(date('m/Y')) ?></p>
+        <p class="text-xs text-slate-400 mt-8 mb-6">Última actualización: <?= e(date('m/Y')) ?></p>
     </main>
 <?php
 pagina_foot();

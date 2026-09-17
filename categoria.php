@@ -97,7 +97,7 @@ pagina_head([
         <p class="text-sm text-slate-300 leading-relaxed mb-4"><?= e((string) $parrafo) ?></p>
         <?php endforeach; ?>
         <?php if ($mtimeCat > 0): ?>
-        <p class="text-xs text-slate-500 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', $mtimeCat)) ?></p>
+        <p class="text-xs text-slate-400 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', $mtimeCat)) ?></p>
         <?php endif; ?>
 
         <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>

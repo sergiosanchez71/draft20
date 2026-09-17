@@ -578,10 +578,10 @@
             texto.textContent = '🙋 ' + t('ui.juego.aviso_unido', { nombre: nombre, seg: seg });
         };
         pintar();
-        const aviso = el('div', { class: 'flex-shrink-0 bg-emerald-500 text-white text-xs text-center py-2 px-3 flex flex-col items-center gap-1' }, [
+        const aviso = el('div', { class: 'flex-shrink-0 bg-emerald-500 text-slate-900 text-xs text-center py-2 px-3 flex flex-col items-center gap-1' }, [
             texto,
             el('button', {
-                class: 'bg-slate-900/25 text-white font-bold py-1 px-3 rounded btn-tap text-[11px]',
+                class: 'bg-slate-900/60 text-white font-bold py-1 px-3 rounded btn-tap text-[11px]',
                 onclick: function () { entrarPartidaHumana(); },
             }, t('ui.juego.entrar_ya')),
         ]);
@@ -767,7 +767,7 @@
             el('div', { class: 'text-[11px] mt-0.5 opacity-80' }, (me?.items_ganados?.length || 0) + '/4'),
         ]);
 
-        const rivalCard = el('div', { class: 'rounded-lg p-2 ' + (rivalTurn ? 'bg-rose-500 text-white' : 'bg-slate-700 text-slate-100') }, [
+        const rivalCard = el('div', { class: 'rounded-lg p-2 ' + (rivalTurn ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-100') }, [
             el('div', { class: 'text-[11px] font-semibold opacity-80 truncate' }, rivalLabel),
             el('div', { class: 'flex items-baseline gap-1 mt-0.5' }, [
                 el('span', { class: 'text-xl font-bold font-mono' }, String(rival?.dinero ?? 0)),
@@ -797,7 +797,7 @@
             t('ui.juego.ronda') + ' ' + s.ronda + ' / ' + totalRondas));
         card.appendChild(el('div', {
             class: 'absolute right-2 top-2 w-20 sm:w-24 text-center text-[10px] sm:text-[11px] font-bold px-1 py-0.5 rounded-full whitespace-nowrap ' +
-                (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'),
+                (myTurn ? 'bg-emerald-500 text-slate-900' : 'bg-slate-700 text-slate-300'),
         }, myTurn ? t('ui.juego.tu_turno') : t('ui.juego.turno_rival')));
 
         // Aviso blando: el rival lleva sin responder unos segundos.
@@ -907,7 +907,7 @@
             ]),
             el('div', { class: 'flex gap-1 overflow-x-auto no-scrollbar pb-1 min-h-[36px]' },
                 myItems.length === 0
-                    ? [el('span', { class: 'text-slate-500 text-xs italic' }, t('ui.juego.sin_items'))]
+                    ? [el('span', { class: 'text-slate-400 text-xs italic' }, t('ui.juego.sin_items'))]
                     : myItems.map(function (i) {
                         const wrap = el('div', { class: 'flex-shrink-0 w-9 h-10 flex flex-col items-center' }, [
                             el('div', { class: 'w-9 h-9 bg-slate-700 border-l-2 border-amber-400 rounded flex items-center justify-center', title: itemTooltip(i) }, [emojiImg(i.emoji, 'w-6 h-6', '')]),
@@ -925,7 +925,7 @@
             ]),
             el('div', { class: 'flex gap-1 overflow-x-auto no-scrollbar pb-1 min-h-[36px]' },
                 rivalItems.length === 0
-                    ? [el('span', { class: 'text-slate-500 text-xs italic' }, t('ui.juego.sin_items'))]
+                    ? [el('span', { class: 'text-slate-400 text-xs italic' }, t('ui.juego.sin_items'))]
                     : rivalItems.map(function (i) {
                         const wrap = el('div', { class: 'flex-shrink-0 w-9 h-10 flex flex-col items-center' }, [
                             el('div', { class: 'w-9 h-9 bg-slate-700 border-l-2 border-rose-500 rounded flex items-center justify-center', title: itemTooltip(i) }, [emojiImg(i.emoji, 'w-6 h-6', '')]),
@@ -1001,7 +1001,7 @@
             const buttons = el('div', { class: 'flex gap-2' });
             buttons.appendChild(el('button', {
                 id: 'btnAsignarKeep',
-                class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap text-base disabled:opacity-40',
+                class: 'flex-1 bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap text-base disabled:opacity-40',
                 onclick: function () { onAsignarRival(state.jugadorSlot, 1); },
                 title: canKeep ? '' : t('ui.juego.err_no_puedes_pagar_1'),
             }, t('ui.juego.btn_me_lo_quedo_1')));
@@ -1048,7 +1048,7 @@
             && !s.decision_pendiente) {
             bar.appendChild(el('button', {
                 id: 'btnPasarDeadlock',
-                class: 'w-full bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap text-base',
+                class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap text-base',
                 onclick: onPasarDeadlock,
             }, t('ui.juego.btn_pasar_turno')));
             bar.appendChild(el('div', { class: 'text-center text-amber-300 text-xs mt-2' }, t('ui.juego.msg_deadlock_sin_dinero')));
@@ -1062,7 +1062,7 @@
             // Estando capped el server asigna el ítem al rival a precio 0: no paga nadie.
             const label = canBajar ? t('ui.juego.btn_bajar') : t('ui.juego.btn_pasar_turno');
             const buttons = el('div', { class: 'flex gap-2' });
-            buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap text-base', onclick: onBajar }, label));
+            buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap text-base', onclick: onBajar }, label));
             if (rivalCapped) {
                 buttons.appendChild(el('button', { id: 'btnPujar3', class: 'bg-slate-700 text-slate-100 font-bold py-3 px-4 rounded-lg btn-tap text-sm', onclick: onPujar3 }, t('ui.juego.btn_pujar3')));
             }
@@ -1087,7 +1087,7 @@
         const buttons = el('div', { class: 'flex gap-2' });
         buttons.appendChild(el('button', { id: 'btnPujar', class: 'flex-1 bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap text-base disabled:opacity-40', onclick: onPujar, title: canPujar1 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar')));
         buttons.appendChild(el('button', { id: 'btnPujar3', class: 'bg-slate-700 text-slate-100 font-bold py-3 px-4 rounded-lg btn-tap text-sm disabled:opacity-40', onclick: onPujar3, title: canPujar3 ? '' : t('ui.juego.item_no_presupuesto') }, t('ui.juego.btn_pujar3')));
-        buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap text-sm leading-tight disabled:opacity-40', onclick: onBajar }, bajarLabel));
+        buttons.appendChild(el('button', { id: 'btnBajar', class: 'flex-1 bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap text-sm leading-tight disabled:opacity-40', onclick: onBajar }, bajarLabel));
 
         bar.appendChild(buttons);
 
@@ -1233,7 +1233,7 @@
             el('div', { class: 'text-base font-mono font-bold text-amber-400' }, totalValor + ' ⭐'),
         ]);
         const list = items.length === 0
-            ? el('div', { class: 'text-slate-500 text-xs italic px-1' }, '—')
+            ? el('div', { class: 'text-slate-400 text-xs italic px-1' }, '—')
             : el('div', { class: 'space-y-1' }, items.map(function (i) {
                 return el('div', { class: 'flex items-center gap-2 bg-slate-800 rounded px-2 py-1.5' }, [
                     el('span', { class: 'w-7 flex-shrink-0 flex justify-center' }, [emojiImg(i.emoji, 'w-6 h-6', '')]),
@@ -1243,7 +1243,7 @@
                 ]);
             }));
         const footer = items.length > 0
-            ? el('div', { class: 'text-xs text-slate-500 mt-2 px-1 text-right font-mono' }, t('ui.juego.total_gastado') + ': ' + totalPrecio + ' 🪙')
+            ? el('div', { class: 'text-xs text-slate-400 mt-2 px-1 text-right font-mono' }, t('ui.juego.total_gastado') + ': ' + totalPrecio + ' 🪙')
             : null;
         return el('div', { class: 'mb-4' }, [header, list, footer].filter(Boolean));
     }
@@ -1397,7 +1397,7 @@
         let resultBlock;
         if (resultado === 'win') {
             const clave = porDesempate ? 'ui.juego.fin_ganador_desempate' : 'ui.juego.fin_ganador_score';
-            resultBlock = el('div', { class: 'bg-emerald-500 text-white p-4 rounded-lg mb-4 text-center fade-in' }, [
+            resultBlock = el('div', { class: 'bg-emerald-500 text-slate-900 p-4 rounded-lg mb-4 text-center fade-in' }, [
                 el('div', { class: 'text-3xl mb-1' }, '🏅'),
                 el('p', { class: 'text-base font-bold' }, t(clave, { nombre: me?.nombre || 'Tú', puntos: myScore })),
             ]);
@@ -1405,7 +1405,7 @@
             sfx('fin');
         } else if (resultado === 'loss') {
             const clave = porDesempate ? 'ui.juego.fin_ganador_desempate' : 'ui.juego.fin_ganador_score';
-            resultBlock = el('div', { class: 'bg-rose-500 text-white p-4 rounded-lg mb-4 text-center fade-in' }, [
+            resultBlock = el('div', { class: 'bg-rose-600 text-white p-4 rounded-lg mb-4 text-center fade-in' }, [
                 el('div', { class: 'text-3xl mb-1' }, '🏅'),
                 el('p', { class: 'text-base font-bold' }, t(clave, { nombre: rival?.nombre || 'Rival', puntos: rivalScore })),
             ]);
@@ -1426,7 +1426,7 @@
             revanchaBanner = el('div', { class: 'bg-slate-700 border border-amber-400 rounded-lg p-3 mb-4 text-center fade-in' }, [
                 el('p', { class: 'text-sm text-slate-100 mb-3' }, t('ui.juego.msg_revancha_propuesta', { nombre: rival?.nombre || 'Rival', tema: tema })),
                 el('div', { class: 'flex gap-2' }, [
-                    el('button', { class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap', onclick: aceptarRevancha }, t('ui.juego.btn_revancha_unirse')),
+                    el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap', onclick: aceptarRevancha }, t('ui.juego.btn_revancha_unirse')),
                     el('button', { class: 'flex-1 bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap', onclick: rechazarRevancha }, t('ui.juego.btn_revancha_rechazar')),
                 ]),
             ]);
@@ -1449,7 +1449,7 @@
                 onclick: function () { compartirResultado(myScore, rivalScore, resultado); },
             }, t('ui.juego.btn_compartir_resultado')),
             el('button', {
-                class: 'w-full bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg btn-tap',
+                class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap',
                 onclick: openRevanchaModal,
             }, '🔄 ' + t('ui.juego.btn_revancha_rapida')),
             el('button', { class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap', onclick: onLeave }, t('ui.juego.salir_lobby')),
@@ -1486,7 +1486,7 @@
         ]));
         wrap.appendChild(el('div', { class: 'flex gap-2 mt-6 px-2 w-full' }, [
             el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
-            el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+            el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
             el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { D.mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
         ]));
           wrap.appendChild(el('div', { class: 'w-full mt-6 px-2' }, [
@@ -1512,7 +1512,7 @@
         content.appendChild(el('div', { class: 'flex gap-2 mt-4' }, [
             el('button', { class: 'flex-1 bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap', onclick: m.close }, t('ui.reglas.cerrar')),
             el('button', {
-                class: 'flex-1 bg-emerald-500 text-white font-bold py-3 rounded-lg btn-tap',
+                class: 'flex-1 bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
                 onclick: function () { proponerRevancha(resolverTematica(ctx), m.close); },
             }, t('ui.juego.btn_revancha_proponer')),
         ]));
@@ -1652,7 +1652,7 @@
                 onclick: m.close,
             }, t('ui.juego.btn_cancelar')),
             el('button', {
-                class: 'flex-1 bg-rose-500 text-white font-bold py-3 rounded-lg btn-tap',
+                class: 'flex-1 bg-rose-600 text-white font-bold py-3 rounded-lg btn-tap',
                 onclick: function () { m.close(); salirYa(); },
             }, t('ui.juego.btn_salir_confirmar')),
         ]));

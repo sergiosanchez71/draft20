@@ -96,11 +96,11 @@ pagina_head([
         <p class="text-slate-300 text-sm leading-relaxed mt-4 mb-6"><?= e(str_replace('{t}', $nombre, (string) ($SEO['tematica_intro'] ?? ''))) ?></p>
         <?php endif; ?>
         <?php $jsonTema = __DIR__ . '/tematicas/' . $id . '.json'; if (is_file($jsonTema)): ?>
-        <p class="text-xs text-slate-500 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', (int) filemtime($jsonTema))) ?></p>
+        <p class="text-xs text-slate-400 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', (int) filemtime($jsonTema))) ?></p>
         <?php endif; ?>
 
         <button id="btnJugarTema" type="button" data-tematica="<?= e($id) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-2 disabled:opacity-60"><?= e((string) ($SEO['tematica_cta'] ?? 'Jugar')) ?></button>
-        <p class="text-xs text-slate-500 mb-8"><a class="hover:text-amber-400" href="/?tematica=<?= e($id) ?>#app"><?= e('o elige temática en el lobby') ?></a></p>
+        <p class="text-xs text-slate-400 mb-8"><a class="hover:text-amber-400" href="/?tematica=<?= e($id) ?>#app"><?= e('o elige temática en el lobby') ?></a></p>
 
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(str_replace('{t}', $nombre, (string) ($SEO['tematica_items_titulo'] ?? 'Ítems de {t}'))) ?></h2>
         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-10">

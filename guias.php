@@ -51,7 +51,7 @@ pagina_head([
             <li class="bg-slate-800 border border-slate-700 rounded-lg p-4">
                 <a class="font-bold text-amber-300 hover:text-amber-200" href="/guia/<?= e($slug) ?>"><?= e((string) $g['titulo']) ?></a>
                 <p class="text-sm text-slate-300 leading-relaxed mt-2"><?= e((string) ($g['desc'] ?? '')) ?></p>
-                <p class="text-xs text-slate-500 mt-2"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(fecha_es((string) ($g['fecha'] ?? ''))) ?></p>
+                <p class="text-xs text-slate-400 mt-2"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(fecha_es((string) ($g['fecha'] ?? ''))) ?></p>
             </li>
             <?php endforeach; ?>
         </ul>

@@ -403,7 +403,7 @@
 
         filas.push(el('div', { class: 'text-xs uppercase tracking-wide text-slate-400 mb-2' }, t('ui.lobby.progreso_historial')));
         if (!historial.length) {
-            filas.push(el('p', { class: 'text-xs text-slate-500 italic' }, t('ui.lobby.progreso_sin_historial')));
+            filas.push(el('p', { class: 'text-xs text-slate-400 italic' }, t('ui.lobby.progreso_sin_historial')));
         } else {
             filas.push(el('div', { class: 'space-y-1' }, historial.slice(0, 5).map(function (h) {
                 const icono = h.r === 'win' ? '✅' : (h.r === 'loss' ? '❌' : '🤝');
@@ -412,7 +412,7 @@
                 try { fecha = new Date(h.ts || 0).toLocaleDateString(); } catch (e) { /* ignore */ }
                 return el('div', { class: 'flex items-center justify-between text-xs text-slate-300 bg-slate-700/40 rounded px-2 py-1' }, [
                     el('span', { class: 'truncate' }, icono + ' ' + quien),
-                    el('span', { class: 'text-slate-500 ml-2 flex-shrink-0' }, (h.tema ? tTematica(h.tema) : '') + ' · ' + fecha),
+                    el('span', { class: 'text-slate-400 ml-2 flex-shrink-0' }, (h.tema ? tTematica(h.tema) : '') + ' · ' + fecha),
                 ]);
             })));
         }
@@ -646,7 +646,7 @@
         const cont = el('div', {}, [
             el('h2', { class: 'text-lg font-bold text-amber-400 mb-3' }, t('ui.lobby.qr_titulo')),
             el('div', { id: 'qrBox', class: 'flex justify-center bg-white rounded-lg p-3 min-h-[248px] items-center' }, [
-                el('span', { class: 'text-slate-500 text-sm' }, '…'),
+                el('span', { class: 'text-slate-600 text-sm' }, '…'),
             ]),
             el('p', { class: 'text-xs text-slate-400 mt-3 text-center break-all' }, url),
         ]);
@@ -712,7 +712,7 @@
         const hayStats = (st.wins || st.losses || st.draws);
         const btnInstalar = el('button', {
             id: 'btnInstalar',
-            class: 'w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500 text-white text-base font-bold btn-tap',
+            class: 'w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500 text-slate-900 text-base font-bold btn-tap',
             'aria-label': t('ui.lobby.pwa_instalar'),
             title: t('ui.lobby.pwa_instalar'),
             onclick: pwaInstalar,
@@ -778,7 +778,7 @@
             pintar();
             return el('div', { class: claseWrapper }, [
                 btn,
-                el('div', { class: 'text-[11px] text-slate-500 mt-2 text-center' }, t('ui.lobby.mostrar_valores_ayuda')),
+                el('div', { class: 'text-[11px] text-slate-400 mt-2 text-center' }, t('ui.lobby.mostrar_valores_ayuda')),
             ]);
         }
 
@@ -786,11 +786,11 @@
         // también la pulse (sin compartir código). Va antes de Crear Sala.
         const rapidaForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
-            el('input', { id: 'nameRapida', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
+            el('input', { id: 'nameRapida', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base placeholder:text-slate-300' }),
             crearToggleValores('mb-4'),
-            el('button', { id: 'btnRapida', class: 'w-full bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-lg' }, '⚡ ' + t('ui.lobby.btn_rapida')),
-            el('p', { class: 'text-[11px] text-slate-500 mt-2 text-center' }, t('ui.lobby.rapida_ayuda')),
-            el('div', { id: 'colaInfo', class: 'text-[11px] text-slate-400 mt-1 text-center' }, ''),
+            el('button', { id: 'btnRapida', class: 'w-full bg-emerald-500 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg' }, '⚡ ' + t('ui.lobby.btn_rapida')),
+            el('p', { class: 'text-[11px] text-slate-400 mt-2 text-center' }, t('ui.lobby.rapida_ayuda')),
+            el('div', { id: 'colaInfo', class: 'text-[11px] text-slate-400 mt-1 text-center min-h-[15px]' }, ''),
         ]);
 
         // Selector de dificultad del bot (movido al ámbito del módulo para que
@@ -800,20 +800,20 @@
             el('label', { class: 'block text-sm text-slate-400 mb-2' }, t('ui.lobby.selector_tematica')),
             selectorBox,
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
-            el('input', { id: 'nameCreate', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
+            el('input', { id: 'nameCreate', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base placeholder:text-slate-300' }),
             crearToggleValores('mb-4'),
             el('button', { id: 'btnCreate', class: 'w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_crear')),
         ]);
 
         const joinForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.label_unirse')),
-            el('input', { id: 'codeJoin', type: 'text', maxlength: '5', minlength: '5', placeholder: t('ui.lobby.placeholder_codigo'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base uppercase tracking-widest text-center text-2xl font-mono' }),
+            el('input', { id: 'codeJoin', type: 'text', maxlength: '5', minlength: '5', placeholder: t('ui.lobby.placeholder_codigo'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base uppercase tracking-widest text-center text-2xl font-mono placeholder:text-slate-300' }),
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
-            el('input', { id: 'nameJoin', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: 'Jugador 2', class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
-            el('button', { id: 'btnJoin', class: 'w-full bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_unirse')),
+            el('input', { id: 'nameJoin', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: 'Jugador 2', class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base placeholder:text-slate-300' }),
+            el('button', { id: 'btnJoin', class: 'w-full bg-emerald-500 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_unirse')),
         ]);
 
-        const errorBox = el('div', { id: 'lobbyError', class: 'hidden bg-rose-500 text-white p-3 rounded-lg mx-4 mb-4 text-sm text-center' });
+        const errorBox = el('div', { id: 'lobbyError', class: 'hidden bg-rose-600 text-white p-3 rounded-lg mx-4 mb-4 text-sm text-center' });
 
         // Dificultad del bot (persistida entre sesiones).
         try {
@@ -837,16 +837,16 @@
                     class: 'w-full bg-amber-400/90 text-slate-900 font-bold py-3 rounded-lg btn-tap text-sm mt-2',
                     onclick: onGuiada,
                 }, '🎓 ' + t('ui.lobby.btn_guiada')),
-                el('p', { class: 'text-[11px] text-slate-500 mt-1 text-center' }, t('ui.lobby.guiada_ayuda')),
+                el('p', { class: 'text-[11px] text-slate-400 mt-1 text-center' }, t('ui.lobby.guiada_ayuda')),
             ]);
 
         app.appendChild(errorBox);
         app.appendChild(rapidaForm);
-        app.appendChild(el('div', { class: 'text-center text-slate-500 text-xs my-2' }, '— o —'));
+        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
         app.appendChild(createForm);
-        app.appendChild(el('div', { class: 'text-center text-slate-500 text-xs my-2' }, '— o —'));
+        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
         app.appendChild(joinForm);
-        app.appendChild(el('div', { class: 'text-center text-slate-500 text-xs my-2' }, '— o —'));
+        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
         app.appendChild(practiceCard);
 
         $('#btnCreate').addEventListener('click', onCreate);
@@ -1084,7 +1084,7 @@
             el('div', { class: 'text-5xl font-mono font-bold text-amber-400 tracking-widest my-4' }, state.codigo),
             el('div', { class: 'flex gap-2 mt-4' }, [
                 el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
-                el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+                el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
                 el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
             ]),
         ]));
@@ -1169,7 +1169,7 @@
             el('div', { class: 'text-3xl font-mono font-bold text-amber-400 tracking-widest my-4' }, state.codigo || ''),
             el('div', { class: 'flex gap-2' }, [
                 el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
-                el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+                el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
                 el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
             ]),
         ]));

@@ -66,7 +66,7 @@ pagina_head([
         </nav>
 
         <h1 class="text-3xl font-bold text-slate-100 mb-2"><?= e((string) ($guia['h1'] ?? $titulo)) ?></h1>
-        <p class="text-xs text-slate-500 mb-8"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(fecha_es((string) ($guia['fecha'] ?? ''))) ?></p>
+        <p class="text-xs text-slate-400 mb-8"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(fecha_es((string) ($guia['fecha'] ?? ''))) ?></p>
 
         <?php foreach ($guia['secciones'] as $sec): ?>
         <section class="mb-6">

@@ -9,6 +9,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/inc/layout.php';
+require_once __DIR__ . '/inc/lobby_inicial.php';
 require_once __DIR__ . '/contenido_seo.php';
 
 $LANG = cargar_lang();
@@ -85,7 +86,7 @@ pagina_head([
         </header>
 
         <main class="flex-1 flex flex-col">
-            <div id="app" class="flex flex-col"></div>
+            <div id="app" class="flex flex-col"><?= lobby_inicial_html($tematicaPre) ?></div>
 
             <section class="max-w-3xl mx-auto w-full px-4 mt-10">
                 <details class="acordeon bg-slate-800 border border-slate-700 rounded-lg">
@@ -119,7 +120,7 @@ pagina_head([
                     <div class="text-xs uppercase tracking-wide text-amber-400 font-bold mb-1"><?= e((string) ($SEO['tematica_dia'] ?? '')) ?></div>
                     <div class="text-lg font-bold text-slate-100"><?= e($tematicaDia['emoji'] . ' ' . nombre_tematica($tematicaDia['id'])) ?></div>
                     <p class="text-sm text-slate-400 mt-1"><?= e((string) ($SEO['tematica_dia_sub'] ?? '')) ?></p>
-                    <time class="block text-[11px] text-slate-500 mt-2" datetime="<?= e(date('Y-m-d')) ?>"><?= e(date('d/m/Y')) ?></time>
+                    <time class="block text-[11px] text-slate-400 mt-2" datetime="<?= e(date('Y-m-d')) ?>"><?= e(date('d/m/Y')) ?></time>
                 </a>
             </section>
 
@@ -176,7 +177,7 @@ pagina_head([
             <?php endif; ?>
 
             <section class="text-center mt-10 px-4">
-                <a href="#app" class="inline-block bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['cta_final'] ?? '')) ?></a>
+                <a href="#app" class="inline-block bg-emerald-500 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['cta_final'] ?? '')) ?></a>
             </section>
         </main>
     </div>
