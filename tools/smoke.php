@@ -56,7 +56,7 @@ function http_req(string $method, string $url, ?array $body = null): array
             $code = (int) $m[1];
         }
     }
-    return ['code' => $code, 'json' => json_decode($raw, true)];
+    return ['code' => $code, 'json' => json_decode($raw, true), 'raw' => $raw, 'headers' => $http_response_header ?? []];
 }
 
 $ok = 0; $fail = 0;
@@ -223,6 +223,22 @@ try {
     $asig = http_req('POST', $base . '/api/accion.php', ['codigo' => $codD, 'jugador_id' => $j2d, 'accion' => 'asignar_rival', 'destino' => 1, 'precio' => 1]);
     check($asig['code'] === 200 && (($asig['json']['sala']['jugadores'][1]['dinero'] ?? null) === 19), 'deadlock: asignar_rival cobra 1 → 19');
     check(($asig['json']['sala']['decision_pendiente'] ?? null) === null, 'deadlock: decisión limpia');
+
+    // 10) CSP con nonce: el HTML y los scripts inline deben ir firmados.
+    $rcsp = http_req('GET', $base . '/index.php');
+    $hcsp = implode("\n", $rcsp['headers']);
+    check($rcsp['code'] === 200, 'home 200 para comprobar la CSP');
+    $mCsp = [];
+    check((bool) preg_match('/Content-Security-Policy:.*script-src \'self\' \'nonce-([A-Za-z0-9+\/=]+)\'/i', $hcsp, $mCsp), 'CSP: script-src con nonce');
+    $nonce = $mCsp[1] ?? '';
+    check($nonce !== '' && substr_count((string) $rcsp['raw'], 'nonce="' . $nonce . '"') >= 1, 'home: los scripts inline llevan el nonce');
+    $rcsp2 = http_req('GET', $base . '/como-jugar');
+    $hcsp2 = implode("\n", $rcsp2['headers']);
+    $mCsp2 = [];
+    check((bool) preg_match('/script-src \'self\' \'nonce-([A-Za-z0-9+\/=]+)\'/', $hcsp2, $mCsp2), 'como-jugar: CSP con nonce');
+    $n2 = $mCsp2[1] ?? '';
+    check(strpos((string) $rcsp2['raw'], 'application/ld+json" nonce="' . $n2 . '"') !== false, 'JSON-LD firmado con el nonce');
+    check(strpos($hcsp, "object-src 'none'") !== false, 'CSP: object-src none');
 } finally {
     foreach ($codigos as $c) {
         if ($c !== '') {

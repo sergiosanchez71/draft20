@@ -24,6 +24,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../inc/sala_publica.php';
+require_once __DIR__ . '/../inc/rate_limit.php';
 
 // ============================================================================
 //  Config & constantes
@@ -93,6 +94,10 @@ if ($codigo === '' || !preg_match($regexCodigo, $codigo)) {
 if ($jugadorId !== '' && !preg_match($regexJugador, $jugadorId)) {
     responder(['ok' => false, 'error' => 'jugador_id inválido.'], 400);
 }
+
+// Anti-abuso: el poll normal es 1/s por jugador (dos jugadores tras el mismo
+// NAT hacen 120/min). El límite solo corta automatizaciones agresivas.
+rl_guard('estado', 300, 60);
 
 // ============================================================================
 //  Lectura + opcional: actualizar last_seen y comprobar timeout

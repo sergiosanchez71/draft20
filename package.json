@@ -8,7 +8,7 @@
         "build:js": "terser js/app.core.js -c -m -o js/app.core.min.js && terser js/app.game.js -c -m -o js/app.game.min.js && terser js/bot_policy.js -c -m -o js/bot_policy.min.js",
         "build": "npm run build:css && npm run build:js",
         "test": "npm run test:php && npm run test:node",
-        "test:php": "php tools/test_catalogo.php",
+        "test:php": "php tools/test_catalogo.php && php tests/rate_limit.test.php",
         "test:node": "node tests/bot_policy.test.js",
         "smoke": "php tools/smoke.php",
         "gen:assets": "node tools/gen_emoji.js && node tools/gen_flags.js && svgo --folder img/emoji --multipass"

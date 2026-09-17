@@ -22,6 +22,7 @@ if (!is_string($codigo) || !preg_match('/^[A-Z0-9]{5}$/', $codigo)) {
 
 // Catálogo compartido: lo usan el header (temática) y el modal de revancha.
 $categorias = categorias();
+csp_headers();
 ?><!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,15 +37,15 @@ $categorias = categorias();
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <?= tailwind_tag() ?><link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
-    <script>window.LANG = <?= json_encode($LANG, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
-    <script>window.__CATEGORIAS = <?= json_encode($categorias, JSON_UNESCAPED_UNICODE) ?>;</script>
+    <script nonce="<?= e(csp_nonce()) ?>">window.LANG = <?= json_encode($LANG, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
+    <script nonce="<?= e(csp_nonce()) ?>">window.__CATEGORIAS = <?= json_encode($categorias, JSON_UNESCAPED_UNICODE) ?>;</script>
 </head>
 <body class="app-viewport bg-slate-900 text-slate-100 flex flex-col">
     <main id="app" class="flex-1 flex flex-col"></main>
     <script src="<?= e(asset_js('js/bot_policy.js')) ?>"></script>
     <script src="<?= e(asset_js('js/app.core.js')) ?>"></script>
     <script src="<?= e(asset_js('js/app.game.js')) ?>"></script>
-    <script>
+    <script nonce="<?= e(csp_nonce()) ?>">
         (function () {
             const codigo = <?= json_encode($codigo, JSON_UNESCAPED_UNICODE) ?>;
             window.__juegoInit(codigo);

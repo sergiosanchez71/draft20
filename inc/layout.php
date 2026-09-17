@@ -126,6 +126,32 @@ function asset_js(string $rel): string
     return asset($rel);
 }
 
+/**
+ * Nonce CSP por petición: firma los scripts inline (JSON-LD, datos de arranque).
+ * El header va en enforcing desde PHP porque el nonce no puede vivir en .htaccess.
+ */
+function csp_nonce(): string
+{
+    static $nonce = null;
+    if ($nonce === null) {
+        $nonce = base64_encode(random_bytes(16));
+    }
+    return $nonce;
+}
+
+function csp_headers(): void
+{
+    if (headers_sent()) {
+        return;
+    }
+    $n = csp_nonce();
+    header(
+        "Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-" . $n . "'; " .
+        "style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; " .
+        "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    );
+}
+
 /** Tailwind: usa el CSS compilado si existe; si no, cae al CDN (desarrollo). */
 function tailwind_tag(): string
 {
@@ -198,6 +224,7 @@ function pagina_head(array $opts): void
     $robots = $opts['robots'] ?? 'index, follow';
     $ogImage = $opts['og_image'] ?? SITE_URL . '/og-image.png';
     $bodyClass = $opts['body_class'] ?? 'bg-slate-900 text-slate-100 min-h-screen flex flex-col';
+    csp_headers();
     ?><!DOCTYPE html>
 <html lang="es">
 <head>
@@ -232,7 +259,7 @@ function pagina_head(array $opts): void
     <link rel="preload" as="script" href="<?= e(asset_js($src)) ?>">
 <?php endforeach; ?>
 <?php foreach (($opts['json_ld'] ?? []) as $schema): ?>
-    <script type="application/ld+json"><?= json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>
+    <script type="application/ld+json" nonce="<?= e(csp_nonce()) ?>"><?= json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>
 <?php endforeach; ?>
 </head>
 <body class="<?= e($bodyClass) ?>">
@@ -247,14 +274,14 @@ function pagina_foot(array $opts = []): void
 {
     site_footer();
     if (!empty($opts['inline_first'])) {
-        echo '    <script>' . $opts['inline_first'] . '</script>' . "\n";
+        echo '    <script nonce="' . e(csp_nonce()) . '">' . $opts['inline_first'] . '</script>' . "\n";
     }
     $defer = !empty($opts['defer']) ? ' defer' : '';
     foreach (($opts['scripts'] ?? []) as $src) {
         echo '    <script src="' . e(asset_js($src)) . '"' . $defer . '></script>' . "\n";
     }
     if (!empty($opts['inline'])) {
-        echo '    <script>' . $opts['inline'] . '</script>' . "\n";
+        echo '    <script nonce="' . e(csp_nonce()) . '">' . $opts['inline'] . '</script>' . "\n";
     }
     ?>
 </body>
