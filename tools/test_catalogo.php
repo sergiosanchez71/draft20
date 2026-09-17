@@ -11,6 +11,12 @@
  */
 declare(strict_types=1);
 
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    echo 'Solo CLI.';
+    exit;
+}
+
 $root = dirname(__DIR__);
 $totalOk = 0; $totalFail = 0; $totalWarn = 0;
 

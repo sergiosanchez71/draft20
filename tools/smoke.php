@@ -9,6 +9,12 @@
  */
 declare(strict_types=1);
 
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    echo 'Solo CLI.';
+    exit;
+}
+
 $root = dirname(__DIR__);
 $salasDir = $root . '/api/salas/';
 $port = 9400 + (getmypid() % 300);

@@ -28,6 +28,12 @@ Options -Indexes
     # 4) Catálogo interno: los valores de los ítems no se sirven por HTTP
     #    (el cliente los recibe por API solo cuando el modo lo permite).
     RewriteRule ^tematicas/ - [F,L]
+
+    # 5) Superficie de desarrollo y archivos internos: nunca por HTTP.
+    #    (El deploy sube todo el repo; esto evita exponer código y notas.)
+    RewriteRule ^(tools|tests|docs|node_modules|vendor)(/|$) - [F,L]
+    RewriteRule ^(README\.md|package(-lock)?\.json|composer\.(json|lock)|draft20\.iml|phpunit\.xml|AGENTS\.md)$ - [F,L]
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
     RewriteRule ^como-jugar/?$ como_jugar.php [L]
     RewriteRule ^acerca/?$ acerca.php [L]
     RewriteRule ^contacto/?$ contacto.php [L]
@@ -56,8 +62,12 @@ ErrorDocument 404 /404.php
 
     # Cabeceras de seguridad. La CSP va en modo informe (hay scripts inline).
     Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
+    # frame-ancestors va en enforcing (complementa X-Frame-Options); el resto
+    # de la política sigue en Report-Only hasta poder quitar los inline.
+    Header always set Content-Security-Policy "frame-ancestors 'none'"
     Header always set Content-Security-Policy-Report-Only "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 </IfModule>
 
