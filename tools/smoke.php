@@ -81,6 +81,10 @@ try {
     $lang = json_decode((string) @file_get_contents($root . '/lang/es.json'), true);
     check(is_array($lang) && count($lang['items'] ?? []) > 1000, 'lang/es.json válido con items');
 
+    // 0b) Iconos Fluent Emoji servidos (MIT)
+    $icono = http_req('GET', $base . '/img/emoji/1f410.svg');
+    check($icono['code'] === 200, 'icono Fluent SVG servido (200)');
+
     // 1) Crear
     $r = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'hamburguesa', 'nombre' => 'Smoke1']);
     check($r['code'] === 200 && !empty($r['json']['codigo']), 'crear_sala → 200');

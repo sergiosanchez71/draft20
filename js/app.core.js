@@ -147,6 +147,40 @@
 
     const LOGROS_IDS = ['coleccionista', 'cazador', 'austero', 'derrochador', 'racha', 'veterano'];
 
+    /** Slug del icono: codepoints en hex sin FE0F, unidos por '-'. */
+    function emojiSlug(emoji) {
+        if (!emoji) return '';
+        const cps = [];
+        for (const ch of emoji) {
+            const cp = ch.codePointAt(0);
+            if (cp === 0xFE0F) continue;
+            cps.push(cp.toString(16));
+        }
+        return cps.join('-');
+    }
+
+    /**
+     * Icono Fluent Emoji (SVG, MIT) con fallback automático al emoji de texto.
+     * alt vacío = decorativo (el nombre visible va al lado).
+     */
+    function emojiImg(emoji, clase, alt) {
+        const img = el('img', {
+            class: clase || '',
+            src: '/img/emoji/' + emojiSlug(emoji) + '.svg',
+            alt: alt || '',
+            loading: 'lazy',
+            decoding: 'async',
+            width: '128',
+            height: '128',
+        });
+        img.addEventListener('error', function () {
+            // Sin asset (o red caída): se pinta el emoji de texto como antes.
+            const span = el('span', { class: clase || '' }, emoji);
+            if (img.parentNode) img.parentNode.replaceChild(span, img);
+        });
+        return img;
+    }
+
     function logrosDesbloqueados() {
         try {
             const g = JSON.parse(localStorage.getItem('draft20_logros') || '{}');
@@ -862,6 +896,8 @@
         resolverTematica: resolverTematica,
         renderTematicaSelector: renderTematicaSelector,
         mostrarQR: mostrarQR,
+        emojiImg: emojiImg,
+        emojiSlug: emojiSlug,
         LOGROS_IDS: LOGROS_IDS,
         iniciarPartidaBot: iniciarPartidaBot,
     };

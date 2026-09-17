@@ -17,6 +17,7 @@
     const api = D.api, toast = D.toast, vibrate = D.vibrate;
     const copyLink = D.copyLink, shareWhatsApp = D.shareWhatsApp;
     const el = D.el, clear = D.clear, showModal = D.showModal;
+    const emojiImg = D.emojiImg, emojiSlug = D.emojiSlug;
     const $ = D.$;
     const loadSession = D.loadSession, saveSession = D.saveSession, clearSession = D.clearSession;
     const loadStats = D.loadStats, registrarResultado = D.registrarResultado;
@@ -620,7 +621,9 @@
         const wrap = el('div', { class: 'w-full my-auto flex flex-col items-center' });
         centro.appendChild(wrap);
 
-        const emoji = el('div', { class: 'text-[clamp(3rem,12svh,6rem)] mb-2 ' + (myTurn ? 'pulse-win' : '') }, item.emoji);
+        const emoji = el('div', { class: 'h-[clamp(3rem,12svh,6rem)] mb-2 flex items-center ' + (myTurn ? 'pulse-win' : '') }, [
+            emojiImg(item.emoji, 'h-full w-auto', ''),
+        ]);
         wrap.appendChild(emoji);
 
         const itemName = tItem(item.id);
@@ -712,7 +715,7 @@
                     ? [el('span', { class: 'text-slate-500 text-xs italic' }, t('ui.juego.sin_items'))]
                     : myItems.map(function (i) {
                         const wrap = el('div', { class: 'flex-shrink-0 w-9 h-10 flex flex-col items-center' }, [
-                            el('div', { class: 'w-9 h-9 bg-slate-700 border-l-2 border-amber-400 rounded flex items-center justify-center text-xl', title: itemTooltip(i) }, i.emoji),
+                            el('div', { class: 'w-9 h-9 bg-slate-700 border-l-2 border-amber-400 rounded flex items-center justify-center', title: itemTooltip(i) }, [emojiImg(i.emoji, 'w-6 h-6', '')]),
                         ]);
                         if (i.precio != null) wrap.appendChild(el('div', { class: 'text-[9px] text-amber-400 leading-none mt-0.5 font-mono' }, i.precio + '🪙'));
                         return wrap;
@@ -730,7 +733,7 @@
                     ? [el('span', { class: 'text-slate-500 text-xs italic' }, t('ui.juego.sin_items'))]
                     : rivalItems.map(function (i) {
                         const wrap = el('div', { class: 'flex-shrink-0 w-9 h-10 flex flex-col items-center' }, [
-                            el('div', { class: 'w-9 h-9 bg-slate-700 border-l-2 border-rose-500 rounded flex items-center justify-center text-xl', title: itemTooltip(i) }, i.emoji),
+                            el('div', { class: 'w-9 h-9 bg-slate-700 border-l-2 border-rose-500 rounded flex items-center justify-center', title: itemTooltip(i) }, [emojiImg(i.emoji, 'w-6 h-6', '')]),
                         ]);
                         if (i.precio != null) wrap.appendChild(el('div', { class: 'text-[9px] text-rose-300 leading-none mt-0.5 font-mono' }, i.precio + '🪙'));
                         return wrap;
@@ -885,7 +888,7 @@
      * Genera una tarjeta 1080×1080 con el resultado y la comparte (Web Share
      * nivel 2, con imagen) o la descarga con el texto copiado como fallback.
      */
-    function compartirResultado(myScore, rivalScore, resultado) {
+    async function compartirResultado(myScore, rivalScore, resultado) {
         const s = state.sala;
         if (!s) return;
         const me = s.jugadores[state.jugadorSlot] || {};
@@ -926,8 +929,27 @@
         const emojis = []
             .concat((me.items_ganados || []).map(function (i) { return i.emoji; }))
             .concat((rival.items_ganados || []).map(function (i) { return i.emoji; }));
-        ctx.font = '72px Arial, sans-serif';
-        ctx.fillText(emojis.slice(0, 8).join(' '), 540, 790);
+        const lista = emojis.slice(0, 8);
+        const iconos = await Promise.all(lista.map(function (code) {
+            return new Promise(function (resolve) {
+                const im = new Image();
+                im.onload = function () { resolve(im); };
+                im.onerror = function () { resolve(null); };
+                im.src = '/img/emoji/' + emojiSlug(code) + '.svg';
+            });
+        }));
+        const lado = 84;
+        const hueco = 14;
+        let x = 540 - (iconos.length * lado + Math.max(0, iconos.length - 1) * hueco) / 2;
+        iconos.forEach(function (im, idx) {
+            if (im) {
+                ctx.drawImage(im, x, 748, lado, lado);
+            } else {
+                ctx.font = '64px Arial, sans-serif';
+                ctx.fillText(lista[idx] || '🎲', x + lado / 2, 812);
+            }
+            x += lado + hueco;
+        });
 
         ctx.fillStyle = '#94a3b8';
         ctx.font = '38px Arial, sans-serif';
@@ -990,7 +1012,7 @@
             ? el('div', { class: 'text-slate-500 text-xs italic px-1' }, '—')
             : el('div', { class: 'space-y-1' }, items.map(function (i) {
                 return el('div', { class: 'flex items-center gap-2 bg-slate-800 rounded px-2 py-1.5' }, [
-                    el('span', { class: 'text-xl w-7 text-center flex-shrink-0' }, i.emoji),
+                    el('span', { class: 'w-7 flex-shrink-0 flex justify-center' }, [emojiImg(i.emoji, 'w-6 h-6', '')]),
                     el('span', { class: 'flex-1 text-sm text-slate-100 truncate' }, tItem(i.id)),
                     el('span', { class: 'text-xs font-mono text-amber-300 flex-shrink-0' }, '⭐' + (i.valor || 0)),
                     el('span', { class: 'text-xs font-mono text-slate-400 flex-shrink-0' }, '🪙' + (i.precio || 0)),
@@ -1014,7 +1036,7 @@
         ultimoItemPopupMostrado = true;
         const ganador = (s.jugadores && s.jugadores[ult.ganador]) || null;
         const content = el('div', { class: 'text-center' }, [
-            el('div', { class: 'text-5xl mb-1' }, ult.emoji || '🎲'),
+            el('div', { class: 'h-14 mb-1 flex justify-center' }, [emojiImg(ult.emoji || '🎲', 'h-14 w-auto', '')]),
             el('div', { class: 'text-xs uppercase tracking-wide text-slate-400 mb-3' }, t('ui.juego.ultimo_item_titulo')),
             el('p', { class: 'text-base text-slate-100 leading-relaxed' }, t('ui.juego.msg_ultimo_item', {
                 item: tItem(ult.id),

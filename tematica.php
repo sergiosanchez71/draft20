@@ -85,8 +85,11 @@ pagina_head([
             <span class="text-slate-300"><?= e($nombre) ?></span>
         </nav>
 
-        <h1 class="text-3xl font-bold text-slate-100 mb-2"><?= e($tm['emoji'] . ' ' . $nombre) ?></h1>
-        <p class="text-slate-400 text-sm mb-1"><a class="hover:text-amber-400" href="/categoria/<?= e($tm['categoria_id']) ?>"><?= e($tm['categoria_emoji'] . ' ' . $categoria) ?></a></p>
+        <h1 class="text-3xl font-bold text-slate-100 mb-2 flex items-center gap-2 justify-center sm:justify-start">
+            <?= emoji_icono((string) $tm['emoji'], 40, '') ?>
+            <span><?= e($nombre) ?></span>
+        </h1>
+        <p class="text-slate-400 text-sm mb-1"><a class="hover:text-amber-400 inline-flex items-center gap-1.5" href="/categoria/<?= e($tm['categoria_id']) ?>"><?= emoji_icono((string) $tm['categoria_emoji'], 20, '') ?> <?= e($categoria) ?></a></p>
         <?php if ($cont !== null): ?>
         <p class="text-slate-300 text-sm leading-relaxed mt-4 mb-6"><?= e((string) $cont['descripcion']) ?></p>
         <?php else: ?>
@@ -103,7 +106,7 @@ pagina_head([
         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-10">
             <?php foreach ($items as $it): ?>
             <li class="flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
-                <span class="text-2xl w-8 text-center flex-shrink-0"><?= e($it['emoji']) ?></span>
+                <span class="w-8 flex justify-center flex-shrink-0"><?= emoji_icono((string) $it['emoji'], 28, (string) ($LANG['items'][$it['id']] ?? $it['id'])) ?></span>
                 <span class="text-sm text-slate-100"><?= e((string) ($LANG['items'][$it['id']] ?? $it['id'])) ?></span>
             </li>
             <?php endforeach; ?>

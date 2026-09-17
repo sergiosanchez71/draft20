@@ -83,6 +83,31 @@ function items_tematica(string $id): array
     return is_array($data['items'] ?? null) ? $data['items'] : [];
 }
 
+/** Slug del icono (codepoints hex sin FE0F, unidos por '-'). */
+function emoji_slug(string $emoji): string
+{
+    $cps = [];
+    $chars = preg_split('//u', $emoji, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    foreach ($chars as $ch) {
+        $cp = mb_ord($ch, 'UTF-8');
+        if ($cp === 0xFE0F) {
+            continue;
+        }
+        $cps[] = dechex($cp);
+    }
+    return implode('-', $cps);
+}
+
+/** Icono Fluent Emoji (SVG, MIT) con fallback al emoji de texto si falta. */
+function emoji_icono(string $emoji, int $size = 32, string $alt = ''): string
+{
+    $slug = emoji_slug($emoji);
+    if ($slug === '' || !is_file(__DIR__ . '/../img/emoji/' . $slug . '.svg')) {
+        return '<span>' . e($emoji) . '</span>';
+    }
+    return '<img src="/img/emoji/' . e($slug) . '.svg" alt="' . e($alt) . '" width="' . $size . '" height="' . $size . '" loading="lazy" decoding="async" class="inline-block align-middle">';
+}
+
 /** Ruta relativa con ?v=filemtime para esquivar la caché del CDN. */
 function asset(string $rel): string
 {

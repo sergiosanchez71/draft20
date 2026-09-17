@@ -108,5 +108,41 @@ foreach ($catalogoIds as $cid) {
 }
 ass(true, $totalLabels >= $totalTematicas, 'lang.tematicas cubre el catálogo');
 
+// --- Iconos Fluent Emoji (MIT): cobertura completa de los emojis usados ---
+$todosEmojis = [];
+foreach ($tematicasFiles as $path) {
+    $d = json_decode((string) file_get_contents($path), true);
+    foreach (($d['items'] ?? []) as $it) {
+        if (isset($it['emoji'])) {
+            $todosEmojis[] = (string) $it['emoji'];
+        }
+    }
+}
+if (preg_match_all("/'emoji'\s*=>\s*'([^']+)'/", $indexSrc, $mm)) {
+    foreach ($mm[1] as $em) {
+        $todosEmojis[] = (string) $em;
+    }
+}
+$todosEmojis = array_values(array_unique($todosEmojis));
+$sinIcono = [];
+foreach ($todosEmojis as $em) {
+    $slug = '';
+    foreach (preg_split('//u', $em, -1, PREG_SPLIT_NO_EMPTY) ?: [] as $ch) {
+        $cp = mb_ord($ch, 'UTF-8');
+        if ($cp === 0xFE0F) {
+            continue;
+        }
+        $slug .= ($slug === '' ? '' : '-') . dechex($cp);
+    }
+    if ($slug === '' || !is_file($root . '/img/emoji/' . $slug . '.svg')) {
+        $sinIcono[] = $em . '(' . $slug . ')';
+    }
+}
+if ($sinIcono !== []) {
+    echo '  -> sin icono: ' . implode(' ', array_slice($sinIcono, 0, 20)) . "\n";
+}
+ass([], $sinIcono, 'todos los emojis tienen icono Fluent (' . count($todosEmojis) . ' únicos)');
+ass(true, is_file($root . '/img/emoji/LICENSE'), 'licencia MIT de Fluent Emoji presente');
+
 echo "\n=== RESUMEN CATÁLOGO: $totalOk OK / $totalFail FAIL / $totalWarn WARN ===\n";
 exit($totalFail > 0 ? 1 : 0);

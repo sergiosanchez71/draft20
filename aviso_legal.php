@@ -43,6 +43,11 @@ pagina_head([
                 obras, marcas y personajes públicos citados en el juego se usan con fines de entretenimiento y
                 referencia; el proyecto no está afiliado ni respaldado por sus titulares.
             </p>
+            <p class="text-sm text-slate-300 leading-relaxed mt-2">
+                Los iconos del juego son <strong>Fluent Emoji</strong> de Microsoft
+                (<a class="hover:text-amber-400" href="https://github.com/microsoft/fluentui-emoji" rel="noopener nofollow">github.com/microsoft/fluentui-emoji</a>),
+                usados bajo licencia <strong>MIT</strong>. Las banderas son representaciones simplificadas de uso libre.
+            </p>
         </section>
 
         <section class="mb-6">

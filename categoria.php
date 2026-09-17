@@ -91,7 +91,7 @@ pagina_head([
             <span class="text-slate-300"><?= e($nombreCat) ?></span>
         </nav>
 
-        <h1 class="text-3xl font-bold text-slate-100 mb-4"><?= e($cat['emoji'] . ' ' . $titulo) ?></h1>
+        <h1 class="text-3xl font-bold text-slate-100 mb-4 flex items-center gap-2 justify-center sm:justify-start"><?= emoji_icono((string) $cat['emoji'], 40, '') ?> <span><?= e($titulo) ?></span></h1>
         <?php foreach ($cont['intro'] as $parrafo): ?>
         <p class="text-sm text-slate-300 leading-relaxed mb-4"><?= e((string) $parrafo) ?></p>
         <?php endforeach; ?>
@@ -107,7 +107,7 @@ pagina_head([
                 $tCont = tematica_contenido($tm['id']);
                 ?>
             <li class="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                <a class="font-bold text-amber-300 hover:text-amber-200" href="/tematica/<?= e($tm['id']) ?>"><?= e($tm['emoji'] . ' ' . nombre_tematica($tm['id'])) ?></a>
+                <a class="font-bold text-amber-300 hover:text-amber-200 inline-flex items-center gap-2" href="/tematica/<?= e($tm['id']) ?>"><?= emoji_icono((string) $tm['emoji'], 24, '') ?> <?= e(nombre_tematica($tm['id'])) ?></a>
                 <?php if ($tCont !== null): ?>
                 <p class="text-sm text-slate-300 leading-relaxed mt-2"><?= e(recortar((string) $tCont['descripcion'], 170)) ?></p>
                 <?php endif; ?>

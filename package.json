@@ -10,9 +10,11 @@
         "test": "npm run test:php && npm run test:node",
         "test:php": "php tools/test_catalogo.php",
         "test:node": "node tests/bot_policy.test.js",
-        "smoke": "php tools/smoke.php"
+        "smoke": "php tools/smoke.php",
+        "gen:assets": "node tools/gen_emoji.js && node tools/gen_flags.js && svgo --folder img/emoji --multipass"
     },
     "devDependencies": {
+        "svgo": "^4.1.0",
         "tailwindcss": "3.4.17",
         "terser": "5.36.0"
     }
