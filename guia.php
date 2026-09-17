@@ -49,9 +49,10 @@ if ($faqLd !== null) {
 }
 
 pagina_head([
-    'titulo' => $titulo . ' — ' . SITE_NOMBRE,
+    'titulo' => $titulo . ' - ' . SITE_NOMBRE,
     'descripcion' => $descripcion,
     'canonical' => '/guia/' . $slug,
+    'og_image' => SITE_URL . '/og/guia/' . $slug . '.png',
     'json_ld' => $jsonLd,
 ]);
 ?>

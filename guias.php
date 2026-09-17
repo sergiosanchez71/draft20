@@ -25,9 +25,10 @@ foreach ($guias as $slug => $g) {
 }
 
 pagina_head([
-    'titulo' => seo_ui('guias_titulo') . ' — ' . SITE_NOMBRE,
+    'titulo' => seo_ui('guias_titulo') . ' - ' . SITE_NOMBRE,
     'descripcion' => $descripcion,
     'canonical' => '/guias',
+    'og_image' => SITE_URL . '/og/seccion/guias.png',
     'json_ld' => [[
         '@context' => 'https://schema.org',
         '@type' => 'CollectionPage',

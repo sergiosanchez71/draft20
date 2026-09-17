@@ -54,6 +54,7 @@ pagina_head([
     'titulo' => 'Glosario de Draft 20: draft, subasta, puja y más',
     'descripcion' => 'Todos los términos de Draft 20 explicados: draft, subasta, puja, ME BAJO, valor ⭐, cap de 4 ítems, deadlock, revancha y serie.',
     'canonical' => '/glosario',
+    'og_image' => SITE_URL . '/og/seccion/glosario.png',
     'json_ld' => $jsonLd,
 ]);
 ?>

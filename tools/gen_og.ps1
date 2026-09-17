@@ -1,13 +1,21 @@
 param(
     [string]$Root = (Split-Path -Parent $PSScriptRoot),
+    [string]$Data = (Join-Path $env:TEMP 'og_data.json'),
+    [string]$Tipo = '',
     [string]$Only = ''
 )
 
+# Genera las imágenes OG (1200x630) de categorías, guías y secciones.
+# Antes:  php tools/og_data.php  (escribe el JSON que se lee aquí)
+
 Add-Type -AssemblyName System.Drawing
 
-$temas = (Get-Content -Raw -Encoding UTF8 (Join-Path $env:TEMP 'temas_og.json') | ConvertFrom-Json)
-$outDir = Join-Path $Root 'og\tematica'
-New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+if (-not (Test-Path $Data)) {
+    Write-Error "No existe $Data. Ejecuta antes: php tools/og_data.php"
+    exit 1
+}
+
+$entradas = (Get-Content -Raw -Encoding UTF8 $Data | ConvertFrom-Json)
 
 function New-OgImage {
     param(
@@ -53,10 +61,12 @@ function New-OgImage {
 }
 
 $n = 0
-foreach ($t in $temas) {
-    if ($Only -ne '' -and $t.id -ne $Only) { continue }
-    $path = Join-Path $outDir ($t.id + '.png')
-    New-OgImage -Nombre $t.nombre -Categoria $t.categoria -Path $path
+foreach ($e in $entradas) {
+    if ($Tipo -ne '' -and $e.tipo -ne $Tipo) { continue }
+    if ($Only -ne '' -and $e.id -ne $Only) { continue }
+    $dir = Join-Path $Root ('og\' + $e.tipo)
+    New-Item -ItemType Directory -Force -Path $dir | Out-Null
+    New-OgImage -Nombre $e.nombre -Categoria $e.categoria -Path (Join-Path $dir ($e.id + '.png'))
     $n++
 }
-Write-Output "OG generadas: $n en $outDir"
+Write-Output "OG generadas: $n"

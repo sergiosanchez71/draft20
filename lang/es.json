@@ -270,8 +270,10 @@
         "como_paso3": "Subasta por turnos: PUJAR +1, PUJAR +3 o ME BAJO.",
         "como_paso4": "Gana quien sume más ⭐; si hay empate, quien conserve más monedas.",
         "como_mas": "Ver la guía completa",
-        "tematicas_titulo": "Todas las temáticas",
-        "tematicas_sub": "{n} temáticas con 20 ítems cada una. Elige una para ver su lista completa.",
+            "tematicas_titulo": "Todas las temáticas",
+            "tematicas_sub": "{n} temáticas con 20 ítems cada una. Elige una para ver su lista completa.",
+            "tematica_dia": "Temática del día",
+            "tematica_dia_sub": "Entra a ver su lista de 20 ítems y crea una partida en 1 clic.",
         "tematicas_contador": "{n} temáticas",
         "faq_titulo": "Preguntas frecuentes",
         "faq": [

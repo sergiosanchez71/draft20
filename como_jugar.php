@@ -25,10 +25,21 @@ $secciones = [
 
 $consejos = is_array($SEO['consejos'] ?? null) ? $SEO['consejos'] : [];
 
+$pasosHowTo = [];
+foreach ($secciones as $i => $s) {
+    $pasosHowTo[] = [
+        '@type' => 'HowToStep',
+        'position' => $i + 1,
+        'name' => (string) $s[0],
+        'text' => (string) $s[1],
+    ];
+}
+
 pagina_head([
     'titulo' => $titulo,
     'descripcion' => (string) ($SEO['como_jugar_desc'] ?? ''),
     'canonical' => '/como-jugar',
+    'og_image' => SITE_URL . '/og/seccion/como-jugar.png',
     'json_ld' => [[
         '@context' => 'https://schema.org',
         '@type' => 'Article',
@@ -36,6 +47,14 @@ pagina_head([
         'description' => (string) ($SEO['como_jugar_desc'] ?? ''),
         'inLanguage' => 'es',
         'mainEntityOfPage' => SITE_URL . '/como-jugar',
+    ], [
+        '@context' => 'https://schema.org',
+        '@type' => 'HowTo',
+        'name' => $titulo,
+        'description' => (string) ($SEO['como_jugar_desc'] ?? ''),
+        'inLanguage' => 'es',
+        'totalTime' => 'PT2M',
+        'step' => $pasosHowTo,
     ]],
 ]);
 ?>

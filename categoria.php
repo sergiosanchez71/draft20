@@ -76,9 +76,10 @@ $jsonLd = [
 ];
 
 pagina_head([
-    'titulo' => $titulo . ' — ' . SITE_NOMBRE,
+    'titulo' => $titulo . ' - ' . SITE_NOMBRE,
     'descripcion' => $descripcion,
     'canonical' => '/categoria/' . $cat['id'],
+    'og_image' => SITE_URL . '/og/categoria/' . $cat['id'] . '.png',
     'json_ld' => $jsonLd,
 ]);
 ?>

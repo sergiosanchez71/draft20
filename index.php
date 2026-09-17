@@ -104,6 +104,25 @@ pagina_head([
                 </details>
             </section>
 
+            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+                <?php
+                // Temática del día: rotación determinista por fecha (frescura + enlace interno).
+                $todasTematicas = [];
+                foreach ($categorias as $catDia) {
+                    foreach ($catDia['tematicas'] as $tmDia) {
+                        $todasTematicas[] = $tmDia;
+                    }
+                }
+                $tematicaDia = $todasTematicas[((int) date('Ymd')) % count($todasTematicas)];
+                ?>
+                <a href="/tematica/<?= e($tematicaDia['id']) ?>" class="block bg-slate-800 border border-amber-400/60 hover:border-amber-400 rounded-lg p-4">
+                    <div class="text-xs uppercase tracking-wide text-amber-400 font-bold mb-1"><?= e((string) ($SEO['tematica_dia'] ?? '')) ?></div>
+                    <div class="text-lg font-bold text-slate-100"><?= e($tematicaDia['emoji'] . ' ' . nombre_tematica($tematicaDia['id'])) ?></div>
+                    <p class="text-sm text-slate-400 mt-1"><?= e((string) ($SEO['tematica_dia_sub'] ?? '')) ?></p>
+                    <time class="block text-[11px] text-slate-500 mt-2" datetime="<?= e(date('Y-m-d')) ?>"><?= e(date('d/m/Y')) ?></time>
+                </a>
+            </section>
+
             <section id="tematicas" class="max-w-5xl mx-auto w-full px-4 mt-10">
                 <h2 class="text-2xl font-bold text-slate-100 mb-2"><?= e((string) ($SEO['tematicas_titulo'] ?? '')) ?></h2>
                 <p class="text-slate-400 text-sm mb-6"><?= e($num((string) ($SEO['tematicas_sub'] ?? ''))) ?></p>
