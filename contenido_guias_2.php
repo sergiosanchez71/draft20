@@ -70,6 +70,9 @@ return [
         'enlaces' => [
             ['href' => '/', 'texto' => 'Crear una sala de Draft 20'],
             ['href' => '/como-jugar', 'texto' => 'Cómo se juega'],
+            ['href' => '/tematica/musica', 'texto' => 'Temática de música'],
+            ['href' => '/tematica/mercadona', 'texto' => 'Temática de Mercadona'],
+            ['href' => '/tematica/futbol', 'texto' => 'Temática de fútbol'],
             ['href' => '/guia/draft-de-20-monedas', 'texto' => 'Qué es el draft de 20 monedas'],
             ['href' => '/guia/juegos-de-subasta-online', 'texto' => 'Juegos de subasta online'],
         ],

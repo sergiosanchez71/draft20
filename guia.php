@@ -21,6 +21,9 @@ $titulo = (string) $guia['titulo'];
 $descripcion = (string) ($guia['desc'] ?? '');
 $faq = is_array($guia['faq'] ?? null) ? $guia['faq'] : [];
 
+$ogFile = __DIR__ . '/og/guia/' . $slug . '.png';
+$ogGuia = is_file($ogFile) ? SITE_URL . '/og/guia/' . $slug . '.png' : SITE_URL . '/og-image.png';
+
 $jsonLd = [
     [
         '@context' => 'https://schema.org',
@@ -30,8 +33,11 @@ $jsonLd = [
         'inLanguage' => 'es',
         'datePublished' => (string) ($guia['fecha'] ?? ''),
         'dateModified' => (string) ($guia['fecha'] ?? ''),
+        'image' => $ogGuia,
+        'url' => SITE_URL . '/guia/' . $slug,
         'mainEntityOfPage' => SITE_URL . '/guia/' . $slug,
-        'author' => ['@type' => 'Organization', 'name' => SITE_NOMBRE, 'url' => SITE_URL . '/'],
+        'author' => ['@id' => SITE_URL . '/#organizacion'],
+        'publisher' => ['@id' => SITE_URL . '/#organizacion'],
     ],
     [
         '@context' => 'https://schema.org',
@@ -52,7 +58,7 @@ pagina_head([
     'titulo' => $titulo . ' - ' . SITE_NOMBRE,
     'descripcion' => $descripcion,
     'canonical' => '/guia/' . $slug,
-    'og_image' => SITE_URL . '/og/guia/' . $slug . '.png',
+    'og_image' => $ogGuia,
     'json_ld' => $jsonLd,
 ]);
 ?>

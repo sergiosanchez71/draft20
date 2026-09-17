@@ -182,6 +182,9 @@ return [
         'enlaces' => [
             ['href' => '/', 'texto' => 'Jugar a Draft 20'],
             ['href' => '/como-jugar', 'texto' => 'Cómo se juega'],
+            ['href' => '/tematica/futbol', 'texto' => 'Temática de fútbol'],
+            ['href' => '/tematica/anime', 'texto' => 'Temática de anime'],
+            ['href' => '/tematica/streamers', 'texto' => 'Temática de streamers'],
             ['href' => '/guia/draft-20-vs-you-have-20', 'texto' => 'Draft 20 vs You Have $20'],
             ['href' => '/guia/juegos-por-whatsapp', 'texto' => 'Juegos para WhatsApp'],
         ],

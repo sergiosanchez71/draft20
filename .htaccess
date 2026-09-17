@@ -10,6 +10,11 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # 0) /index.php → / : una sola URL canónica para la home (301 en un salto,
+    #    conservando la query, p. ej. ?sala=CODE).
+    RewriteCond %{THE_REQUEST} \s/+index\.php[\s?] [NC]
+    RewriteRule ^ https://draft20.es/ [R=301,L]
+
     # 1) www → https://draft20.es en un solo salto (cubre http y https).
     RewriteCond %{HTTP_HOST} ^www\. [NC]
     RewriteRule ^ https://draft20.es%{REQUEST_URI} [R=301,L]

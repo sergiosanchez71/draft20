@@ -31,6 +31,13 @@ pagina_head([
     'og_image' => SITE_URL . '/og/seccion/guias.png',
     'json_ld' => [[
         '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . '/'],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => seo_ui('migas_guias')],
+        ],
+    ], [
+        '@context' => 'https://schema.org',
         '@type' => 'CollectionPage',
         'name' => seo_ui('guias_titulo'),
         'inLanguage' => 'es',

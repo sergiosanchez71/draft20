@@ -114,6 +114,34 @@ foreach ($catalogoIds as $cid) {
 }
 ass(true, $totalLabels >= $totalTematicas, 'lang.tematicas cubre el catálogo');
 
+// --- Enlaces internos de las guías: sin rutas rotas (SEO/enlazado interno) ---
+require_once $root . '/contenido_seo.php';
+$rutasFijas = ['/', '/como-jugar', '/guias', '/glosario', '/juegos-de-subasta', '/acerca', '/contacto', '/privacidad', '/aviso-legal'];
+$categoriasIds = array_map(static fn($c) => (string) $c['id'], $catalogo);
+$guiasSlugs = array_keys(guias_ordenadas());
+$enlacesValidos = 0;
+$enlacesRot = [];
+foreach (guias_ordenadas() as $slug => $g) {
+    foreach (($g['enlaces'] ?? []) as $l) {
+        $href = (string) ($l['href'] ?? '');
+        $ruta = parse_url($href, PHP_URL_PATH);
+        $ruta = is_string($ruta) ? $ruta : '';
+        $ok = in_array($ruta, $rutasFijas, true);
+        if (preg_match('#^/tematica/([a-z0-9_]+)$#', $ruta, $m)) {
+            $ok = in_array($m[1], $catalogoIds, true);
+        } elseif (preg_match('#^/categoria/([a-z0-9_]+)$#', $ruta, $m)) {
+            $ok = in_array($m[1], $categoriasIds, true);
+        } elseif (preg_match('#^/guia/([a-z0-9-]+)$#', $ruta, $m)) {
+            $ok = in_array($m[1], $guiasSlugs, true);
+        }
+        $enlacesValidos++;
+        if (!$ok) {
+            $enlacesRot[] = $slug . ' → ' . $href;
+        }
+    }
+}
+ass([], $enlacesRot, "enlaces internos de guías válidos ($enlacesValidos revisados)");
+
 // --- Iconos Fluent Emoji (MIT): cobertura completa de los emojis usados ---
 $todosEmojis = [];
 foreach ($tematicasFiles as $path) {

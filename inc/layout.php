@@ -248,6 +248,36 @@ function json_ld_faq(array $faq): ?array
     ];
 }
 
+/** Entidad de sitio (Organization + WebSite) que acompaña a todas las páginas. */
+function site_json_ld(): array
+{
+    return [
+        [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            '@id' => SITE_URL . '/#organizacion',
+            'name' => SITE_NOMBRE,
+            'url' => SITE_URL . '/',
+            'email' => SITE_EMAIL,
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => SITE_URL . '/icons/icon-512.png',
+                'width' => 512,
+                'height' => 512,
+            ],
+        ],
+        [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            '@id' => SITE_URL . '/#web',
+            'name' => SITE_NOMBRE,
+            'url' => SITE_URL . '/',
+            'inLanguage' => 'es',
+            'publisher' => ['@id' => SITE_URL . '/#organizacion'],
+        ],
+    ];
+}
+
 /**
  * Cabecera HTML común.
  * $opts: titulo, descripcion, canonical (ruta), robots, og_image, json_ld (array),
@@ -261,6 +291,7 @@ function pagina_head(array $opts): void
     $robots = $opts['robots'] ?? 'index, follow';
     $ogImage = $opts['og_image'] ?? SITE_URL . '/og-image.png';
     $bodyClass = $opts['body_class'] ?? 'bg-slate-900 text-slate-100 min-h-screen flex flex-col';
+    $jsonLd = array_merge(site_json_ld(), $opts['json_ld'] ?? []);
     csp_headers();
     ?><!DOCTYPE html>
 <html lang="es">
@@ -296,7 +327,7 @@ function pagina_head(array $opts): void
 <?php foreach (($opts['preload_scripts'] ?? []) as $src): ?>
     <link rel="preload" as="script" href="<?= e(asset_js($src)) ?>">
 <?php endforeach; ?>
-<?php foreach (($opts['json_ld'] ?? []) as $schema): ?>
+<?php foreach ($jsonLd as $schema): ?>
     <script type="application/ld+json" nonce="<?= e(csp_nonce()) ?>"><?= json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>
 <?php endforeach; ?>
 </head>

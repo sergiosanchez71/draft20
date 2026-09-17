@@ -46,7 +46,11 @@ pagina_head([
         'headline' => $titulo,
         'description' => (string) ($SEO['como_jugar_desc'] ?? ''),
         'inLanguage' => 'es',
+        'image' => SITE_URL . '/og/seccion/como-jugar.png',
+        'url' => SITE_URL . '/como-jugar',
         'mainEntityOfPage' => SITE_URL . '/como-jugar',
+        'author' => ['@id' => SITE_URL . '/#organizacion'],
+        'publisher' => ['@id' => SITE_URL . '/#organizacion'],
     ], [
         '@context' => 'https://schema.org',
         '@type' => 'HowTo',

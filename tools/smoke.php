@@ -246,6 +246,23 @@ try {
     check($nonce !== '' && $metaCsp !== '' && strpos($metaCsp, $nonce) !== false, 'el meta CSP usa el mismo nonce');
     check(strpos($metaCsp, 'object-src') !== false && strpos($metaCsp, 'default-src') !== false, 'meta CSP completa');
 
+    // 10b) SEO: entidad de sitio, llms.txt y lastmod real del sitemap.
+    $rSeoHome = http_req('GET', $base . '/index.php');
+    check(strpos((string) $rSeoHome['raw'], '"@type":"Organization"') !== false, 'home: JSON-LD Organization');
+    check(strpos((string) $rSeoHome['raw'], '"@type":"WebSite"') !== false, 'home: JSON-LD WebSite');
+    $rSeoGuia = http_req('GET', $base . '/guia.php?slug=como-ganar-draft-20');
+    check($rSeoGuia['code'] === 200
+        && strpos((string) $rSeoGuia['raw'], '"publisher":{"@id":"https://draft20.es/#organizacion"}') !== false,
+        'guía: Article con publisher de organización');
+    $rLlms = http_req('GET', $base . '/llms.txt');
+    check($rLlms['code'] === 200 && strpos((string) $rLlms['raw'], '# Draft 20') === 0, 'llms.txt servido con H1');
+    $rSitemap = http_req('GET', $base . '/sitemap.php');
+    $mSitemap = [];
+    check($rSitemap['code'] === 200
+        && (bool) preg_match('#<loc>https://draft20\.es/privacidad</loc>\s*<lastmod>([^<]+)</lastmod>#', (string) $rSitemap['raw'], $mSitemap),
+        'sitemap: /privacidad con lastmod');
+    check(($mSitemap[1] ?? '') === date('Y-m-d', (int) filemtime($root . '/privacidad.php')), 'sitemap: lastmod real de /privacidad');
+
     // 11) Contador anónimo de eventos + beacon en las páginas SEO.
     $rEv = http_req('POST', $base . '/api/evento.php', ['evento' => 'page:home']);
     check($rEv['code'] === 204, 'evento válido → 204');

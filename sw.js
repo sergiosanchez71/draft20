@@ -1,11 +1,11 @@
-/* Draft 20 - Service Worker (v4)
+/* Draft 20 - Service Worker (v5)
  * - Navegación: network-first con fallback a la home cacheada.
  * - Assets: stale-while-revalidate (los assets van versionados con ?v=filemtime,
  *   así que la caché antigua se sustituye sola al cambiar el archivo).
  * - API: siempre red.
  */
-const CACHE = 'draft20-v4';
-const SHELL = ['/', '/index.php'];
+const CACHE = 'draft20-v5';
+const SHELL = ['/'];
 
 self.addEventListener('install', function (e) {
     e.waitUntil(
@@ -48,8 +48,7 @@ self.addEventListener('fetch', function (e) {
                     return res;
                 })
                 .catch(function () {
-                    return caches.match('/', { ignoreSearch: true })
-                        .then(function (r) { return r || caches.match('/index.php'); });
+                    return caches.match('/', { ignoreSearch: true });
                 })
         );
         return;

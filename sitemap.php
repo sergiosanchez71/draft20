@@ -11,16 +11,32 @@ require_once __DIR__ . '/contenido_seo.php';
 
 $hoy = date('Y-m-d');
 
+/** lastmod real: fecha de modificación del archivo que sirve la página. */
+$mtime = static function (string $archivo) use ($hoy): string {
+    $ruta = __DIR__ . '/' . $archivo;
+    return is_file($ruta) ? date('Y-m-d', (int) filemtime($ruta)) : $hoy;
+};
+$mtimeMax = static function (array $archivos) use ($hoy): string {
+    $ts = 0;
+    foreach ($archivos as $a) {
+        $ruta = __DIR__ . '/' . $a;
+        if (is_file($ruta)) {
+            $ts = max($ts, (int) filemtime($ruta));
+        }
+    }
+    return $ts > 0 ? date('Y-m-d', $ts) : $hoy;
+};
+
 $urls = [
     ['loc' => SITE_URL . '/', 'lastmod' => $hoy, 'changefreq' => 'weekly', 'priority' => '1.0'],
-    ['loc' => SITE_URL . '/como-jugar', 'lastmod' => $hoy, 'changefreq' => 'monthly', 'priority' => '0.8'],
-    ['loc' => SITE_URL . '/guias', 'lastmod' => $hoy, 'changefreq' => 'weekly', 'priority' => '0.8'],
-    ['loc' => SITE_URL . '/acerca', 'lastmod' => $hoy, 'changefreq' => 'monthly', 'priority' => '0.5'],
-    ['loc' => SITE_URL . '/contacto', 'lastmod' => $hoy, 'changefreq' => 'yearly', 'priority' => '0.4'],
-    ['loc' => SITE_URL . '/privacidad', 'lastmod' => $hoy, 'changefreq' => 'yearly', 'priority' => '0.3'],
-    ['loc' => SITE_URL . '/aviso-legal', 'lastmod' => $hoy, 'changefreq' => 'yearly', 'priority' => '0.3'],
-    ['loc' => SITE_URL . '/glosario', 'lastmod' => $hoy, 'changefreq' => 'monthly', 'priority' => '0.6'],
-    ['loc' => SITE_URL . '/juegos-de-subasta', 'lastmod' => $hoy, 'changefreq' => 'monthly', 'priority' => '0.9'],
+    ['loc' => SITE_URL . '/como-jugar', 'lastmod' => $mtime('como_jugar.php'), 'changefreq' => 'monthly', 'priority' => '0.8'],
+    ['loc' => SITE_URL . '/guias', 'lastmod' => $mtimeMax(['guias.php', 'contenido_seo.php', 'contenido_guias_1.php', 'contenido_guias_2.php', 'contenido_guias_3.php']), 'changefreq' => 'weekly', 'priority' => '0.8'],
+    ['loc' => SITE_URL . '/acerca', 'lastmod' => $mtime('acerca.php'), 'changefreq' => 'monthly', 'priority' => '0.5'],
+    ['loc' => SITE_URL . '/contacto', 'lastmod' => $mtime('contacto.php'), 'changefreq' => 'yearly', 'priority' => '0.4'],
+    ['loc' => SITE_URL . '/privacidad', 'lastmod' => $mtime('privacidad.php'), 'changefreq' => 'yearly', 'priority' => '0.3'],
+    ['loc' => SITE_URL . '/aviso-legal', 'lastmod' => $mtime('aviso_legal.php'), 'changefreq' => 'yearly', 'priority' => '0.3'],
+    ['loc' => SITE_URL . '/glosario', 'lastmod' => $mtime('glosario.php'), 'changefreq' => 'monthly', 'priority' => '0.6'],
+    ['loc' => SITE_URL . '/juegos-de-subasta', 'lastmod' => $mtimeMax(['juegos_de_subasta.php', 'contenido_hub_subasta.php']), 'changefreq' => 'monthly', 'priority' => '0.9'],
 ];
 
 foreach (categorias() as $cat) {
