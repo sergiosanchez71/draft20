@@ -1489,9 +1489,13 @@
             el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
             el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { D.mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
         ]));
-        wrap.appendChild(el('div', { class: 'text-center mt-6' }, [
-            el('button', { class: 'text-slate-400 text-sm btn-tap', onclick: onLeave }, '← ' + t('ui.juego.salir_lobby')),
-        ]));
+          wrap.appendChild(el('div', { class: 'w-full mt-6 px-2' }, [
+              el('button', {
+                  id: 'btnSalirEspera',
+                  class: 'w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg',
+                  onclick: onLeave,
+              }, '← ' + t('ui.juego.salir_lobby')),
+          ]));
         card.appendChild(wrap);
     }
 

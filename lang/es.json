@@ -6,7 +6,7 @@
             "sala_expirada": "La partida ya no está disponible"
         },
         "lobby": {
-            "btn_crear": "Crear Sala",
+            "btn_crear": "Crear sala privada",
             "label_unirse": "Código de sala",
             "placeholder_codigo": "ABCDE",
             "btn_unirse": "Unirse",
@@ -18,6 +18,7 @@
             "btn_whatsapp": "Enviar por WhatsApp",
             "toast_copiado": "¡Enlace copiado!",
             "esperando_rival_join": "Esperando a que el otro jugador se una desde su móvil…",
+            "espera_alternativa": "¿Prefieres otra cosa? Puedes salir y probar la Partida rápida.",
             "entrar_partida": "Entrar a la partida",
             "selector_tematica": "Temática",
             "tematica_aleatoria": "✨ Todas (aleatoria)",

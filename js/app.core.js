@@ -1093,6 +1093,17 @@
             el('div', { class: 'inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-600 border-t-amber-400 mb-3' }),
             el('p', { class: 'text-slate-300 text-sm' }, t('ui.lobby.esperando_rival_join')),
         ]));
+
+        // Salida mientras se espera: botón destacado que cancela la sala y vuelve
+        // al lobby (por si el jugador prefiere partida rápida o practicar).
+        app.appendChild(el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 text-center fade-in' }, [
+            el('p', { class: 'text-xs text-slate-400 mb-3' }, t('ui.lobby.espera_alternativa')),
+            el('button', {
+                id: 'btnSalirEspera',
+                class: 'w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg',
+                onclick: cancelarBusqueda,
+            }, '← ' + t('ui.juego.salir_lobby')),
+        ]));
     }
 
     async function pollLobbyTick() {

@@ -321,6 +321,16 @@ try {
     // Y quien llega sin ⭐ empareja con la que espera sin ⭐.
     $rqMatch2 = http_req('POST', $base . '/api/partida_rapida.php', ['nombre' => 'RapidaD', 'mostrar_valores' => false]);
     check(($rqMatch2['json']['codigo'] ?? '') === $codA, 'emparejamiento: el que llega sin ⭐ cae en la sala sin ⭐');
+
+    // 13) Salir de una sala privada mientras se espera (botón del lobby).
+    $rpriv = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'pizza', 'nombre' => 'Priv1']);
+    $codPriv = (string) ($rpriv['json']['codigo'] ?? '');
+    $codigos[] = $codPriv;
+    $j1Priv = (string) ($rpriv['json']['jugador_id'] ?? '');
+    $rcancel = http_req('POST', $base . '/api/partida_rapida.php', ['accion' => 'cancelar', 'codigo' => $codPriv, 'jugador_id' => $j1Priv]);
+    check($rcancel['code'] === 200 && ($rcancel['json']['ok'] ?? false) === true, 'salir de sala privada: cancelar → 200');
+    $rprivEstado = http_req('GET', $base . '/api/estado.php?codigo=' . $codPriv . '&jugador_id=' . $j1Priv);
+    check($rprivEstado['code'] === 404, 'salir de sala privada: la sala se borra');
 } finally {
     foreach ($codigos as $c) {
         if ($c !== '') {

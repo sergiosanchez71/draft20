@@ -64,7 +64,7 @@ CI lista en **`tools/ci.yml`** (GitHub Actions: `php -l` de todo el repo, los tr
 
 ## Cómo se juega
 
-1. **Jugador 1** abre la app, elige temática y nombre → pulsa **Crear Sala** → recibe un código de 5 caracteres.
+1. **Jugador 1** abre la app, elige temática y nombre → pulsa **Crear sala privada** → recibe un código de 5 caracteres.
 2. Comparte el código (botón WhatsApp o copiar enlace) con el **Jugador 2**.
 3. **Jugador 2** abre el enlace o introduce el código → entra a la partida.
 4. La partida empieza automáticamente cuando ambos están dentro.
