@@ -32,6 +32,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/salas_gc.php';
+require_once __DIR__ . '/../inc/rate_limit.php';
 
 // ============================================================================
 //  Config & constantes
@@ -43,6 +44,7 @@ const SALAS_DIR             = __DIR__ . '/salas/';
 const TEMATICAS_DIR         = __DIR__ . '/../tematicas/';
 const DINERO_INICIAL        = 20;
 const MAX_INTENTOS_CODIGO   = 25;
+const MAX_SALAS_ACTIVAS     = 300; // cupo global de salas en disco (anti-abuso)
 
 // Mecánica de la partida: 4 ítems por persona (cap duro).
 const ITEMS_POR_PARTIDA     = 8;   // = 2 × MAX_ITEMS_POR_JUGADOR (4 por jugador)
@@ -348,6 +350,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     responder(['ok' => false, 'error' => 'Método no permitido. Usa POST.'], 405);
 }
 
+api_guard_origen();
+rl_guard('crear', 20, 3600);
+
 $input      = leer_input_json();
 $tematicaId = isset($input['tematica']) ? (string) $input['tematica'] : '';
 $nombreJ1   = isset($input['nombre'])   ? trim((string) $input['nombre']) : '';
@@ -366,6 +371,13 @@ if (mb_strlen($nombreJ1, 'UTF-8') > 20) {
 // ============================================================================
 
 try {
+    // Cupo global: si hay demasiadas salas activas, mejor rechazar que saturar.
+    // En local (tests/desarrollo) no aplica, igual que el rate limit.
+    $salasActivas = count((array) @glob(SALAS_DIR . '*.json'));
+    if (!rl_es_local() && $salasActivas >= MAX_SALAS_ACTIVAS) {
+        responder(['ok' => false, 'error' => 'El servicio está saturado. Inténtalo en unos minutos.'], 503);
+    }
+
     $tematica = cargar_tematica($tematicaId);
 
     // Selección equilibrada por tiers (8 = 4 por persona): sorteo ponderado con
@@ -441,4 +453,6 @@ try {
     responder(['ok' => false, 'error' => $e->getMessage()], 400);
 } catch (RuntimeException $e) {
     responder(['ok' => false, 'error' => $e->getMessage()], 500);
+} catch (Throwable $e) {
+    responder(['ok' => false, 'error' => 'Error interno.'], 500);
 }

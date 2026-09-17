@@ -24,6 +24,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../inc/sala_publica.php';
+require_once __DIR__ . '/../inc/rate_limit.php';
 
 // ============================================================================
 //  Config & constantes
@@ -81,6 +82,9 @@ function slot_de_jugador(array $sala, string $jugadorId): ?int {
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     responder(['ok' => false, 'error' => 'Método no permitido. Usa POST.'], 405);
 }
+
+api_guard_origen();
+rl_guard('revancha', 60, 3600);
 
 $input     = leer_input_json();
 $codigo    = isset($input['codigo'])     ? strtoupper(trim((string) $input['codigo'])) : '';
@@ -200,4 +204,6 @@ try {
 } catch (RuntimeException $e) {
     if (isset($fp) && is_resource($fp)) { @flock($fp, LOCK_UN); @fclose($fp); }
     responder(['ok' => false, 'error' => $e->getMessage()], 500);
+} catch (Throwable $e) {
+    responder(['ok' => false, 'error' => 'Error interno.'], 500);
 }

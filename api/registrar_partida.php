@@ -30,6 +30,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../inc/rate_limit.php';
+
 const DATOS_DIR     = __DIR__ . '/datos/';
 const PARTIDAS_LOG  = DATOS_DIR . 'partidas.jsonl';
 const LOG_MAX_BYTES = 5 * 1024 * 1024; // 5 MB → al superarlo se recorta a la mitad
@@ -52,6 +54,9 @@ if (!function_exists('responder')) {
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     responder(['ok' => false, 'error' => 'Método no permitido. Usa POST.'], 405);
 }
+
+api_guard_origen();
+rl_guard('registrar', 60, 3600);
 
 $raw = file_get_contents('php://input');
 if ($raw === false || $raw === '' || strlen($raw) > CUERPO_MAX) {

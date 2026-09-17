@@ -36,6 +36,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../inc/sala_publica.php';
+require_once __DIR__ . '/../inc/rate_limit.php';
 
 // ============================================================================
 //  Config & constantes
@@ -290,6 +291,9 @@ if ($accion === 'asignar_rival') {
         responder(['ok' => false, 'error' => 'precio inválido.'], 400);
     }
 }
+
+api_guard_origen();
+rl_guard($accion === 'emote' ? 'emote' : 'accion', $accion === 'emote' ? 60 : 240, 60);
 
 // ============================================================================
 //  Lógica
