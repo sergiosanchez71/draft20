@@ -24,6 +24,14 @@ if (!function_exists('sala_publica')) {
         }
         unset($sala['last_seen']);
 
+        // Temática sorpresa: se oculta mientras la partida está en curso.
+        if (!empty($sala['ocultar_tematica'])
+            && in_array((string) ($sala['estado'] ?? ''), ['esperando', 'jugando'], true)
+            && isset($sala['tematica'])) {
+            unset($sala['tematica']);
+            $sala['tematica_oculta'] = true;
+        }
+
         $esBot = isset($sala['bot_slot']) && $sala['bot_slot'] !== null;
         $sala['total_items'] = is_array($sala['items_mezclados'] ?? null)
             ? count($sala['items_mezclados'])

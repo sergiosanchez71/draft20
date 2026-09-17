@@ -358,12 +358,18 @@ $tematicaId = isset($input['tematica']) ? (string) $input['tematica'] : '';
 $nombreJ1   = isset($input['nombre'])   ? trim((string) $input['nombre']) : '';
 // Modo "⭐ Valores visibles": se comparte con toda la sala (lo fija quien crea).
 $mostrarValores = !empty($input['mostrar_valores']);
+// Presupuesto por partida (10/20/30 monedas) y temática oculta hasta el final.
+$dineroInicial  = isset($input['dinero_inicial']) ? (int) $input['dinero_inicial'] : DINERO_INICIAL;
+$ocultarTematica = !empty($input['ocultar_tematica']);
 
 if ($tematicaId === '') {
     responder(['ok' => false, 'error' => 'Falta el campo "tematica".'], 400);
 }
 if (mb_strlen($nombreJ1, 'UTF-8') > 20) {
     responder(['ok' => false, 'error' => 'Nombre demasiado largo (máx 20 caracteres).'], 400);
+}
+if (!in_array($dineroInicial, [10, 20, 30], true)) {
+    responder(['ok' => false, 'error' => 'Presupuesto inválido (usa 10, 20 o 30).'], 400);
 }
 
 // ============================================================================
@@ -413,14 +419,14 @@ try {
             [
                 'id'             => $jugadorId,
                 'nombre'         => $nombreJ1 !== '' ? $nombreJ1 : 'Jugador 1',
-                'dinero'         => DINERO_INICIAL,
+                'dinero'         => $dineroInicial,
                 'items_ganados'  => [],      // se rellena en api/accion.php con {id, emoji}
             ],
             // Slot J2: lo rellena api/unirse_sala.php (Fase 2).
             [
                 'id'             => null,
                 'nombre'         => 'Jugador 2',
-                'dinero'         => DINERO_INICIAL,
+                'dinero'         => $dineroInicial,
                 'items_ganados'  => [],
             ],
         ],
@@ -434,6 +440,8 @@ try {
         'emotes'               => [],   // últimos emotes: {por, code, ts} (máx EMOTES_MAX)
         'bot_slot'             => null, // 0 | 1 si ese slot es un bot local (no pollea: sin abandono ni aviso)
         'mostrar_valores'      => $mostrarValores, // true = mostrar ⭐ de cada ítem durante la partida
+        'dinero_inicial'       => $dineroInicial,  // 10 | 20 | 30 monedas por jugador
+        'ocultar_tematica'     => $ocultarTematica, // true = la temática no se revela hasta el final
         'creado_en'           => $ahora,
         'actualizado_en'      => $ahora,
     ];

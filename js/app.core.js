@@ -33,7 +33,12 @@
         partidaGuardada: false,
         botDificultad: 'normal',
         mostrarValores: false,
+        dineroInicial: 20,
+        ocultarTematica: false,
         statsRegistradas: false,
+        finalRegistrada: false,
+        serieFinal: null,
+        logrosFinal: null,
         ultimoEmoteTs: 0,
         bot: null,
         botTurnoKey: null,
@@ -140,6 +145,15 @@
     /** Recuerda el nombre para la creación de sala en 1 clic desde las fichas. */
     function guardarNombre(nombre) {
         try { localStorage.setItem('draft20_nombre', (nombre || '').trim()); } catch (e) { /* ignore */ }
+    }
+
+    const LOGROS_IDS = ['coleccionista', 'cazador', 'austero', 'derrochador', 'racha', 'veterano'];
+
+    function logrosDesbloqueados() {
+        try {
+            const g = JSON.parse(localStorage.getItem('draft20_logros') || '{}');
+            return LOGROS_IDS.filter(function (id) { return g && g[id]; });
+        } catch (e) { return []; }
     }
 
     // =================== toast ===================
@@ -400,7 +414,9 @@
         const hayStats = (st.wins || st.losses || st.draws);
         app.appendChild(el('header', { class: 'py-2 text-center relative min-h-[36px]' }, [
             hayStats
-                ? el('p', { class: 'text-amber-300/80 text-xs font-mono pt-1' }, t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 }))
+                ? el('p', { class: 'text-amber-300/80 text-xs font-mono pt-1' },
+                    t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 })
+                    + (logrosDesbloqueados().length ? ' · 🏅 ' + logrosDesbloqueados().length + '/' + LOGROS_IDS.length : ''))
                 : null,
             el('button', {
                 class: 'absolute top-1 right-4 w-9 h-9 rounded-full bg-slate-700 text-slate-200 text-sm font-bold btn-tap',
@@ -411,6 +427,57 @@
         ]));
 
         const selectorBox = el('div', { id: 'tematicaSelector', class: 'mb-4' });
+
+        // Ajustes de partida: presupuesto (10/20/30) y temática sorpresa.
+        // Persistidos en localStorage y compartidos por toda la sala.
+        try {
+            const dg = localStorage.getItem('draft20_dinero');
+            if (dg && ['10', '20', '30'].indexOf(dg) !== -1) state.dineroInicial = parseInt(dg, 10);
+            if (localStorage.getItem('draft20_sorpresa') === '1') state.ocultarTematica = true;
+        } catch (e) { /* ignore */ }
+        const dineroValores = [10, 20, 30];
+        const dineroBtns = [];
+        const dineroWrap = el('div', { class: 'flex gap-2 justify-center mt-2' });
+        function pintarDinero() {
+            dineroBtns.forEach(function (b, i) {
+                const activo = state.dineroInicial === dineroValores[i];
+                b.className = 'px-3 py-1.5 rounded-full text-xs border btn-tap ' +
+                    (activo ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
+            });
+        }
+        dineroValores.forEach(function (v) {
+            const b = el('button', {
+                type: 'button',
+                onclick: function () {
+                    state.dineroInicial = v;
+                    try { localStorage.setItem('draft20_dinero', String(v)); } catch (e) { /* ignore */ }
+                    pintarDinero();
+                },
+            }, v + ' 🪙');
+            dineroBtns.push(b);
+            dineroWrap.appendChild(b);
+        });
+        pintarDinero();
+        const sorpresaBtn = el('button', {
+            type: 'button',
+            onclick: function () {
+                state.ocultarTematica = !state.ocultarTematica;
+                try { localStorage.setItem('draft20_sorpresa', state.ocultarTematica ? '1' : '0'); } catch (e) { /* ignore */ }
+                pintarSorpresa();
+            },
+        }, t('ui.lobby.tematica_sorpresa'));
+        function pintarSorpresa() {
+            sorpresaBtn.className = 'px-4 py-2 rounded-full text-xs border btn-tap ' +
+                (state.ocultarTematica ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
+            sorpresaBtn.setAttribute('aria-pressed', state.ocultarTematica ? 'true' : 'false');
+        }
+        pintarSorpresa();
+        const ajustesBox = el('div', { class: 'text-center mb-4' }, [
+            el('div', { class: 'text-[11px] text-slate-500 mb-1' }, t('ui.lobby.presupuesto')),
+            dineroWrap,
+            el('div', { class: 'mt-3' }, [sorpresaBtn]),
+            el('div', { class: 'text-[11px] text-slate-500 mt-2' }, t('ui.lobby.tematica_sorpresa_ayuda')),
+        ]);
 
         // Modo "⭐ Valores visibles" (persistido; se comparte con la sala).
         // Se muestra en Crear Sala y en Practicar: ambas instancias van sincronizadas.
@@ -446,6 +513,7 @@
             selectorBox,
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
             el('input', { id: 'nameCreate', type: 'text', maxlength: '20', placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
+            ajustesBox,
             crearToggleValores('text-center mb-4'),
             el('button', { id: 'btnCreate', class: 'w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_crear')),
         ]);
@@ -593,6 +661,8 @@
             tematica: tematica,
             nombre: nombre,
             mostrar_valores: !!state.mostrarValores,
+            dinero_inicial: state.dineroInicial || 20,
+            ocultar_tematica: !!state.ocultarTematica,
         });
         btn.disabled = false; btn.classList.remove('opacity-50');
         if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
@@ -617,6 +687,8 @@
             tematica: tematica,
             nombre: nombreFinal,
             mostrar_valores: mv,
+            dinero_inicial: state.dineroInicial || 20,
+            ocultar_tematica: !!state.ocultarTematica,
         });
         if (!r.ok) { toast(r.error || 'Error'); return false; }
         const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: 'Bot', bot: true });
@@ -668,7 +740,9 @@
         const app = $('#app');
         clear(app);
         app.appendChild(el('header', { class: 'px-6 pt-2 pb-0 text-center' }, [
-            el('p', { class: 'text-slate-400 text-sm' }, tTematica(state.sala?.tematica || state.tematicaCreada || '')),
+            el('p', { class: 'text-slate-400 text-sm' }, state.ocultarTematica
+                ? t('ui.lobby.tematica_sorpresa')
+                : tTematica(state.sala?.tematica || state.tematicaCreada || '')),
         ]));
 
         app.appendChild(el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 text-center fade-in' }, [
@@ -725,6 +799,7 @@
         resolverTematica: resolverTematica,
         renderTematicaSelector: renderTematicaSelector,
         mostrarQR: mostrarQR,
+        LOGROS_IDS: LOGROS_IDS,
         iniciarPartidaBot: iniciarPartidaBot,
     };
 })();

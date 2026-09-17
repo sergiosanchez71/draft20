@@ -77,6 +77,10 @@ if (!$listo) {
 $codigos = [];
 
 try {
+    // 0) i18n válido (si el JSON se rompe, las páginas degradan en silencio)
+    $lang = json_decode((string) @file_get_contents($root . '/lang/es.json'), true);
+    check(is_array($lang) && count($lang['items'] ?? []) > 1000, 'lang/es.json válido con items');
+
     // 1) Crear
     $r = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'hamburguesa', 'nombre' => 'Smoke1']);
     check($r['code'] === 200 && !empty($r['json']['codigo']), 'crear_sala → 200');

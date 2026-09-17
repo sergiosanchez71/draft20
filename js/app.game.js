@@ -484,7 +484,13 @@
 
         // Header: temática en curso
         const ht = document.getElementById('headerTematica');
-        if (ht && s.tematica) ht.textContent = tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica);
+        if (ht) {
+            if (s.tematica) {
+                ht.textContent = tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica);
+            } else if (s.tematica_oculta) {
+                ht.textContent = t('ui.lobby.tematica_sorpresa');
+            }
+        }
 
         // Scoreboard
         renderScoreboard();
@@ -1042,6 +1048,75 @@
         ]));
     }
 
+    const LOGROS = [
+        { id: 'coleccionista', icono: '🧺', test: function (r, mi) { return mi.length >= 4; } },
+        { id: 'cazador', icono: '🎯', test: function (r, mi) { return r === 'win' && mi.filter(function (i) { return (i.valor || 0) >= 8; }).length >= 2; } },
+        { id: 'austero', icono: '💰', test: function (r, mi, ri, gasto) { return r === 'win' && gasto <= 8; } },
+        { id: 'derrochador', icono: '💸', test: function (r, mi, ri, gasto) { return r === 'win' && gasto >= 18; } },
+        { id: 'racha', icono: '🔥', test: function () { return (loadStats().streak || 0) >= 3; } },
+        { id: 'veterano', icono: '🎖️', test: function () { const s = loadStats(); return ((s.wins || 0) + (s.losses || 0) + (s.draws || 0)) >= 10; } },
+    ];
+
+    /** Serie al mejor de 3 con el mismo rival (se reinicia a los 30 min). */
+    function actualizarSerie(resultado) {
+        const rival = state.rivalNombre || 'Rival';
+        let serie = null;
+        try { serie = JSON.parse(localStorage.getItem('draft20_serie') || 'null'); } catch (e) { /* ignore */ }
+        const ahora = Date.now();
+        const vigente = serie && serie.rival === rival && (ahora - (serie.ts || 0)) < 30 * 60 * 1000;
+        if (!vigente) serie = { rival: rival, mio: 0, rivalPuntos: 0 };
+        if (resultado === 'win') serie.mio = (serie.mio || 0) + 1;
+        else if (resultado === 'loss') serie.rivalPuntos = (serie.rivalPuntos || 0) + 1;
+        serie.ts = ahora;
+        serie.ganada = (serie.mio >= 2 || serie.rivalPuntos >= 2) ? (serie.mio >= 2 ? 'mio' : 'rival') : '';
+        try { localStorage.setItem('draft20_serie', JSON.stringify(serie)); } catch (e) { /* ignore */ }
+        return serie;
+    }
+
+    function evaluarLogros(resultado, miItems, rivalItems, gasto) {
+        let guardados = {};
+        try { guardados = JSON.parse(localStorage.getItem('draft20_logros') || '{}') || {}; } catch (e) { /* ignore */ }
+        const nuevos = [];
+        LOGROS.forEach(function (l) {
+            if (!guardados[l.id] && l.test(resultado, miItems, rivalItems, gasto)) {
+                guardados[l.id] = Date.now();
+                nuevos.push(l);
+            }
+        });
+        try { localStorage.setItem('draft20_logros', JSON.stringify(guardados)); } catch (e) { /* ignore */ }
+        return nuevos;
+    }
+
+    function renderSerieYLogros(resultado, myItems, rivalItems, mySpent) {
+        if (!state.finalRegistrada) {
+            state.finalRegistrada = true;
+            state.serieFinal = actualizarSerie(resultado);
+            state.logrosFinal = evaluarLogros(resultado, myItems, rivalItems, mySpent);
+        }
+        const serie = state.serieFinal || { mio: 0, rivalPuntos: 0, ganada: '' };
+        const logrosNuevos = state.logrosFinal || [];
+        const bloques = [];
+
+        bloques.push(el('div', { class: 'text-center bg-slate-800 border border-slate-700 rounded-lg p-3 mb-4' }, [
+            el('div', { class: 'text-xs text-slate-400' }, t('ui.juego.serie_titulo')),
+            el('div', { class: 'text-xl font-mono font-bold text-amber-300' }, serie.mio + ' - ' + (serie.rivalPuntos || 0)),
+            serie.ganada
+                ? el('div', { class: 'text-sm font-bold text-emerald-400 mt-1' },
+                    (serie.ganada === 'mio' ? t('ui.juego.serie_ganada') : t('ui.juego.serie_ganada').replace('¡Serie', 'Serie')))
+                : null,
+        ].filter(Boolean)));
+
+        if (logrosNuevos.length) {
+            bloques.push(el('div', { class: 'bg-amber-400 text-slate-900 rounded-lg p-3 mb-4 text-center fade-in' }, [
+                el('div', { class: 'text-xs font-bold uppercase' }, t('ui.juego.logro_desbloqueado')),
+                el('div', { class: 'text-sm font-bold mt-1' }, logrosNuevos.map(function (l) {
+                    return l.icono + ' ' + t('ui.juego.logros.' + l.id);
+                }).join(' · ')),
+            ]));
+        }
+        return bloques;
+    }
+
     function renderFinalScreen() {
         const card = $('#itemCard');
         if (!card) return;
@@ -1136,6 +1211,9 @@
         card.appendChild(header);
         if (revanchaBanner) card.appendChild(revanchaBanner);
         card.appendChild(resultBlock);
+        renderSerieYLogros(resultado, myItems, rivalItems, mySpent).forEach(function (b) { card.appendChild(b); });
+        card.appendChild(el('p', { class: 'text-center text-xs text-slate-400 mb-4' },
+            t('ui.juego.tematica_label') + ': ' + (s.tematica ? (tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica)) : t('ui.lobby.tematica_sorpresa'))));
         card.appendChild(lists);
         card.appendChild(statsLine);
         card.appendChild(exitBtn);
@@ -1186,9 +1264,12 @@
     async function proponerRevancha(tematica, closeModal) {
         const cerrar = function () { if (typeof closeModal === 'function') closeModal(); };
 
-        // Contra bot: nueva partida inmediata con el mismo bot y dificultad.
+        // Contra bot: nueva partida inmediata con el mismo bot y dificultad,
+        // manteniendo presupuesto y modo sorpresa de la sala.
         if (state.bot) {
             const dificultad = state.bot.dificultad || 'normal';
+            state.dineroInicial = (state.sala && state.sala.dinero_inicial) || state.dineroInicial || 20;
+            state.ocultarTematica = !!(state.sala && state.sala.ocultar_tematica);
             const ok = await iniciarPartidaBot(tematica, dificultad, state.jugadorNombre, !!(state.sala && state.sala.mostrar_valores));
             if (ok) cerrar();
             return;
@@ -1201,6 +1282,8 @@
             tematica: tematica,
             nombre: nombre,
             mostrar_valores: !!(state.sala && state.sala.mostrar_valores),
+            dinero_inicial: (state.sala && state.sala.dinero_inicial) || 20,
+            ocultar_tematica: !!(state.sala && state.sala.ocultar_tematica),
         });
         if (!r.ok) { toast(r.error || 'Error'); return; }
         const r2 = await api('POST', 'api/revancha.php', {

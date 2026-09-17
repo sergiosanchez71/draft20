@@ -33,7 +33,10 @@
             "partida_en_curso": "Tienes una partida en curso",
             "continuar": "Continuar",
             "btn_qr": "Ver QR",
-            "qr_titulo": "Escanea para unirse"
+            "qr_titulo": "Escanea para unirse",
+            "presupuesto": "Monedas por jugador",
+            "tematica_sorpresa": "🎁 Temática sorpresa",
+            "tematica_sorpresa_ayuda": "La temática no se revela hasta el final"
         },
         "juego": {
             "tu_turno": "¡Tu turno!",
@@ -59,6 +62,19 @@
             "texto_resultado_draw": "Empate {mio}–{rival} en Draft 20 🤝 ¿Desempate?",
             "toast_resultado_copiado": "Imagen descargada y texto copiado",
             "toast_resultado_error": "No se pudo generar la imagen",
+            "tematica_label": "Temática",
+            "serie_titulo": "Serie al mejor de 3",
+            "serie_ganada": "🏆 ¡Serie ganada!",
+            "logro_desbloqueado": "🏅 Logro desbloqueado:",
+            "logros_titulo": "Logros",
+            "logros": {
+                "coleccionista": "Coleccionista",
+                "cazador": "Cazador de estrellas",
+                "austero": "Austero",
+                "derrochador": "Derrochador",
+                "racha": "En racha",
+                "veterano": "Veterano"
+            },
             "btn_revancha_proponer": "PROPONER REVANCHA",
             "msg_revancha_propuesta": "«{nombre}» propone revancha: {tema}",
             "btn_revancha_unirse": "UNIRSE",
