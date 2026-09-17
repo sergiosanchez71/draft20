@@ -62,13 +62,12 @@ ErrorDocument 404 /404.php
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
 
     # Cabeceras de seguridad. La CSP completa (con nonce para los scripts inline)
-    # la emite PHP en las páginas HTML; aquí solo se fija frame-ancestors para
-    # cubrir también las rutas que no pasan por layout (API, estáticos).
+    # la emite PHP en las páginas HTML: si se fija aquí, mod_headers reemplaza
+    # la de PHP y el nonce nunca llega al navegador.
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "DENY"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
-    Header always set Content-Security-Policy "frame-ancestors 'none'"
 </IfModule>
 
 # La landing y las páginas de contenido pueden cachearse 10 min en el CDN
