@@ -869,6 +869,80 @@
     function sumPrecio(items) { return (items || []).reduce(function (acc, i) { return acc + (i.precio || 0); }, 0); }
 
     /**
+     * Genera una tarjeta 1080×1080 con el resultado y la comparte (Web Share
+     * nivel 2, con imagen) o la descarga con el texto copiado como fallback.
+     */
+    function compartirResultado(myScore, rivalScore, resultado) {
+        const s = state.sala;
+        if (!s) return;
+        const me = s.jugadores[state.jugadorSlot] || {};
+        const rival = s.jugadores[1 - state.jugadorSlot] || {};
+        const tema = s.tematica ? (tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica)) : '';
+        const clave = resultado === 'win' ? 'ui.juego.texto_resultado_win'
+            : (resultado === 'loss' ? 'ui.juego.texto_resultado_loss' : 'ui.juego.texto_resultado_draw');
+        const texto = t(clave, { mio: myScore, rival: rivalScore }) + ' https://draft20.es';
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1080;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { toast(t('ui.juego.toast_resultado_error')); return; }
+
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, 1080, 1080);
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(0, 0, 1080, 18);
+        ctx.textAlign = 'center';
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 92px Arial, sans-serif';
+        ctx.fillText('Draft 20', 540, 170);
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '44px Arial, sans-serif';
+        ctx.fillText(tema, 540, 250);
+
+        ctx.fillStyle = resultado === 'win' ? '#10b981' : (resultado === 'loss' ? '#f43f5e' : '#94a3b8');
+        ctx.font = 'bold 240px Arial, sans-serif';
+        ctx.fillText(myScore + ' - ' + rivalScore, 540, 560);
+
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = 'bold 46px Arial, sans-serif';
+        ctx.fillText((me.nombre || 'Tú') + '  ·  ' + (rival.nombre || 'Rival'), 540, 660);
+
+        const emojis = []
+            .concat((me.items_ganados || []).map(function (i) { return i.emoji; }))
+            .concat((rival.items_ganados || []).map(function (i) { return i.emoji; }));
+        ctx.font = '72px Arial, sans-serif';
+        ctx.fillText(emojis.slice(0, 8).join(' '), 540, 790);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '38px Arial, sans-serif';
+        ctx.fillText('draft20.es · subasta por turnos para 2 jugadores', 540, 980);
+
+        canvas.toBlob(function (blob) {
+            if (!blob) { toast(t('ui.juego.toast_resultado_error')); return; }
+            const file = (typeof File === 'function') ? new File([blob], 'draft20.png', { type: 'image/png' }) : null;
+            if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], text: texto, url: 'https://draft20.es' })
+                    .catch(function () { /* cancelado por el usuario */ });
+                return;
+            }
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'draft20-resultado.png';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(texto).then(function () {
+                    toast(t('ui.juego.toast_resultado_copiado'));
+                }, function () { /* sin clipboard */ });
+            }
+        }, 'image/png');
+    }
+
+    /**
      * Firma del estado visible: si no cambia, el poll no vuelve a pintar el DOM.
      * Incluye lo que afecta a la UI (incluido el aviso de rival ausente ≥6s).
      */
@@ -1048,6 +1122,10 @@
         ]);
 
         const exitBtn = el('div', { class: 'mt-6 mb-2 space-y-2' }, [
+            el('button', {
+                class: 'w-full bg-slate-700 text-slate-100 font-bold py-3 px-6 rounded-lg btn-tap',
+                onclick: function () { compartirResultado(myScore, rivalScore, resultado); },
+            }, t('ui.juego.btn_compartir_resultado')),
             el('button', {
                 class: 'w-full bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg btn-tap',
                 onclick: openRevanchaModal,

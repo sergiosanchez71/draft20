@@ -66,10 +66,13 @@ if ($faqLd !== null) {
     $jsonLd[] = $faqLd;
 }
 
+$ogFile = __DIR__ . '/og/tematica/' . $id . '.png';
+
 pagina_head([
     'titulo' => $titulo,
     'descripcion' => $descripcion,
     'canonical' => '/tematica/' . $id,
+    'og_image' => is_file($ogFile) ? SITE_URL . '/og/tematica/' . $id . '.png' : null,
     'json_ld' => $jsonLd,
 ]);
 ?>
