@@ -23,6 +23,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../inc/sala_publica.php';
+
 // ============================================================================
 //  Config & constantes
 // ============================================================================
@@ -123,11 +125,14 @@ if ($ultimaAct > 0 && (time() - $ultimaAct) > TTL_SEGUNDOS) {
 }
 
 // Inicializar last_seen por compatibilidad con salas antiguas.
+$cambio = false;
 if (!isset($estado['last_seen']) || !is_array($estado['last_seen'])) {
     $estado['last_seen'] = [null, null];
+    $cambio = true;
 }
 if (!array_key_exists('abandono_por', $estado)) {
     $estado['abandono_por'] = null;
+    $cambio = true;
 }
 
 // Si llega jugador_id, resolver slot y actualizar last_seen.
@@ -142,6 +147,8 @@ if ($jugadorId !== '') {
     }
     if ($miSlot !== null) {
         $estado['last_seen'][$miSlot] = time();
+        $estado['actualizado_en'] = time();
+        $cambio = true;
 
         // Segundos que lleva el rival sin dar señales (aviso blando en UI).
         // Si el rival es un bot local no aplica: no pollea por diseño.
@@ -164,10 +171,29 @@ if ($jugadorId !== '') {
 
 $estado['actualizado_en'] = time();
 
-// Persistir (hemos podido tocar last_seen o estado).
-ftruncate($fp, 0); rewind($fp);
-fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-fflush($fp);
+// Persistir solo si hemos tocado algo (last_seen, abandono o compatibilidad):
+// el poll del lobby sin jugador_id no debe escribir en disco cada segundo.
+if ($cambio) {
+    ftruncate($fp, 0); rewind($fp);
+    fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    fflush($fp);
+}
 flock($fp, LOCK_UN); fclose($fp);
 
-responder(['ok' => true, 'sala' => $estado, 'rival_ausente' => $rivalAusente], 200);
+// Valores ⭐: solo se exponen si el modo está activo o la partida es contra bot.
+$esBot = isset($estado['bot_slot']) && $estado['bot_slot'] !== null;
+if ((!empty($estado['mostrar_valores']) || $esBot) && !empty($estado['tematica'])) {
+    $archivoTem = __DIR__ . '/../tematicas/' . preg_replace('/[^a-z0-9_]/', '', (string) $estado['tematica']) . '.json';
+    if (is_file($archivoTem)) {
+        $dataTem = json_decode((string) file_get_contents($archivoTem), true);
+        $mapaValores = [];
+        foreach (($dataTem['items'] ?? []) as $itTem) {
+            if (isset($itTem['id'])) {
+                $mapaValores[(string) $itTem['id']] = (int) ($itTem['valor'] ?? 0);
+            }
+        }
+        $estado['valores'] = $mapaValores;
+    }
+}
+
+responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot), 'rival_ausente' => $rivalAusente], 200);

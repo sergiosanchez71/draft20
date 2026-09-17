@@ -357,7 +357,7 @@ $mostrarValores = !empty($input['mostrar_valores']);
 if ($tematicaId === '') {
     responder(['ok' => false, 'error' => 'Falta el campo "tematica".'], 400);
 }
-if (strlen($nombreJ1) > 20) {
+if (mb_strlen($nombreJ1, 'UTF-8') > 20) {
     responder(['ok' => false, 'error' => 'Nombre demasiado largo (máx 20 caracteres).'], 400);
 }
 

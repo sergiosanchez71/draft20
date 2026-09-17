@@ -24,6 +24,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/salas_gc.php';
+require_once __DIR__ . '/../inc/sala_publica.php';
 
 // ============================================================================
 //  Config & constantes (idénticas al resto de endpoints — guards evitan colisión)
@@ -115,7 +116,7 @@ $regexCodigo = '/^[' . CHARSET . ']{5}$/';
 if ($codigo === '' || !preg_match($regexCodigo, $codigo)) {
     responder(['ok' => false, 'error' => 'Código de sala inválido.'], 400);
 }
-if (strlen($nombreJ2) > 20) {
+if (mb_strlen($nombreJ2, 'UTF-8') > 20) {
     responder(['ok' => false, 'error' => 'Nombre demasiado largo (máx 20 caracteres).'], 400);
 }
 
@@ -177,7 +178,7 @@ try {
     responder([
         'ok'         => true,
         'jugador_id' => $jugadorIdJ2,
-        'sala'       => $estado,
+        'sala'       => sala_publica($estado, 1),
     ], 200);
 
 } catch (RuntimeException $e) {

@@ -145,6 +145,7 @@ draft20/
 - **Cache-busting de assets**: `inc/layout.php::asset()` sirve `js/*`, `css/*` e imágenes con `?v=filemtime(...)`. Cada deploy cambia la URL y el CDN de Hostinger no puede servir versiones viejas (no hace falta purgar caché).
 - **SEO**: dominio `https://draft20.es` (canonical sin www; 301 de `www` y HTTPS forzado en `.htaccess`), URLs limpias (`/tematica/<id>`, `/categoria/<id>`, `/guias`, `/guia/<slug>`, `/como-jugar`, `/feed.xml`, `/sitemap.xml`), landing server-side con H1/intro/categorías/FAQ, 72 fichas de temática enriquecidas (texto editorial único + FAQ propia, ítems sin valores ⭐) con `BreadcrumbList`+`ItemList`, 10 hubs de categoría y 6 guías con `Article`/`CollectionPage`, feed RSS de guías para descubrimiento, JSON-LD `WebApplication`+`FAQPage` en la home, OG/Twitter cards (`og-image.png`), `juego.php` y `?sala=` con `noindex`, `robots.txt` + sitemap dinámico (**94 URLs**) e IndexNow (`tools/indexnow.php`) para Bing/Yandex.
 - **Rendimiento**: Tailwind compilado (14 KB) e **inline en las páginas SEO** (cero CSS render-blocking), JS dividido (`app.core.min.js` 14 KB en la landing; `app.game.min.js` 27 KB solo en `juego.php`), `window.LANG` recortado en la landing (solo `ui` + temáticas), service worker v4 sin `cache:'reload'`, redirecciones a 1 salto y render del juego por **firma de estado** (el poll de 1 s no reconstruye el DOM si nada cambió). La landing puede cachearse 10 min en el CDN (`s-maxage=600`, sin query).
+- **Endurecimiento básico (P0)**: las respuestas de la API ocultan `jugadores[].id` (token de auth) y `last_seen`, y usan `mi_slot`/`total_items`; `asignar_rival` solo acepta las dos decisiones legales (quedárselo por 1 🪙 o regalarlo a quien cedió); `/tematicas/*.json` no se sirve por HTTP (los valores llegan por API solo con el modo visible o en salas de bot); el polling se detiene al terminar la partida.
 - **Sin login ni cuentas**: cada sala es anónima, ligada al `localStorage` del navegador.
 
 ---
@@ -193,6 +194,8 @@ Si se pasa `jugador_id`, el servidor:
 2. Devuelve `rival_ausente` (segundos sin señales del rival; `null` si nunca ha polleado).
 3. Si el rival lleva > 45 s sin actividad y la sala está `jugando`, la marca como `abandonada` con `abandono_por = otroSlot`.
 
+**La respuesta nunca expone datos internos**: ni `jugadores[].id` (es el token de autenticación), ni `last_seen`. En su lugar devuelve `mi_slot` (tu índice) y `total_items`. En partidas entre humanos tampoco se expone `items_mezclados`; `valores` (mapa id→⭐) solo viaja con el modo "Valores visibles" o en salas contra bot.
+
 ```json
 // 200 OK
 {
@@ -202,20 +205,20 @@ Si se pasa `jugador_id`, el servidor:
     "codigo": "A8F3X",
     "estado": "jugando",          // esperando | jugando | finalizada | abandonada
     "tematica": "hamburguesa",
-    "items_mezclados": [...],
+    "total_items": 8,
+    "mi_slot": 0,
     "indice_item": 2,
     "item_actual": {
       "id": "ing_xxx", "emoji": "🍞", "precio_actual": 5, "turno_de": 0, "ultimo_pujo": 0,
       "pujas": [{ "por": 0, "incremento": 3, "precio": 5, "ts": 1693574432 }]
     },
     "jugadores": [
-      { "id": "j1_...", "nombre": "Ana", "dinero": 15, "items_ganados": [...] },
-      { "id": "j2_...", "nombre": "Bea", "dinero": 17, "items_ganados": [] }
+      { "nombre": "Ana", "dinero": 15, "items_ganados": [...] },
+      { "nombre": "Bea", "dinero": 17, "items_ganados": [] }
     ],
     "ronda": 3,
     "asignacion_forzada_a": null,
     "decision_pendiente": null,         // {para, sobre, motivo} si deadlock sin dinero
-    "last_seen": [1693574432, 1693574400],
     "abandono_por": null,               // 0 | 1 cuando estado === 'abandonada'
     "revancha": null,                   // {por, codigo_nuevo, tematica, ts} al terminar
     "emotes": [{ "por": 1, "code": "😂", "ts": 1693574432000 }]

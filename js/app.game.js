@@ -140,8 +140,12 @@
             state.pollInFlight = false;
         }
         if (!r.ok) {
-            state.pollFailures = (state.pollFailures || 0) + 1;
-            if (state.pollFailures >= 3) setOfflineBanner(true);
+            // Solo cuenta como "sin conexión" un fallo de red real (status 0);
+            // un 4xx/5xx del servidor no debe mostrar el banner offline.
+            if (r._status === 0) {
+                state.pollFailures = (state.pollFailures || 0) + 1;
+                if (state.pollFailures >= 3) setOfflineBanner(true);
+            }
             return;
         }
         state.pollFailures = 0;
@@ -210,6 +214,13 @@
 
     function detectarEmotes(sala) {
         if (!sala || !Array.isArray(sala.emotes) || state.jugadorSlot === null) return;
+        // Primer poll: sincroniza el máximo sin repintar emotes antiguos.
+        if (!state.ultimoEmoteTs) {
+            let max0 = 0;
+            sala.emotes.forEach(function (e) { max0 = Math.max(max0, e.ts || 0); });
+            state.ultimoEmoteTs = max0;
+            return;
+        }
         let maxTs = state.ultimoEmoteTs || 0;
         sala.emotes.forEach(function (e) {
             const ts = e.ts || 0;
@@ -314,18 +325,13 @@
      * y el modo "⭐ Valores visibles" necesitan el catálogo público de la
      * temática; se carga una vez conocida la sala.
      */
-    async function cargarValoresSiToca() {
-        if (!state.sala || !state.sala.tematica || state.botValores) return;
-        const necesitaModo = !!state.sala.mostrar_valores;
-        const cfgBot = (state.bot && window.DraftBot && window.DraftBot.config) ? window.DraftBot.config(state.bot.dificultad) : null;
-        if (!necesitaModo && (!cfgBot || (!cfgBot.usaValorReal && !cfgBot.intuida))) return;
-        try {
-            const resp = await fetch('tematicas/' + encodeURIComponent(state.sala.tematica) + '.json');
-            const data = await resp.json();
-            const map = {};
-            (data.items || []).forEach(function (it) { map[it.id] = it.valor; });
-            state.botValores = map;
-        } catch (e) { state.botValores = null; }
+    function cargarValoresSiToca() {
+        if (state.botValores || !state.sala) return;
+        // Los valores llegan del API solo cuando el modo está activo o la
+        // partida es contra bot (el catálogo ya no es público por HTTP).
+        if (state.sala.valores && typeof state.sala.valores === 'object') {
+            state.botValores = state.sala.valores;
+        }
     }
 
     /**
@@ -430,15 +436,36 @@
         if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
     }
 
+    /**
+     * Al llegar a un estado terminal se deja de pollear a 1s. En partidas
+     * humanas se mantiene un poll lento para recibir la revancha del rival;
+     * en las de bot se corta del todo.
+     */
+    function ajustarPollingTerminal() {
+        if (state.pollTerminal) return;
+        state.pollTerminal = true;
+        if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+        if (!state.bot) {
+            state.pollTimer = setInterval(pollGameTick, 5000);
+        }
+    }
+
     function identifySlots() {
         const s = state.sala;
         if (!s) return;
-        for (let i = 0; i < s.jugadores.length; i++) {
-            if (s.jugadores[i] && s.jugadores[i].id === state.jugadorId) {
-                state.jugadorSlot = i;
-                state.rivalNombre = s.jugadores[1 - i]?.nombre || ('Jugador ' + (i + 2 === 2 ? 2 : 1));
-                break;
+        if (typeof s.mi_slot === 'number' && s.mi_slot !== null) {
+            state.jugadorSlot = s.mi_slot;
+        } else if (state.jugadorSlot === null) {
+            // Compatibilidad: salas antiguas con ids visibles.
+            for (let i = 0; i < s.jugadores.length; i++) {
+                if (s.jugadores[i] && s.jugadores[i].id === state.jugadorId) {
+                    state.jugadorSlot = i;
+                    break;
+                }
             }
+        }
+        if (state.jugadorSlot !== null) {
+            state.rivalNombre = s.jugadores[1 - state.jugadorSlot]?.nombre || ('Jugador ' + (state.jugadorSlot + 2 === 2 ? 2 : 1));
         }
     }
 
@@ -473,6 +500,7 @@
 
         // Estado terminal: abandono manda sobre finalización normal.
         if (s.estado === 'abandonada') {
+            ajustarPollingTerminal();
             guardarPartidaReferenciaSiToca();
             renderAbandonedScreen();
             // Vaciar inventarios + bar para que no aparezca UI residual.
@@ -482,6 +510,7 @@
             return;
         }
         if (s.estado === 'finalizada') {
+            ajustarPollingTerminal();
             guardarPartidaReferenciaSiToca();
             renderFinalScreen();
             mostrarPopupUltimoItem();
@@ -508,7 +537,7 @@
         const s = state.sala;
         const me = s.jugadores[state.jugadorSlot];
         const rival = s.jugadores[1 - state.jugadorSlot];
-        const rivalEsBot = !!(state.bot && rival && state.bot.jugadorId === rival.id);
+        const rivalEsBot = s.bot_slot !== null && s.bot_slot !== undefined && Number(s.bot_slot) === (1 - state.jugadorSlot);
         const myTurn = s.item_actual && s.item_actual.turno_de === state.jugadorSlot;
         const rivalTurn = s.item_actual && s.item_actual.turno_de === (1 - state.jugadorSlot);
 
@@ -553,7 +582,7 @@
         const myTurn = item.turno_de === state.jugadorSlot;
 
         // Barra superior pegada a las esquinas de la tarjeta.
-        const totalRondas = (s.items_mezclados && s.items_mezclados.length) ? s.items_mezclados.length : 8;
+        const totalRondas = (s.total_items || (s.items_mezclados && s.items_mezclados.length) || 8);
         const chipTurno = el('div', {
             class: 'text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'),
         }, myTurn ? t('ui.juego.tu_turno') : t('ui.juego.turno_rival'));

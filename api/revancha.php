@@ -23,6 +23,8 @@
  */
 declare(strict_types=1);
 
+require_once __DIR__ . '/../inc/sala_publica.php';
+
 // ============================================================================
 //  Config & constantes
 // ============================================================================
@@ -193,7 +195,7 @@ try {
     fflush($fp);
     flock($fp, LOCK_UN); fclose($fp);
 
-    responder(['ok' => true, 'sala' => $estado], 200);
+    responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
 
 } catch (RuntimeException $e) {
     if (isset($fp) && is_resource($fp)) { @flock($fp, LOCK_UN); @fclose($fp); }

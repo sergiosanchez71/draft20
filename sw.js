@@ -38,8 +38,13 @@ self.addEventListener('fetch', function (e) {
         e.respondWith(
             fetch(req)
                 .then(function (res) {
-                    const copy = res.clone();
-                    caches.open(CACHE).then(function (c) { c.put('/', copy); }).catch(function () {});
+                    // Solo se guarda como fallback offline la home real, nunca
+                    // la respuesta de otra ruta (p. ej. una ficha o guía).
+                    const p = url.pathname;
+                    if (res && res.ok && (p === '/' || p === '/index.php')) {
+                        const copy = res.clone();
+                        caches.open(CACHE).then(function (c) { c.put('/', copy); }).catch(function () {});
+                    }
                     return res;
                 })
                 .catch(function () {

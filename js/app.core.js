@@ -17,6 +17,7 @@
         sala: null,
         pollTimer: null,
         isPolling: false,
+        pollTerminal: false,
         actionInFlight: false,
         abandonoDetectadoVibrado: false,
         tematicaSeleccionada: null,
@@ -86,10 +87,12 @@
     function keyFor(codigo) { return 'draft20_' + codigo; }
     function saveSession() {
         if (!state.codigo) return;
-        localStorage.setItem(keyFor(state.codigo), JSON.stringify({
-            jugadorId: state.jugadorId,
-            jugadorNombre: state.jugadorNombre,
-        }));
+        try {
+            localStorage.setItem(keyFor(state.codigo), JSON.stringify({
+                jugadorId: state.jugadorId,
+                jugadorNombre: state.jugadorNombre,
+            }));
+        } catch (e) { /* almacenamiento no disponible (modo privado) */ }
     }
     function loadSession(codigo) {
         try { return JSON.parse(localStorage.getItem(keyFor(codigo)) || 'null'); }
@@ -217,11 +220,18 @@
             class: 'bg-slate-800 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 fade-in ' +
                 (opts.lockBody ? 'max-h-[90vh] overflow-hidden' : 'max-h-[85vh] overflow-y-auto'),
         });
-        function close() { overlay.remove(); }
+        function close() {
+            document.removeEventListener('keydown', onKey);
+            overlay.remove();
+        }
+        function onKey(e) { if (e.key === 'Escape') close(); }
+        document.addEventListener('keydown', onKey);
         overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
         box.appendChild(content);
         overlay.appendChild(box);
         document.body.appendChild(overlay);
+        const foco = overlay.querySelector('button, select, input, a[href]');
+        if (foco) { try { foco.focus(); } catch (e) { /* ignore */ } }
         return { overlay: overlay, close: close };
     }
 

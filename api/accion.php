@@ -35,6 +35,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../inc/sala_publica.php';
+
 // ============================================================================
 //  Config & constantes
 // ============================================================================
@@ -369,7 +371,7 @@ try {
             fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
             fflush($fp);
             flock($fp, LOCK_UN); fclose($fp);
-            responder(['ok' => true, 'sala' => $estado], 200);
+            responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
         }
     }
 
@@ -394,7 +396,7 @@ try {
         fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         fflush($fp);
         flock($fp, LOCK_UN); fclose($fp);
-        responder(['ok' => true, 'sala' => $estado], 200);
+        responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
     }
 
     // 1b) Si el jugador del turno actual está en el cap, el sistema le
@@ -424,7 +426,7 @@ try {
         fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         fflush($fp);
         flock($fp, LOCK_UN); fclose($fp);
-        responder(['ok' => true, 'sala' => $estado], 200);
+        responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
     }
 
     // 2) Validar turno.
@@ -532,6 +534,15 @@ try {
         $precio  = (int) $input['precio'];
         $sobre   = (int) $estado['decision_pendiente']['sobre'];
 
+        // Solo hay dos decisiones legales: quedártelo tú por 1 🪙 o regalarle el
+        // ítem (0 🪙) a quien lo cedió. Cualquier otra pareja es un exploit.
+        $legal = ($destino === $miSlot && $precio === 1)
+            || ($destino === $sobre && $precio === 0);
+        if (!$legal) {
+            flock($fp, LOCK_UN); fclose($fp);
+            responder(['ok' => false, 'error' => 'Decisión inválida.'], 400);
+        }
+
         // Validaciones económicas: si precio=1, el ganador debe poder pagar 1.
         if ($precio === 1) {
             if ((int) $estado['jugadores'][$destino]['dinero'] < 1) {
@@ -604,7 +615,7 @@ try {
     fflush($fp);
     flock($fp, LOCK_UN); fclose($fp);
 
-    responder(['ok' => true, 'sala' => $estado], 200);
+    responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
 
 } catch (RuntimeException $e) {
     if (isset($fp) && is_resource($fp)) { @flock($fp, LOCK_UN); @fclose($fp); }

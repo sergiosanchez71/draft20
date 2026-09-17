@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /juego.php
+Disallow: /tematicas/
 
 Sitemap: https://draft20.es/sitemap.xml

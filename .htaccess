@@ -24,6 +24,10 @@ Options -Indexes
     RewriteRule ^categoria/([a-z0-9_]+)/?$ categoria.php?id=$1 [L,QSA]
     RewriteRule ^guias/?$ guias.php [L]
     RewriteRule ^guia/([a-z0-9-]+)/?$ guia.php?slug=$1 [L,QSA]
+
+    # 4) Catálogo interno: los valores de los ítems no se sirven por HTTP
+    #    (el cliente los recibe por API solo cuando el modo lo permite).
+    RewriteRule ^tematicas/ - [F,L]
     RewriteRule ^como-jugar/?$ como_jugar.php [L]
     RewriteRule ^acerca/?$ acerca.php [L]
     RewriteRule ^contacto/?$ contacto.php [L]
