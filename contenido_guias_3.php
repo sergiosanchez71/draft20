@@ -37,7 +37,7 @@ return [
                 'h' => 'Cómo montar la partida en 3 pasos',
                 'p' => [
                     '1) Uno crea la sala desde su móvil y elige temática (o deja «Todas»). 2) Comparte el código de 5 caracteres por WhatsApp con el rival del duelo. 3) Cuando el otro entra, la subasta empieza sola. Al terminar, el botón de revancha genera una sala nueva con otra temática.',
-                    'Truco navideño: jugad con la temática sorpresa activada y que nadie sepa qué lista toca hasta el final. En Nochebuena funciona especialmente bien.',
+                    'Truco navideño: jugad con temática aleatoria (la opción «Todas») y que nadie sepa qué lista toca hasta que salga el primer ítem. En Nochebuena funciona especialmente bien.',
                 ],
             ],
             [
@@ -137,7 +137,7 @@ return [
             [
                 'h' => 'Tres formas de jugar en pareja',
                 'p' => [
-                    'La primera es la clásica: una partida a Parejas Famosas y revancha con la misma temática para desempatar. La segunda es «temática sorpresa»: nadie sabe qué lista toca y se juega a ciegas. Y la tercera es una liguilla al mejor de tres: cada uno elige una temática y la tercera es aleatoria, así nadie tiene ventaja.',
+                    'La primera es la clásica: una partida a Parejas Famosas y revancha con la misma temática para desempatar. La segunda es a ciegas: elegid «Todas (aleatoria)» y jugad sin saber qué lista toca hasta que salga el primer ítem. Y la tercera es una liguilla al mejor de tres: cada uno elige una temática y la tercera es aleatoria, así nadie tiene ventaja.',
                     'Si queréis subir la apuesta, poned una prenda simbólica por partida (quién elige la serie, quién prepara el desayuno del domingo). En cinco minutos por duelo, lo normal es encadenar tres o cuatro revanchas sin daros cuenta.',
                     'Si os gusta el modo de valores visibles, activadlo: veréis el ⭐ de cada ítem durante la partida y la subasta se vuelve más estratégica (y más peleada).',
                     'Y para que la serie no acabe en tablas, la tercera partida con temática aleatoria: nadie puede preparar estrategia y el resultado se decide de verdad. El marcador se guarda en el móvil, así que podéis retomar la serie cualquier otro día.',

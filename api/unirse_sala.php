@@ -162,7 +162,7 @@ try {
     $estado['jugadores'][1] = [
         'id'            => $jugadorIdJ2,
         'nombre'        => $nombreJ2 !== '' ? $nombreJ2 : 'Jugador 2',
-            'dinero'        => (int) ($estado['dinero_inicial'] ?? DINERO_INICIAL),
+            'dinero'        => DINERO_INICIAL,
         'items_ganados' => [],
     ];
     $estado['estado']         = 'jugando';

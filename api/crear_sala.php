@@ -343,6 +343,103 @@ if (!function_exists('escribir_sala_bloqueado')) {
 }
 
 // ============================================================================
+//  Creación de sala (reutilizable por partida_rapida.php)
+// ============================================================================
+
+if (!function_exists('crear_sala_nueva')) {
+    /**
+     * Crea una sala nueva con reparto equilibrado de ítems.
+     *
+     * @param array{rapida?:bool} $opciones
+     * @return array{ok:bool,codigo:string,jugador_id:string}
+     * @throws InvalidArgumentException|RuntimeException
+     */
+    function crear_sala_nueva(string $tematicaId, string $nombreJ1, array $opciones = []): array
+    {
+        // Cupo global: si hay demasiadas salas activas, mejor rechazar que saturar.
+        // En local (tests/desarrollo) no aplica, igual que el rate limit.
+        $salasActivas = count((array) @glob(SALAS_DIR . '*.json'));
+        if (!rl_es_local() && $salasActivas >= MAX_SALAS_ACTIVAS) {
+            throw new RuntimeException('El servicio está saturado. Inténtalo en unos minutos.');
+        }
+
+        $tematica = cargar_tematica($tematicaId);
+
+        // Selección equilibrada por tiers (8 = 4 por persona): sorteo ponderado con
+        // castigo por repetición y límites duros → evita partidas cargadas de malos.
+        // Guardamos SOLO los IDs en la sala → agnóstico de idioma (i18n).
+        $itemsPool      = seleccionar_items_balanceados($tematica['items'], ITEMS_POR_PARTIDA);
+        $itemsMezclados = array_map(
+            static fn(array $it): string => (string) $it['id'],
+            $itemsPool
+        );
+
+        $primerItem = $itemsPool[0];
+        $codigo     = generar_codigo_unico(5);
+        $jugadorId  = 'j1_' . uuid_v4();
+        $ahora      = time();
+
+        $estado = [
+            'codigo'              => $codigo,
+            'estado'              => 'esperando',     // esperando | jugando | finalizada
+            'tematica'            => $tematica['id'],
+            'items_mezclados'     => $itemsMezclados, // 8 IDs con reparto equilibrado por tiers (no nombres)
+            'indice_item'         => 0,
+            'item_actual'         => [
+                'id'            => $primerItem['id'],
+                'emoji'         => $primerItem['emoji'],
+                'precio_actual' => 0,          // precio base de salida de cada puja
+                'turno_de'      => 0,          // 0 = J1, 1 = J2
+                'ultimo_pujo'   => null,       // índice del último jugador que pujó (null al inicio)
+                'auto_asignado' => false,      // true cuando se asigna sin puja (rival ya completó cap)
+                'pujas'         => [],         // historial de pujas del ítem: {por, incremento, precio, ts}
+            ],
+            'jugadores' => [
+                [
+                    'id'             => $jugadorId,
+                    'nombre'         => $nombreJ1 !== '' ? $nombreJ1 : 'Jugador 1',
+                    'dinero'         => DINERO_INICIAL,
+                    'items_ganados'  => [],      // se rellena en api/accion.php con {id, emoji}
+                ],
+                // Slot J2: lo rellena api/unirse_sala.php (Fase 2).
+                [
+                    'id'             => null,
+                    'nombre'         => 'Jugador 2',
+                    'dinero'         => DINERO_INICIAL,
+                    'items_ganados'  => [],
+                ],
+            ],
+            'turno_inicial_ronda' => 0, // J1 empieza la primera ronda
+            'ronda'               => 1,
+            'asignacion_forzada_a' => null, // 0 | 1 cuando un jugador llega al cap; el otro recibe el resto
+            'decision_pendiente'   => null, // {para, sobre, motivo} cuando un jugador sin dinero cede el ítem al rival
+            'last_seen'            => [null, null], // UNIX ts por slot; el que tenga last_seen[other] > ABANDON_TIMEOUT_S se da por abandonado
+            'abandono_por'         => null, // 0 | 1 cuando un jugador abandona (explícito o por timeout)
+            'revancha'             => null, // {por, codigo_nuevo, tematica, ts} cuando alguien propone revancha al acabar
+            'emotes'               => [],   // últimos emotes: {por, code, ts} (máx EMOTES_MAX)
+            'bot_slot'             => null, // 0 | 1 si ese slot es un bot local (no pollea: sin abandono ni aviso)
+            'mostrar_valores'      => !empty($opciones['mostrar_valores']), // true = mostrar ⭐ durante la partida
+            'rapida'               => !empty($opciones['rapida']),          // true = sala de partida rápida
+            'creado_en'           => $ahora,
+            'actualizado_en'      => $ahora,
+        ];
+
+        escribir_sala_bloqueado($codigo, $estado);
+
+        // GC oportunista: limpia salas con > 1h sin actividad (nunca bloquea).
+        try { limpiar_salas_antiguas(); } catch (Throwable $e) { /* best-effort */ }
+
+        return ['ok' => true, 'codigo' => $codigo, 'jugador_id' => $jugadorId];
+    }
+}
+
+// Permite reutilizar helpers y crear_sala_nueva() desde partida_rapida.php
+// sin ejecutar la validación ni la lógica de este endpoint.
+if (defined('SALA_CORE_ONLY') && SALA_CORE_ONLY) {
+    return;
+}
+
+// ============================================================================
 //  Validación de entrada
 // ============================================================================
 
@@ -358,9 +455,6 @@ $tematicaId = isset($input['tematica']) ? (string) $input['tematica'] : '';
 $nombreJ1   = isset($input['nombre'])   ? trim((string) $input['nombre']) : '';
 // Modo "⭐ Valores visibles": se comparte con toda la sala (lo fija quien crea).
 $mostrarValores = !empty($input['mostrar_valores']);
-// Presupuesto por partida (10/20/30 monedas) y temática oculta hasta el final.
-$dineroInicial  = isset($input['dinero_inicial']) ? (int) $input['dinero_inicial'] : DINERO_INICIAL;
-$ocultarTematica = !empty($input['ocultar_tematica']);
 
 if ($tematicaId === '') {
     responder(['ok' => false, 'error' => 'Falta el campo "tematica".'], 400);
@@ -368,94 +462,14 @@ if ($tematicaId === '') {
 if (mb_strlen($nombreJ1, 'UTF-8') > 20) {
     responder(['ok' => false, 'error' => 'Nombre demasiado largo (máx 20 caracteres).'], 400);
 }
-if (!in_array($dineroInicial, [10, 20, 30], true)) {
-    responder(['ok' => false, 'error' => 'Presupuesto inválido (usa 10, 20 o 30).'], 400);
-}
 
 // ============================================================================
 //  Lógica: crear sala
 // ============================================================================
 
 try {
-    // Cupo global: si hay demasiadas salas activas, mejor rechazar que saturar.
-    // En local (tests/desarrollo) no aplica, igual que el rate limit.
-    $salasActivas = count((array) @glob(SALAS_DIR . '*.json'));
-    if (!rl_es_local() && $salasActivas >= MAX_SALAS_ACTIVAS) {
-        responder(['ok' => false, 'error' => 'El servicio está saturado. Inténtalo en unos minutos.'], 503);
-    }
-
-    $tematica = cargar_tematica($tematicaId);
-
-    // Selección equilibrada por tiers (8 = 4 por persona): sorteo ponderado con
-    // castigo por repetición y límites duros → evita partidas cargadas de malos.
-    // Guardamos SOLO los IDs en la sala → agnóstico de idioma (i18n).
-    $itemsPool      = seleccionar_items_balanceados($tematica['items'], ITEMS_POR_PARTIDA);
-    $itemsMezclados = array_map(
-        static fn(array $it): string => (string) $it['id'],
-        $itemsPool
-    );
-
-    $primerItem = $itemsPool[0];
-    $codigo     = generar_codigo_unico(5);
-    $jugadorId  = 'j1_' . uuid_v4();
-    $ahora      = time();
-
-    $estado = [
-        'codigo'              => $codigo,
-        'estado'              => 'esperando',     // esperando | jugando | finalizada
-        'tematica'            => $tematica['id'],
-        'items_mezclados'     => $itemsMezclados, // 8 IDs con reparto equilibrado por tiers (no nombres)
-        'indice_item'         => 0,
-        'item_actual'         => [
-            'id'            => $primerItem['id'],
-            'emoji'         => $primerItem['emoji'],
-            'precio_actual' => 0,          // precio base de salida de cada puja
-            'turno_de'      => 0,          // 0 = J1, 1 = J2
-            'ultimo_pujo'   => null,       // índice del último jugador que pujó (null al inicio)
-            'auto_asignado' => false,      // true cuando se asigna sin puja (rival ya completó cap)
-            'pujas'         => [],         // historial de pujas del ítem: {por, incremento, precio, ts}
-        ],
-        'jugadores' => [
-            [
-                'id'             => $jugadorId,
-                'nombre'         => $nombreJ1 !== '' ? $nombreJ1 : 'Jugador 1',
-                'dinero'         => $dineroInicial,
-                'items_ganados'  => [],      // se rellena en api/accion.php con {id, emoji}
-            ],
-            // Slot J2: lo rellena api/unirse_sala.php (Fase 2).
-            [
-                'id'             => null,
-                'nombre'         => 'Jugador 2',
-                'dinero'         => $dineroInicial,
-                'items_ganados'  => [],
-            ],
-        ],
-        'turno_inicial_ronda' => 0, // J1 empieza la primera ronda
-        'ronda'               => 1,
-        'asignacion_forzada_a' => null, // 0 | 1 cuando un jugador llega al cap; el otro recibe el resto
-        'decision_pendiente'   => null, // {para, sobre, motivo} cuando un jugador sin dinero cede el ítem al rival
-        'last_seen'            => [null, null], // UNIX ts por slot; el que tenga last_seen[other] > ABANDON_TIMEOUT_S se da por abandonado
-        'abandono_por'         => null, // 0 | 1 cuando un jugador abandona (explícito o por timeout)
-        'revancha'             => null, // {por, codigo_nuevo, tematica, ts} cuando alguien propone revancha al acabar
-        'emotes'               => [],   // últimos emotes: {por, code, ts} (máx EMOTES_MAX)
-        'bot_slot'             => null, // 0 | 1 si ese slot es un bot local (no pollea: sin abandono ni aviso)
-        'mostrar_valores'      => $mostrarValores, // true = mostrar ⭐ de cada ítem durante la partida
-        'dinero_inicial'       => $dineroInicial,  // 10 | 20 | 30 monedas por jugador
-        'ocultar_tematica'     => $ocultarTematica, // true = la temática no se revela hasta el final
-        'creado_en'           => $ahora,
-        'actualizado_en'      => $ahora,
-    ];
-
-    escribir_sala_bloqueado($codigo, $estado);
-
-    // GC oportunista: limpia salas con > 1h sin actividad (nunca bloquea).
-    try { limpiar_salas_antiguas(); } catch (Throwable $e) { /* best-effort */ }
-
-    responder([
-        'ok'         => true,
-        'codigo'     => $codigo,
-        'jugador_id' => $jugadorId,
-    ], 200);
+    $res = crear_sala_nueva($tematicaId, $nombreJ1, ['mostrar_valores' => $mostrarValores]);
+    responder($res, 200);
 
 } catch (InvalidArgumentException $e) {
     responder(['ok' => false, 'error' => $e->getMessage()], 400);

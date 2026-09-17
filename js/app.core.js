@@ -33,8 +33,6 @@
         partidaGuardada: false,
         botDificultad: 'normal',
         mostrarValores: false,
-        dineroInicial: 20,
-        ocultarTematica: false,
         statsRegistradas: false,
         finalRegistrada: false,
         serieFinal: null,
@@ -428,55 +426,16 @@
 
         const selectorBox = el('div', { id: 'tematicaSelector', class: 'mb-4' });
 
-        // Ajustes de partida: presupuesto (10/20/30) y temática sorpresa.
-        // Persistidos en localStorage y compartidos por toda la sala.
-        try {
-            const dg = localStorage.getItem('draft20_dinero');
-            if (dg && ['10', '20', '30'].indexOf(dg) !== -1) state.dineroInicial = parseInt(dg, 10);
-            if (localStorage.getItem('draft20_sorpresa') === '1') state.ocultarTematica = true;
-        } catch (e) { /* ignore */ }
-        const dineroValores = [10, 20, 30];
-        const dineroBtns = [];
-        const dineroWrap = el('div', { class: 'flex gap-2 justify-center mt-2' });
-        function pintarDinero() {
-            dineroBtns.forEach(function (b, i) {
-                const activo = state.dineroInicial === dineroValores[i];
-                b.className = 'px-3 py-1.5 rounded-full text-xs border btn-tap ' +
-                    (activo ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
-            });
-        }
-        dineroValores.forEach(function (v) {
-            const b = el('button', {
-                type: 'button',
-                onclick: function () {
-                    state.dineroInicial = v;
-                    try { localStorage.setItem('draft20_dinero', String(v)); } catch (e) { /* ignore */ }
-                    pintarDinero();
-                },
-            }, v + ' 🪙');
-            dineroBtns.push(b);
-            dineroWrap.appendChild(b);
-        });
-        pintarDinero();
-        const sorpresaBtn = el('button', {
-            type: 'button',
-            onclick: function () {
-                state.ocultarTematica = !state.ocultarTematica;
-                try { localStorage.setItem('draft20_sorpresa', state.ocultarTematica ? '1' : '0'); } catch (e) { /* ignore */ }
-                pintarSorpresa();
-            },
-        }, t('ui.lobby.tematica_sorpresa'));
-        function pintarSorpresa() {
-            sorpresaBtn.className = 'px-4 py-2 rounded-full text-xs border btn-tap ' +
-                (state.ocultarTematica ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
-            sorpresaBtn.setAttribute('aria-pressed', state.ocultarTematica ? 'true' : 'false');
-        }
-        pintarSorpresa();
-        const ajustesBox = el('div', { class: 'text-center mb-4' }, [
-            el('div', { class: 'text-[11px] text-slate-500 mb-1' }, t('ui.lobby.presupuesto')),
-            dineroWrap,
-            el('div', { class: 'mt-3' }, [sorpresaBtn]),
-            el('div', { class: 'text-[11px] text-slate-500 mt-2' }, t('ui.lobby.tematica_sorpresa_ayuda')),
+        let nombrePrevio = '';
+        try { nombrePrevio = localStorage.getItem('draft20_nombre') || ''; } catch (e) { /* ignore */ }
+
+        // Partida rápida: temática aleatoria y emparejamiento con el primero que
+        // también la pulse (sin compartir código). Va antes de Crear Sala.
+        const rapidaForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
+            el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
+            el('input', { id: 'nameRapida', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
+            el('button', { id: 'btnRapida', class: 'w-full bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-lg' }, '⚡ ' + t('ui.lobby.btn_rapida')),
+            el('p', { class: 'text-[11px] text-slate-500 mt-2 text-center' }, t('ui.lobby.rapida_ayuda')),
         ]);
 
         // Modo "⭐ Valores visibles" (persistido; se comparte con la sala).
@@ -496,25 +455,27 @@
                 },
             }, t('ui.lobby.mostrar_valores'));
             function pintar() {
-                btn.className = 'px-4 py-2 rounded-full text-xs border btn-tap ' +
-                    (state.mostrarValores ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
+                btn.className = 'w-full py-3 px-4 rounded-lg border text-sm font-bold btn-tap ' +
+                    (state.mostrarValores ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-slate-700 text-slate-200 border-slate-600');
                 btn.setAttribute('aria-pressed', state.mostrarValores ? 'true' : 'false');
             }
             mvPintores.push(pintar);
             pintar();
             return el('div', { class: claseWrapper }, [
                 btn,
-                el('div', { class: 'text-[11px] text-slate-500 mt-2' }, t('ui.lobby.mostrar_valores_ayuda')),
+                el('div', { class: 'text-[11px] text-slate-500 mt-2 text-center' }, t('ui.lobby.mostrar_valores_ayuda')),
             ]);
         }
+
+        // Selector de dificultad del bot (movido al ámbito del módulo para que
+        // lo use también la reserva de partida rápida): ver crearSelectorDificultad.
 
         const createForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
             el('label', { class: 'block text-sm text-slate-400 mb-2' }, t('ui.lobby.selector_tematica')),
             selectorBox,
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
-            el('input', { id: 'nameCreate', type: 'text', maxlength: '20', placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
-            ajustesBox,
-            crearToggleValores('text-center mb-4'),
+            el('input', { id: 'nameCreate', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
+            crearToggleValores('mb-4'),
             el('button', { id: 'btnCreate', class: 'w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_crear')),
         ]);
 
@@ -522,7 +483,7 @@
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.label_unirse')),
             el('input', { id: 'codeJoin', type: 'text', maxlength: '5', minlength: '5', placeholder: t('ui.lobby.placeholder_codigo'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base uppercase tracking-widest text-center text-2xl font-mono' }),
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
-            el('input', { id: 'nameJoin', type: 'text', maxlength: '20', placeholder: 'Jugador 2', class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
+            el('input', { id: 'nameJoin', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: 'Jugador 2', class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
             el('button', { id: 'btnJoin', class: 'w-full bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_unirse')),
         ]);
 
@@ -533,36 +494,11 @@
             const difGuardada = localStorage.getItem('draft20_bot_dificultad');
             if (difGuardada) state.botDificultad = difGuardada;
         } catch (e) { /* ignore */ }
-        const difOpciones = [['facil', 'ui.lobby.bot_facil'], ['normal', 'ui.lobby.bot_normal'], ['dificil', 'ui.lobby.bot_dificil'], ['extremo', 'ui.lobby.bot_extremo']];
-        const difBtns = [];
-        const difWrap = el('div', { class: 'flex flex-wrap gap-2 justify-center mt-2' });
-        function pintarDificultad() {
-            difBtns.forEach(function (b, i) {
-                const activo = state.botDificultad === difOpciones[i][0];
-                b.className = 'px-3 py-1.5 rounded-full text-xs border btn-tap ' +
-                    (activo ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
-            });
-        }
-        difOpciones.forEach(function (d) {
-            const b = el('button', {
-                type: 'button',
-                onclick: function () {
-                    state.botDificultad = d[0];
-                    try { localStorage.setItem('draft20_bot_dificultad', d[0]); } catch (e) { /* ignore */ }
-                    pintarDificultad();
-                },
-            }, t(d[1]));
-            difBtns.push(b);
-            difWrap.appendChild(b);
-        });
-        pintarDificultad();
-
-        // Modo "⭐ Valores visibles": los toggles ya se crean en las tarjetas.
 
         const practiceCard = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
             el('label', { class: 'block text-sm text-slate-400 mb-2 text-center' }, t('ui.lobby.bot_dificultad')),
-            difWrap,
-            crearToggleValores('text-center mt-4'),
+            crearSelectorDificultad('mt-2'),
+            crearToggleValores('mt-4'),
             el('button', {
                 id: 'btnPractice',
                 class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm mt-4',
@@ -571,6 +507,8 @@
         ]);
 
         app.appendChild(errorBox);
+        app.appendChild(rapidaForm);
+        app.appendChild(el('div', { class: 'text-center text-slate-500 text-xs my-2' }, '— o —'));
         app.appendChild(createForm);
         app.appendChild(el('div', { class: 'text-center text-slate-500 text-xs my-2' }, '— o —'));
         app.appendChild(joinForm);
@@ -579,6 +517,7 @@
 
         $('#btnCreate').addEventListener('click', onCreate);
         $('#btnJoin').addEventListener('click', onJoin);
+        $('#btnRapida').addEventListener('click', onPartidaRapida);
 
         renderTematicaSelector(selectorBox, { ctx: state });
 
@@ -589,6 +528,35 @@
     }
 
     const TEMATICA_RANDOM = '__random__';
+    const DIF_OPCIONES = [['facil', 'ui.lobby.bot_facil'], ['normal', 'ui.lobby.bot_normal'], ['dificil', 'ui.lobby.bot_dificil'], ['extremo', 'ui.lobby.bot_extremo']];
+
+    /** Selector de dificultad del bot (píldoras), reutilizado por el bloque de
+     *  práctica y por la reserva de "Partida rápida". */
+    function crearSelectorDificultad(claseWrapper) {
+        const wrap = el('div', { class: 'flex flex-wrap gap-2 justify-center ' + (claseWrapper || '') });
+        const btns = [];
+        function pintar() {
+            btns.forEach(function (b, i) {
+                const activo = state.botDificultad === DIF_OPCIONES[i][0];
+                b.className = 'px-3 py-1.5 rounded-full text-xs border btn-tap ' +
+                    (activo ? 'bg-amber-400 text-slate-900 border-amber-400 font-bold' : 'bg-slate-700 text-slate-200 border-slate-600');
+            });
+        }
+        DIF_OPCIONES.forEach(function (d) {
+            const b = el('button', {
+                type: 'button',
+                onclick: function () {
+                    state.botDificultad = d[0];
+                    try { localStorage.setItem('draft20_bot_dificultad', d[0]); } catch (e) { /* ignore */ }
+                    pintar();
+                },
+            }, t(d[1]));
+            btns.push(b);
+            wrap.appendChild(b);
+        });
+        pintar();
+        return wrap;
+    }
 
     /**
      * Selector de temática: desplegable nativo con todas las temáticas
@@ -661,8 +629,6 @@
             tematica: tematica,
             nombre: nombre,
             mostrar_valores: !!state.mostrarValores,
-            dinero_inicial: state.dineroInicial || 20,
-            ocultar_tematica: !!state.ocultarTematica,
         });
         btn.disabled = false; btn.classList.remove('opacity-50');
         if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
@@ -687,8 +653,6 @@
             tematica: tematica,
             nombre: nombreFinal,
             mostrar_valores: mv,
-            dinero_inicial: state.dineroInicial || 20,
-            ocultar_tematica: !!state.ocultarTematica,
         });
         if (!r.ok) { toast(r.error || 'Error'); return false; }
         const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: 'Bot', bot: true });
@@ -740,9 +704,7 @@
         const app = $('#app');
         clear(app);
         app.appendChild(el('header', { class: 'px-6 pt-2 pb-0 text-center' }, [
-            el('p', { class: 'text-slate-400 text-sm' }, state.ocultarTematica
-                ? t('ui.lobby.tematica_sorpresa')
-                : tTematica(state.sala?.tematica || state.tematicaCreada || '')),
+            el('p', { class: 'text-slate-400 text-sm' }, tTematica(state.sala?.tematica || state.tematicaCreada || '')),
         ]));
 
         app.appendChild(el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 text-center fade-in' }, [
@@ -763,13 +725,103 @@
 
     async function pollLobbyTick() {
         if (!state.codigo) return;
-        const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(state.codigo) + '&t=' + Date.now());
+        const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(state.codigo)
+            + (state.jugadorId ? '&jugador_id=' + encodeURIComponent(state.jugadorId) : '')
+            + '&t=' + Date.now());
         if (!r.ok) return;
         state.sala = r.sala;
         if (r.sala.estado === 'jugando' || r.sala.estado === 'finalizada') {
             stopPollingLobby();
             window.location.href = 'juego.php?codigo=' + encodeURIComponent(state.codigo);
         }
+    }
+
+    // =================== PARTIDA RÁPIDA ===================
+
+    async function onPartidaRapida() {
+        const nombre = ($('#nameRapida') && $('#nameRapida').value.trim()) || '';
+        guardarNombre(nombre);
+        const btn = $('#btnRapida');
+        if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
+        const r = await api('POST', 'api/partida_rapida.php', { nombre: nombre });
+        if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+        if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
+
+        state.codigo = r.codigo;
+        state.jugadorId = r.jugador_id;
+        state.jugadorNombre = nombre || (r.rol === 'creador' ? 'Jugador 1' : 'Jugador 2');
+        state.tematicaCreada = null;
+        saveSession();
+
+        if (r.rol === 'rival') {
+            window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
+            return;
+        }
+        renderBuscandoView();
+        startPollingLobby();
+    }
+
+    /** Pantalla de espera del matchmaking, con reserva de bot a los 20 s. */
+    function renderBuscandoView() {
+        const app = $('#app');
+        clear(app);
+        app.appendChild(el('header', { class: 'px-6 pt-2 pb-0 text-center' }, [
+            el('p', { class: 'text-slate-300 text-sm font-bold' }, t('ui.lobby.buscando_rival')),
+        ]));
+        app.appendChild(el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 text-center fade-in' }, [
+            el('div', { class: 'inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-600 border-t-amber-400 mb-3' }),
+            el('p', { class: 'text-slate-300 text-sm' }, t('ui.lobby.buscando_rival_sub')),
+            el('div', { class: 'text-3xl font-mono font-bold text-amber-400 tracking-widest my-4' }, state.codigo || ''),
+            el('div', { class: 'flex gap-2' }, [
+                el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
+                el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+                el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
+            ]),
+        ]));
+
+        const botBox = el('section', { id: 'botReserva', class: 'hidden bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
+            el('p', { class: 'text-sm text-slate-300 text-center mb-3' }, t('ui.lobby.bot_reserva')),
+            crearSelectorDificultad('mb-4'),
+            el('button', {
+                id: 'btnBotReserva',
+                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+                onclick: jugarBotDesdeBusqueda,
+            }, '🤖 ' + t('ui.lobby.btn_practicar')),
+        ]);
+        app.appendChild(botBox);
+        setTimeout(function () {
+            const box = document.getElementById('botReserva');
+            if (box && state.codigo) box.classList.remove('hidden');
+        }, 20000);
+
+        app.appendChild(el('div', { class: 'text-center m-4' }, [
+            el('button', { class: 'text-slate-400 text-sm btn-tap', onclick: cancelarBusqueda }, t('ui.lobby.btn_cancelar')),
+        ]));
+    }
+
+    async function cancelarBusqueda() {
+        if (state.codigo) {
+            await api('POST', 'api/partida_rapida.php', { accion: 'cancelar', codigo: state.codigo, jugador_id: state.jugadorId });
+            clearSession(state.codigo);
+        }
+        stopPollingLobby();
+        state.codigo = null;
+        state.jugadorId = null;
+        renderInitialView();
+    }
+
+    /** Deja la cola y arranca una partida de práctica con la temática de la sala. */
+    async function jugarBotDesdeBusqueda() {
+        if (!state.codigo) return;
+        const tematica = (state.sala && state.sala.tematica) ? state.sala.tematica : TEMATICA_RANDOM;
+        const nombre = state.jugadorNombre || 'Tú';
+        const btn = $('#btnBotReserva');
+        if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
+        await api('POST', 'api/partida_rapida.php', { accion: 'cancelar', codigo: state.codigo, jugador_id: state.jugadorId });
+        stopPollingLobby();
+        clearSession(state.codigo);
+        state.codigo = null;
+        await iniciarPartidaBot(tematica, state.botDificultad || 'normal', nombre);
     }
 
     function startPollingLobby() {

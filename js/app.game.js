@@ -484,12 +484,8 @@
 
         // Header: temática en curso
         const ht = document.getElementById('headerTematica');
-        if (ht) {
-            if (s.tematica) {
-                ht.textContent = tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica);
-            } else if (s.tematica_oculta) {
-                ht.textContent = t('ui.lobby.tematica_sorpresa');
-            }
+        if (ht && s.tematica) {
+            ht.textContent = tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica);
         }
 
         // Scoreboard
@@ -1213,7 +1209,7 @@
         card.appendChild(resultBlock);
         renderSerieYLogros(resultado, myItems, rivalItems, mySpent).forEach(function (b) { card.appendChild(b); });
         card.appendChild(el('p', { class: 'text-center text-xs text-slate-400 mb-4' },
-            t('ui.juego.tematica_label') + ': ' + (s.tematica ? (tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica)) : t('ui.lobby.tematica_sorpresa'))));
+            t('ui.juego.tematica_label') + ': ' + (s.tematica ? (tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica)) : '—')));
         card.appendChild(lists);
         card.appendChild(statsLine);
         card.appendChild(exitBtn);
@@ -1264,12 +1260,9 @@
     async function proponerRevancha(tematica, closeModal) {
         const cerrar = function () { if (typeof closeModal === 'function') closeModal(); };
 
-        // Contra bot: nueva partida inmediata con el mismo bot y dificultad,
-        // manteniendo presupuesto y modo sorpresa de la sala.
+        // Contra bot: nueva partida inmediata con el mismo bot y dificultad.
         if (state.bot) {
             const dificultad = state.bot.dificultad || 'normal';
-            state.dineroInicial = (state.sala && state.sala.dinero_inicial) || state.dineroInicial || 20;
-            state.ocultarTematica = !!(state.sala && state.sala.ocultar_tematica);
             const ok = await iniciarPartidaBot(tematica, dificultad, state.jugadorNombre, !!(state.sala && state.sala.mostrar_valores));
             if (ok) cerrar();
             return;
@@ -1282,8 +1275,6 @@
             tematica: tematica,
             nombre: nombre,
             mostrar_valores: !!(state.sala && state.sala.mostrar_valores),
-            dinero_inicial: (state.sala && state.sala.dinero_inicial) || 20,
-            ocultar_tematica: !!(state.sala && state.sala.ocultar_tematica),
         });
         if (!r.ok) { toast(r.error || 'Error'); return; }
         const r2 = await api('POST', 'api/revancha.php', {

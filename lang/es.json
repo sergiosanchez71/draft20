@@ -34,9 +34,12 @@
             "continuar": "Continuar",
             "btn_qr": "Ver QR",
             "qr_titulo": "Escanea para unirse",
-            "presupuesto": "Monedas por jugador",
-            "tematica_sorpresa": "🎁 Temática sorpresa",
-            "tematica_sorpresa_ayuda": "La temática no se revela hasta el final"
+            "btn_rapida": "Partida rápida",
+            "rapida_ayuda": "Te emparejamos con el primero que pulse Partida rápida",
+            "buscando_rival": "Buscando rival…",
+            "buscando_rival_sub": "En cuanto alguien pulse Partida rápida, empezaréis a jugar",
+            "btn_cancelar": "Cancelar búsqueda",
+            "bot_reserva": "Nadie ha entrado todavía. Puedes practicar contra el bot mientras esperas:"
         },
         "juego": {
             "tu_turno": "¡Tu turno!",
