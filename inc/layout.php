@@ -133,6 +133,7 @@ function nav_links(): array
     return [
         ['href' => '/como-jugar', 'texto' => 'Cómo se juega'],
         ['href' => '/guias', 'texto' => 'Guías'],
+        ['href' => '/glosario', 'texto' => 'Glosario'],
         ['href' => '/acerca', 'texto' => 'Acerca de'],
         ['href' => '/contacto', 'texto' => 'Contacto'],
         ['href' => '/privacidad', 'texto' => 'Privacidad'],

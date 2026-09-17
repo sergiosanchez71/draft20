@@ -12,7 +12,9 @@ function contenido_seo(): array
     static $data = null;
     if ($data === null) {
         $tematicas = (require __DIR__ . '/contenido_tematicas_1.php') + (require __DIR__ . '/contenido_tematicas_2.php');
-        $guias = (require __DIR__ . '/contenido_guias_1.php') + (require __DIR__ . '/contenido_guias_2.php');
+        $guias = (require __DIR__ . '/contenido_guias_1.php')
+            + (require __DIR__ . '/contenido_guias_2.php')
+            + (require __DIR__ . '/contenido_guias_3.php');
         $data = [
             'ui' => [
                 'guias_titulo' => 'Guías de Draft 20',
@@ -38,6 +40,9 @@ function contenido_seo(): array
                 'juegos-por-whatsapp',
                 'juegos-de-subasta-online',
                 'draft-20-vs-you-have-20',
+                'juegos-navidad-familia',
+                'juegos-verano',
+                'juegos-san-valentin',
             ],
         ];
     }
