@@ -11,6 +11,9 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
+const ADSENSE_SLOT_JUEGO = '6658157047';
+const ADSENSE_SLOT_FINAL = '4631951476';
+const ADSENSE_SLOT_LOBBY = '1410891766';
 
 function e(?string $s): string
 {

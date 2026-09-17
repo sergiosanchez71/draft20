@@ -260,6 +260,13 @@ try {
     check(strpos($hcsp, 'pagead2.googlesyndication.com') !== false, 'CSP: dominios de AdSense permitidos');
     $rAds = http_req('GET', $base . '/ads.txt');
     check($rAds['code'] === 200 && strpos((string) $rAds['raw'], 'pub-9504493922636861') !== false, 'ads.txt servido con el publisher');
+    check(strpos((string) $rSeoHome['raw'], 'data-ad-slot="1410891766"') !== false, 'home: bloque manual del lobby');
+    $rJuegoAds = http_req('GET', $base . '/juego.php?codigo=ABC12');
+    check($rJuegoAds['code'] === 200, 'juego: shell servido (200)');
+    check(strpos((string) $rJuegoAds['raw'], 'adsbygoogle.js?client=ca-pub-9504493922636861') !== false, 'juego: loader de AdSense');
+    check(strpos((string) $rJuegoAds['raw'], '"banner":"6658157047"') !== false
+        && strpos((string) $rJuegoAds['raw'], '"final":"4631951476"') !== false,
+        'juego: slots banner/final en window.__ADS');
     $rSitemap = http_req('GET', $base . '/sitemap.php');
     $mSitemap = [];
     check($rSitemap['code'] === 200

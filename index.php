@@ -88,6 +88,14 @@ pagina_head([
         <main class="flex-1 flex flex-col">
             <div id="app" class="flex flex-col"><?= lobby_inicial_html($tematicaPre) ?></div>
 
+            <?php if (ADSENSE_SLOT_LOBBY !== ''): ?>
+            <section class="max-w-5xl mx-auto w-full px-4 mt-10">
+                <div class="ad-slot ad-lobby">
+                    <ins class="adsbygoogle" style="display:inline-block;width:320px;height:100px" data-ad-client="<?= e(ADSENSE_CLIENT) ?>" data-ad-slot="<?= e(ADSENSE_SLOT_LOBBY) ?>"></ins>
+                </div>
+            </section>
+            <?php endif; ?>
+
             <section class="max-w-3xl mx-auto w-full px-4 mt-10">
                 <details class="acordeon bg-slate-800 border border-slate-700 rounded-lg">
                     <summary class="flex items-center justify-between gap-2 px-4 py-3 cursor-pointer font-bold text-xl text-slate-100">
@@ -203,6 +211,10 @@ $inline = '(function () {'
     . ' navigator.serviceWorker.register("/sw.js?v=' . (is_file(__DIR__ . '/sw.js') ? filemtime(__DIR__ . '/sw.js') : '1') . '").catch(function () {});'
     . ' }); }'
     . '})();';
+
+if (ADSENSE_SLOT_LOBBY !== '') {
+    $inline .= '(window.adsbygoogle = window.adsbygoogle || []).push({});';
+}
 
 pagina_foot([
     'inline_first' => $inlineFirst,

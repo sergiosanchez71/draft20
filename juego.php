@@ -37,6 +37,10 @@ csp_headers();
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<?php if (ADSENSE_CLIENT !== '' && (ADSENSE_SLOT_JUEGO !== '' || ADSENSE_SLOT_FINAL !== '')): ?>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?= e(ADSENSE_CLIENT) ?>" crossorigin="anonymous"></script>
+    <script nonce="<?= e(csp_nonce()) ?>">window.__ADS = <?= json_encode(['client' => ADSENSE_CLIENT, 'banner' => ADSENSE_SLOT_JUEGO, 'final' => ADSENSE_SLOT_FINAL], JSON_UNESCAPED_SLASHES) ?>;</script>
+<?php endif; ?>
     <?= tailwind_tag() ?><link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
     <script nonce="<?= e(csp_nonce()) ?>">window.LANG = <?= json_encode($LANG, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
     <script nonce="<?= e(csp_nonce()) ?>">window.__CATEGORIAS = <?= json_encode($categorias, JSON_UNESCAPED_UNICODE) ?>;</script>

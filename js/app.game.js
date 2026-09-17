@@ -36,6 +36,25 @@
     let ultimoItemAvisado = false;
     let tematicaAvisada = false;
 
+    // =================== ANUNCIOS (bloques manuales) ===================
+    /** Contenedor de un bloque manual de AdSense; null si no hay slot configurado. */
+    function crearAd(clave, clase, ancho, alto) {
+        const cfg = window.__ADS;
+        if (!cfg || !cfg.client || !cfg[clave]) return null;
+        const ins = el('ins', {
+            class: 'adsbygoogle',
+            style: 'display:inline-block;width:' + ancho + 'px;height:' + alto + 'px',
+            'data-ad-client': cfg.client,
+            'data-ad-slot': cfg[clave],
+        });
+        return el('div', { class: 'ad-slot ' + clase }, [ins]);
+    }
+
+    /** Encola el bloque recién insertado (el loader async procesa la cola al llegar). */
+    function pedirAd() {
+        try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { /* sin ads */ }
+    }
+
     // =================== JUEGO ===================
     async function juegoInit(codigo) {
         if (!codigo || !/^[A-Z0-9]{5}$/.test(codigo)) {
@@ -163,11 +182,14 @@
 
         app.appendChild(header);
         app.appendChild(offlineBanner);
+        const adJuego = crearAd('banner', 'ad-juego', 320, 50);
+        if (adJuego) app.appendChild(adJuego);
         app.appendChild(scoreboard);
         app.appendChild(itemCard);
         app.appendChild(inventory);
         app.appendChild(emoteBar);
         app.appendChild(actionBar);
+        if (adJuego) pedirAd();
     }
 
     function setOfflineBanner(show) {
@@ -697,6 +719,10 @@
 
         // Scoreboard
         renderScoreboard();
+
+        // En final/abandono manda el rectángulo del resumen: se oculta el banner superior.
+        const adJ = document.querySelector('.ad-juego');
+        if (adJ) adJ.classList.toggle('hidden', s.estado === 'finalizada' || s.estado === 'abandonada');
 
         // Sala esperando (p.ej. revancha propuesta y aún sin aceptar).
         if (s.estado === 'esperando') {
@@ -1365,8 +1391,28 @@
     function renderFinalScreen() {
         const card = $('#itemCard');
         if (!card) return;
-        clear(card);
         card.classList.remove('pr-20', 'sm:pr-24');
+
+        // Estructura persistente: el anuncio vive en #adFinalHost y no se
+        // recrea en los repintados por revancha (sin peticiones repetidas).
+        let top = document.getElementById('finalTop');
+        let bottom = document.getElementById('finalBottom');
+        if (!top || !bottom || !document.getElementById('adFinalHost')) {
+            clear(card);
+            top = el('div', { id: 'finalTop' });
+            bottom = el('div', { id: 'finalBottom' });
+            const host = el('div', { id: 'adFinalHost' });
+            const adFinal = crearAd('final', 'ad-final', 300, 250);
+            if (adFinal) host.appendChild(adFinal);
+            card.appendChild(top);
+            card.appendChild(host);
+            card.appendChild(bottom);
+            if (adFinal) pedirAd();
+        } else {
+            clear(top);
+            clear(bottom);
+        }
+
         const s = state.sala;
         const me = s.jugadores[state.jugadorSlot];
         const rival = s.jugadores[1 - state.jugadorSlot];
@@ -1455,21 +1501,21 @@
             el('button', { class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap', onclick: onLeave }, t('ui.juego.salir_lobby')),
         ]);
 
-        card.appendChild(header);
-        if (revanchaBanner) card.appendChild(revanchaBanner);
-        card.appendChild(resultBlock);
+        top.appendChild(header);
+        if (revanchaBanner) top.appendChild(revanchaBanner);
+        top.appendChild(resultBlock);
         if (state.guiado && state.bot) {
-            card.appendChild(el('div', { class: 'bg-slate-800 border border-amber-400/50 rounded-lg p-3 mb-4 text-sm text-amber-200 text-center' }, [
+            bottom.appendChild(el('div', { class: 'bg-slate-800 border border-amber-400/50 rounded-lg p-3 mb-4 text-sm text-amber-200 text-center' }, [
                 el('div', {}, '🎓 ' + t('ui.juego.guia_fin')),
                 el('a', { class: 'inline-block mt-2 text-xs text-amber-400 underline', href: 'como-jugar' }, t('ui.juego.guia_mas')),
             ]));
         }
-        renderSerieYLogros(resultado, myItems, rivalItems, mySpent).forEach(function (b) { card.appendChild(b); });
-        card.appendChild(el('p', { class: 'text-center text-xs text-slate-400 mb-4' },
+        renderSerieYLogros(resultado, myItems, rivalItems, mySpent).forEach(function (b) { bottom.appendChild(b); });
+        bottom.appendChild(el('p', { class: 'text-center text-xs text-slate-400 mb-4' },
             t('ui.juego.tematica_label') + ': ' + (s.tematica ? (tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica)) : '—')));
-        card.appendChild(lists);
-        card.appendChild(statsLine);
-        card.appendChild(exitBtn);
+        bottom.appendChild(lists);
+        bottom.appendChild(statsLine);
+        bottom.appendChild(exitBtn);
     }
 
     function renderEsperandoRival() {
