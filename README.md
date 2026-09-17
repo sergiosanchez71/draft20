@@ -43,6 +43,8 @@ npm run smoke     # E2E: crear → unirse → pujar → bajar → finalizar
 
 - `tools/test_catalogo.php`: 20 ítems por temática, tiers 6/7/7, ids únicos y con formato, `valor` 1-10, traducciones presentes y catálogo ↔ ficheros.
 - `tests/bot_policy.test.js`: decisiones de la política del bot + fuzz de 2000 estados (solo acciones legales y nunca `null` cuando le toca).
+- `tests/rate_limit.test.php`: ventana fija del limitador (permite hasta el máximo, corta, caduca, loopback exento y contadores por IP).
+- `tests/a11y.test.js`: axe-core (WCAG A/AA) sobre home, cómo jugar, glosario, ficha, categoría, guía y privacidad; falla con violaciones serious/critical.
 - `tools/smoke.php`: partida completa contra el servidor embebido de PHP, con cleanup de salas.
 
 CI lista en **`tools/ci.yml`** (GitHub Actions: `php -l` de todo el repo, los tres tests, `npm run build` y comprobación de que los minificados/CSS commiteados no divergen del fuente). Para activarla, copia el fichero a `.github/workflows/ci.yml` y haz push con un token que tenga el scope `workflow`.
