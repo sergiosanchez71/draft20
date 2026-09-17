@@ -1197,11 +1197,39 @@
         const nombre = state.jugadorNombre || 'Tú';
         const btn = $('#btnBotReserva');
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
-        await api('POST', 'api/partida_rapida.php', { accion: 'cancelar', codigo: state.codigo, jugador_id: state.jugadorId });
+        // La sala de la búsqueda NO se cancela ni se borra: si alguien entra
+        // mientras practicas, la partida del bot avisa y te lleva a la humana.
+        try {
+            localStorage.setItem('draft20_espera', JSON.stringify({
+                codigo: state.codigo,
+                jugadorId: state.jugadorId,
+                ts: Date.now(),
+            }));
+        } catch (e) { /* ignore */ }
         stopPollingLobby();
-        clearSession(state.codigo);
-        state.codigo = null;
         await iniciarPartidaBot(tematica, state.botDificultad || 'normal', nombre);
+    }
+
+    /**
+     * Cancela la búsqueda pendiente (si la hay) y limpia el registro. Pensado
+     * para salir de la práctica sin dejar salas huérfanas; con keepalive para
+     * que la petición sobreviva a la navegación.
+     */
+    function limpiarEspera() {
+        let esp = null;
+        try { esp = JSON.parse(localStorage.getItem('draft20_espera') || 'null'); } catch (e) { /* ignore */ }
+        try { localStorage.removeItem('draft20_espera'); } catch (e) { /* ignore */ }
+        if (!esp || !esp.codigo || !esp.jugadorId) return;
+        try { localStorage.removeItem('draft20_' + esp.codigo); } catch (e) { /* ignore */ }
+        try {
+            fetch('api/partida_rapida.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                keepalive: true,
+                body: JSON.stringify({ accion: 'cancelar', codigo: esp.codigo, jugador_id: esp.jugadorId }),
+            }).catch(function () { /* best-effort */ });
+        } catch (e) { /* ignore */ }
     }
 
     let lobbyVisibilidadLista = false;
@@ -1257,6 +1285,7 @@
         toggleSonido: toggleSonido,
         showRulesModal: showRulesModal,
         evento: evento,
+        limpiarEspera: limpiarEspera,
         iniciarPartidaBot: iniciarPartidaBot,
     };
 })();

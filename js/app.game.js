@@ -29,6 +29,7 @@
     const sfx = D.sfx, leerSerie = D.leerSerie, registrarHistorial = D.registrarHistorial, logroIcono = D.logroIcono;
     const showRulesModal = D.showRulesModal;
     const evento = D.evento;
+    const limpiarEspera = D.limpiarEspera;
 
     // El aviso del último ítem y el de la temática se muestran una sola vez
     // por partida (la carga de página va por partida).
@@ -66,6 +67,18 @@
                 state.guiado = true;
             }
         } catch (e) { /* ignore */ }
+
+        // ¿Búsqueda rápida pendiente? Mientras practicas se vigila esa sala
+        // para entrar en cuanto alguien se una.
+        state.esperaRival = null;
+        state.avisoUnion = false;
+        if (state.bot) {
+            try {
+                const esp = JSON.parse(localStorage.getItem('draft20_espera') || 'null');
+                if (esp && esp.codigo && esp.jugadorId) state.esperaRival = esp;
+            } catch (e) { /* ignore */ }
+            if (state.esperaRival) iniciarVigilanciaEspera();
+        }
 
         renderGameShell();
         await pollGameTick();
@@ -502,6 +515,104 @@
         if (!state.bot) {
             state.pollTimer = setInterval(pollGameTick, 5000);
         }
+    }
+
+    // =================== espera de partida rápida ===================
+    let vigiaEspera = null;
+
+    /** Mientras practicas con el bot, vigila tu sala de búsqueda rápida. */
+    function iniciarVigilanciaEspera() {
+        if (vigiaEspera) clearInterval(vigiaEspera);
+        vigiaEspera = setInterval(async function () {
+            const esp = state.esperaRival;
+            if (!esp || state.avisoUnion) return;
+            let r;
+            try {
+                r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(esp.codigo)
+                    + '&jugador_id=' + encodeURIComponent(esp.jugadorId) + '&t=' + Date.now());
+            } catch (e) { return; }
+            if (!r.ok) {
+                // Sala borrada o sin permiso: se deja de vigilar en silencio.
+                if (r._status === 404 || r._status === 403) {
+                    detenerVigilancia();
+                    olvidarEspera();
+                }
+                return;
+            }
+            const sl = r.sala;
+            if (!sl) return;
+            if (sl.estado === 'jugando') {
+                detenerVigilancia();
+                avisarUnion(sl);
+                return;
+            }
+            if (sl.estado === 'abandonada' || sl.estado === 'finalizada') {
+                detenerVigilancia();
+                olvidarEspera();
+            }
+        }, 2500);
+    }
+
+    function detenerVigilancia() {
+        if (vigiaEspera) { clearInterval(vigiaEspera); vigiaEspera = null; }
+    }
+
+    function olvidarEspera() {
+        state.esperaRival = null;
+        try { localStorage.removeItem('draft20_espera'); } catch (e) { /* ignore */ }
+    }
+
+    /** Aviso con cuenta atrás: alguien ha entrado en tu sala de búsqueda. */
+    function avisarUnion(salaHumana) {
+        state.avisoUnion = true;
+        const otros = (salaHumana.jugadores || []).filter(function (j, i) {
+            return i !== state.jugadorSlot && j && j.nombre;
+        });
+        const nombre = (otros[0] && otros[0].nombre) ? otros[0].nombre : t('ui.juego.alguien');
+        let seg = state.cuentaAtrasS || 5;
+        vibrate([120, 60, 120]);
+        sfx('turno');
+
+        const texto = el('div', { class: 'font-bold' }, '');
+        const pintar = function () {
+            texto.textContent = '🙋 ' + t('ui.juego.aviso_unido', { nombre: nombre, seg: seg });
+        };
+        pintar();
+        const aviso = el('div', { class: 'flex-shrink-0 bg-emerald-500 text-white text-xs text-center py-2 px-3 flex flex-col items-center gap-1' }, [
+            texto,
+            el('button', {
+                class: 'bg-slate-900/25 text-white font-bold py-1 px-3 rounded btn-tap text-[11px]',
+                onclick: function () { entrarPartidaHumana(); },
+            }, t('ui.juego.entrar_ya')),
+        ]);
+        const sb = $('#scoreboard');
+        if (sb && sb.parentNode) sb.parentNode.insertBefore(aviso, sb.nextSibling);
+
+        const timer = setInterval(function () {
+            seg--;
+            pintar();
+            if (seg <= 0) {
+                clearInterval(timer);
+                entrarPartidaHumana();
+            }
+        }, 1000);
+    }
+
+    /** Abandona la práctica y entra en la partida humana pendiente. */
+    function entrarPartidaHumana() {
+        const esp = state.esperaRival;
+        if (!esp) return;
+        olvidarEspera();
+        try {
+            fetch('api/accion.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                keepalive: true,
+                body: JSON.stringify({ codigo: state.codigo, jugador_id: state.jugadorId, accion: 'abandonar' }),
+            }).catch(function () { /* best-effort */ });
+        } catch (e) { /* ignore */ }
+        window.location.href = 'juego.php?codigo=' + encodeURIComponent(esp.codigo);
     }
 
     function identifySlots() {
@@ -1512,6 +1623,17 @@
         });
     }
 
+    /** Al salir: cancela la búsqueda pendiente (o conserva la sala si entró alguien). */
+    function limpiarEsperaPendiente() {
+        detenerVigilancia();
+        if (!state.esperaRival) return;
+        if (state.avisoUnion) {
+            olvidarEspera(); // la sala sigue viva: se puede volver desde el lobby
+        } else {
+            limpiarEspera(); // nadie entró: se cancela y se borra la sala
+        }
+    }
+
     function onLeave() {
         const s = state.sala;
         const enJuego = s && s.estado === 'jugando';
@@ -1523,6 +1645,7 @@
                 toast(t('ui.juego.toque_otra_vez_salir'), 2000);
                 return;
             }
+            limpiarEsperaPendiente();
             // Notificar abandono al servidor y luego redirigir.
             clearSession(state.codigo);
             stopPollingGame();
@@ -1538,6 +1661,7 @@
             return;
         }
         // Estados terminales (abandonada, finalizada, sin sala): salida directa.
+        limpiarEsperaPendiente();
         clearSession(state.codigo);
         stopPollingGame();
         window.location.href = 'index.php';
