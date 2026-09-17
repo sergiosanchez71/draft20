@@ -739,7 +739,6 @@
             el('p', { class: 'flex-1 text-amber-300/80 text-xs font-mono truncate' },
                 hayStats
                     ? t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 })
-                        + (logrosDesbloqueados().length ? ' · 🏅 ' + logrosDesbloqueados().length + '/' + LOGROS_IDS.length : '')
                     : ''),
             btnInstalar,
             btnProgreso,
@@ -748,6 +747,7 @@
         ]));
 
         const selectorBox = el('div', { id: 'tematicaSelector', class: 'mb-4' });
+        const botSelectorBox = el('div', { id: 'tematicaBotSelector', class: 'mb-4' });
 
         let nombrePrevio = '';
         try { nombrePrevio = localStorage.getItem('draft20_nombre') || ''; } catch (e) { /* ignore */ }
@@ -819,6 +819,8 @@
         } catch (e) { /* ignore */ }
 
         const practiceCard = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
+            el('label', { class: 'block text-sm text-slate-400 mb-2' }, t('ui.lobby.selector_tematica_bot')),
+            botSelectorBox,
             el('label', { class: 'block text-sm text-slate-400 mb-2 text-center' }, t('ui.lobby.bot_dificultad')),
             crearSelectorDificultad('mt-2'),
             crearToggleValores('mt-4'),
@@ -849,6 +851,12 @@
         $('#btnRapida').addEventListener('click', onPartidaRapida);
 
         renderTematicaSelector(selectorBox, { ctx: state });
+        renderTematicaSelector(botSelectorBox, {
+            ctx: ctxBot,
+            onChange: function () {
+                try { localStorage.setItem('draft20_tematica_bot', ctxBot.tematicaSeleccionada); } catch (e) { /* ignore */ }
+            },
+        });
 
         // Primer ingreso: mostrar reglas automáticamente.
         try {
@@ -857,6 +865,14 @@
     }
 
     const TEMATICA_RANDOM = '__random__';
+
+    // Selector de temática del bloque de práctica: independiente del de
+    // "Crear sala" y con la última elección recordada.
+    const ctxBot = { tematicaSeleccionada: TEMATICA_RANDOM };
+    try {
+        const tb = localStorage.getItem('draft20_tematica_bot');
+        if (tb && esTematicaValida(tb)) ctxBot.tematicaSeleccionada = tb;
+    } catch (e) { /* ignore */ }
     const DIF_OPCIONES = [['facil', 'ui.lobby.bot_facil'], ['normal', 'ui.lobby.bot_normal'], ['dificil', 'ui.lobby.bot_dificil'], ['extremo', 'ui.lobby.bot_extremo']];
 
     /** Selector de dificultad del bot (píldoras), reutilizado por el bloque de
@@ -986,8 +1002,12 @@
     async function iniciarPartidaBot(tematica, dificultad, nombre, mostrarValores) {
         const nombreFinal = (nombre && nombre.trim()) || state.jugadorNombre || 'Tú';
         const mv = (mostrarValores === undefined) ? !!state.mostrarValores : !!mostrarValores;
+        // Guarda: si llega la constante de aleatoria sin resolver, se sortea aquí.
+        const temaFinal = (tematica === TEMATICA_RANDOM || !tematica)
+            ? resolverTematica({ tematicaSeleccionada: TEMATICA_RANDOM })
+            : tematica;
         const r = await api('POST', 'api/crear_sala.php', {
-            tematica: tematica,
+            tematica: temaFinal,
             nombre: nombreFinal,
             mostrar_valores: mv,
         });
@@ -1011,7 +1031,7 @@
     }
 
     async function onPractice() {
-        const tematica = resolverTematica(state);
+        const tematica = resolverTematica(ctxBot);
         const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || 'Tú';
         const dificultad = state.botDificultad || 'normal';
         const btn = $('#btnPractice');
@@ -1026,7 +1046,7 @@
         const btn = $('#btnGuiada');
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
         try { localStorage.setItem('draft20_guiada', '1'); } catch (e) { /* ignore */ }
-        iniciarPartidaBot(TEMATICA_RANDOM, 'facil', nombre, true);
+        await iniciarPartidaBot(resolverTematica(ctxBot), 'facil', nombre, true);
         if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
     }
 

@@ -678,15 +678,15 @@
 
         const myTurn = item.turno_de === state.jugadorSlot;
 
-        // Barra superior pegada a las esquinas de la tarjeta.
+        // Barra superior: solo la ronda a la izquierda. El chip de turno va
+        // anclado encima de la columna de pujas (mismo ancho y borde derecho).
         const totalRondas = (s.total_items || (s.items_mezclados && s.items_mezclados.length) || 8);
-        const chipTurno = el('div', {
-            class: 'text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ' + (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'),
-        }, myTurn ? t('ui.juego.tu_turno') : t('ui.juego.turno_rival'));
-        card.appendChild(el('div', { class: 'w-full flex-shrink-0 flex items-center justify-between gap-2' }, [
-            el('div', { class: 'text-xs text-slate-400' }, t('ui.juego.ronda') + ' ' + s.ronda + ' / ' + totalRondas),
-            chipTurno,
-        ]));
+        card.appendChild(el('div', { class: 'w-full flex-shrink-0 text-xs text-slate-400' },
+            t('ui.juego.ronda') + ' ' + s.ronda + ' / ' + totalRondas));
+        card.appendChild(el('div', {
+            class: 'absolute right-2 top-2 w-20 sm:w-24 text-center text-[10px] sm:text-[11px] font-bold px-1 py-0.5 rounded-full whitespace-nowrap ' +
+                (myTurn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'),
+        }, myTurn ? t('ui.juego.tu_turno') : t('ui.juego.turno_rival')));
 
         // Aviso blando: el rival lleva sin responder unos segundos.
         if (state.rivalAusente !== null && state.rivalAusente >= 6 && s.estado === 'jugando') {
@@ -1338,15 +1338,8 @@
             }, t('ui.juego.btn_compartir_resultado')),
             el('button', {
                 class: 'w-full bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg btn-tap',
-                onclick: function () {
-                    // Revancha en 1 toque: mismo rival, temática al azar.
-                    proponerRevancha(resolverTematica({ tematicaSeleccionada: TEMATICA_RANDOM }), null);
-                },
-            }, '🔄 ' + t('ui.juego.btn_revancha_rapida')),
-            el('button', {
-                class: 'w-full bg-slate-700 text-slate-100 font-bold py-3 px-6 rounded-lg btn-tap',
                 onclick: openRevanchaModal,
-            }, '🎲 ' + t('ui.juego.btn_revancha_elegir')),
+            }, '🔄 ' + t('ui.juego.btn_revancha_rapida')),
             el('button', { class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap', onclick: onLeave }, t('ui.juego.salir_lobby')),
         ]);
 
