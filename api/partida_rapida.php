@@ -24,7 +24,7 @@ require_once __DIR__ . '/crear_sala.php';
 
 const COLA_ARCHIVO   = __DIR__ . '/datos/cola_rapida.json';
 const COLA_MAX       = 50;  // máximo de entradas en espera
-const COLA_STALE_S   = 15;  // sin poll del creador → entrada muerta
+const COLA_STALE_S   = 60;  // sin poll del creador → entrada muerta (tolera móvil en 2º plano)
 
 if (!function_exists('cola_sh')) {
     /** Lee una sala con lock compartido (solo lectura). */
@@ -270,7 +270,7 @@ try {
         $sala['last_seen'][1] = time();
         ftruncate($fpSala, 0);
         rewind($fpSala);
-        fwrite($fpSala, json_encode($sala, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        fwrite($fpSala, json_encode($sala, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         fflush($fpSala);
         flock($fpSala, LOCK_UN);
         fclose($fpSala);

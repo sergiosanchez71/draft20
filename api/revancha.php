@@ -213,7 +213,7 @@ try {
 
     $estado['actualizado_en'] = time();
     ftruncate($fp, 0); rewind($fp);
-    fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     fflush($fp);
     flock($fp, LOCK_UN); fclose($fp);
 

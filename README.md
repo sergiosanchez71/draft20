@@ -78,11 +78,11 @@ CI lista en **`tools/ci.yml`** (GitHub Actions: `php -l` de todo el repo, los tr
 - **Cap de 4 ítems por jugador**: si alguien llega a 4, los ítems restantes se asignan automáticamente al rival.
 - **Deadlock sin dinero**: si en un ítem fresco te toca a ti y tienes 0 monedas, pulsas **PASAR TURNO** y el rival decide si se lo queda por 1 🪙 o te lo regala por 0 🪙.
 - **Sin límite de tiempo por turno**: la partida espera a que cada jugador decida (el abandono por inactividad se gestiona aparte, ver abandono).
-- **Abandono**: pulsar **Salir al lobby** notifica al rival y termina la partida. Si cierras la pestaña o pierdes conexión, el rival ve un aviso a los **6 s** ("rival desconectado") y la partida se da por **abandonada a los 45 s** sin actividad (margen para cortes móviles).
+- **Abandono**: pulsar **Salir al lobby** notifica al rival y termina la partida. Si cierras la pestaña o pierdes conexión, el rival ve un aviso a los **6 s** ("rival desconectado") y la partida se da por **abandonada a los 120 s** sin actividad (margen amplio para cortes móviles).
 - **Victoria**: gana el jugador cuya **colección de ítems tenga mayor valor intrínseco** (suma de `valor`, escala 1-10). En caso de empate a ⭐, gana quien conserve **más monedas**; si también empatan, tablas. El precio pagado es informativo.
-- **Revancha**: al terminar, cualquiera puede proponer revancha eligiendo **nueva temática** (o 🎲 aleatoria). El rival la acepta o rechaza desde la pantalla final.
+- **Revancha**: al terminar, cualquiera puede proponer revancha (por defecto **🎲 temática al azar**, o elegir una concreta). El rival la acepta o rechaza desde la pantalla final.
 - **Valores ocultos**: el ⭐ de cada ítem es secreto durante la partida (ni en la carta ni en el inventario). Solo se revela en la pantalla final. Con el modo **⭐ Valores visibles** (opcional, lo fija quien crea la sala) el ⭐ del ítem en juego y el de los ítems del inventario se muestran a ambos jugadores.
-- **Último ítem**: al terminar la partida se muestra un popup con el 8º ítem (el que ya no llega a pintarse en la carta): quién se lo llevó y por cuántas monedas.
+- **Último ítem**: al terminar la partida se avisa con un toast (se va solo) del 8º ítem (el que ya no llega a pintarse en la carta): quién se lo llevó y por cuántas monedas.
 
 ---
 
@@ -148,8 +148,8 @@ draft20/
 - **Victoria por valor, no por dinero**: el ganador se determina por la suma de `valor` de su colección. El dinero restante y el `precio` pagado son solo informativos. Esto convierte la subasta en un mecanismo de selección: gana quien mejor identifica y puja por los ítems premium.
 - **Auto-asignación por cap**: si un jugador llega a 4 ítems, los restantes van al rival a precio 0 (sin más subastas). Acepta pequeños sobre-caps en partidas muy desequilibradas — es un tradeoff de simplicidad para MVP.
 - **Deadlock sin dinero**: si un jugador sin monedas recibe un ítem fresco, pulsa PASAR y el rival decide (quedárselo por 1 🪙 o regalarlo por 0 🪙). Evita bloqueos al final de la partida.
-- **Abandono con gracia**: cada poll actualiza `last_seen[slot]`. A los 6 s sin señales el rival ve un aviso blando (campo `rival_ausente` en la respuesta, sin mutar la sala) y a los 45 s se marca `abandonada`. `visibilitychange` pausa el polling en background y lo reanuda al volver para evitar falsos positivos.
-- **Sin límite de tiempo por turno**: se retiró el timeout real (generaba falsos positivos por desfase reloj cliente/servidor). La inactividad se cubre con el abandono de 45 s.
+- **Abandono con gracia**: cada poll actualiza `last_seen[slot]`, persistido como mucho cada 5 s para no escribir en disco en cada petición. A los 6 s sin señales el rival ve un aviso blando (campo `rival_ausente` en la respuesta, sin mutar la sala) y a los 120 s se marca `abandonada`. En segundo plano el polling no se corta: baja a 10 s en partida (5 s en el lobby) y se para en `pagehide`, reanudándose con un poll inmediato al volver. Así un móvil bloqueado no provoca ni avisos ni abandonos falsos.
+- **Sin límite de tiempo por turno**: se retiró el timeout real (generaba falsos positivos por desfase reloj cliente/servidor). La inactividad se cubre con el abandono de 120 s.
 - **GC de salas**: al crear o unirse a una sala se ejecutan `limpiar_salas_antiguas()` (best-effort): borra JSON con `filemtime` > 1h con `flock` no bloqueante para no tocar partidas activas. El TTL de 24h queda como red de seguridad.
 - **Revancha sin re-compartir código**: el proponente crea la sala nueva y registra `revancha {por, codigo_nuevo, tematica, ts}` en la vieja (caduca a los 10 min). El rival acepta (unirse) o rechaza desde la pantalla final. Contra el bot, la revancha arranca una partida nueva con el **mismo bot y dificultad** al instante.
 - **Vibración háptica** en móvil al ganar ítems, recibir pujas del rival y avisos. **Emotes rápidos** (👍😂🔥😭🤝😱) guardados en la sala (máx 10) y mostrados con el nombre de quien los manda.
@@ -208,9 +208,9 @@ Jugador 2 entra a una sala existente.
 Snapshot de la sala. Usado por el polling cada 1 s.
 
 Si se pasa `jugador_id`, el servidor:
-1. Actualiza `sala.last_seen[miSlot] = time()`.
+1. Actualiza `sala.last_seen[miSlot]` (persistido como mucho cada 5 s).
 2. Devuelve `rival_ausente` (segundos sin señales del rival; `null` si nunca ha polleado).
-3. Si el rival lleva > 45 s sin actividad y la sala está `jugando`, la marca como `abandonada` con `abandono_por = otroSlot`.
+3. Si el rival lleva > 120 s sin actividad y la sala está `jugando`, la marca como `abandonada` con `abandono_por = otroSlot`.
 
 **La respuesta nunca expone datos internos**: ni `jugadores[].id` (es el token de autenticación), ni `last_seen`. En su lugar devuelve `mi_slot` (tu índice) y `total_items`. En partidas entre humanos tampoco se expone `items_mezclados`; `valores` (mapa id→⭐) solo viaja con el modo "Valores visibles" o en salas contra bot.
 
@@ -275,7 +275,7 @@ Realiza una jugada.
 // 409 - partida no en curso, no es tu turno, ya empezada, sala finalizada
 //
 // Auto-abandono: si al recibir la petición el OTRO jugador tiene last_seen
-// stale > 45 s, la sala se marca como 'abandonada' y se devuelve con la
+// stale > 120 s, la sala se marca como 'abandonada' y se devuelve con la
 // acción del solicitante ya tramitada (sin mutar la sala).
 ```
 
@@ -438,9 +438,8 @@ Estándar de calidad del catálogo (validado por `test_catalogo.php`): 20 ítems
 
 ## Limitaciones y siguientes pasos
 
-- **No hay persistencia entre dispositivos**: si recargas el navegador, pierdes la sesión (el `jugador_id` está en `localStorage`). Solución MVP: pasar `jugador_id` por URL.
-- **No hay reconexión del que se fue**: el jugador que abandona NO puede volver a la misma sala (el `jugador_id` se borra al pulsar "Salir"). El rival SÍ recibe el mensaje de abandono y vuelve al lobby.
-- **Timeout 6s**: si un jugador cierra pestaña o pierde conexión durante >6 s, el rival es notificado. En redes muy lentas con jitter alto, pueden darse falsos positivos — aceptable para MVP.
-- **Partidas simultáneas**: no hay límite de salas concurrentes; el cuello de botella es el I/O de disco bajo carga alta.
-- **Anti-trampas mínimo**: la validación de turno y de pertenencia está en el servidor, pero no hay rate limiting (un jugador podría spammear `pujar`). Añadir tokens + rate limit en backend si se expone a internet.
+- **No hay persistencia entre dispositivos**: si cambias de navegador o borras los datos del sitio, pierdes la sesión (el `jugador_id` vive en `localStorage`). El banner "Partida en curso" recupera salas activas del mismo dispositivo.
+- **El que sale con "Salir al lobby" no puede volver**: se notifica al rival y la partida termina. Para el caso accidental (botón atrás, recarga) la sala sigue accesible hasta que se limpia por GC.
+- **Aviso a los 6 s / abandono a los 120 s**: el aviso blando puede aparecer antes en redes con jitter alto; el margen de 120 s y el poll reducido en segundo plano evitan abandonos falsos.
+- **Endurecimiento activo**: rate limit por IP+bucket, comprobación de origen, ids de jugador ocultos en las respuestas, cap de salas y auto-GC. No hay cuentas ni anticheat serio: un cliente podría automatizar acciones dentro de su turno.
 - **Mobile-first**: en desktop funciona pero el layout está pensado para portrait.

@@ -48,7 +48,7 @@ const TEMATICAS_DIR    = __DIR__ . '/../tematicas/';
 const DINERO_INICIAL   = 20;
 const MAX_ITEMS_POR_JUGADOR = 4;   // cap duro por jugador
 const INCREMENTO_PUJA  = 1;          // +1 por puja (UI tiene también botón +3 vía "pujar3")
-const ABANDON_TIMEOUT_S = 45;        // 45s sin poll → abandono definitivo
+const ABANDON_TIMEOUT_S = 120;      // 120s sin poll → abandono definitivo (margen para móvil)
 const EMOTES_MAX       = 10;         // máximo de emotes guardados en la sala
 const EMOTES_VALIDOS   = ['👍', '😂', '🔥', '😭', '🤝', '😱'];
 
@@ -369,7 +369,7 @@ try {
         $estado['abandono_por']   = $miSlot;
         $estado['actualizado_en'] = time();
         ftruncate($fp, 0); rewind($fp);
-        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         fflush($fp);
         flock($fp, LOCK_UN); fclose($fp);
         responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
@@ -385,7 +385,7 @@ try {
         }
         $estado['actualizado_en'] = time();
         ftruncate($fp, 0); rewind($fp);
-        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         fflush($fp);
         flock($fp, LOCK_UN); fclose($fp);
         responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
@@ -407,7 +407,7 @@ try {
             $estado['abandono_por'] = $other;
             $estado['actualizado_en'] = time();
             ftruncate($fp, 0); rewind($fp);
-            fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+            fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
             fflush($fp);
             flock($fp, LOCK_UN); fclose($fp);
             responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
@@ -432,7 +432,7 @@ try {
     if ($estado['item_actual'] === null) {
         $estado['actualizado_en'] = time();
         ftruncate($fp, 0); rewind($fp);
-        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         fflush($fp);
         flock($fp, LOCK_UN); fclose($fp);
         responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
@@ -462,7 +462,7 @@ try {
         }
         $estado['actualizado_en'] = time();
         ftruncate($fp, 0); rewind($fp);
-        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         fflush($fp);
         flock($fp, LOCK_UN); fclose($fp);
         responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
@@ -628,7 +628,7 @@ try {
 
     // Persistir y responder.
     ftruncate($fp, 0); rewind($fp);
-    fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     fflush($fp);
     flock($fp, LOCK_UN); fclose($fp);
 

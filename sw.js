@@ -1,4 +1,4 @@
-/* Draft 20 - Service Worker (v3)
+/* Draft 20 - Service Worker (v4)
  * - Navegación: network-first con fallback a la home cacheada.
  * - Assets: stale-while-revalidate (los assets van versionados con ?v=filemtime,
  *   así que la caché antigua se sustituye sola al cambiar el archivo).

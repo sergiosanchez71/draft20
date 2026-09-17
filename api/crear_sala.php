@@ -337,7 +337,7 @@ if (!function_exists('escribir_sala_bloqueado')) {
         rewind($fp);
         $json = json_encode(
             $data,
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         );
         fwrite($fp, $json);
         fflush($fp);

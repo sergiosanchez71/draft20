@@ -90,7 +90,7 @@ if (!function_exists('escribir_sala_bloqueado_ex')) {
         if ($fp === false) throw new RuntimeException('No se pudo abrir la sala para escritura.');
         if (!flock($fp, LOCK_EX)) { fclose($fp); throw new RuntimeException('No LOCK_EX.'); }
         ftruncate($fp, 0); rewind($fp);
-        fwrite($fp, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        fwrite($fp, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         fflush($fp);
         flock($fp, LOCK_UN); fclose($fp);
     }
@@ -188,7 +188,7 @@ try {
     }
 
     ftruncate($fp, 0); rewind($fp);
-    fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     fflush($fp);
     flock($fp, LOCK_UN); fclose($fp);
 

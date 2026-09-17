@@ -6,6 +6,7 @@
     'use strict';
 
     const POLL_MS = 1000;
+    const POLL_OCULTO_MS = 10000; // pestaña en 2º plano: se baja la cadencia, no se corta
     const BOT_MAX_RESPUESTA_MS = 60000; // watchdog del bot: solo corre en su turno
 
     const D = window.DraftApp;
@@ -59,16 +60,24 @@
         startPollingGame();
 
         // Al volver a la pestaña, poll inmediato (evita last_seen obsoleto).
+        // En segundo plano NO se corta el poll (en móvil, cortar provocaba
+        // avisos de "rival desconectado" y hasta abandono): solo se baja a 10 s.
         document.addEventListener('visibilitychange', function () {
             if (!state.codigo) return;
             if (document.hidden) {
-                stopPollingGame();
+                if (!state.pollTerminal) startPollingGame(POLL_OCULTO_MS);
             } else if (document.getElementById('scoreboard')) {
                 pollGameTick().then(function () {
                     // En estado terminal (revancha) o con bot no se relanza a 1s.
                     if (!state.pollTerminal) startPollingGame();
                 });
             }
+        });
+        // Al navegar fuera se para; al volver por bfcache se reanuda.
+        window.addEventListener('pagehide', function () { stopPollingGame(); });
+        window.addEventListener('pageshow', function () {
+            if (!state.codigo || state.pollTerminal) return;
+            if (document.getElementById('scoreboard')) { startPollingGame(); pollGameTick(); }
         });
     }
 
@@ -454,9 +463,9 @@
         try { return localStorage.getItem('draft20_bot_partidas') || '[]'; } catch (e) { return '[]'; }
     }
 
-    function startPollingGame() {
-        if (state.pollTimer) return;
-        state.pollTimer = setInterval(pollGameTick, POLL_MS);
+    function startPollingGame(ms) {
+        if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+        state.pollTimer = setInterval(pollGameTick, ms || POLL_MS);
     }
     function stopPollingGame() {
         if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }

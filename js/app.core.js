@@ -6,6 +6,7 @@
     'use strict';
 
     const POLL_MS = 1000;
+    const POLL_OCULTO_MS = 5000; // lobby en 2º plano: se baja la cadencia, no se corta
     const BOT_MAX_RESPUESTA_MS = 60000; // watchdog del bot: solo corre en su turno
 
     const state = {
@@ -889,9 +890,23 @@
         await iniciarPartidaBot(tematica, state.botDificultad || 'normal', nombre);
     }
 
-    function startPollingLobby() {
-        if (state.pollTimer) return;
-        state.pollTimer = setInterval(pollLobbyTick, POLL_MS);
+    let lobbyVisibilidadLista = false;
+
+    function startPollingLobby(ms) {
+        if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+        state.pollTimer = setInterval(pollLobbyTick, ms || POLL_MS);
+        // En segundo plano no se corta el poll (móvil): se baja la cadencia.
+        if (!lobbyVisibilidadLista) {
+            lobbyVisibilidadLista = true;
+            document.addEventListener('visibilitychange', function () {
+                if (!state.pollTimer) return;
+                startPollingLobby(document.hidden ? POLL_OCULTO_MS : POLL_MS);
+            });
+            window.addEventListener('pagehide', function () { stopPollingLobby(); });
+            window.addEventListener('pageshow', function () {
+                if (!state.pollTimer && state.codigo && document.getElementById('btnRapida')) startPollingLobby();
+            });
+        }
         pollLobbyTick();
     }
     function stopPollingLobby() {

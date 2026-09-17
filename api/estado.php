@@ -33,7 +33,7 @@ const CHARSET          = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const SALAS_DIR        = __DIR__ . '/salas/';
 const TTL_SEGUNDOS     = 86400; // 24h → red de seguridad pasiva (el GC activo borra a 1h)
 const RIVAL_AUSENTE_S  = 6;      // 6s sin poll → se avisa "rival desconectado" (sin abandonar)
-const ABANDON_TIMEOUT_S = 45;    // 45s sin poll → abandono definitivo
+const ABANDON_TIMEOUT_S = 120;  // 120s sin poll → abandono definitivo (margen para móvil)
 
 // ============================================================================
 //  Helpers (con guard por si se carga junto a crear_sala.php)
@@ -152,9 +152,15 @@ if ($jugadorId !== '') {
         }
     }
     if ($miSlot !== null) {
-        $estado['last_seen'][$miSlot] = time();
-        $estado['actualizado_en'] = time();
-        $cambio = true;
+        // El poll va cada 1 s: se persiste last_seen como mucho cada 5 s
+        // (el aviso de 6 s y el abandono de 120 s toleran el desfase) para
+        // no escribir en disco en cada petición.
+        $seenPrevio = isset($estado['last_seen'][$miSlot]) ? (int) $estado['last_seen'][$miSlot] : 0;
+        if ($seenPrevio === 0 || (time() - $seenPrevio) >= 5) {
+            $estado['last_seen'][$miSlot] = time();
+            $estado['actualizado_en'] = time();
+            $cambio = true;
+        }
 
         // Segundos que lleva el rival sin dar señales (aviso blando en UI).
         // Si el rival es un bot local no aplica: no pollea por diseño.
@@ -171,6 +177,7 @@ if ($jugadorId !== '') {
         $triggered = check_and_trigger_abandon($estado, $miSlot);
         if ($triggered) {
             $estado['actualizado_en'] = time();
+            $cambio = true; // el abandono debe persistir ya, aunque last_seen esté throttled
         }
     }
 }
@@ -181,7 +188,7 @@ $estado['actualizado_en'] = time();
 // el poll del lobby sin jugador_id no debe escribir en disco cada segundo.
 if ($cambio) {
     ftruncate($fp, 0); rewind($fp);
-    fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     fflush($fp);
 }
 flock($fp, LOCK_UN); fclose($fp);
