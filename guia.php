@@ -99,6 +99,13 @@ pagina_head([
         </ul>
         <?php endif; ?>
 
+        <h2 class="text-lg font-bold text-amber-300 mb-3"><?= e(seo_ui('guias_titulo')) ?></h2>
+        <ul class="space-y-2 mb-8">
+            <?php foreach (guias_ordenadas() as $otroSlug => $otra): if ($otroSlug === $slug) continue; ?>
+            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="/guia/<?= e($otroSlug) ?>"><?= e((string) $otra['titulo']) ?> →</a></li>
+            <?php endforeach; ?>
+        </ul>
+
         <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
     </main>
 <?php
