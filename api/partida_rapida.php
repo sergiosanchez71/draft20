@@ -87,9 +87,12 @@ if (!function_exists('cola_guardar')) {
     }
 }
 
-if (!function_exists('cola_purgar')) {
-    /** Descarta entradas muertas: sala inexistente, empezada, ocupada o sin poll. */
-    function cola_purgar(array $espera): array
+if (!function_exists('cola_vivas')) {
+    /**
+     * Entradas vivas con metadatos de su sala (nombre del creador, modo ⭐ y
+     * segundos esperando). Se usa para purgar, emparejar por modo y listar.
+     */
+    function cola_vivas(array $espera): array
     {
         $vivas = [];
         foreach ($espera as $e) {
@@ -114,9 +117,29 @@ if (!function_exists('cola_purgar')) {
             if ($referencia <= 0 || (time() - $referencia) > COLA_STALE_S) {
                 continue;
             }
-            $vivas[] = $e;
+            $vivas[] = [
+                'codigo'     => $codigo,
+                'jugador_id' => (string) ($e['jugador_id'] ?? ''),
+                'nombre'     => (string) ($sala['jugadores'][0]['nombre'] ?? ''),
+                'visible'    => !empty($sala['mostrar_valores']),
+                'espera_s'   => max(0, time() - $referencia),
+            ];
         }
         return $vivas;
+    }
+}
+
+if (!function_exists('cola_purgar')) {
+    /** Descarta entradas muertas: sala inexistente, empezada, ocupada o sin poll. */
+    function cola_purgar(array $espera): array
+    {
+        return array_map(static function (array $v): array {
+            return [
+                'codigo'     => $v['codigo'],
+                'jugador_id' => $v['jugador_id'],
+                'creado_en'  => time() - (int) $v['espera_s'],
+            ];
+        }, cola_vivas($espera));
     }
 }
 
@@ -146,7 +169,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 }
 
 api_guard_origen();
-rl_guard('rapida', 30, 3600);
 
 $input  = leer_input_json();
 $accion = isset($input['accion']) && is_string($input['accion']) ? $input['accion'] : 'buscar';
@@ -155,10 +177,56 @@ $regexCodigo  = '/^[' . CHARSET . ']{5}$/';
 $regexJugador = '/^j[12]_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/';
 
 // ============================================================================
+//  Ver quién espera (saneado: sin código ni jugador_id)
+// ============================================================================
+
+if ($accion === 'cola') {
+    rl_guard('cola', 600, 3600);
+    $yoId = isset($input['jugador_id']) && is_string($input['jugador_id']) ? trim($input['jugador_id']) : '';
+    if ($yoId !== '' && !preg_match($regexJugador, $yoId)) {
+        responder(['ok' => false, 'error' => 'jugador_id inválido.'], 400);
+    }
+    try {
+        $fp = cola_abrir();
+        $vivas = [];
+        if (flock($fp, LOCK_EX)) {
+            $cola = cola_leer($fp);
+            $vivas = cola_vivas($cola['espera']);
+            $cola['espera'] = array_map(static function (array $v): array {
+                return [
+                    'codigo'     => $v['codigo'],
+                    'jugador_id' => $v['jugador_id'],
+                    'creado_en'  => time() - (int) $v['espera_s'],
+                ];
+            }, $vivas);
+            cola_guardar($fp, $cola);
+            flock($fp, LOCK_UN);
+        }
+        fclose($fp);
+
+        $lista = [];
+        foreach ($vivas as $v) {
+            if ($yoId !== '' && $v['jugador_id'] === $yoId) {
+                continue; // no te listes a ti mismo
+            }
+            $lista[] = [
+                'nombre'   => $v['nombre'] !== '' ? $v['nombre'] : 'Jugador',
+                'visible'  => (bool) $v['visible'],
+                'espera_s' => (int) $v['espera_s'],
+            ];
+        }
+        responder(['ok' => true, 'espera' => $lista], 200);
+    } catch (Throwable $e) {
+        responder(['ok' => false, 'error' => 'Error interno.'], 500);
+    }
+}
+
+// ============================================================================
 //  Cancelar búsqueda
 // ============================================================================
 
 if ($accion === 'cancelar') {
+    rl_guard('cancelar', 120, 3600);
     $codigo    = isset($input['codigo']) && is_string($input['codigo']) ? strtoupper(trim($input['codigo'])) : '';
     $jugadorId = isset($input['jugador_id']) && is_string($input['jugador_id']) ? trim($input['jugador_id']) : '';
     if (!preg_match($regexCodigo, $codigo) || !preg_match($regexJugador, $jugadorId)) {
@@ -216,6 +284,9 @@ $nombre = isset($input['nombre']) && is_string($input['nombre']) ? trim($input['
 if (mb_strlen($nombre, 'UTF-8') > 20) {
     responder(['ok' => false, 'error' => 'Nombre demasiado largo (máx 20 caracteres).'], 400);
 }
+$mvBuscador = !empty($input['mostrar_valores']);
+
+rl_guard('rapida', 30, 3600);
 
 try {
     $fp = cola_abrir();
@@ -225,15 +296,35 @@ try {
     }
 
     $cola = cola_leer($fp);
-    $cola['espera'] = cola_purgar($cola['espera']);
+    $vivas = cola_vivas($cola['espera']);
+    $vivasFmt = array_map(static function (array $v): array {
+        return [
+            'codigo'     => $v['codigo'],
+            'jugador_id' => $v['jugador_id'],
+            'creado_en'  => time() - (int) $v['espera_s'],
+        ];
+    }, $vivas);
 
-    // 1) Hay alguien esperando → nos unimos a su sala.
-    $entrada = $cola['espera'][0] ?? null;
-    if (is_array($entrada)) {
-        array_shift($cola['espera']);
+    // 1) Hay alguien esperando → nos unimos a su sala. Se prefiere a alguien con
+    //    el mismo modo de ⭐; si no hay nadie, se empareja igual (modo mixto).
+    $elegida = null;
+    foreach ($vivas as $v) {
+        if ((bool) $v['visible'] === $mvBuscador) {
+            $elegida = $v;
+            break;
+        }
+    }
+    if ($elegida === null && $vivas !== []) {
+        $elegida = $vivas[0];
+    }
+
+    if ($elegida !== null) {
+        $cola['espera'] = array_values(array_filter($vivasFmt, static function (array $v) use ($elegida): bool {
+            return $v['codigo'] !== $elegida['codigo'];
+        }));
         cola_guardar($fp, $cola);
 
-        $codigo = (string) $entrada['codigo'];
+        $codigo = (string) $elegida['codigo'];
         $path = SALAS_DIR . $codigo . '.json';
         $fpSala = @fopen($path, 'c+b');
         if ($fpSala === false) {
@@ -279,17 +370,19 @@ try {
 
         try { limpiar_salas_antiguas(); } catch (Throwable $e) { /* best-effort */ }
 
-        responder(['ok' => true, 'rol' => 'rival', 'codigo' => $codigo, 'jugador_id' => $jugadorId], 200);
+        responder(['ok' => true, 'rol' => 'rival', 'codigo' => $codigo, 'jugador_id' => $jugadorId,
+            'mostrar_valores' => !empty($sala['mostrar_valores'])], 200);
     }
 
     // 2) No hay nadie → creamos sala con temática aleatoria y esperamos.
+    $cola['espera'] = $vivasFmt;
     if (count($cola['espera']) >= COLA_MAX) {
         flock($fp, LOCK_UN);
         fclose($fp);
         responder(['ok' => false, 'error' => 'Hay demasiada gente esperando. Prueba en un minuto.'], 503);
     }
 
-    $res = crear_sala_nueva(tema_aleatoria(), $nombre, ['rapida' => true]);
+    $res = crear_sala_nueva(tema_aleatoria(), $nombre, ['rapida' => true, 'mostrar_valores' => $mvBuscador]);
     $cola['espera'][] = [
         'codigo'     => $res['codigo'],
         'jugador_id' => $res['jugador_id'],
@@ -299,7 +392,8 @@ try {
     flock($fp, LOCK_UN);
     fclose($fp);
 
-    responder(['ok' => true, 'rol' => 'creador', 'codigo' => $res['codigo'], 'jugador_id' => $res['jugador_id']], 200);
+    responder(['ok' => true, 'rol' => 'creador', 'codigo' => $res['codigo'], 'jugador_id' => $res['jugador_id'],
+        'mostrar_valores' => $mvBuscador], 200);
 
 } catch (InvalidArgumentException $e) {
     responder(['ok' => false, 'error' => $e->getMessage()], 400);

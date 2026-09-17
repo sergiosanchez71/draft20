@@ -752,17 +752,9 @@
         let nombrePrevio = '';
         try { nombrePrevio = localStorage.getItem('draft20_nombre') || ''; } catch (e) { /* ignore */ }
 
-        // Partida rápida: temática aleatoria y emparejamiento con el primero que
-        // también la pulse (sin compartir código). Va antes de Crear Sala.
-        const rapidaForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
-            el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
-            el('input', { id: 'nameRapida', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
-            el('button', { id: 'btnRapida', class: 'w-full bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-lg' }, '⚡ ' + t('ui.lobby.btn_rapida')),
-            el('p', { class: 'text-[11px] text-slate-500 mt-2 text-center' }, t('ui.lobby.rapida_ayuda')),
-        ]);
-
         // Modo "⭐ Valores visibles" (persistido; se comparte con la sala).
-        // Se muestra en Crear Sala y en Practicar: ambas instancias van sincronizadas.
+        // Se muestra en Partida rápida, Crear Sala y Practicar: las tres
+        // instancias van sincronizadas.
         try {
             if (localStorage.getItem('draft20_mostrar_valores') === '1') state.mostrarValores = true;
         } catch (e) { /* ignore */ }
@@ -789,6 +781,17 @@
                 el('div', { class: 'text-[11px] text-slate-500 mt-2 text-center' }, t('ui.lobby.mostrar_valores_ayuda')),
             ]);
         }
+
+        // Partida rápida: temática aleatoria y emparejamiento con el primero que
+        // también la pulse (sin compartir código). Va antes de Crear Sala.
+        const rapidaForm = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
+            el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
+            el('input', { id: 'nameRapida', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: t('ui.lobby.placeholder_nombre'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base' }),
+            crearToggleValores('mb-4'),
+            el('button', { id: 'btnRapida', class: 'w-full bg-emerald-500 text-white font-bold py-4 rounded-lg btn-tap text-lg' }, '⚡ ' + t('ui.lobby.btn_rapida')),
+            el('p', { class: 'text-[11px] text-slate-500 mt-2 text-center' }, t('ui.lobby.rapida_ayuda')),
+            el('div', { id: 'colaInfo', class: 'text-[11px] text-slate-400 mt-1 text-center' }, ''),
+        ]);
 
         // Selector de dificultad del bot (movido al ámbito del módulo para que
         // lo use también la reserva de partida rápida): ver crearSelectorDificultad.
@@ -857,6 +860,7 @@
                 try { localStorage.setItem('draft20_tematica_bot', ctxBot.tematicaSeleccionada); } catch (e) { /* ignore */ }
             },
         });
+        cargarColaInfo();
 
         // Primer ingreso: mostrar reglas automáticamente.
         try {
@@ -1122,7 +1126,7 @@
         guardarNombre(nombre);
         const btn = $('#btnRapida');
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
-        const r = await api('POST', 'api/partida_rapida.php', { nombre: nombre });
+        const r = await api('POST', 'api/partida_rapida.php', { nombre: nombre, mostrar_valores: !!state.mostrarValores });
         if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
         if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
 
@@ -1177,6 +1181,44 @@
         app.appendChild(el('div', { class: 'text-center m-4' }, [
             el('button', { class: 'text-slate-400 text-sm btn-tap', onclick: cancelarBusqueda }, t('ui.lobby.btn_cancelar')),
         ]));
+
+        // Quién está esperando ahora mismo (se refresca cada 5 s).
+        app.appendChild(el('section', { class: 'bg-slate-800 p-4 rounded-lg m-4 fade-in' }, [
+            el('div', { class: 'text-xs uppercase tracking-wide text-slate-400 mb-2' }, t('ui.lobby.cola_titulo')),
+            el('div', { id: 'colaLista', class: 'text-sm text-slate-200 leading-relaxed' }, t('ui.lobby.cola_cargando')),
+        ]));
+        refrescarCola();
+        state.colaTimer = setInterval(refrescarCola, 5000);
+    }
+
+    /** Lista de espera de partida rápida (nombre + ⭐), sin datos internos. */
+    async function refrescarCola() {
+        const caja = $('#colaLista');
+        if (!caja) return;
+        const r = await api('POST', 'api/partida_rapida.php', { accion: 'cola', jugador_id: state.jugadorId || '' });
+        if (!r.ok || !Array.isArray(r.espera)) return;
+        if (!caja.parentNode) return;
+        if (r.espera.length === 0) {
+            caja.textContent = t('ui.lobby.cola_solo_tu');
+            return;
+        }
+        caja.textContent = r.espera.slice(0, 6).map(function (e) {
+            return e.nombre + (e.visible ? ' ⭐' : '');
+        }).join(' · ') + (r.espera.length > 6 ? ' · +' + (r.espera.length - 6) : '');
+    }
+
+    /** Contador de espera para la tarjeta del lobby (una consulta por render). */
+    async function cargarColaInfo() {
+        const caja = $('#colaInfo');
+        if (!caja) return;
+        const r = await api('POST', 'api/partida_rapida.php', { accion: 'cola' });
+        if (!r.ok || !Array.isArray(r.espera) || !caja.parentNode) return;
+        if (r.espera.length === 0) {
+            caja.textContent = t('ui.lobby.cola_vacia');
+            return;
+        }
+        const con = r.espera.filter(function (e) { return e.visible; }).length;
+        caja.textContent = t('ui.lobby.cola_info', { n: r.espera.length, v: con });
     }
 
     async function cancelarBusqueda() {
@@ -1253,6 +1295,7 @@
     }
     function stopPollingLobby() {
         if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+        if (state.colaTimer) { clearInterval(state.colaTimer); state.colaTimer = null; }
     }
 
     // =================== EXPOSE ===================

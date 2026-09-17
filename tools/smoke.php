@@ -268,6 +268,47 @@ try {
     check($nDespues === $nAntes + 1, 'el contador diario incrementa');
     $rHomeEv = http_req('GET', $base . '/index.php');
     check(strpos((string) $rHomeEv['raw'], '/api/evento.php') !== false, 'las páginas SEO incluyen el beacon');
+
+    // 12) Partida rápida: modo ⭐, listado de cola y preferencia de emparejamiento.
+    // La cola se vacía antes para no depender de restos de otras ejecuciones.
+    $colaPath = $root . '/api/datos/cola_rapida.json';
+    @unlink($colaPath);
+
+    $rq1 = http_req('POST', $base . '/api/partida_rapida.php', ['nombre' => 'RapidaA', 'mostrar_valores' => false]);
+    check($rq1['code'] === 200 && ($rq1['json']['rol'] ?? '') === 'creador' && ($rq1['json']['mostrar_valores'] ?? null) === false,
+        'rápida sin ⭐ → creador con valores ocultos');
+    $codA = (string) ($rq1['json']['codigo'] ?? '');
+    $codigos[] = $codA;
+
+    // La cola real solo tiene una entrada (el segundo que busca empareja con el
+    // primero), así que la segunda se añade a mano con una sala manual en ⭐.
+    $rm = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'pizza', 'nombre' => 'RapidaB', 'mostrar_valores' => true]);
+    $codB = (string) ($rm['json']['codigo'] ?? '');
+    $codigos[] = $codB;
+    $cola = json_decode((string) @file_get_contents($colaPath), true);
+    if (!is_array($cola)) {
+        $cola = ['espera' => []];
+    }
+    $cola['espera'][] = ['codigo' => $codB, 'jugador_id' => (string) ($rm['json']['jugador_id'] ?? ''), 'creado_en' => time()];
+    file_put_contents($colaPath, json_encode($cola, JSON_UNESCAPED_UNICODE));
+
+    $rqCola = http_req('POST', $base . '/api/partida_rapida.php', ['accion' => 'cola']);
+    $lista = $rqCola['json']['espera'] ?? null;
+    check($rqCola['code'] === 200 && is_array($lista) && count($lista) === 2, 'cola: lista las dos entradas vivas');
+    $primera = is_array($lista) ? ($lista[0] ?? []) : [];
+    check(isset($primera['nombre'], $primera['visible']) && !isset($primera['codigo']) && !isset($primera['jugador_id']),
+        'cola: saneada (nombre/⭐, sin código ni id)');
+    check(($lista[1]['visible'] ?? null) === true, 'cola: refleja el modo ⭐ de cada entrada');
+    $rqColaYo = http_req('POST', $base . '/api/partida_rapida.php', ['accion' => 'cola', 'jugador_id' => (string) ($rq1['json']['jugador_id'] ?? '')]);
+    check(count($rqColaYo['json']['espera'] ?? []) === 1, 'cola: el listado excluye tu propia entrada');
+
+    // Preferencia: buscar con ⭐ debe emparejar con la sala B (aunque A espere antes).
+    $rqMatch = http_req('POST', $base . '/api/partida_rapida.php', ['nombre' => 'RapidaC', 'mostrar_valores' => true]);
+    check($rqMatch['code'] === 200 && ($rqMatch['json']['codigo'] ?? '') === $codB && ($rqMatch['json']['mostrar_valores'] ?? null) === true,
+        'emparejamiento: prefiere el mismo modo de ⭐');
+    check(($rqMatch['json']['rol'] ?? '') === 'rival', 'emparejamiento: entra como rival');
+    $rqMatch2 = http_req('POST', $base . '/api/partida_rapida.php', ['nombre' => 'RapidaD', 'mostrar_valores' => false]);
+    check(($rqMatch2['json']['codigo'] ?? '') === $codA, 'emparejamiento: el resto cae en la sala que queda');
 } finally {
     foreach ($codigos as $c) {
         if ($c !== '') {

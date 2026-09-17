@@ -674,7 +674,8 @@
         if (s.estado === 'jugando' && !tematicaAvisada) {
             tematicaAvisada = true;
             if (s.tematica) {
-                toast(t('ui.juego.aviso_tematica', { tema: tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica) }), 4000);
+                const modo = s.mostrar_valores ? t('ui.juego.valores_visibles') : t('ui.juego.valores_ocultos');
+                toast(t('ui.juego.aviso_tematica', { tema: tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica) }) + ' · ' + modo, 4000);
             }
         }
 
