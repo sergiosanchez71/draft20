@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/inc/layout.php';
+require_once __DIR__ . '/contenido_seo.php';
 
 $LANG = cargar_lang();
 $SEO  = is_array($LANG['seo'] ?? null) ? $LANG['seo'] : [];
@@ -23,17 +24,13 @@ $tm = $mapa[$id];
 $nombre = nombre_tematica($id);
 $categoria = nombre_categoria($tm['categoria_id']);
 $items = items_tematica($id);
+$cont = tematica_contenido($id);
+$preguntas = is_array($cont['preguntas'] ?? null) ? $cont['preguntas'] : [];
 
-// Descripción con los primeros ítems (sin revelar valores).
-$nombres = [];
-foreach (array_slice($items, 0, 4) as $it) {
-    $n = (string) ($LANG['items'][$it['id']] ?? '');
-    if ($n !== '') {
-        $nombres[] = $n;
-    }
-}
-$descripcion = 'Los 20 ítems de ' . $nombre . ' en Draft 20: ' . implode(', ', $nombres)
-    . ' y más. Subasta por turnos gratis para 2 jugadores, sin registro.';
+// Meta description: descripción editorial única (sin revelar valores).
+$descripcion = $cont !== null
+    ? recortar((string) $cont['descripcion'], 155)
+    : 'Los 20 ítems de ' . $nombre . ' en Draft 20. Subasta por turnos gratis para 2 jugadores, sin registro.';
 
 $titulo = $nombre . ' — 20 ítems para jugar a Draft 20';
 
@@ -52,7 +49,7 @@ $jsonLd = [
         '@type' => 'BreadcrumbList',
         'itemListElement' => [
             ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . '/'],
-            ['@type' => 'ListItem', 'position' => 2, 'name' => (string) ($SEO['migas_tematicas'] ?? 'Temáticas'), 'item' => SITE_URL . '/#tematicas'],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => $categoria, 'item' => SITE_URL . '/categoria/' . $tm['categoria_id']],
             ['@type' => 'ListItem', 'position' => 3, 'name' => $nombre],
         ],
     ],
@@ -64,6 +61,10 @@ $jsonLd = [
         'itemListElement' => $itemList,
     ],
 ];
+$faqLd = json_ld_faq($preguntas);
+if ($faqLd !== null) {
+    $jsonLd[] = $faqLd;
+}
 
 pagina_head([
     'titulo' => $titulo,
@@ -76,14 +77,18 @@ pagina_head([
         <nav class="text-xs text-slate-400 mb-4" aria-label="Migas de pan">
             <a class="hover:text-amber-400" href="/"><?= e((string) ($SEO['migas_inicio'] ?? 'Inicio')) ?></a>
             <span class="mx-1">/</span>
-            <a class="hover:text-amber-400" href="/#tematicas"><?= e((string) ($SEO['migas_tematicas'] ?? 'Temáticas')) ?></a>
+            <a class="hover:text-amber-400" href="/categoria/<?= e($tm['categoria_id']) ?>"><?= e($categoria) ?></a>
             <span class="mx-1">/</span>
             <span class="text-slate-300"><?= e($nombre) ?></span>
         </nav>
 
         <h1 class="text-3xl font-bold text-slate-100 mb-2"><?= e($tm['emoji'] . ' ' . $nombre) ?></h1>
-        <p class="text-slate-400 text-sm mb-1"><?= e($tm['categoria_emoji'] . ' ' . $categoria) ?></p>
+        <p class="text-slate-400 text-sm mb-1"><a class="hover:text-amber-400" href="/categoria/<?= e($tm['categoria_id']) ?>"><?= e($tm['categoria_emoji'] . ' ' . $categoria) ?></a></p>
+        <?php if ($cont !== null): ?>
+        <p class="text-slate-300 text-sm leading-relaxed mt-4 mb-6"><?= e((string) $cont['descripcion']) ?></p>
+        <?php else: ?>
         <p class="text-slate-300 text-sm leading-relaxed mt-4 mb-6"><?= e(str_replace('{t}', $nombre, (string) ($SEO['tematica_intro'] ?? ''))) ?></p>
+        <?php endif; ?>
 
         <a href="/?tematica=<?= e($id) ?>#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8"><?= e((string) ($SEO['tematica_cta'] ?? 'Jugar')) ?></a>
 
@@ -96,6 +101,18 @@ pagina_head([
             </li>
             <?php endforeach; ?>
         </ul>
+
+        <?php if ($preguntas !== []): ?>
+        <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(seo_ui('tematica_faq_titulo')) ?></h2>
+        <div class="mb-10">
+            <?php foreach ($preguntas as $f): ?>
+            <details class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-2">
+                <summary class="font-semibold text-slate-100 cursor-pointer"><?= e((string) ($f['q'] ?? '')) ?></summary>
+                <p class="text-sm text-slate-300 mt-2 leading-relaxed"><?= e((string) ($f['a'] ?? '')) ?></p>
+            </details>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
 
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e((string) ($SEO['tematica_relacionadas'] ?? 'Temáticas parecidas')) ?></h2>
         <ul class="flex flex-wrap gap-2 mb-6">
@@ -121,6 +138,13 @@ pagina_head([
                 }
             }
             ?>
+        </ul>
+        <a href="/categoria/<?= e($tm['categoria_id']) ?>" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold mb-8"><?= e('Ver todas las temáticas de ' . $categoria) ?> →</a>
+
+        <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(seo_ui('guia_enlaces_titulo')) ?></h2>
+        <ul class="space-y-2 mb-6">
+            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="/guia/como-ganar-draft-20">Cómo ganar en Draft 20: tácticas de subasta →</a></li>
+            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="/guia/mejores-tematicas">Las 10 temáticas más divertidas de Draft 20 →</a></li>
         </ul>
     </main>
 <?php

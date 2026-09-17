@@ -80,12 +80,18 @@ draft20/
 ├── index.php              # Landing SEO + lobby: crear / unirse a sala
 ├── juego.php              # UI principal del juego (noindex)
 ├── tematica.php           # Ficha SEO de temática (/tematica/<id>, 72 URLs)
+├── categoria.php          # Hub de categoría (/categoria/<id>, 10 URLs)
+├── guias.php              # Índice de guías (/guias)
+├── guia.php               # Guía individual (/guia/<slug>, 6 URLs)
+├── contenido_categorias.php / contenido_tematicas_*.php / contenido_guias_*.php
+│                          # Texto editorial único (sin valores ⭐) para hubs, fichas y guías
+├── contenido_seo.php      # Agregador + accessors del contenido SEO
 ├── como_jugar.php         # Guía completa (/como-jugar)
 ├── acerca.php             # Acerca de (/acerca)
 ├── contacto.php           # Contacto (/contacto)
 ├── privacidad.php         # Privacidad (/privacidad)
 ├── 404.php                # Página no encontrada (ErrorDocument)
-├── sitemap.php            # sitemap.xml dinámico (home + soporte + 72 fichas)
+├── sitemap.php            # sitemap.xml dinámico (94 URLs: home + soporte + hubs + guías + 72 fichas)
 ├── robots.txt             # Allow / · Disallow /api/ y /juego.php
 ├── inc/layout.php         # Helpers SEO: metas, canonical, OG, JSON-LD, footer, assets
 ├── tematicas_catalogo.php # Catálogo de temáticas por categoría (fuente única)
@@ -134,7 +140,7 @@ draft20/
 - **Bot de práctica con dificultades** (`js/bot_policy.js`, función pura): Fácil (intuye los valores con mucho ruido, puja poco y se retira pronto), Normal (intuición ligera y presupuesto equilibrado; partida pareja), Difícil (valores reales y reparto racional moderado del presupuesto) y Extremo (valores reales + reparto agresivo y selectivo por los mejores ítems). Niveles calibrados contra un jugador medio simulado en los dos modos: objetivo de victorias 30/50/70/90%. Con «⭐ Valores visibles» todos los niveles ven los valores reales (el humano también), salvo el handicap de Fácil, que mantiene su intuición. Delays humanos y retiradas no deterministas. El bot se marca en la sala (`bot_slot`) y **nunca cuenta como ausente**; su watchdog de 60 s solo corre en su turno (con acción de respaldo garantizada), así que puedes pensar sin prisa.
 - **PWA instalable**: manifest + service worker v4 (navegación red-first con fallback a la home cacheada, assets stale-while-revalidate con **match exacto** para que un `?v=` nuevo nunca reutilice caché antigua, API siempre red) + iconos generados por script.
 - **Cache-busting de assets**: `inc/layout.php::asset()` sirve `js/*`, `css/*` e imágenes con `?v=filemtime(...)`. Cada deploy cambia la URL y el CDN de Hostinger no puede servir versiones viejas (no hace falta purgar caché).
-- **SEO**: dominio `https://draft20.es` (canonical sin www; 301 de `www` y HTTPS forzado en `.htaccess`), URLs limpias (`/tematica/<id>`, `/como-jugar`, `/sitemap.xml`), landing server-side con H1/intro/categorías/FAQ, 72 fichas de temática (ítems sin valores ⭐) con `BreadcrumbList`+`ItemList`, JSON-LD `WebApplication`+`FAQPage` en la home, OG/Twitter cards (`og-image.png`), `juego.php` y `?sala=` con `noindex`, `robots.txt` + sitemap dinámico.
+- **SEO**: dominio `https://draft20.es` (canonical sin www; 301 de `www` y HTTPS forzado en `.htaccess`), URLs limpias (`/tematica/<id>`, `/categoria/<id>`, `/guias`, `/guia/<slug>`, `/como-jugar`, `/sitemap.xml`), landing server-side con H1/intro/categorías/FAQ, 72 fichas de temática enriquecidas (texto editorial único + FAQ propia, ítems sin valores ⭐) con `BreadcrumbList`+`ItemList`, 10 hubs de categoría y 6 guías con `Article`/`CollectionPage`, JSON-LD `WebApplication`+`FAQPage` en la home, OG/Twitter cards (`og-image.png`), `juego.php` y `?sala=` con `noindex`, `robots.txt` + sitemap dinámico (**94 URLs**).
 - **Rendimiento**: Tailwind compilado (14 KB) e **inline en las páginas SEO** (cero CSS render-blocking), JS dividido (`app.core.min.js` 14 KB en la landing; `app.game.min.js` 27 KB solo en `juego.php`), `window.LANG` recortado en la landing (solo `ui` + temáticas), service worker v4 sin `cache:'reload'`, redirecciones a 1 salto y render del juego por **firma de estado** (el poll de 1 s no reconstruye el DOM si nada cambió). La landing puede cachearse 10 min en el CDN (`s-maxage=600`, sin query).
 - **Sin login ni cuentas**: cada sala es anónima, ligada al `localStorage` del navegador.
 

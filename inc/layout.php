@@ -132,9 +132,29 @@ function nav_links(): array
 {
     return [
         ['href' => '/como-jugar', 'texto' => 'Cómo se juega'],
+        ['href' => '/guias', 'texto' => 'Guías'],
         ['href' => '/acerca', 'texto' => 'Acerca de'],
         ['href' => '/contacto', 'texto' => 'Contacto'],
         ['href' => '/privacidad', 'texto' => 'Privacidad'],
+    ];
+}
+
+/** Schema FAQPage a partir de una lista de {q,a}; null si no hay preguntas. */
+function json_ld_faq(array $faq): ?array
+{
+    if ($faq === []) {
+        return null;
+    }
+    return [
+        '@context' => 'https://schema.org',
+        '@type' => 'FAQPage',
+        'mainEntity' => array_map(static function (array $f): array {
+            return [
+                '@type' => 'Question',
+                'name' => (string) ($f['q'] ?? ''),
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => (string) ($f['a'] ?? '')],
+            ];
+        }, $faq),
     ];
 }
 

@@ -9,6 +9,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/inc/layout.php';
+require_once __DIR__ . '/contenido_seo.php';
 
 $LANG = cargar_lang();
 $SEO  = is_array($LANG['seo'] ?? null) ? $LANG['seo'] : [];
@@ -113,15 +114,32 @@ pagina_head([
                             <span class="chev" aria-hidden="true">▾</span>
                         </span>
                     </summary>
-                    <ul class="flex flex-wrap gap-2 px-4 pb-4">
+                    <ul class="flex flex-wrap gap-2 px-4 pb-2">
                         <?php foreach ($cat['tematicas'] as $tm): ?>
                         <li>
                             <a href="/tematica/<?= e($tm['id']) ?>" class="inline-block bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($tm['emoji'] . ' ' . nombre_tematica($tm['id'])) ?></a>
                         </li>
                         <?php endforeach; ?>
                     </ul>
+                    <div class="px-4 pb-4">
+                        <a href="/categoria/<?= e($cat['id']) ?>" class="inline-block text-xs font-semibold text-slate-400 hover:text-amber-400"><?= e('Ver temáticas de ' . nombre_categoria($cat['id'])) ?> →</a>
+                    </div>
                 </details>
                 <?php endforeach; ?>
+            </section>
+
+            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+                <h2 class="text-2xl font-bold text-slate-100 mb-2"><?= e(seo_ui('guias_titulo')) ?></h2>
+                <p class="text-slate-400 text-sm mb-6"><?= e(seo_ui('guias_sub')) ?></p>
+                <ul class="space-y-3 mb-4">
+                    <?php foreach (array_slice(guias_ordenadas(), 0, 3, true) as $gSlug => $g): ?>
+                    <li class="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                        <a class="font-bold text-amber-300 hover:text-amber-200" href="/guia/<?= e($gSlug) ?>"><?= e((string) $g['titulo']) ?></a>
+                        <p class="text-sm text-slate-300 leading-relaxed mt-1"><?= e(recortar((string) ($g['desc'] ?? ''), 160)) ?></p>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+                <a href="/guias" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold"><?= e(seo_ui('guias_ver_todas')) ?> →</a>
             </section>
 
             <?php if ($faq !== []): ?>

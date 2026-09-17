@@ -7,16 +7,36 @@
 declare(strict_types=1);
 
 require __DIR__ . '/inc/layout.php';
+require_once __DIR__ . '/contenido_seo.php';
 
 $hoy = date('Y-m-d');
 
 $urls = [
     ['loc' => SITE_URL . '/', 'lastmod' => $hoy, 'changefreq' => 'weekly', 'priority' => '1.0'],
     ['loc' => SITE_URL . '/como-jugar', 'lastmod' => $hoy, 'changefreq' => 'monthly', 'priority' => '0.8'],
+    ['loc' => SITE_URL . '/guias', 'lastmod' => $hoy, 'changefreq' => 'weekly', 'priority' => '0.8'],
     ['loc' => SITE_URL . '/acerca', 'lastmod' => $hoy, 'changefreq' => 'monthly', 'priority' => '0.5'],
     ['loc' => SITE_URL . '/contacto', 'lastmod' => $hoy, 'changefreq' => 'yearly', 'priority' => '0.4'],
     ['loc' => SITE_URL . '/privacidad', 'lastmod' => $hoy, 'changefreq' => 'yearly', 'priority' => '0.3'],
 ];
+
+foreach (categorias() as $cat) {
+    $urls[] = [
+        'loc' => SITE_URL . '/categoria/' . $cat['id'],
+        'lastmod' => $hoy,
+        'changefreq' => 'monthly',
+        'priority' => '0.8',
+    ];
+}
+
+foreach (guias_ordenadas() as $slug => $g) {
+    $urls[] = [
+        'loc' => SITE_URL . '/guia/' . $slug,
+        'lastmod' => (string) ($g['fecha'] ?? $hoy),
+        'changefreq' => 'monthly',
+        'priority' => '0.7',
+    ];
+}
 
 foreach (mapa_tematicas() as $id => $tm) {
     $file = __DIR__ . '/tematicas/' . $id . '.json';

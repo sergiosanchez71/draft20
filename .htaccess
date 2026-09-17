@@ -21,6 +21,9 @@ Options -Indexes
 
     # 3) URLs limpias.
     RewriteRule ^tematica/([a-z0-9_]+)/?$ tematica.php?id=$1 [L,QSA]
+    RewriteRule ^categoria/([a-z0-9_]+)/?$ categoria.php?id=$1 [L,QSA]
+    RewriteRule ^guias/?$ guias.php [L]
+    RewriteRule ^guia/([a-z0-9-]+)/?$ guia.php?slug=$1 [L,QSA]
     RewriteRule ^como-jugar/?$ como_jugar.php [L]
     RewriteRule ^acerca/?$ acerca.php [L]
     RewriteRule ^contacto/?$ contacto.php [L]
