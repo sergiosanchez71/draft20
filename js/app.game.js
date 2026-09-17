@@ -26,8 +26,10 @@
     const renderTematicaSelector = D.renderTematicaSelector;
     const iniciarPartidaBot = D.iniciarPartidaBot;
 
-    // El popup del último ítem se muestra una sola vez por carga de página.
-    let ultimoItemPopupMostrado = false;
+    // El aviso del último ítem y el de la temática se muestran una sola vez
+    // por partida (la carga de página va por partida).
+    let ultimoItemAvisado = false;
+    let tematicaAvisada = false;
 
     // =================== JUEGO ===================
     async function juegoInit(codigo) {
@@ -156,16 +158,28 @@
             // un 4xx/5xx del servidor no debe mostrar el banner offline.
             if (r._status === 0) {
                 state.pollFailures = (state.pollFailures || 0) + 1;
-                if (state.pollFailures >= 3) setOfflineBanner(true);
+                if (state.pollFailures >= 3) {
+                    setOfflineBanner(true);
+                    state.offlineActivo = true;
+                }
             }
             return;
         }
         state.pollFailures = 0;
         setOfflineBanner(false);
+        if (state.offlineActivo) {
+            state.offlineActivo = false;
+            toast(t('ui.juego.conexion_restablecida'));
+        }
 
         const prev = state.sala;
         state.sala = r.sala;
+        const rivalAusentePrev = state.rivalAusente;
         state.rivalAusente = (r.rival_ausente === undefined || r.rival_ausente === null) ? null : r.rival_ausente;
+        // El rival vuelve: estuvo ausente (banner ≥6 s) y ya no lo está.
+        if (rivalAusentePrev !== null && rivalAusentePrev >= 6 && (state.rivalAusente === null || state.rivalAusente < 6)) {
+            toast(t('ui.juego.rival_ha_vuelto', { nombre: state.rivalNombre || 'Rival' }));
+        }
         identifySlots();
 
         detectarAccionesRival(prev, state.sala);
@@ -500,6 +514,14 @@
             ht.textContent = tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica);
         }
 
+        // Aviso transitorio de la temática al entrar en la partida (sin aceptación).
+        if (s.estado === 'jugando' && !tematicaAvisada) {
+            tematicaAvisada = true;
+            if (s.tematica) {
+                toast(t('ui.juego.aviso_tematica', { tema: tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica) }), 4000);
+            }
+        }
+
         // Scoreboard
         renderScoreboard();
 
@@ -527,7 +549,7 @@
             ajustarPollingTerminal();
             guardarPartidaReferenciaSiToca();
             renderFinalScreen();
-            mostrarPopupUltimoItem();
+            avisarUltimoItem();
             const inv = $('#inventory'); if (inv) clear(inv);
             const bar = $('#actionBar'); if (bar) clear(bar);
             const eb = $('#emoteBar'); if (eb) clear(eb);
@@ -1025,30 +1047,21 @@
     }
 
     /**
-     * Popup del 8º ítem: se asigna en la misma acción que finaliza la partida,
-     * así que la carta nunca llega a pintarlo. Se muestra una vez al terminar.
+     * Último ítem: se asigna en la misma acción que finaliza la partida, así que
+     * la carta nunca llega a pintarlo. Se avisa con un toast que se va solo.
      */
-    function mostrarPopupUltimoItem() {
-        if (ultimoItemPopupMostrado) return;
+    function avisarUltimoItem() {
+        if (ultimoItemAvisado) return;
         const s = state.sala;
         const ult = s && s.ultimo_item;
         if (!ult || !ult.id) return;
-        ultimoItemPopupMostrado = true;
+        ultimoItemAvisado = true;
         const ganador = (s.jugadores && s.jugadores[ult.ganador]) || null;
-        const content = el('div', { class: 'text-center' }, [
-            el('div', { class: 'h-14 mb-1 flex justify-center' }, [emojiImg(ult.emoji || '🎲', 'h-14 w-auto', '')]),
-            el('div', { class: 'text-xs uppercase tracking-wide text-slate-400 mb-3' }, t('ui.juego.ultimo_item_titulo')),
-            el('p', { class: 'text-base text-slate-100 leading-relaxed' }, t('ui.juego.msg_ultimo_item', {
-                item: tItem(ult.id),
-                nombre: (ganador && ganador.nombre) ? ganador.nombre : '—',
-                precio: (ult.precio || 0) + '🪙',
-            })),
-        ]);
-        const m = showModal(content);
-        content.appendChild(el('button', {
-            class: 'mt-5 w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap',
-            onclick: m.close,
-        }, t('ui.juego.btn_ver_resultado')));
+        toast(t('ui.juego.msg_ultimo_item', {
+            item: (ult.emoji ? ult.emoji + ' ' : '') + tItem(ult.id),
+            nombre: (ganador && ganador.nombre) ? ganador.nombre : '—',
+            precio: (ult.precio || 0) + '🪙',
+        }), 4500);
     }
 
     function renderAbandonedScreen() {
@@ -1276,7 +1289,7 @@
 
     // =================== revancha ===================
     function openRevanchaModal() {
-        const ctx = { tematicaSeleccionada: (state.sala && state.sala.tematica) || TEMATICA_RANDOM };
+        const ctx = { tematicaSeleccionada: TEMATICA_RANDOM };
         const box = el('div', {});
         const content = el('div', {}, [
             el('h2', { class: 'text-lg font-bold text-amber-400 mb-3' }, '🔄 ' + t('ui.juego.btn_revancha')),
@@ -1407,7 +1420,13 @@
         const s = state.sala;
         const enJuego = s && s.estado === 'jugando';
         if (enJuego) {
-            if (!confirm(t('ui.juego.confirm_salir_jugando'))) return;
+            // Doble toque: el primero avisa, el segundo (en 3 s) sale de verdad.
+            const ahora = Date.now();
+            if (!state.salirArmadoHasta || ahora > state.salirArmadoHasta) {
+                state.salirArmadoHasta = ahora + 3000;
+                toast(t('ui.juego.toque_otra_vez_salir'), 2000);
+                return;
+            }
             // Notificar abandono al servidor y luego redirigir.
             clearSession(state.codigo);
             stopPollingGame();

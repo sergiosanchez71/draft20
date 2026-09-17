@@ -189,8 +189,25 @@
     }
 
     // =================== toast ===================
+    // Cola corta: los avisos se muestran en secuencia (1 activo + 2 pendientes)
+    // para que dos mensajes seguidos no se pisen.
+    const toastCola = [];
     let toastTimer = null;
-    function toast(msg) {
+    let toastMostrando = false;
+
+    function toast(msg, ms) {
+        toastCola.push({ msg: msg, ms: ms || 2000 });
+        if (toastCola.length > 2) toastCola.splice(0, toastCola.length - 2);
+        if (!toastMostrando) siguienteToast();
+    }
+
+    function siguienteToast() {
+        const item = toastCola.shift();
+        if (!item) {
+            toastMostrando = false;
+            return;
+        }
+        toastMostrando = true;
         let el = document.getElementById('toast');
         if (!el) {
             el = document.createElement('div');
@@ -199,10 +216,13 @@
             el.setAttribute('aria-live', 'polite');
             document.body.appendChild(el);
         }
-        el.textContent = msg;
+        el.textContent = item.msg;
         el.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2000);
+        toastTimer = setTimeout(function () {
+            el.classList.remove('show');
+            siguienteToast();
+        }, item.ms);
     }
 
     // =================== vibrate ===================

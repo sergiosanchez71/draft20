@@ -54,7 +54,9 @@
             "rival_ultima_puja": "Última puja: {nombre}",
             "ultima_ronda": "¡Última ronda!",
             "sin_conexion": "Sin conexión · reintentando…",
+            "conexion_restablecida": "Conexión restablecida",
             "msg_rival_ausente": "⚠️ {nombre} lleva {seg}s sin responder. Esperando reconexión…",
+            "rival_ha_vuelto": "🏃 {nombre} ha vuelto a la partida",
             "msg_deadlock_decide_corto": "El otro jugador cedió. Decide:",
             "msg_cediste_item": "Cediste el ítem. Esperando decisión…",
             "msg_cede_item": "Cede el ítem al rival pulsando PASAR",
@@ -92,9 +94,8 @@
             "esperando_rival": "Esperando rival…",
             "ganaste_item": "¡Conseguiste {item} por {precio}!",
             "perdio_item": "{rival} ganó {item} por {precio}",
-            "ultimo_item_titulo": "Último ítem de la partida",
             "msg_ultimo_item": "«{item}» fue otorgado a {nombre} por {precio}",
-            "btn_ver_resultado": "Ver resultado",
+            "aviso_tematica": "🎲 Temática: {tema}",
             "item_no_presupuesto": "No te llega el dinero",
             "fin_titulo": "Partida finalizada",
             "fin_empate": "¡Empate!",
@@ -126,7 +127,7 @@
             "msg_rival_abandono": "Tu rival ha abandonado la partida",
             "msg_abandono_propio": "Abandonaste por inactividad",
             "submsg_rival_abandono": "La partida ha terminado. Vuelve al lobby para empezar otra.",
-            "confirm_salir_jugando": "¿Salir? Tu rival será notificado y la partida terminará."
+            "toque_otra_vez_salir": "Toca otra vez para salir · perderás la partida"
         },
         "estados_sala": {
             "esperando": "Esperando jugador…",
