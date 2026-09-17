@@ -1189,8 +1189,15 @@
             if (box && state.codigo) box.classList.remove('hidden');
         }, 20000);
 
-        app.appendChild(el('div', { class: 'text-center m-4' }, [
-            el('button', { class: 'text-slate-400 text-sm btn-tap', onclick: cancelarBusqueda }, t('ui.lobby.btn_cancelar')),
+        // Salida destacada: cancela la búsqueda y vuelve al lobby (crear sala
+        // privada, practicar…).
+        app.appendChild(el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 text-center fade-in' }, [
+            el('p', { class: 'text-xs text-slate-400 mb-3' }, t('ui.lobby.busqueda_alternativa')),
+            el('button', {
+                id: 'btnSalirEspera',
+                class: 'w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg',
+                onclick: cancelarBusqueda,
+            }, '← ' + t('ui.juego.salir_lobby')),
         ]));
 
         // Quién está esperando ahora mismo (se refresca cada 5 s).
