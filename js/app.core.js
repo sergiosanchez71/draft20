@@ -789,12 +789,18 @@
             el('label', { class: 'block text-sm text-slate-400 mb-2 text-center' }, t('ui.lobby.bot_dificultad')),
             crearSelectorDificultad('mt-2'),
             crearToggleValores('mt-4'),
-            el('button', {
-                id: 'btnPractice',
-                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm mt-4',
-                onclick: onPractice,
-            }, t('ui.lobby.btn_practicar')),
-        ]);
+                el('button', {
+                    id: 'btnPractice',
+                    class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm mt-4',
+                    onclick: onPractice,
+                }, t('ui.lobby.btn_practicar')),
+                el('button', {
+                    id: 'btnGuiada',
+                    class: 'w-full bg-amber-400/90 text-slate-900 font-bold py-3 rounded-lg btn-tap text-sm mt-2',
+                    onclick: onGuiada,
+                }, '🎓 ' + t('ui.lobby.btn_guiada')),
+                el('p', { class: 'text-[11px] text-slate-500 mt-1 text-center' }, t('ui.lobby.guiada_ayuda')),
+            ]);
 
         app.appendChild(errorBox);
         app.appendChild(rapidaForm);
@@ -969,6 +975,16 @@
         const btn = $('#btnPractice');
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
         await iniciarPartidaBot(tematica, dificultad, nombre);
+        if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+    }
+
+    /** Práctica guiada: bot fácil, ⭐ visibles y explicaciones paso a paso. */
+    async function onGuiada() {
+        const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || 'Tú';
+        const btn = $('#btnGuiada');
+        if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
+        try { localStorage.setItem('draft20_guiada', '1'); } catch (e) { /* ignore */ }
+        iniciarPartidaBot(TEMATICA_RANDOM, 'facil', nombre, true);
         if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
     }
 

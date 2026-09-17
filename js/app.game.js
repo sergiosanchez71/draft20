@@ -56,6 +56,15 @@
         } catch (e) { state.bot = null; }
         state.partidaGuardada = false;
 
+        // ¿Práctica guiada? (se consume una sola vez, y solo en partidas de bot)
+        state.guiado = false;
+        try {
+            if (state.bot && localStorage.getItem('draft20_guiada') === '1') {
+                localStorage.removeItem('draft20_guiada');
+                state.guiado = true;
+            }
+        } catch (e) { /* ignore */ }
+
         renderGameShell();
         await pollGameTick();
         startPollingGame();
@@ -797,6 +806,35 @@
     }
 
     function renderActionBar() {
+        renderActionBarBase();
+        const bar = $('#actionBar');
+        if (!bar || !state.guiado || !state.bot) return;
+        const s = state.sala;
+        if (!s) return;
+        const texto = guiaTexto(s);
+        if (!texto) return;
+        bar.appendChild(el('div', { class: 'mt-2 text-[11px] leading-snug text-amber-200 bg-slate-900/70 border border-amber-400/50 rounded-lg px-3 py-2 text-center' }, [
+            el('span', {}, '🎓 ' + texto),
+            el('button', {
+                class: 'block mx-auto mt-1 text-slate-400 underline btn-tap',
+                onclick: function () { state.guiado = false; renderGame(null); },
+            }, t('ui.juego.guia_saltar')),
+        ]));
+    }
+
+    /** Texto del paso actual de la práctica guiada (null = sin guía). */
+    function guiaTexto(s) {
+        if (s.estado === 'finalizada') return null; // el cierre va en la pantalla final
+        if (s.estado !== 'jugando' || !s.item_actual) return null;
+        const dp = s.decision_pendiente;
+        if (dp && dp.para === state.jugadorSlot) return t('ui.juego.guia_paso3');
+        if (s.item_actual.turno_de === state.jugadorSlot) {
+            return (s.item_actual.precio_actual || 0) === 0 ? t('ui.juego.guia_paso1') : t('ui.juego.guia_paso2');
+        }
+        return t('ui.juego.guia_rival', { rival: state.rivalNombre || 'Rival' });
+    }
+
+    function renderActionBarBase() {
         const bar = $('#actionBar');
         if (!bar) return;
         clear(bar);
@@ -1281,6 +1319,12 @@
         card.appendChild(header);
         if (revanchaBanner) card.appendChild(revanchaBanner);
         card.appendChild(resultBlock);
+        if (state.guiado && state.bot) {
+            card.appendChild(el('div', { class: 'bg-slate-800 border border-amber-400/50 rounded-lg p-3 mb-4 text-sm text-amber-200 text-center' }, [
+                el('div', {}, '🎓 ' + t('ui.juego.guia_fin')),
+                el('a', { class: 'inline-block mt-2 text-xs text-amber-400 underline', href: 'como-jugar' }, t('ui.juego.guia_mas')),
+            ]));
+        }
         renderSerieYLogros(resultado, myItems, rivalItems, mySpent).forEach(function (b) { card.appendChild(b); });
         card.appendChild(el('p', { class: 'text-center text-xs text-slate-400 mb-4' },
             t('ui.juego.tematica_label') + ': ' + (s.tematica ? (tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica)) : '—')));
