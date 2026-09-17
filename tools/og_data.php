@@ -59,6 +59,7 @@ foreach ($guias as $slug => $g) {
 $out[] = ['tipo' => 'seccion', 'id' => 'como-jugar', 'nombre' => 'Cómo jugar a Draft 20', 'categoria' => 'Reglas en 2 minutos'];
 $out[] = ['tipo' => 'seccion', 'id' => 'guias', 'nombre' => 'Guías de Draft 20', 'categoria' => 'Trucos, formatos y variantes'];
 $out[] = ['tipo' => 'seccion', 'id' => 'glosario', 'nombre' => 'Glosario de Draft 20', 'categoria' => 'Todos los términos del juego'];
+$out[] = ['tipo' => 'seccion', 'id' => 'juegos-de-subasta', 'nombre' => 'Juegos de subasta', 'categoria' => 'Qué son y cómo elegir uno online'];
 
 $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'og_data.json';
 file_put_contents($path, json_encode($out, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));

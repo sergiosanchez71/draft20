@@ -40,6 +40,7 @@ Options -Indexes
     RewriteRule ^privacidad/?$ privacidad.php [L]
     RewriteRule ^aviso-legal/?$ aviso_legal.php [L]
     RewriteRule ^glosario/?$ glosario.php [L]
+    RewriteRule ^juegos-de-subasta/?$ juegos_de_subasta.php [L]
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
     RewriteRule ^feed\.xml$ feed.php [L]
 </IfModule>
@@ -79,7 +80,7 @@ ErrorDocument 404 /404.php
         SetEnvIf Request_URI "^/index\.php$" es_landing
         Header set Cache-Control "public, max-age=0, s-maxage=600" env=es_landing
 
-        SetEnvIf Request_URI "^/(tematica|guia|guias|categoria|como-jugar|acerca|contacto|privacidad|aviso-legal|glosario)/?([a-z0-9_-]+)?/?$" es_contenido
+        SetEnvIf Request_URI "^/(tematica|guia|guias|categoria|como-jugar|acerca|contacto|privacidad|aviso-legal|glosario|juegos-de-subasta)/?([a-z0-9_-]+)?/?$" es_contenido
         SetEnvIf Request_URI "^/feed\.xml$" es_contenido
         Header set Cache-Control "public, max-age=0, s-maxage=600" env=es_contenido
     </IfModule>

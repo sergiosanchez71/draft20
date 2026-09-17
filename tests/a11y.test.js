@@ -22,9 +22,11 @@ const PAGINAS = [
     '/index.php',
     '/como-jugar',
     '/glosario',
+    '/juegos-de-subasta',
     '/tematica/futbol',
     '/categoria/comida',
     '/guia/draft-de-20-monedas',
+    '/guia/juegos-por-videollamada',
     '/privacidad',
 ];
 

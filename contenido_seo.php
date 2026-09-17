@@ -43,6 +43,8 @@ function contenido_seo(): array
                 'juegos-navidad-familia',
                 'juegos-verano',
                 'juegos-san-valentin',
+                'juegos-por-videollamada',
+                'juegos-online-gratis-sin-registro',
             ],
         ];
     }

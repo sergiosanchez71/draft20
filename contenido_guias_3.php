@@ -162,4 +162,104 @@ return [
             ['href' => '/guia/como-ganar-draft-20', 'texto' => 'Tácticas para ganar la revancha'],
         ],
     ],
+    'juegos-por-videollamada' => [
+        'titulo' => 'Juegos para jugar por videollamada con un amigo (Discord, Zoom o FaceTime)',
+        'desc' => 'Qué juegos funcionan de verdad en una videollamada, qué buscar y por qué Draft 20 encaja: sin instalar nada, con enlace o código y partidas de 5 minutos.',
+        'h1' => 'Juegos para jugar por videollamada con un amigo',
+        'fecha' => '2026-09-17',
+        'secciones' => [
+            [
+                'h' => 'Lo que de verdad funciona en una videollamada',
+                'p' => [
+                    'Jugar por videollamada tiene una regla no escrita: si el juego te obliga a mirar otra pantalla durante más de unos segundos, la conversación se muere y con ella las ganas. Por eso funcionan mejor los juegos con turnos claros, reglas que se explican en una frase y partidas cortas que se puedan comentar mientras se juegan.',
+                    'El segundo factor es la fricción técnica. Pedir a alguien que se registre, que instale una app o que cree una cuenta mata la partida antes de empezar. Lo ideal es un juego al que se entre con un enlace, sin descargas, y que funcione igual desde el móvil o el ordenador.',
+                    'Y el tercero es el pique. Un juego por videollamada solo engancha si hay decisiones, tensión y algo que contar al terminar. Los turnos con farol o con puja cumplen esto mucho mejor que los juegos de suerte pura.',
+                ],
+            ],
+            [
+                'h' => 'Por qué los juegos de subasta encajan tan bien',
+                'p' => [
+                    'La subasta añade justo lo que le falta a una llamada: momentos de decisión compartidos. En cada ronda hay una pausa brevísima en la que uno puja, el otro duda y en la videollamada se escucha el «¿en serio?». Esa tensión de dos segundos es todo el entretenimiento.',
+                    'Además, la subasta se explica sola: hay ítems, cada uno vale algo secreto y gana quien reúne la mejor colección. Puedes explicarlo en veinte segundos y la partida puede empezar con la otra persona sin haber leído una regla.',
+                ],
+            ],
+            [
+                'h' => 'Cómo jugar a Draft 20 por videollamada',
+                'p' => [
+                    'Abre Draft 20 en el móvil y comparte el enlace de la sala por el chat de la llamada (WhatsApp, Discord, Telegram o el propio chat de Zoom). Tu amigo entra con su nombre y ya estáis jugando: 8 rondas, 20 monedas cada uno y una temática sorpresa.',
+                    'Como no hace falta hablar del juego para jugarlo, la llamada se llena de lo otro: comentar los ítems, reírse de los que nadie quiere y presumir de la colección final. Al terminar podéis pulsar REVANCHA RÁPIDA y seguir con otra temática sin volver a compartir nada.',
+                    'Si preferís jugar sin llamada, el código sirve igual; y si queréis practicar antes, hay una partida contra el bot con dificultad ajustable.',
+                ],
+            ],
+            [
+                'h' => 'Errores que arruinan una partida por videollamada',
+                'p' => [
+                    'El primero es elegir un juego con turnos largos: si cada jugador piensa treinta segundos, la llamada se convierte en dos personas mirando el móvil en silencio. Los turnos de Draft 20 se resuelven en segundos y eso mantiene la conversación viva.',
+                    'El segundo es no acordar cuándo terminar. Una partida corta se disfruta; cinco seguidas sin pausa acaban en cansancio. Lo habitual es jugar dos o tres, comentar la última y decidir si hay revancha.',
+                    'El tercero es jugar con alguien que está haciendo otra cosa: en una subasta, la mitad de la diversión está en reaccionar a lo que hace el otro. Si el rival responde a los dos minutos, la tensión desaparece.',
+                ],
+            ],
+        ],
+        'faq' => [
+            ['q' => '¿Hace falta instalar algo para jugar por videollamada?', 'a' => 'No. Draft 20 se juega en el navegador: se comparte un enlace o un código y listo. La videollamada va por tu aplicación habitual (Discord, Zoom, FaceTime, Meet).'],
+            ['q' => '¿Se puede jugar desde el móvil con datos móviles?', 'a' => 'Sí, el juego es ligero y solo envía peticiones pequeñas cada segundo. Con una conexión móvil normal va sobrado.'],
+            ['q' => '¿Cuánto dura una partida?', 'a' => 'Entre 4 y 8 minutos. Son 8 rondas y cada ronda son unos segundos de puja, así que da tiempo a varias partidas en una llamada.'],
+            ['q' => '¿Funciona para más de dos jugadores?', 'a' => 'No: Draft 20 es un duelo de dos. Si sois más, se juega por parejas y cada pareja comparte pantalla o turnos.'],
+        ],
+        'enlaces' => [
+            ['href' => '/guia/juegos-por-whatsapp', 'texto' => 'Juegos para jugar por WhatsApp'],
+            ['href' => '/guia/juegos-de-subasta-online', 'texto' => 'Juegos de subasta online'],
+            ['href' => '/como-jugar', 'texto' => 'Cómo se juega a Draft 20'],
+            ['href' => '/glosario', 'texto' => 'Glosario: puja, ME BAJO, cap…'],
+        ],
+    ],
+    'juegos-online-gratis-sin-registro' => [
+        'titulo' => 'Juegos online gratis sin descargar ni registro para 2 jugadores',
+        'desc' => 'Cómo reconocer los juegos online gratis que de verdad no piden registro, ni descargas, ni anuncios invasivos, y opciones para jugar con un amigo al instante.',
+        'h1' => 'Juegos online gratis sin descargar ni registro',
+        'fecha' => '2026-09-17',
+        'secciones' => [
+            [
+                'h' => '«Sin registro» significa compartir un enlace',
+                'p' => [
+                    'La mayoría de las webs que dicen «sin registro» piden un correo en el segundo clic, o te obligan a instalar una aplicación. Un juego realmente sin registro te da una sala y un enlace (o un código corto): quien lo abre, entra directamente a jugar con un nombre y ya está.',
+                    'Ese detalle cambia la experiencia completa. No hay espera previa, no hay contraseña que recordar y no hay perfil que rellenar: se juega ahora y, si te gusta, vuelves otro día.',
+                ],
+            ],
+            [
+                'h' => 'Qué mirar antes de elegir un juego gratuito',
+                'p' => [
+                    'Primero, la fricción: ¿cuántos clics hay entre la web y la primera jugada? Si son más de dos, malo. Segundo, los anuncios: los banners que saltan o bloquean los botones hacen imposible jugar en el móvil. Tercero, la privacidad: un juego serio no necesita tus datos personales para dejarte jugar una partida.',
+                    'Y por último, la claridad: reglas que se explican en una frase y partidas cortas. Si necesitas un tutorial de diez minutos antes de tu primera partida, es un juego para otro momento.',
+                ],
+            ],
+            [
+                'h' => 'Draft 20: gratis, en el navegador y sin cuentas',
+                'p' => [
+                    'Draft 20 es un duelo de subastas para dos jugadores que funciona exactamente así: entras, eliges temática (o dejas que salga aleatoria), compartes el enlace y jugáis 8 rondas de pujas. No hay cuenta, no hay descarga obligatoria y no hay anuncios dentro de la partida.',
+                    'Tampoco se piden datos para jugar: la sesión vive en tu navegador y el progreso local (récord, logros y serie) se guarda en tu propio dispositivo. Es gratis en el navegador y, si lo prefieres, se puede instalar como aplicación desde el propio móvil con un botón, sin pasar por una tienda.',
+                    'Y si nadie está disponible para jugar en ese momento, hay partida rápida contra otra persona o práctica contra el bot con cuatro dificultades.',
+                ],
+            ],
+            [
+                'h' => 'Cómo detectar un «gratis» con trampa',
+                'p' => [
+                    'Los juegos gratuitos de verdad se sostienen sin pedirte nada antes de jugar. Las señales de alarma son claras: un formulario de registro antes de la primera partida, un límite de intentos que se desbloquea pagando, o monedas virtuales que se compran para seguir jugando.',
+                    'También conviene mirar los anuncios: un banner al lado es aceptable, pero los que cubren los botones o abren pestañas nuevas convierten la partida en un ejercicio de puntería. Y si el juego promete premios reales por jugar, sospecha: lo más probable es que el producto seas tú.',
+                ],
+            ],
+        ],
+        'faq' => [
+            ['q' => '¿Draft 20 pide correo o cuenta?', 'a' => 'No. Solo un nombre para mostrar en la partida, que puede ser lo que quieras. No hay registro ni contraseña.'],
+            ['q' => '¿Hay que descargar algo?', 'a' => 'No es obligatorio: se juega en el navegador. Si quieres, puedes instalarlo como app web desde el propio móvil (Compartir → Añadir a pantalla de inicio en iPhone, o el botón de instalar en Android).'],
+            ['q' => '¿Tiene anuncios o microtransacciones?', 'a' => 'No hay anuncios dentro de la partida ni compras: las 20 monedas y las 8 rondas son iguales para todos.'],
+            ['q' => '¿Necesito crear una sala o puedo jugar ya?', 'a' => 'Puedes pulsar Partida rápida y el sistema te empareja con la primera persona que esté buscando; o crear una sala y compartir el código.'],
+        ],
+        'enlaces' => [
+            ['href' => '/guia/juegos-de-subasta-online', 'texto' => 'Juegos de subasta online'],
+            ['href' => '/guias', 'texto' => 'Todas las guías de Draft 20'],
+            ['href' => '/tematica/hamburguesa', 'texto' => 'Ver una ficha de temática'],
+            ['href' => '/', 'texto' => 'Jugar ahora (gratis)'],
+        ],
+    ],
 ];
