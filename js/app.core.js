@@ -189,6 +189,218 @@
         } catch (e) { return []; }
     }
 
+    /** Metadatos de logros para el perfil (el test de cada uno vive en app.game.js). */
+    const LOGROS_META = [
+        { id: 'coleccionista', icono: '🧺' },
+        { id: 'cazador', icono: '🎯' },
+        { id: 'austero', icono: '💰' },
+        { id: 'derrochador', icono: '💸' },
+        { id: 'racha', icono: '🔥' },
+        { id: 'veterano', icono: '🎖️' },
+    ];
+    function logroIcono(id) {
+        for (let i = 0; i < LOGROS_META.length; i++) {
+            if (LOGROS_META[i].id === id) return LOGROS_META[i].icono;
+        }
+        return '🏅';
+    }
+
+    // =================== serie al mejor de 3 ===================
+    const SERIE_VIGENCIA_MS = 30 * 60 * 1000;
+
+    function leerSerieGuardada() {
+        let serie = null;
+        try { serie = JSON.parse(localStorage.getItem('draft20_serie') || 'null'); } catch (e) { /* ignore */ }
+        if (!serie || typeof serie !== 'object') return null;
+        if ((Date.now() - (serie.ts || 0)) >= SERIE_VIGENCIA_MS) return null;
+        return serie;
+    }
+
+    /** Serie vigente contra el rival actual (para la cabecera de la partida). */
+    function leerSerie() {
+        const serie = leerSerieGuardada();
+        const rival = state.rivalNombre || '';
+        return (serie && rival && serie.rival === rival) ? serie : null;
+    }
+
+    /** Suma el resultado a la serie contra el rival actual (se reinicia a los 30 min). */
+    function actualizarSerie(resultado) {
+        const rival = state.rivalNombre || 'Rival';
+        let serie = null;
+        try { serie = JSON.parse(localStorage.getItem('draft20_serie') || 'null'); } catch (e) { /* ignore */ }
+        const ahora = Date.now();
+        const vigente = serie && serie.rival === rival && (ahora - (serie.ts || 0)) < SERIE_VIGENCIA_MS;
+        if (!vigente) serie = { rival: rival, mio: 0, rivalPuntos: 0 };
+        if (resultado === 'win') serie.mio = (serie.mio || 0) + 1;
+        else if (resultado === 'loss') serie.rivalPuntos = (serie.rivalPuntos || 0) + 1;
+        serie.ts = ahora;
+        serie.ganada = (serie.mio >= 2 || serie.rivalPuntos >= 2) ? (serie.mio >= 2 ? 'mio' : 'rival') : '';
+        try { localStorage.setItem('draft20_serie', JSON.stringify(serie)); } catch (e) { /* ignore */ }
+        return serie;
+    }
+
+    // =================== historial local ===================
+    function registrarHistorial(resultado) {
+        const s = state.sala || {};
+        const entrada = {
+            ts: Date.now(),
+            tema: s.tematica || '',
+            rival: state.rivalNombre || (state.bot ? 'Bot' : 'Rival'),
+            r: resultado,
+            bot: !!state.bot,
+        };
+        try {
+            const raw = localStorage.getItem('draft20_historial');
+            const prev = raw ? JSON.parse(raw) : [];
+            const lista = Array.isArray(prev) ? prev : [];
+            lista.unshift(entrada);
+            localStorage.setItem('draft20_historial', JSON.stringify(lista.slice(0, 10)));
+        } catch (e) { /* ignore */ }
+    }
+
+    // =================== sonido (WebAudio, sin ficheros) ===================
+    let audioCtx = null;
+
+    function sonidoActivo() {
+        try { return localStorage.getItem('draft20_sonido') === '1'; } catch (e) { return false; }
+    }
+
+    function toggleSonido() {
+        const on = !sonidoActivo();
+        try { localStorage.setItem('draft20_sonido', on ? '1' : '0'); } catch (e) { /* ignore */ }
+        if (on) sfx('turno'); // feedback inmediato al activar
+        return on;
+    }
+
+    /** Tonos cortos generados al vuelo; no suena nada si el usuario no lo activó. */
+    function sfx(nombre) {
+        if (!sonidoActivo()) return;
+        const tonos = {
+            turno: [[660, 0.07]],
+            item: [[523, 0.08], [784, 0.12]],
+            perdido: [[330, 0.08], [220, 0.14]],
+            fin: [[523, 0.1], [659, 0.1], [784, 0.18]],
+        };
+        const seq = tonos[nombre];
+        if (!seq) return;
+        try {
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (!Ctx) return;
+            if (!audioCtx) audioCtx = new Ctx();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            let t0 = audioCtx.currentTime;
+            seq.forEach(function (p) {
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = p[0];
+                g.gain.setValueAtTime(0.0001, t0);
+                g.gain.exponentialRampToValueAtTime(0.08, t0 + 0.01);
+                g.gain.exponentialRampToValueAtTime(0.0001, t0 + p[1]);
+                osc.connect(g);
+                g.connect(audioCtx.destination);
+                osc.start(t0);
+                osc.stop(t0 + p[1] + 0.02);
+                t0 += p[1];
+            });
+        } catch (e) { /* sin audio */ }
+    }
+
+    // =================== PWA (instalar app) ===================
+    let deferredPrompt = null;
+    const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || '');
+    let pwaDescartada = false;
+    try { pwaDescartada = localStorage.getItem('draft20_pwa_oculto') === '1'; } catch (e) { /* ignore */ }
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        const b = document.getElementById('btnInstalar');
+        if (b) b.classList.remove('hidden');
+    });
+    window.addEventListener('appinstalled', function () {
+        deferredPrompt = null;
+        const b = document.getElementById('btnInstalar');
+        if (b) b.classList.add('hidden');
+        toast(t('ui.lobby.pwa_instalada'));
+    });
+
+    function pwaDisponible() {
+        if (deferredPrompt) return true;
+        if (!esIOS || pwaDescartada) return false;
+        const standalone = window.navigator.standalone === true
+            || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+        return !standalone;
+    }
+
+    async function pwaInstalar() {
+        if (deferredPrompt) {
+            try {
+                deferredPrompt.prompt();
+                await deferredPrompt.userChoice;
+            } catch (e) { /* ignore */ }
+            deferredPrompt = null;
+            const b = document.getElementById('btnInstalar');
+            if (b) b.classList.add('hidden');
+            return;
+        }
+        // iOS no tiene prompt: se explican los pasos.
+        try { localStorage.setItem('draft20_pwa_oculto', '1'); } catch (e) { /* ignore */ }
+        toast(t('ui.lobby.pwa_ios'), 6000);
+    }
+
+    // =================== Mi progreso ===================
+    function showProgresoModal() {
+        const st = loadStats();
+        const desbloqueados = logrosDesbloqueados();
+        const serie = leerSerieGuardada();
+        let historial = [];
+        try { historial = JSON.parse(localStorage.getItem('draft20_historial') || '[]') || []; } catch (e) { /* ignore */ }
+        if (!Array.isArray(historial)) historial = [];
+
+        const filas = [];
+        filas.push(el('div', { class: 'text-center text-sm text-slate-200 mb-1' },
+            t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 })));
+        filas.push(el('div', { class: 'text-center text-xs text-slate-400 mb-3' },
+            t('ui.lobby.progreso_racha', { actual: st.streak || 0, mejor: st.best || 0 })));
+        if (serie) {
+            filas.push(el('div', { class: 'text-center text-xs text-amber-300 mb-3' },
+                t('ui.lobby.progreso_serie', { rival: serie.rival, mio: serie.mio || 0, suyos: serie.rivalPuntos || 0 })));
+        }
+
+        filas.push(el('div', { class: 'text-xs uppercase tracking-wide text-slate-400 mb-2' }, t('ui.lobby.progreso_logros') + ' · ' + desbloqueados.length + '/' + LOGROS_IDS.length));
+        filas.push(el('div', { class: 'grid grid-cols-2 gap-2 mb-4' }, LOGROS_META.map(function (l) {
+            const ok = desbloqueados.indexOf(l.id) !== -1;
+            return el('div', { class: 'flex items-center gap-2 rounded bg-slate-700/60 px-2 py-1.5 ' + (ok ? '' : 'opacity-40') }, [
+                el('span', { class: 'text-xl' }, l.icono),
+                el('span', { class: 'text-xs ' + (ok ? 'text-slate-100' : 'text-slate-400') }, t('ui.juego.logros.' + l.id)),
+            ]);
+        })));
+
+        filas.push(el('div', { class: 'text-xs uppercase tracking-wide text-slate-400 mb-2' }, t('ui.lobby.progreso_historial')));
+        if (!historial.length) {
+            filas.push(el('p', { class: 'text-xs text-slate-500 italic' }, t('ui.lobby.progreso_sin_historial')));
+        } else {
+            filas.push(el('div', { class: 'space-y-1' }, historial.slice(0, 5).map(function (h) {
+                const icono = h.r === 'win' ? '✅' : (h.r === 'loss' ? '❌' : '🤝');
+                const quien = h.bot ? 'Bot' : (h.rival || 'Rival');
+                let fecha = '';
+                try { fecha = new Date(h.ts || 0).toLocaleDateString(); } catch (e) { /* ignore */ }
+                return el('div', { class: 'flex items-center justify-between text-xs text-slate-300 bg-slate-700/40 rounded px-2 py-1' }, [
+                    el('span', { class: 'truncate' }, icono + ' ' + quien),
+                    el('span', { class: 'text-slate-500 ml-2 flex-shrink-0' }, (h.tema ? tTematica(h.tema) : '') + ' · ' + fecha),
+                ]);
+            })));
+        }
+
+        const content = el('div', {}, [el('h2', { class: 'text-lg font-bold text-amber-400 mb-3' }, '🏅 ' + t('ui.lobby.progreso_titulo'))].concat(filas));
+        const m = showModal(content);
+        content.appendChild(el('button', {
+            class: 'mt-4 w-full bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap',
+            onclick: m.close,
+        }, t('ui.reglas.cerrar')));
+    }
+
     // =================== toast ===================
     // Cola corta: los avisos se muestran en secuencia (1 activo + 2 pendientes)
     // para que dos mensajes seguidos no se pisen.
@@ -465,18 +677,41 @@
         clear(app);
         const st = loadStats();
         const hayStats = (st.wins || st.losses || st.draws);
-        app.appendChild(el('header', { class: 'py-2 text-center relative min-h-[36px]' }, [
-            hayStats
-                ? el('p', { class: 'text-amber-300/80 text-xs font-mono pt-1' },
-                    t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 })
-                    + (logrosDesbloqueados().length ? ' · 🏅 ' + logrosDesbloqueados().length + '/' + LOGROS_IDS.length : ''))
-                : null,
-            el('button', {
-                class: 'absolute top-1 right-4 w-9 h-9 rounded-full bg-slate-700 text-slate-200 text-sm font-bold btn-tap',
-                'aria-label': t('ui.lobby.btn_reglas'),
-                title: t('ui.lobby.btn_reglas'),
-                onclick: showRulesModal,
-            }, '?'),
+        const btnInstalar = el('button', {
+            id: 'btnInstalar',
+            class: 'w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500 text-white text-base font-bold btn-tap' + (pwaDisponible() ? '' : ' hidden'),
+            'aria-label': t('ui.lobby.pwa_instalar'),
+            title: t('ui.lobby.pwa_instalar'),
+            onclick: pwaInstalar,
+        }, '📲');
+        const btnProgreso = el('button', {
+            class: 'w-9 h-9 flex-shrink-0 rounded-full bg-slate-700 text-slate-200 text-base font-bold btn-tap',
+            'aria-label': t('ui.lobby.btn_progreso'),
+            title: t('ui.lobby.btn_progreso'),
+            onclick: showProgresoModal,
+        }, '🏅');
+        const btnSonido = el('button', {
+            class: 'w-9 h-9 flex-shrink-0 rounded-full bg-slate-700 text-slate-200 text-base font-bold btn-tap',
+            'aria-label': t('ui.lobby.sonido'),
+            title: t('ui.lobby.sonido'),
+            onclick: function () { this.textContent = toggleSonido() ? '🔊' : '🔇'; },
+        }, sonidoActivo() ? '🔊' : '🔇');
+        const btnReglas = el('button', {
+            class: 'w-9 h-9 flex-shrink-0 rounded-full bg-slate-700 text-slate-200 text-sm font-bold btn-tap',
+            'aria-label': t('ui.lobby.btn_reglas'),
+            title: t('ui.lobby.btn_reglas'),
+            onclick: showRulesModal,
+        }, '?');
+        app.appendChild(el('header', { class: 'py-1.5 px-3 flex items-center gap-2 min-h-[44px]' }, [
+            el('p', { class: 'flex-1 text-amber-300/80 text-xs font-mono truncate' },
+                hayStats
+                    ? t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 })
+                        + (logrosDesbloqueados().length ? ' · 🏅 ' + logrosDesbloqueados().length + '/' + LOGROS_IDS.length : '')
+                    : ''),
+            btnInstalar,
+            btnProgreso,
+            btnSonido,
+            btnReglas,
         ]));
 
         const selectorBox = el('div', { id: 'tematicaSelector', class: 'mb-4' });
@@ -934,6 +1169,13 @@
         emojiImg: emojiImg,
         emojiSlug: emojiSlug,
         LOGROS_IDS: LOGROS_IDS,
+        LOGROS_META: LOGROS_META,
+        logroIcono: logroIcono,
+        leerSerie: leerSerie,
+        actualizarSerie: actualizarSerie,
+        registrarHistorial: registrarHistorial,
+        sfx: sfx,
+        toggleSonido: toggleSonido,
         iniciarPartidaBot: iniciarPartidaBot,
     };
 })();

@@ -26,6 +26,7 @@
     const resolverTematica = D.resolverTematica;
     const renderTematicaSelector = D.renderTematicaSelector;
     const iniciarPartidaBot = D.iniciarPartidaBot;
+    const sfx = D.sfx, leerSerie = D.leerSerie, registrarHistorial = D.registrarHistorial, logroIcono = D.logroIcono;
 
     // El aviso del último ítem y el de la temática se muestran una sola vez
     // por partida (la carga de página va por partida).
@@ -97,6 +98,7 @@
             el('div', { class: 'text-center flex-1 px-2' }, [
                 el('h1', { class: 'text-sm font-bold text-amber-400 leading-tight' }, t('ui.app.titulo')),
                 el('div', { id: 'headerTematica', class: 'text-[10px] text-slate-400 leading-tight truncate' }, ''),
+                el('div', { id: 'headerSerie', class: 'hidden text-[10px] font-bold text-amber-300/90 leading-tight' }, ''),
             ]),
             el('div', { class: 'w-14' }),
         ]);
@@ -244,6 +246,7 @@
                 precio: (nuevo.precio || 0) + '🪙',
             }));
             vibrate([80, 40, 80]);
+            sfx('perdido');
         }
     }
 
@@ -514,13 +517,30 @@
             const nowItems = (s.jugadores[state.jugadorSlot]?.items_ganados || []).map(function (i) { return i.id; }).join(',');
             if (nowItems.length > prevItems.length) {
                 vibrate([40, 30, 80]);
+                sfx('item');
+            }
+            // Cambio de turno a mi favor: aviso sonoro (si el sonido está activo).
+            const prevTurno = prev.item_actual && prev.item_actual.turno_de;
+            const nowTurno = s.item_actual && s.item_actual.turno_de;
+            if (nowTurno === state.jugadorSlot && prevTurno !== undefined && prevTurno !== state.jugadorSlot) {
+                sfx('turno');
             }
         }
 
-        // Header: temática en curso
+        // Header: temática en curso + serie contra el rival
         const ht = document.getElementById('headerTematica');
         if (ht && s.tematica) {
             ht.textContent = tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica);
+        }
+        const hs = document.getElementById('headerSerie');
+        if (hs) {
+            const serie = (s.estado === 'jugando' || s.estado === 'finalizada') ? leerSerie() : null;
+            if (serie) {
+                hs.textContent = t('ui.juego.serie_corta', { mio: serie.mio || 0, suyos: serie.rivalPuntos || 0 });
+                hs.classList.remove('hidden');
+            } else {
+                hs.classList.add('hidden');
+            }
         }
 
         // Aviso transitorio de la temática al entrar en la partida (sin aceptación).
@@ -1111,21 +1131,7 @@
         { id: 'veterano', icono: '🎖️', test: function () { const s = loadStats(); return ((s.wins || 0) + (s.losses || 0) + (s.draws || 0)) >= 10; } },
     ];
 
-    /** Serie al mejor de 3 con el mismo rival (se reinicia a los 30 min). */
-    function actualizarSerie(resultado) {
-        const rival = state.rivalNombre || 'Rival';
-        let serie = null;
-        try { serie = JSON.parse(localStorage.getItem('draft20_serie') || 'null'); } catch (e) { /* ignore */ }
-        const ahora = Date.now();
-        const vigente = serie && serie.rival === rival && (ahora - (serie.ts || 0)) < 30 * 60 * 1000;
-        if (!vigente) serie = { rival: rival, mio: 0, rivalPuntos: 0 };
-        if (resultado === 'win') serie.mio = (serie.mio || 0) + 1;
-        else if (resultado === 'loss') serie.rivalPuntos = (serie.rivalPuntos || 0) + 1;
-        serie.ts = ahora;
-        serie.ganada = (serie.mio >= 2 || serie.rivalPuntos >= 2) ? (serie.mio >= 2 ? 'mio' : 'rival') : '';
-        try { localStorage.setItem('draft20_serie', JSON.stringify(serie)); } catch (e) { /* ignore */ }
-        return serie;
-    }
+    /** Serie al mejor de 3 con el mismo rival: lógica en app.core.js. */
 
     function evaluarLogros(resultado, miItems, rivalItems, gasto) {
         let guardados = {};
@@ -1144,8 +1150,9 @@
     function renderSerieYLogros(resultado, myItems, rivalItems, mySpent) {
         if (!state.finalRegistrada) {
             state.finalRegistrada = true;
-            state.serieFinal = actualizarSerie(resultado);
+            state.serieFinal = D.actualizarSerie(resultado);
             state.logrosFinal = evaluarLogros(resultado, myItems, rivalItems, mySpent);
+            registrarHistorial(resultado);
         }
         const serie = state.serieFinal || { mio: 0, rivalPuntos: 0, ganada: '' };
         const logrosNuevos = state.logrosFinal || [];
@@ -1164,7 +1171,7 @@
             bloques.push(el('div', { class: 'bg-amber-400 text-slate-900 rounded-lg p-3 mb-4 text-center fade-in' }, [
                 el('div', { class: 'text-xs font-bold uppercase' }, t('ui.juego.logro_desbloqueado')),
                 el('div', { class: 'text-sm font-bold mt-1' }, logrosNuevos.map(function (l) {
-                    return l.icono + ' ' + t('ui.juego.logros.' + l.id);
+                    return logroIcono(l.id) + ' ' + t('ui.juego.logros.' + l.id);
                 }).join(' · ')),
             ]));
         }
@@ -1211,12 +1218,14 @@
                 el('p', { class: 'text-base font-bold' }, t(clave, { nombre: me?.nombre || 'Tú', puntos: myScore })),
             ]);
             vibrate([100, 50, 100, 50, 100]);
+            sfx('fin');
         } else if (resultado === 'loss') {
             const clave = porDesempate ? 'ui.juego.fin_ganador_desempate' : 'ui.juego.fin_ganador_score';
             resultBlock = el('div', { class: 'bg-rose-500 text-white p-4 rounded-lg mb-4 text-center fade-in' }, [
                 el('div', { class: 'text-3xl mb-1' }, '🏅'),
                 el('p', { class: 'text-base font-bold' }, t(clave, { nombre: rival?.nombre || 'Rival', puntos: rivalScore })),
             ]);
+            sfx('fin');
         } else {
             resultBlock = el('div', { class: 'bg-slate-700 text-slate-100 p-4 rounded-lg mb-4 text-center fade-in' }, [
                 el('div', { class: 'text-3xl mb-1' }, '🤝'),
@@ -1257,8 +1266,15 @@
             }, t('ui.juego.btn_compartir_resultado')),
             el('button', {
                 class: 'w-full bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg btn-tap',
+                onclick: function () {
+                    // Revancha en 1 toque: mismo rival, temática al azar.
+                    proponerRevancha(resolverTematica({ tematicaSeleccionada: TEMATICA_RANDOM }), null);
+                },
+            }, '🔄 ' + t('ui.juego.btn_revancha_rapida')),
+            el('button', {
+                class: 'w-full bg-slate-700 text-slate-100 font-bold py-3 px-6 rounded-lg btn-tap',
                 onclick: openRevanchaModal,
-            }, '🔄 ' + t('ui.juego.btn_revancha')),
+            }, '🎲 ' + t('ui.juego.btn_revancha_elegir')),
             el('button', { class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap', onclick: onLeave }, t('ui.juego.salir_lobby')),
         ]);
 
