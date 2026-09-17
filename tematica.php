@@ -96,7 +96,8 @@ pagina_head([
         <p class="text-xs text-slate-500 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', (int) filemtime($jsonTema))) ?></p>
         <?php endif; ?>
 
-        <a href="/?tematica=<?= e($id) ?>#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8"><?= e((string) ($SEO['tematica_cta'] ?? 'Jugar')) ?></a>
+        <button id="btnJugarTema" type="button" data-tematica="<?= e($id) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-2 disabled:opacity-60"><?= e((string) ($SEO['tematica_cta'] ?? 'Jugar')) ?></button>
+        <p class="text-xs text-slate-500 mb-8"><a class="hover:text-amber-400" href="/?tematica=<?= e($id) ?>#app"><?= e('o elige temática en el lobby') ?></a></p>
 
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(str_replace('{t}', $nombre, (string) ($SEO['tematica_items_titulo'] ?? 'Ítems de {t}'))) ?></h2>
         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-10">
@@ -176,4 +177,24 @@ pagina_head([
         </ul>
     </main>
 <?php
-pagina_foot();
+// Crear la sala desde la propia ficha (1 clic): guarda sesión y va al juego.
+$jsJugar = '(function () {'
+    . ' var b = document.getElementById("btnJugarTema"); if (!b) return;'
+    . ' var tema = b.getAttribute("data-tematica");'
+    . ' b.addEventListener("click", function () {'
+    . '  b.disabled = true;'
+    . '  var nombre = ""; try { nombre = localStorage.getItem("draft20_nombre") || ""; } catch (e) {}'
+    . '  fetch("/api/crear_sala.php", { method: "POST", headers: { "Content-Type": "application/json" },'
+    . '   credentials: "same-origin",'
+    . '   body: JSON.stringify({ tematica: tema, nombre: nombre }) })'
+    . '  .then(function (r) { return r.json(); })'
+    . '  .then(function (r) {'
+    . '   if (!r || !r.ok) { window.location.href = "/?tematica=" + encodeURIComponent(tema) + "#app"; return; }'
+    . '   try { localStorage.setItem("draft20_" + r.codigo, JSON.stringify({ jugadorId: r.jugador_id, jugadorNombre: nombre || "Jugador 1", ts: Date.now() })); } catch (e) {}'
+    . '   window.location.href = "/juego.php?codigo=" + encodeURIComponent(r.codigo);'
+    . '  })'
+    . '  .catch(function () { window.location.href = "/?tematica=" + encodeURIComponent(tema) + "#app"; });'
+    . ' });'
+    . '})();';
+
+pagina_foot(['inline' => $jsJugar]);

@@ -18,6 +18,7 @@ $urls = [
     ['loc' => SITE_URL . '/acerca', 'lastmod' => $hoy, 'changefreq' => 'monthly', 'priority' => '0.5'],
     ['loc' => SITE_URL . '/contacto', 'lastmod' => $hoy, 'changefreq' => 'yearly', 'priority' => '0.4'],
     ['loc' => SITE_URL . '/privacidad', 'lastmod' => $hoy, 'changefreq' => 'yearly', 'priority' => '0.3'],
+    ['loc' => SITE_URL . '/aviso-legal', 'lastmod' => $hoy, 'changefreq' => 'yearly', 'priority' => '0.3'],
 ];
 
 foreach (categorias() as $cat) {

@@ -136,6 +136,7 @@ function nav_links(): array
         ['href' => '/acerca', 'texto' => 'Acerca de'],
         ['href' => '/contacto', 'texto' => 'Contacto'],
         ['href' => '/privacidad', 'texto' => 'Privacidad'],
+        ['href' => '/aviso-legal', 'texto' => 'Aviso legal'],
     ];
 }
 
@@ -197,6 +198,9 @@ function pagina_head(array $opts): void
     <link rel="apple-touch-icon" href="<?= e(asset('icons/icon-180.png')) ?>">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="alternate" type="application/rss+xml" title="Draft 20 — Guías" href="/feed.xml">
+<?php foreach (($opts['prefetch'] ?? []) as $pf): ?>
+    <link rel="prefetch" href="<?= e($pf) ?>">
+<?php endforeach; ?>
     <?= css_tags($opts['css_inline'] ?? true) ?>
 <?php foreach (($opts['preload_scripts'] ?? []) as $src): ?>
     <link rel="preload" as="script" href="<?= e(asset_js($src)) ?>">

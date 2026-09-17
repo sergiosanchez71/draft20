@@ -72,6 +72,8 @@ pagina_head([
     'json_ld' => $jsonLd,
     // El bundle del lobby se descubre en el <head> y llega antes (SI/LCP).
     'preload_scripts' => ['js/app.core.js'],
+    // El juego se precarga en segundo plano: entrar a la partida es inmediato.
+    'prefetch' => ['/js/app.game.min.js', '/js/bot_policy.min.js'],
 ]);
 ?>
     <div class="min-h-screen flex flex-col">

@@ -1156,6 +1156,7 @@
         wrap.appendChild(el('div', { class: 'flex gap-2 mt-6 px-2 w-full' }, [
             el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
             el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+            el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { D.mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
         ]));
         wrap.appendChild(el('div', { class: 'text-center mt-6' }, [
             el('button', { class: 'text-slate-400 text-sm btn-tap', onclick: onLeave }, '← ' + t('ui.juego.salir_lobby')),

@@ -91,6 +91,7 @@
             localStorage.setItem(keyFor(state.codigo), JSON.stringify({
                 jugadorId: state.jugadorId,
                 jugadorNombre: state.jugadorNombre,
+                ts: Date.now(),
             }));
         } catch (e) { /* almacenamiento no disponible (modo privado) */ }
     }
@@ -134,6 +135,11 @@
     }
     function buildLink(codigo) {
         return window.location.origin + getBasePath() + '?sala=' + encodeURIComponent(codigo);
+    }
+
+    /** Recuerda el nombre para la creación de sala en 1 clic desde las fichas. */
+    function guardarNombre(nombre) {
+        try { localStorage.setItem('draft20_nombre', (nombre || '').trim()); } catch (e) { /* ignore */ }
     }
 
     // =================== toast ===================
@@ -281,7 +287,98 @@
             renderJoinView(linkSala, '');
         } else {
             renderInitialView();
+            buscarPartidaEnCurso().then(function (partida) {
+                if (partida) pintarBannerPartida(partida);
+            });
         }
+    }
+
+    /**
+     * Busca en localStorage salas propias que sigan vivas (jugando/esperando).
+     * Las que ya no existen se limpian. Devuelve la primera válida.
+     */
+    async function buscarPartidaEnCurso() {
+        try {
+            const codigos = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                const m = k && k.match(/^draft20_(?:bot_)?([A-Z0-9]{5})$/);
+                if (m && codigos.indexOf(m[1]) === -1) codigos.push(m[1]);
+            }
+            for (let j = 0; j < codigos.length; j++) {
+                const codigo = codigos[j];
+                const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(codigo) + '&t=' + Date.now());
+                if (r.ok && r.sala && (r.sala.estado === 'jugando' || r.sala.estado === 'esperando')) {
+                    return { codigo: codigo, estado: r.sala.estado };
+                }
+                clearSession(codigo);
+                try { localStorage.removeItem('draft20_bot_' + codigo); } catch (e) { /* ignore */ }
+            }
+        } catch (e) { /* ignore */ }
+        return null;
+    }
+
+    /** Carga un script bajo demanda (p. ej. la librería de QR). */
+    function cargarScript(src, alCargar, alFallar) {
+        const s = document.createElement('script');
+        s.src = src;
+        s.async = true;
+        s.onload = function () { if (alCargar) alCargar(); };
+        s.onerror = function () { if (alFallar) alFallar(); };
+        document.head.appendChild(s);
+    }
+
+    /** Modal con el QR del enlace de invitación (librería cargada on-demand). */
+    function mostrarQR(codigo) {
+        const url = buildLink(codigo);
+        const cont = el('div', {}, [
+            el('h2', { class: 'text-lg font-bold text-amber-400 mb-3' }, t('ui.lobby.qr_titulo')),
+            el('div', { id: 'qrBox', class: 'flex justify-center bg-white rounded-lg p-3 min-h-[248px] items-center' }, [
+                el('span', { class: 'text-slate-500 text-sm' }, '…'),
+            ]),
+            el('p', { class: 'text-xs text-slate-400 mt-3 text-center break-all' }, url),
+        ]);
+        const m = showModal(cont);
+        cont.appendChild(el('button', {
+            class: 'mt-4 w-full bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap',
+            onclick: m.close,
+        }, t('ui.reglas.cerrar')));
+
+        const pintar = function () {
+            const box = document.getElementById('qrBox');
+            if (!box || !window.QrCreator) return;
+            box.innerHTML = '';
+            window.QrCreator.render({
+                text: url,
+                size: 240,
+                radius: 0.4,
+                ecLevel: 'L',
+                fill: '#0f172a',
+                background: '#ffffff',
+                quiet: 2,
+            }, box);
+        };
+        if (window.QrCreator) {
+            pintar();
+        } else {
+            cargarScript('/js/vendor/qr-creator.min.js', pintar);
+        }
+    }
+
+    function pintarBannerPartida(partida) {
+        const app = $('#app');
+        if (!app || $('#partidaEnCurso')) return;
+        const card = el('section', { id: 'partidaEnCurso', class: 'bg-amber-400 text-slate-900 p-4 rounded-lg m-4 fade-in' }, [
+            el('p', { class: 'text-sm font-bold' }, t('ui.lobby.partida_en_curso')),
+            el('div', { class: 'flex items-center justify-between gap-3 mt-2' }, [
+                el('span', { class: 'text-2xl font-mono font-bold tracking-widest' }, partida.codigo),
+                el('a', {
+                    class: 'bg-slate-900 text-amber-300 font-bold py-2 px-4 rounded-lg btn-tap',
+                    href: 'juego.php?codigo=' + encodeURIComponent(partida.codigo),
+                }, t('ui.lobby.continuar')),
+            ]),
+        ]);
+        app.insertBefore(card, app.firstChild);
     }
 
     function esTematicaValida(id) {
@@ -502,6 +599,7 @@
         state.codigo = r.codigo;
         state.jugadorId = r.jugador_id;
         state.jugadorNombre = (nombre || '').trim() || ('Jugador 1');
+        guardarNombre(state.jugadorNombre);
         state.tematicaCreada = tematica;
         saveSession();
         renderCreatorView();
@@ -532,6 +630,7 @@
         state.codigo = r.codigo;
         state.jugadorId = r.jugador_id;
         state.jugadorNombre = nombreFinal;
+        guardarNombre(nombreFinal);
         saveSession();
         window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
         return true;
@@ -559,6 +658,7 @@
         state.codigo = codigo;
         state.jugadorId = r.jugador_id;
         state.jugadorNombre = (nombre || '').trim() || ('Jugador 2');
+        guardarNombre(state.jugadorNombre);
         saveSession();
         // J2 entra directamente al juego
         window.location.href = 'juego.php?codigo=' + encodeURIComponent(codigo);
@@ -577,6 +677,7 @@
             el('div', { class: 'flex gap-2 mt-4' }, [
                 el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
                 el('button', { class: 'flex-1 bg-emerald-500 text-white py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+                el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
             ]),
         ]));
 
@@ -623,6 +724,7 @@
         TEMATICA_RANDOM: TEMATICA_RANDOM,
         resolverTematica: resolverTematica,
         renderTematicaSelector: renderTematicaSelector,
+        mostrarQR: mostrarQR,
         iniciarPartidaBot: iniciarPartidaBot,
     };
 })();

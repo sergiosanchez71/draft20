@@ -29,7 +29,11 @@
             "bot_extremo": "Extremo",
             "mostrar_valores": "⭐ Valores visibles",
             "mostrar_valores_ayuda": "Ver el ⭐ de cada ítem durante la partida (afecta a los dos jugadores)",
-            "stats_record": "Récord: {v}V · {d}D · {e}E"
+            "stats_record": "Récord: {v}V · {d}D · {e}E",
+            "partida_en_curso": "Tienes una partida en curso",
+            "continuar": "Continuar",
+            "btn_qr": "Ver QR",
+            "qr_titulo": "Escanea para unirse"
         },
         "juego": {
             "tu_turno": "¡Tu turno!",
