@@ -73,6 +73,8 @@ pagina_head([
         </section>
         <?php endforeach; ?>
 
+        <?= ads_slot() ?>
+
         <?php if ($consejos !== []): ?>
         <section class="mb-8">
             <h2 class="text-lg font-bold text-amber-300 mb-2"><?= e((string) ($SEO['consejos_titulo'] ?? '')) ?></h2>

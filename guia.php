@@ -74,13 +74,14 @@ pagina_head([
         <h1 class="text-3xl font-bold text-slate-100 mb-2"><?= e((string) ($guia['h1'] ?? $titulo)) ?></h1>
         <p class="text-xs text-slate-400 mb-8"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(fecha_es((string) ($guia['fecha'] ?? ''))) ?></p>
 
-        <?php foreach ($guia['secciones'] as $sec): ?>
+        <?php foreach ($guia['secciones'] as $i => $sec): ?>
         <section class="mb-6">
             <h2 class="text-lg font-bold text-amber-300 mb-2"><?= e((string) $sec['h']) ?></h2>
             <?php foreach ($sec['p'] as $p): ?>
             <p class="text-sm text-slate-300 leading-relaxed mb-3"><?= e((string) $p) ?></p>
             <?php endforeach; ?>
         </section>
+        <?php if ($i === 1) { echo ads_slot(); } ?>
         <?php endforeach; ?>
 
         <?php if ($faq !== []): ?>

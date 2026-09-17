@@ -267,6 +267,13 @@ try {
     check(strpos((string) $rJuegoAds['raw'], '"banner":"6658157047"') !== false
         && strpos((string) $rJuegoAds['raw'], '"final":"4631951476"') !== false,
         'juego: slots banner/final en window.__ADS');
+    foreach (['/tematica.php?id=futbol', '/guia.php?slug=draft-de-20-monedas', '/juegos_de_subasta.php', '/como_jugar.php'] as $rutaCont) {
+        $rCont = http_req('GET', $base . $rutaCont);
+        check($rCont['code'] === 200 && strpos((string) $rCont['raw'], 'data-ad-slot="1818472919"') !== false,
+            'contenido ' . $rutaCont . ': bloque in-article');
+        check(substr_count((string) $rCont['raw'], '(window.adsbygoogle = window.adsbygoogle || []).push({});') === 1,
+            'contenido ' . $rutaCont . ': push único');
+    }
     $rSitemap = http_req('GET', $base . '/sitemap.php');
     $mSitemap = [];
     check($rSitemap['code'] === 200

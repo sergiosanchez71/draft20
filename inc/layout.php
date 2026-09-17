@@ -14,6 +14,7 @@ const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 const ADSENSE_SLOT_JUEGO = '6658157047';
 const ADSENSE_SLOT_FINAL = '4631951476';
 const ADSENSE_SLOT_LOBBY = '1410891766';
+const ADSENSE_SLOT_ARTICULO = '1818472919';
 
 function e(?string $s): string
 {
@@ -175,6 +176,19 @@ function csp_policy(): string
 function csp_meta(): string
 {
     return '<meta http-equiv="Content-Security-Policy" content="' . e(csp_policy()) . '">';
+}
+
+/** Bloque manual de AdSense para contenido ('' si no hay slot configurado). */
+function ads_slot(string $clase = 'ad-articulo', int $ancho = 300, int $alto = 250): string
+{
+    if (ADSENSE_SLOT_ARTICULO === '') {
+        return '';
+    }
+    $GLOBALS['__ads_pendiente'] = true;
+    return '<div class="ad-slot ' . e($clase) . '">'
+        . '<ins class="adsbygoogle" style="display:inline-block;width:' . $ancho . 'px;height:' . $alto . 'px" '
+        . 'data-ad-client="' . e(ADSENSE_CLIENT) . '" data-ad-slot="' . e(ADSENSE_SLOT_ARTICULO) . '"></ins>'
+        . '</div>';
 }
 
 /** Evento de página para el contador anónimo (según el script que la sirve). */
@@ -369,6 +383,10 @@ function pagina_foot(array $opts = []): void
     }
     if (!empty($opts['inline'])) {
         echo '    <script nonce="' . e(csp_nonce()) . '">' . $opts['inline'] . '</script>' . "\n";
+    }
+    // Bloque manual de AdSense pintado en el cuerpo: se encola una sola vez.
+    if (!empty($GLOBALS['__ads_pendiente'])) {
+        echo '    <script nonce="' . e(csp_nonce()) . '">(window.adsbygoogle = window.adsbygoogle || []).push({});</script>' . "\n";
     }
     // Contador anónimo de páginas (sin cookies ni identificadores).
     $eventoPagina = evento_pagina_actual();

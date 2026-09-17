@@ -112,6 +112,8 @@ pagina_head([
             <?php endforeach; ?>
         </ul>
 
+        <?= ads_slot() ?>
+
         <?php if ($preguntas !== []): ?>
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(seo_ui('tematica_faq_titulo')) ?></h2>
         <div class="mb-10">

@@ -60,6 +60,8 @@ pagina_head([
         </section>
         <?php endforeach; ?>
 
+        <?= ads_slot() ?>
+
         <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8">Jugar a Draft 20 gratis</a>
 
         <?php if (!empty($hub['faq'])): ?>
