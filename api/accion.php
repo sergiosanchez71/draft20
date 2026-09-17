@@ -438,9 +438,27 @@ try {
         responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
     }
 
-    // 1b) Si el jugador del turno actual está en el cap, el sistema le
-    //     "regala" el ítem al rival a precio=0 y avanza. Evita quedarse
-    //     atascado cuando al capped le toca actuar.
+    // 2) Validar turno.
+    //    Excepciones:
+    //    - 'asignar_rival': el decisor pendiente puede actuar aunque no sea su turno.
+    //    - 'abandonar': cualquiera puede salir en cualquier momento de la partida.
+    //    - 'emote': los emotes no respetan turno.
+    $turnoActual = $estado['item_actual']['turno_de'];
+    $esDecisor = $accion === 'asignar_rival'
+        && is_array($estado['decision_pendiente'] ?? null)
+        && (int) ($estado['decision_pendiente']['para'] ?? -1) === $miSlot;
+    $esAbandono = $accion === 'abandonar';
+    $esEmote = $accion === 'emote';
+    if ($turnoActual !== $miSlot && !$esDecisor && !$esAbandono && !$esEmote) {
+        flock($fp, LOCK_UN); fclose($fp);
+        responder(['ok' => false, 'error' => 'No es tu turno.'], 409);
+    }
+
+    // 2b) Validado el turno: si el jugador del turno actual está en el cap, el
+    //     sistema le "regala" el ítem al rival a precio=0 y avanza. Evita
+    //     quedarse atascado cuando al capped le toca actuar. Va después de la
+    //     validación para que una acción fuera de turno devuelva 409 en lugar
+    //     de resolver el cap en silencio.
     $turnoActual = $estado['item_actual']['turno_de'];
     if (count($estado['jugadores'][$turnoActual]['items_ganados']) >= MAX_ITEMS_POR_JUGADOR) {
         $capped = $turnoActual;
@@ -466,22 +484,6 @@ try {
         fflush($fp);
         flock($fp, LOCK_UN); fclose($fp);
         responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
-    }
-
-    // 2) Validar turno.
-    //    Excepciones:
-    //    - 'asignar_rival': el decisor pendiente puede actuar aunque no sea su turno.
-    //    - 'abandonar': cualquiera puede salir en cualquier momento de la partida.
-    //    - 'emote': los emotes no respetan turno.
-    $turnoActual = $estado['item_actual']['turno_de'];
-    $esDecisor = $accion === 'asignar_rival'
-        && is_array($estado['decision_pendiente'] ?? null)
-        && (int) ($estado['decision_pendiente']['para'] ?? -1) === $miSlot;
-    $esAbandono = $accion === 'abandonar';
-    $esEmote = $accion === 'emote';
-    if ($turnoActual !== $miSlot && !$esDecisor && !$esAbandono && !$esEmote) {
-        flock($fp, LOCK_UN); fclose($fp);
-        responder(['ok' => false, 'error' => 'No es tu turno.'], 409);
     }
 
     // 3) Procesar la acción.

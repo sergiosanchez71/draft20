@@ -174,6 +174,55 @@ try {
     check($mal['code'] === 403, 'bot sin creador_id → 403');
     $bien = http_req('POST', $base . '/api/unirse_sala.php', ['codigo' => $codB, 'nombre' => 'Bot', 'bot' => true, 'creador_id' => $j1b]);
     check($bien['code'] === 200 && (($bien['json']['sala']['bot_slot'] ?? null) === 1), 'bot con creador_id → 200');
+
+    // 8) Cap: si el jugador en turno tiene 4 ítems, se auto-regala el actual;
+    //    las acciones fuera de turno deben devolver 409 (no resolverlo en silencio).
+    $rc = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'hamburguesa', 'nombre' => 'Cap1']);
+    $codC = (string) ($rc['json']['codigo'] ?? '');
+    $codigos[] = $codC;
+    $j1c = (string) ($rc['json']['jugador_id'] ?? '');
+    $rc2 = http_req('POST', $base . '/api/unirse_sala.php', ['codigo' => $codC, 'nombre' => 'Cap2']);
+    $j2c = (string) ($rc2['json']['jugador_id'] ?? '');
+    check(($rc2['json']['sala']['item_actual']['turno_de'] ?? null) === 0, 'cap: el ítem inicial es de J1');
+
+    $fuera = http_req('POST', $base . '/api/accion.php', ['codigo' => $codC, 'jugador_id' => $j2c, 'accion' => 'pujar', 'incremento' => 1]);
+    check($fuera['code'] === 409, 'accion fuera de turno → 409');
+
+    $pathC = $salasDir . $codC . '.json';
+    $rawC = json_decode((string) file_get_contents($pathC), true);
+    $itemCapId = $rawC['item_actual']['id'];
+    $rawC['jugadores'][0]['items_ganados'] = [];
+    for ($k = 0; $k < 4; $k++) {
+        $rawC['jugadores'][0]['items_ganados'][] = ['id' => 'fake' . $k, 'emoji' => '🍔', 'valor' => 5, 'precio' => 3];
+    }
+    file_put_contents($pathC, json_encode($rawC, JSON_UNESCAPED_UNICODE));
+
+    $fuera2 = http_req('POST', $base . '/api/accion.php', ['codigo' => $codC, 'jugador_id' => $j2c, 'accion' => 'pujar', 'incremento' => 1]);
+    check($fuera2['code'] === 409, 'fuera de turno con rival capped → 409 (no resuelve el cap)');
+
+    $cap = http_req('POST', $base . '/api/accion.php', ['codigo' => $codC, 'jugador_id' => $j1c, 'accion' => 'pujar', 'incremento' => 1]);
+    $capIds = array_column($cap['json']['sala']['jugadores'][1]['items_ganados'] ?? [], 'id');
+    check($cap['code'] === 200 && in_array($itemCapId, $capIds, true), 'capped en turno: el ítem pasa al rival');
+
+    // 9) Deadlock sin dinero: pasar_deadlock abre decisión para el rival.
+    $rd = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'hamburguesa', 'nombre' => 'Dead1']);
+    $codD = (string) ($rd['json']['codigo'] ?? '');
+    $codigos[] = $codD;
+    $j1d = (string) ($rd['json']['jugador_id'] ?? '');
+    $rd2 = http_req('POST', $base . '/api/unirse_sala.php', ['codigo' => $codD, 'nombre' => 'Dead2']);
+    $j2d = (string) ($rd2['json']['jugador_id'] ?? '');
+
+    $pathD = $salasDir . $codD . '.json';
+    $rawD = json_decode((string) file_get_contents($pathD), true);
+    $rawD['jugadores'][0]['dinero'] = 0;
+    $rawD['jugadores'][1]['dinero'] = 20;
+    file_put_contents($pathD, json_encode($rawD, JSON_UNESCAPED_UNICODE));
+
+    $pas = http_req('POST', $base . '/api/accion.php', ['codigo' => $codD, 'jugador_id' => $j1d, 'accion' => 'pasar_deadlock']);
+    check($pas['code'] === 200 && (($pas['json']['sala']['decision_pendiente']['para'] ?? null) === 1), 'deadlock: decisión pendiente para J2');
+    $asig = http_req('POST', $base . '/api/accion.php', ['codigo' => $codD, 'jugador_id' => $j2d, 'accion' => 'asignar_rival', 'destino' => 1, 'precio' => 1]);
+    check($asig['code'] === 200 && (($asig['json']['sala']['jugadores'][1]['dinero'] ?? null) === 19), 'deadlock: asignar_rival cobra 1 → 19');
+    check(($asig['json']['sala']['decision_pendiente'] ?? null) === null, 'deadlock: decisión limpia');
 } finally {
     foreach ($codigos as $c) {
         if ($c !== '') {
