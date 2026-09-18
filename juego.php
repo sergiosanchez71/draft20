@@ -30,6 +30,7 @@ csp_headers();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= csp_meta() ?>
     <meta name="theme-color" content="#0f172a">
+    <meta name="app-version" content="<?= e(APP_VERSION) ?>">
     <meta name="app-build" content="<?= e(app_build()) ?>">
     <title>Draft 20 — Partida</title>
     <meta name="robots" content="noindex, follow">

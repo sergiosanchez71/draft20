@@ -69,15 +69,28 @@
         } catch (e) { return 0; }
     }
 
-    /** Aplica la clase de modo app y fija --app-bottom. */
+    /** Aplica la clase de modo app, el alto visible y el hueco inferior. */
     function ajustarModoApp() {
         const app = esAppInstalada();
         document.body.classList.toggle('app-mode', app);
+
+        const vv = window.visualViewport;
+        const tieneVisible = app && vv && vv.height > 0;
+
+        // Alto: en la app el viewport de layout puede ser más alto que la
+        // pantalla (barras del sistema superpuestas). Si tenemos el alto
+        // visible, el contenedor se fija a él y todo (ítem, barra) cuadra.
+        if (tieneVisible) {
+            document.documentElement.style.setProperty('--app-height', Math.round(vv.height) + 'px');
+        } else {
+            document.documentElement.style.removeProperty('--app-height');
+        }
+
+        // Hueco inferior: solo hace falta compensar cuando NO se pudo fijar el
+        // alto visible (WebView que no reporta visualViewport).
         let hueco = 0;
-        if (app) {
+        if (app && !tieneVisible) {
             hueco = Math.max(medirHuecoInferior(), insetInferior());
-            // WebView a pantalla completa (viewport = pantalla física): las
-            // barras del sistema van superpuestas aunque no se reporten.
             try {
                 if (window.innerHeight >= Math.round(window.screen.height) - 1) {
                     hueco = Math.max(hueco, 32);
@@ -940,7 +953,7 @@
         const wrap = el('div', { class: 'w-full my-auto flex flex-col items-center' });
         centro.appendChild(wrap);
 
-        const emoji = el('div', { class: 'h-[clamp(3rem,12svh,6rem)] mb-2 flex items-center ' + (myTurn ? 'pulse-win' : '') }, [
+        const emoji = el('div', { class: 'item-emoji h-[clamp(3rem,12svh,6rem)] mb-2 flex items-center ' + (myTurn ? 'pulse-win' : '') }, [
             emojiImg(item.emoji, 'h-full w-auto', ''),
         ]);
         wrap.appendChild(emoji);

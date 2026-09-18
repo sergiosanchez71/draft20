@@ -10,6 +10,8 @@ declare(strict_types=1);
 const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
+// Versión visible de la app (mantener en sync con package.json).
+const APP_VERSION = '1.1.26';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 const ADSENSE_SLOT_JUEGO = '6658157047';
 const ADSENSE_SLOT_FINAL = '4631951476';
@@ -344,6 +346,7 @@ function pagina_head(array $opts): void
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <?= csp_meta() ?>
     <meta name="theme-color" content="#0f172a">
+    <meta name="app-version" content="<?= e(APP_VERSION) ?>">
     <meta name="app-build" content="<?= e(app_build()) ?>">
     <title><?= e($titulo) ?></title>
     <meta name="description" content="<?= e($descripcion) ?>">

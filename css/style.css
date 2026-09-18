@@ -20,6 +20,14 @@
 }
 .game-shell #itemCard { min-height: 13rem; }
 
+/* En la app el viewport de layout puede ser más alto que la pantalla: se usa
+   el alto realmente visible (medido en JS) para que nada quede fuera. */
+body.app-mode.app-viewport { height: var(--app-height, 100dvh); }
+
+/* ...y el cuadro del ítem se compacta para dejar sitio a inventario y botones. */
+body.app-mode .game-shell #itemCard { min-height: 10rem; }
+body.app-mode .game-shell .item-emoji { height: clamp(2.5rem, 9svh, 4.5rem); }
+
 /* En pantallas bajas se recupera alto sin tocar el anuncio: fuera la barra de
    emotes (opcional) y cuadros de inventario algo más pequeños. */
 @media (max-height: 740px) {

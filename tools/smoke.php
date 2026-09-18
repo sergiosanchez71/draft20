@@ -326,6 +326,14 @@ try {
     $rJuegoAds = http_req('GET', $base . '/juego.php?codigo=ABC12');
     check(strpos((string) $rJuegoAds['raw'], 'viewport-fit=cover') === false,
         'juego: sin viewport-fit=cover (la PWA queda dentro del área segura)');
+    $mVer = [];
+    check((bool) preg_match("/const APP_VERSION = '([^']+)'/", (string) @file_get_contents($root . '/inc/layout.php'), $mVer),
+        'APP_VERSION definida');
+    $verApp = $mVer[1] ?? '';
+    check($verApp !== '' && strpos((string) $rJuegoAds['raw'], '<meta name="app-version" content="' . $verApp . '">') !== false,
+        'juego: versión visible coincide con APP_VERSION');
+    $pkg = json_decode((string) @file_get_contents($root . '/package.json'), true);
+    check(is_array($pkg) && (string) ($pkg['version'] ?? '') === $verApp, 'package.json en sync con APP_VERSION');
     $mBuild = [];
     check((bool) preg_match('/<meta name="app-build" content="(\d+|dev)">/', (string) $rJuegoAds['raw'], $mBuild),
         'juego: meta de build para diagnóstico');
@@ -359,6 +367,8 @@ try {
     check(strpos($cssAds, '@media (max-height: 740px)') !== false && strpos($cssAds, '#inventory .w-9') !== false,
         'CSS: compactado en pantallas bajas (emotes fuera, inventario menor)');
     check(strpos($cssAds, '--app-bottom') !== false, 'CSS: la barra usa el hueco medido en la app instalada');
+    check(strpos($cssAds, '--app-height') !== false && strpos($cssAds, 'body.app-mode.app-viewport') !== false,
+        'CSS: alto visible y compactado en modo app');
     $rGameJs = http_req('GET', $base . '/js/app.game.min.js');
     check(strpos((string) $rGameJs['raw'], 'app-mode') !== false && strpos((string) $rGameJs['raw'], 'visualViewport') !== false,
         'JS: ajuste del modo app instalada en el bundle');
