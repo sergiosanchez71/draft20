@@ -13,7 +13,8 @@
         "smoke": "php tools/smoke.php",
         "warmup": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/warmup.ps1",
         "latencia": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/warmup.ps1 -Medir",
-        "gen:assets": "node tools/gen_emoji.js && node tools/gen_flags.js && svgo --folder img/emoji --multipass"
+        "gen:assets": "node tools/gen_emoji.js && node tools/gen_flags.js && svgo --folder img/emoji --multipass",
+        "gen:icons": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/gen_icons.ps1"
     },
     "devDependencies": {
         "axe-core": "^4.13.0",

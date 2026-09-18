@@ -342,6 +342,18 @@ try {
         'CSS: los anuncios no se ocultan (política de AdSense)');
     check(strpos($cssAds, 'rgba(255, 255, 255, 0.03)') === false, 'CSS: el contenedor del anuncio ya no tiene fondo propio');
     check((bool) preg_match('/\.ad-slot\s*\{[^}]*background:\s*transparent/s', $cssAds), 'CSS: el contenedor del anuncio usa el fondo de la página');
+
+    // Favicon: rutas absolutas también en URLs bonitas (antes se rompían) y
+    // tamaños múltiplos de 48 que pide Google.
+    $rFicha = http_req('GET', $base . '/tematica/futbol');
+    $htmlFicha = (string) $rFicha['raw'];
+    check((bool) preg_match('#href="/icons/icon-192\.png(\?v=\d+)?"#', $htmlFicha), 'ficha: icono con ruta absoluta');
+    check(strpos($htmlFicha, 'sizes="48x48"') !== false && strpos($htmlFicha, 'sizes="96x96"') !== false,
+        'ficha: iconos PNG 48 y 96 declarados');
+    foreach (['/favicon.ico', '/icons/icon-48.png', '/icons/icon-96.png', '/icons/icon-192.png'] as $rutaIco) {
+        $rIco = http_req('GET', $base . $rutaIco);
+        check($rIco['code'] === 200, 'icono servido: ' . $rutaIco);
+    }
     $rSitemap = http_req('GET', $base . '/sitemap.php');
     $mSitemap = [];
     check($rSitemap['code'] === 200

@@ -116,9 +116,12 @@ function emoji_icono(string $emoji, int $size = 32, string $alt = ''): string
 /** Ruta relativa con ?v=filemtime para esquivar la caché del CDN. */
 function asset(string $rel): string
 {
-    $abs = __DIR__ . '/../' . ltrim($rel, '/');
+    $limpio = ltrim($rel, '/');
+    $abs = __DIR__ . '/../' . $limpio;
     $v = is_file($abs) ? filemtime($abs) : null;
-    return $rel . ($v !== null ? '?v=' . $v : '');
+    // Ruta absoluta: las URLs bonitas (/tematica/<id>, /guia/<slug>…) no están
+    // en la raíz, así que una ruta relativa se resolvería mal.
+    return '/' . $limpio . ($v !== null ? '?v=' . $v : '');
 }
 
 /** JS: usa la versión minificada si existe (npm run build). */
@@ -345,7 +348,9 @@ function pagina_head(array $opts): void
     <meta name="twitter:description" content="<?= e($descripcion) ?>">
     <meta name="twitter:image" content="<?= e($ogImage) ?>">
     <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" href="<?= e(asset('icons/icon-192.png')) ?>">
+    <link rel="icon" type="image/png" sizes="48x48" href="<?= e(asset('icons/icon-48.png')) ?>">
+    <link rel="icon" type="image/png" sizes="96x96" href="<?= e(asset('icons/icon-96.png')) ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= e(asset('icons/icon-192.png')) ?>">
     <link rel="apple-touch-icon" href="<?= e(asset('icons/icon-180.png')) ?>">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="alternate" type="application/rss+xml" title="Draft 20 — Guías" href="/feed.xml">
