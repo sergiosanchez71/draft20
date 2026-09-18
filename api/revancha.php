@@ -2,57 +2,47 @@
 /**
  * Draft 20 — API: revancha
  *
- * Gestiona la propuesta de revancha entre dos jugadores al terminar una
- * partida. El proponente ya ha creado la sala nueva (api/crear_sala.php) y
- * aquí se registra en la sala vieja para que el rival pueda aceptarla.
+ * Gestiona la revancha SIN cambiar de sala: se reinicia la misma partida
+ * (mismo código y mismos jugadores/sesiones), así no hay que volver a
+ * compartir el enlace. Alterna quién empieza y lleva la cuenta en `partida_n`.
  *
- * --- Petición ---
- *   POST  application/json
- *   Body: { "codigo": "A8F3X", "jugador_id": "j1_<uuid>", "accion": "proponer",
- *           "codigo_nuevo": "B9G4Y", "tematica": "pizza" }
- *   Body: { "codigo": "A8F3X", "jugador_id": "j1_<uuid>", "accion": "rechazar" }
+ * Acciones:
+ *   - proponer : registra {por, tematica, ts} en la sala (cualquiera de los dos).
+ *   - rechazar : el rival rechaza la propuesta pendiente.
+ *   - cancelar : el proponente retira su propia propuesta.
+ *   - aceptar  : el rival acepta y la sala se reinicia (estado 'jugando').
+ *   - reiniciar: salas de práctica contra bot; el dueño humano reinicia ya.
+ *
+ * --- Petición (POST JSON) ---
+ *   { "codigo": "A8F3X", "jugador_id": "j1_<uuid>", "accion": "proponer", "tematica": "pizza" }
+ *   { "codigo": "A8F3X", "jugador_id": "j1_<uuid>", "accion": "aceptar" }
+ *   { "codigo": "A8F3X", "jugador_id": "j1_<uuid>", "accion": "reiniciar", "tematica": "pizza" }
  *
  * --- Respuesta 200 ---
  *   { "ok": true, "sala": { ... estado completo ... } }
  *
  * --- Errores ---
- *   400 → parámetros inválidos
+ *   400 → parámetros inválidos / temática inexistente
  *   403 → jugador_id no pertenece a la sala
- *   404 → sala (vieja o nueva) no encontrada
- *   409 → partida no finalizada, propuesta ya existente, o nada que rechazar
+ *   404 → sala no encontrada
+ *   409 → partida no finalizada o acción sin propuesta aplicable
  */
+
 declare(strict_types=1);
 
+define('SALA_CORE_ONLY', true);
+require_once __DIR__ . '/crear_sala.php';
 require_once __DIR__ . '/../inc/sala_publica.php';
-require_once __DIR__ . '/../inc/rate_limit.php';
 
 // ============================================================================
 //  Config & constantes
 // ============================================================================
 
-const CHARSET        = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const SALAS_DIR      = __DIR__ . '/salas/';
 const REVANCHA_TTL_S = 600; // 10 min: pasado ese tiempo la propuesta caduca
 
-if (!function_exists('responder')) {
-    function responder(array $payload, int $code = 200): void {
-        http_response_code($code);
-        header('Content-Type: application/json; charset=utf-8');
-        header('Cache-Control: no-store');
-        echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        exit;
-    }
-}
-if (!function_exists('leer_input_json')) {
-    function leer_input_json(): array {
-        $raw = file_get_contents('php://input');
-        if ($raw === false || $raw === '') return [];
-        $d = json_decode($raw, true);
-        return is_array($d) ? $d : [];
-    }
-}
 if (!function_exists('leer_sala_bloqueado_sh')) {
-    function leer_sala_bloqueado_sh(string $codigo): ?array {
+    function leer_sala_bloqueado_sh(string $codigo): ?array
+    {
         $path = SALAS_DIR . $codigo . '.json';
         if (!is_file($path)) return null;
         $fp = fopen($path, 'rb');
@@ -68,11 +58,13 @@ if (!function_exists('leer_sala_bloqueado_sh')) {
     }
 }
 
-function slot_de_jugador(array $sala, string $jugadorId): ?int {
-    foreach ($sala['jugadores'] as $i => $j) {
-        if (isset($j['id']) && $j['id'] === $jugadorId) return $i;
+if (!function_exists('slot_de_jugador')) {
+    function slot_de_jugador(array $sala, string $jugadorId): ?int {
+        foreach ($sala['jugadores'] as $i => $j) {
+            if (isset($j['id']) && $j['id'] === $jugadorId) return $i;
+        }
+        return null;
     }
-    return null;
 }
 
 // ============================================================================
@@ -100,36 +92,19 @@ if ($codigo === '' || !preg_match($regexCodigo, $codigo)) {
 if ($jugadorId === '' || !preg_match($regexJugador, $jugadorId)) {
     responder(['ok' => false, 'error' => 'jugador_id inválido.'], 400);
 }
-if (!in_array($accion, ['proponer', 'rechazar'], true)) {
+if (!in_array($accion, ['proponer', 'rechazar', 'cancelar', 'aceptar', 'reiniciar'], true)) {
     responder(['ok' => false, 'error' => 'Acción inválida.'], 400);
 }
 
-$codigoNuevo = '';
-$idNuevo     = '';
-$tematica    = null;
-if ($accion === 'proponer') {
-    $codigoNuevo = isset($input['codigo_nuevo']) && is_string($input['codigo_nuevo']) ? strtoupper(trim($input['codigo_nuevo'])) : '';
-    // Id del proponente EN LA SALA NUEVA (la creó él con crear_sala.php): es la
-    // prueba de propiedad; el id de la sala vieja ya no sirve para validarla.
-    $idNuevo = isset($input['jugador_id_nuevo']) ? trim((string) $input['jugador_id_nuevo']) : '';
-    if ($codigoNuevo === '' || !preg_match($regexCodigo, $codigoNuevo)) {
-        responder(['ok' => false, 'error' => 'Código de la sala nueva inválido.'], 400);
+$tematica = null;
+if (in_array($accion, ['proponer', 'reiniciar'], true) && isset($input['tematica']) && is_string($input['tematica'])) {
+    $tematica = trim($input['tematica']);
+    if ($tematica === '' || !preg_match('/^[a-z0-9_]+$/', $tematica)) {
+        responder(['ok' => false, 'error' => 'Temática inválida.'], 400);
     }
-    if ($idNuevo === '' || !preg_match($regexJugador, $idNuevo)) {
-        responder(['ok' => false, 'error' => 'Falta el jugador_id de la sala nueva.'], 400);
-    }
-    if (!is_file(SALAS_DIR . $codigoNuevo . '.json')) {
-        responder(['ok' => false, 'error' => 'La sala nueva no existe.'], 404);
-    }
-    if ($codigoNuevo === $codigo) {
-        responder(['ok' => false, 'error' => 'La sala nueva no puede ser la misma.'], 400);
-    }
-    if (isset($input['tematica']) && is_string($input['tematica'])) {
-        $tematica = trim($input['tematica']);
-        if (!preg_match('/^[a-z0-9_]+$/', $tematica)) {
-            responder(['ok' => false, 'error' => 'Temática inválida.'], 400);
-        }
-    }
+}
+if ($accion === 'reiniciar' && $tematica === null) {
+    responder(['ok' => false, 'error' => 'Falta la temática.'], 400);
 }
 
 // ============================================================================
@@ -176,39 +151,56 @@ try {
     $actual = is_array($estado['revancha']) ? $estado['revancha'] : null;
     $fresca = $actual !== null && (time() - (int) ($actual['ts'] ?? 0)) <= REVANCHA_TTL_S;
 
+    $responderError = static function (string $error, int $code) use ($fp): void {
+        flock($fp, LOCK_UN); fclose($fp);
+        responder(['ok' => false, 'error' => $error], $code);
+    };
+
     if ($accion === 'proponer') {
         if ($fresca && (int) ($actual['por'] ?? -1) !== $miSlot) {
-            flock($fp, LOCK_UN); fclose($fp);
-            responder(['ok' => false, 'error' => 'Ya hay una propuesta de revancha pendiente.'], 409);
+            $responderError('Tu rival ya ha propuesto revancha.', 409);
         }
-        // La sala nueva debe ser del proponente y seguir disponible:
-        // - existe y pertenece a $idNuevo (el id que devolvió crear_sala),
-        // - sigue en 'esperando' y con el slot J2 libre.
-        $salaNueva = leer_sala_bloqueado_sh($codigoNuevo);
-        if ($salaNueva === null || slot_de_jugador($salaNueva, $idNuevo) === null) {
-            flock($fp, LOCK_UN); fclose($fp);
-            responder(['ok' => false, 'error' => 'La sala nueva no pertenece a este jugador.'], 403);
-        }
-        if (($salaNueva['estado'] ?? '') !== 'esperando' || ($salaNueva['jugadores'][1]['id'] ?? null) !== null) {
-            flock($fp, LOCK_UN); fclose($fp);
-            responder(['ok' => false, 'error' => 'La sala nueva ya está en juego.'], 409);
-        }
+        $temaProp = $tematica ?? (string) ($estado['tematica'] ?? '');
+        cargar_tematica($temaProp); // valida que existe (400 si no)
         $estado['revancha'] = [
-            'por'          => $miSlot,
-            'codigo_nuevo' => $codigoNuevo,
-            'tematica'     => $tematica,
-            'ts'           => time(),
+            'por'      => $miSlot,
+            'tematica' => $temaProp,
+            'ts'       => time(),
         ];
-    } else { // rechazar
+    } elseif ($accion === 'rechazar') {
         if (!$fresca) {
-            flock($fp, LOCK_UN); fclose($fp);
-            responder(['ok' => false, 'error' => 'No hay propuesta de revancha pendiente.'], 409);
+            $responderError('No hay propuesta de revancha pendiente.', 409);
         }
         if ((int) ($actual['por'] ?? -1) === $miSlot) {
-            flock($fp, LOCK_UN); fclose($fp);
-            responder(['ok' => false, 'error' => 'No puedes rechazar tu propia propuesta.'], 409);
+            $responderError('No puedes rechazar tu propia propuesta.', 409);
         }
         $estado['revancha'] = null;
+    } elseif ($accion === 'cancelar') {
+        if (!$fresca || (int) ($actual['por'] ?? -1) !== $miSlot) {
+            $responderError('No tienes una propuesta pendiente.', 409);
+        }
+        $estado['revancha'] = null;
+    } elseif ($accion === 'aceptar') {
+        if (!$fresca) {
+            $responderError('No hay ninguna propuesta de revancha.', 409);
+        }
+        if ((int) ($actual['por'] ?? -1) === $miSlot) {
+            $responderError('No puedes aceptar tu propia propuesta.', 409);
+        }
+        $temaAceptar = (string) ($actual['tematica'] ?? '');
+        if ($temaAceptar === '') {
+            $temaAceptar = (string) ($estado['tematica'] ?? '');
+        }
+        $estado = reiniciar_sala($estado, $temaAceptar);
+    } else { // reiniciar (solo salas de práctica contra bot; el humano reinicia ya)
+        $botSlot = $estado['bot_slot'] ?? null;
+        if ($botSlot === null) {
+            $responderError('Esta sala no es de práctica.', 409);
+        }
+        if ((int) $botSlot === $miSlot) {
+            $responderError('El bot no puede reiniciar la partida.', 403);
+        }
+        $estado = reiniciar_sala($estado, (string) $tematica);
     }
 
     $estado['actualizado_en'] = time();
@@ -219,9 +211,13 @@ try {
 
     responder(['ok' => true, 'sala' => sala_publica($estado, $miSlot)], 200);
 
+} catch (InvalidArgumentException $e) {
+    if (isset($fp) && is_resource($fp)) { @flock($fp, LOCK_UN); @fclose($fp); }
+    responder(['ok' => false, 'error' => $e->getMessage()], 400);
 } catch (RuntimeException $e) {
     if (isset($fp) && is_resource($fp)) { @flock($fp, LOCK_UN); @fclose($fp); }
     responder(['ok' => false, 'error' => $e->getMessage()], 500);
 } catch (Throwable $e) {
+    if (isset($fp) && is_resource($fp)) { @flock($fp, LOCK_UN); @fclose($fp); }
     responder(['ok' => false, 'error' => 'Error interno.'], 500);
 }

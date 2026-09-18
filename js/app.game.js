@@ -36,6 +36,20 @@
     let ultimoItemAvisado = false;
     let tematicaAvisada = false;
 
+    /** Reset de flags al empezar una revancha en la misma sala. */
+    function reiniciarFlagsPartida() {
+        state.finalRegistrada = false;
+        state.statsRegistradas = false;
+        state.serieFinal = null;
+        state.logrosFinal = null;
+        state.partidaGuardada = false;
+        state.propuestaEnviada = false;
+        state.avisoTurnoVisto = false;
+        state.turnoFirma = null;
+        tematicaAvisada = false;
+        ultimoItemAvisado = false;
+    }
+
     // =================== ANUNCIOS (bloques manuales) ===================
     /** Contenedor de un bloque manual de AdSense; null si no hay slot configurado. */
     function crearAd(clave, clase, ancho, alto) {
@@ -660,6 +674,19 @@
         if (!state.sala) return;
         const s = state.sala;
 
+        // Revancha aceptada: la sala vuelve a 'jugando' sin recargar la página.
+        if (prev && prev.estado === 'finalizada' && s.estado === 'jugando') {
+            reiniciarFlagsPartida();
+            state.pollTerminal = false;
+            startPollingGame();
+            toast(t('ui.juego.revancha_empezada', { n: s.partida_n || 2 }), 3000);
+        }
+        // Mi propuesta ya no está (la rechazó el rival o caducó).
+        if (state.propuestaEnviada && s.estado === 'finalizada' && !s.revancha) {
+            state.propuestaEnviada = false;
+            toast(t('ui.juego.msg_revancha_rechazada'));
+        }
+
         // Detectar nuevos ítems para animación y vibración
         if (prev && state.jugadorSlot !== null) {
             const prevItems = (prev.jugadores[state.jugadorSlot]?.items_ganados || []).map(function (i) { return i.id; }).join(',');
@@ -679,7 +706,8 @@
         // Header: temática en curso + serie contra el rival
         const ht = document.getElementById('headerTematica');
         if (ht && s.tematica) {
-            ht.textContent = tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica);
+            ht.textContent = tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica)
+                + (s.partida_n > 1 ? ' · ' + t('ui.juego.partida_n', { n: s.partida_n }) : '');
         }
         const hs = document.getElementById('headerSerie');
         if (hs) {
@@ -690,6 +718,11 @@
             } else {
                 hs.classList.add('hidden');
             }
+        }
+
+        // En pantalla final, poll más rápido mientras hay una propuesta viva.
+        if (state.pollTerminal && !state.bot) {
+            startPollingGame(s.revancha ? 2000 : 5000);
         }
 
         // Aviso transitorio de la temática al entrar en la partida (sin aceptación).
@@ -1476,6 +1509,14 @@
                     el('button', { class: 'flex-1 bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap', onclick: rechazarRevancha }, t('ui.juego.btn_revancha_rechazar')),
                 ]),
             ]);
+        } else if (revFresca && rev.por === state.jugadorSlot) {
+            // Mi propuesta está en el aire: esperando al rival (se puede retirar).
+            state.propuestaEnviada = true;
+            const temaProp = rev.tematica ? (tematicaEmoji(rev.tematica) + ' ' + tTematica(rev.tematica)) : '';
+            revanchaBanner = el('div', { class: 'bg-slate-700 border border-amber-400 rounded-lg p-3 mb-4 text-center fade-in' }, [
+                el('p', { class: 'text-sm text-slate-100 mb-3' }, t('ui.juego.propuesta_enviada', { tema: temaProp })),
+                el('button', { class: 'w-full bg-slate-600 text-slate-100 font-bold py-3 rounded-lg btn-tap', onclick: cancelarPropuesta }, t('ui.juego.btn_cancelar_propuesta')),
+            ]);
         }
 
         // Récord local
@@ -1564,51 +1605,74 @@
         ]));
     }
 
+    /** Aplica una sala reiniciada (revancha) sin recargar la página. */
+    function aplicarSalaReiniciada(sala) {
+        const prev = state.sala;
+        state.sala = sala;
+        state.pollTerminal = false;
+        identifySlots();
+        state.lastRenderSig = null;
+        startPollingGame();
+        renderGame(prev);
+    }
+
     async function proponerRevancha(tematica, closeModal) {
         const cerrar = function () { if (typeof closeModal === 'function') closeModal(); };
 
-        // Contra bot: nueva partida inmediata con el mismo bot y dificultad.
+        // Contra bot no hay a quién proponer: se reinicia la misma sala.
         if (state.bot) {
-            const dificultad = state.bot.dificultad || 'normal';
-            const ok = await iniciarPartidaBot(tematica, dificultad, state.jugadorNombre, !!(state.sala && state.sala.mostrar_valores));
-            if (ok) cerrar();
+            const r = await api('POST', 'api/revancha.php', {
+                codigo: state.codigo,
+                jugador_id: state.jugadorId,
+                accion: 'reiniciar',
+                tematica: tematica,
+            });
+            if (!r.ok) { toast(r.error || 'Error'); return; }
+            cerrar();
+            aplicarSalaReiniciada(r.sala);
             return;
         }
 
-        const viejoCodigo = state.codigo;
-        const viejoId = state.jugadorId;
-        const nombre = state.jugadorNombre || '';
-        const r = await api('POST', 'api/crear_sala.php', {
-            tematica: tematica,
-            nombre: nombre,
-            mostrar_valores: !!(state.sala && state.sala.mostrar_valores),
-        });
-        if (!r.ok) { toast(r.error || 'Error'); return; }
-        const r2 = await api('POST', 'api/revancha.php', {
-            codigo: viejoCodigo,
-            jugador_id: viejoId,
+        const r = await api('POST', 'api/revancha.php', {
+            codigo: state.codigo,
+            jugador_id: state.jugadorId,
             accion: 'proponer',
-            codigo_nuevo: r.codigo,
-            jugador_id_nuevo: r.jugador_id,
             tematica: tematica,
         });
-        if (!r2.ok) { toast(r2.error || 'Error'); return; }
+        if (!r.ok) {
+            toast(r.error || 'Error');
+            if (r._status === 409) await pollGameTick(); // p. ej. el rival ya propuso
+            return;
+        }
         cerrar();
-        state.codigo = r.codigo;
-        state.jugadorId = r.jugador_id;
-        saveSession();
-        window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
+        state.propuestaEnviada = true;
+        state.sala = r.sala;
+        state.lastRenderSig = salaSignature(state.sala);
+        renderGame(null);
     }
 
     async function aceptarRevancha() {
-        const rev = state.sala && state.sala.revancha;
-        if (!rev || !rev.codigo_nuevo) return;
-        const r = await api('POST', 'api/unirse_sala.php', { codigo: rev.codigo_nuevo, nombre: state.jugadorNombre || '' });
+        const r = await api('POST', 'api/revancha.php', {
+            codigo: state.codigo,
+            jugador_id: state.jugadorId,
+            accion: 'aceptar',
+        });
         if (!r.ok) { toast(r.error || 'Error'); return; }
-        state.codigo = rev.codigo_nuevo;
-        state.jugadorId = r.jugador_id;
-        saveSession();
-        window.location.href = 'juego.php?codigo=' + encodeURIComponent(rev.codigo_nuevo);
+        aplicarSalaReiniciada(r.sala);
+    }
+
+    async function cancelarPropuesta() {
+        const r = await api('POST', 'api/revancha.php', {
+            codigo: state.codigo,
+            jugador_id: state.jugadorId,
+            accion: 'cancelar',
+        });
+        if (!r.ok) { toast(r.error || 'Error'); return; }
+        state.propuestaEnviada = false;
+        state.sala = r.sala;
+        toast(t('ui.juego.msg_propuesta_cancelada'));
+        state.lastRenderSig = salaSignature(state.sala);
+        renderGame(null);
     }
 
     async function rechazarRevancha() {

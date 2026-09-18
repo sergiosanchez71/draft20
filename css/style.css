@@ -61,15 +61,15 @@
 
 .btn-tap { touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
 
-/* Bloques manuales de AdSense: tamaño reservado (CLS 0), fondo neutro oscuro
-   para que no haya destello blanco antes de cargar y contain para que el
-   iframe no recalcule el layout exterior. */
+/* Bloques manuales de AdSense: tamaño reservado (CLS 0) con el MISMO fondo de
+   la página (transparente) para que un bloque sin rellenar no se vea como una
+   caja distinta. No se oculta nada: cuando AdSense sirva el anuncio, se pinta
+   encima de este hueco. */
 .ad-slot {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 0.5rem;
+    background: transparent;
     overflow: hidden;
     contain: layout style;
     margin-left: auto;

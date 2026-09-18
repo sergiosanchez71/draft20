@@ -140,30 +140,92 @@ try {
     check($n0 === 4 && $n1 === 4, 'reparto 4-4');
     check(!isset($sala['jugadores'][0]['id']) && !isset($sala['jugadores'][1]['id']), 'respuesta final sin ids');
 
-    // 6) Revancha real: el proponente crea la sala nueva y prueba su id nuevo
-    $rn = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'pizza', 'nombre' => 'Smoke1']);
-    check($rn['code'] === 200, 'crear sala de revancha → 200');
-    $codNuevo = (string) ($rn['json']['codigo'] ?? '');
-    $codigos[] = $codNuevo;
+    // 6) Revancha en la MISMA sala: proponer → aceptar (sin código nuevo).
     $rev = http_req('POST', $base . '/api/revancha.php', [
         'codigo' => $cod,
         'jugador_id' => $j1,
         'accion' => 'proponer',
-        'codigo_nuevo' => $codNuevo,
-        'jugador_id_nuevo' => (string) ($rn['json']['jugador_id'] ?? ''),
         'tematica' => 'pizza',
     ]);
     check($rev['code'] === 200 && (($rev['json']['sala']['revancha']['por'] ?? null) === 0), 'proponer revancha → 200');
-    $revSinId = http_req('POST', $base . '/api/revancha.php', [
-        'codigo' => $cod,
-        'jugador_id' => $j1,
-        'accion' => 'proponer',
-        'codigo_nuevo' => $codNuevo,
-        'tematica' => 'pizza',
+    check(($rev['json']['sala']['revancha']['tematica'] ?? null) === 'pizza', 'la propuesta lleva la temática elegida');
+    check(!isset($rev['json']['sala']['revancha']['codigo_nuevo']), 'la propuesta no crea sala nueva');
+
+    $revDoble = http_req('POST', $base . '/api/revancha.php', [
+        'codigo' => $cod, 'jugador_id' => $j2, 'accion' => 'proponer', 'tematica' => 'pizza',
     ]);
-    check($revSinId['code'] === 400, 'proponer sin jugador_id_nuevo → 400');
-    $acep = http_req('POST', $base . '/api/unirse_sala.php', ['codigo' => $codNuevo, 'nombre' => 'Smoke2']);
-    check($acep['code'] === 200 && (($acep['json']['sala']['estado'] ?? '') === 'jugando'), 'aceptar revancha → 200');
+    check($revDoble['code'] === 409, 'proponer encima de otra propuesta → 409');
+
+    $acep = http_req('POST', $base . '/api/revancha.php', [
+        'codigo' => $cod, 'jugador_id' => $j2, 'accion' => 'aceptar',
+    ]);
+    $salaRev = $acep['json']['sala'] ?? [];
+    check($acep['code'] === 200 && ($salaRev['estado'] ?? '') === 'jugando', 'aceptar revancha → 200 y en juego');
+    check(($salaRev['tematica'] ?? '') === 'pizza' && (int) ($salaRev['ronda'] ?? 0) === 1, 'misma sala: temática nueva y ronda 1');
+    check((int) ($salaRev['partida_n'] ?? 0) === 2, 'partida_n = 2');
+    check((int) ($salaRev['turno_inicial_ronda'] ?? -1) === (1 - (int) ($rev['json']['sala']['turno_inicial_ronda'] ?? -1)),
+        'alterna quién empieza la revancha');
+    $dineroOk = true;
+    $itemsOk = true;
+    foreach (($salaRev['jugadores'] ?? []) as $j) {
+        if ((int) ($j['dinero'] ?? -1) !== 20) { $dineroOk = false; }
+        if (($j['items_ganados'] ?? []) !== []) { $itemsOk = false; }
+    }
+    check($dineroOk, 'dinero reiniciado a 20 en ambos');
+    check($itemsOk, 'colecciones vaciadas');
+    check(array_key_exists('revancha', $salaRev) && $salaRev['revancha'] === null, 'propuesta limpiada tras aceptar');
+    $eRev = http_req('GET', $base . '/api/estado.php?codigo=' . $cod . '&jugador_id=' . $j1);
+    check($eRev['code'] === 200 && (int) ($eRev['json']['sala']['mi_slot'] ?? -1) === 0, 'la sesión sigue valiendo en la revancha');
+    $acepOtra = http_req('POST', $base . '/api/revancha.php', [
+        'codigo' => $cod, 'jugador_id' => $j1, 'accion' => 'aceptar',
+    ]);
+    check($acepOtra['code'] === 409, 'aceptar sin partida finalizada → 409');
+
+    // 6b) Cancelar y rechazar la propuesta (sala de prueba forzada a finalizada).
+    $rr = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'pizza', 'nombre' => 'RevA']);
+    $codR = (string) ($rr['json']['codigo'] ?? '');
+    $codigos[] = $codR;
+    $j1R = (string) ($rr['json']['jugador_id'] ?? '');
+    $rr2 = http_req('POST', $base . '/api/unirse_sala.php', ['codigo' => $codR, 'nombre' => 'RevB']);
+    $j2R = (string) ($rr2['json']['jugador_id'] ?? '');
+    $pathR = $root . '/api/salas/' . $codR . '.json';
+    $rawR = json_decode((string) file_get_contents($pathR), true);
+    $rawR['estado'] = 'finalizada';
+    file_put_contents($pathR, json_encode($rawR, JSON_UNESCAPED_UNICODE));
+
+    $pR = http_req('POST', $base . '/api/revancha.php', ['codigo' => $codR, 'jugador_id' => $j1R, 'accion' => 'proponer', 'tematica' => 'sushi']);
+    check($pR['code'] === 200 && (($pR['json']['sala']['revancha']['tematica'] ?? null) === 'sushi'), 'proponer (sala forzada) → 200');
+    $cAjeno = http_req('POST', $base . '/api/revancha.php', ['codigo' => $codR, 'jugador_id' => $j2R, 'accion' => 'cancelar']);
+    check($cAjeno['code'] === 409, 'cancelar la propuesta ajena → 409');
+    $cMio = http_req('POST', $base . '/api/revancha.php', ['codigo' => $codR, 'jugador_id' => $j1R, 'accion' => 'cancelar']);
+    check($cMio['code'] === 200 && array_key_exists('revancha', $cMio['json']['sala'] ?? []) && $cMio['json']['sala']['revancha'] === null,
+        'cancelar mi propuesta → 200 y limpia');
+    http_req('POST', $base . '/api/revancha.php', ['codigo' => $codR, 'jugador_id' => $j1R, 'accion' => 'proponer', 'tematica' => 'sushi']);
+    $rMio = http_req('POST', $base . '/api/revancha.php', ['codigo' => $codR, 'jugador_id' => $j1R, 'accion' => 'rechazar']);
+    check($rMio['code'] === 409, 'rechazar la propia propuesta → 409');
+    $rAjeno = http_req('POST', $base . '/api/revancha.php', ['codigo' => $codR, 'jugador_id' => $j2R, 'accion' => 'rechazar']);
+    check($rAjeno['code'] === 200 && array_key_exists('revancha', $rAjeno['json']['sala'] ?? []) && $rAjeno['json']['sala']['revancha'] === null,
+        'rechazar → 200 y limpia');
+
+    // 6c) Revancha contra bot: reinicia la misma sala.
+    $rbRev = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'futbol', 'nombre' => 'RevBot']);
+    $codBR = (string) ($rbRev['json']['codigo'] ?? '');
+    $codigos[] = $codBR;
+    $j1BR = (string) ($rbRev['json']['jugador_id'] ?? '');
+    $rbRev2 = http_req('POST', $base . '/api/unirse_sala.php', ['codigo' => $codBR, 'nombre' => 'Bot', 'bot' => true, 'creador_id' => $j1BR]);
+    $jBotBR = (string) ($rbRev2['json']['jugador_id'] ?? '');
+    $pathBR = $root . '/api/salas/' . $codBR . '.json';
+    $rawBR = json_decode((string) file_get_contents($pathBR), true);
+    $rawBR['estado'] = 'finalizada';
+    file_put_contents($pathBR, json_encode($rawBR, JSON_UNESCAPED_UNICODE));
+    $sinTema = http_req('POST', $base . '/api/revancha.php', ['codigo' => $codBR, 'jugador_id' => $j1BR, 'accion' => 'reiniciar']);
+    check($sinTema['code'] === 400, 'reiniciar sin temática → 400');
+    $reBotMal = http_req('POST', $base . '/api/revancha.php', ['codigo' => $codBR, 'jugador_id' => $jBotBR, 'accion' => 'reiniciar', 'tematica' => 'anime']);
+    check($reBotMal['code'] === 403, 'el bot no puede reiniciar → 403');
+    $reBot = http_req('POST', $base . '/api/revancha.php', ['codigo' => $codBR, 'jugador_id' => $j1BR, 'accion' => 'reiniciar', 'tematica' => 'anime']);
+    check($reBot['code'] === 200 && (($reBot['json']['sala']['estado'] ?? '') === 'jugando')
+        && (int) ($reBot['json']['sala']['partida_n'] ?? 0) === 2
+        && (($reBot['json']['sala']['bot_slot'] ?? null) === 1), 'revancha contra bot: reinicio en la misma sala');
 
     // 7) Bot: solo el creador de la sala puede sentarlo
     $rb = http_req('POST', $base . '/api/crear_sala.php', ['tematica' => 'futbol', 'nombre' => 'SmokeBot']);
@@ -274,6 +336,12 @@ try {
         check(substr_count((string) $rCont['raw'], '(window.adsbygoogle = window.adsbygoogle || []).push({});') === 1,
             'contenido ' . $rutaCont . ': push único');
     }
+    $rCssAds = http_req('GET', $base . '/css/style.css');
+    $cssAds = (string) $rCssAds['raw'];
+    check(strpos($cssAds, 'visibility: hidden') === false || strpos($cssAds, '.ad-slot ins') === false,
+        'CSS: los anuncios no se ocultan (política de AdSense)');
+    check(strpos($cssAds, 'rgba(255, 255, 255, 0.03)') === false, 'CSS: el contenedor del anuncio ya no tiene fondo propio');
+    check((bool) preg_match('/\.ad-slot\s*\{[^}]*background:\s*transparent/s', $cssAds), 'CSS: el contenedor del anuncio usa el fondo de la página');
     $rSitemap = http_req('GET', $base . '/sitemap.php');
     $mSitemap = [];
     check($rSitemap['code'] === 200

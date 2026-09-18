@@ -437,6 +437,56 @@ if (!function_exists('crear_sala_nueva')) {
     }
 }
 
+if (!function_exists('reiniciar_sala')) {
+    /**
+     * Reinicia la MISMA sala para una revancha: mismo código, mismos jugadores
+     * y mismas sesiones (no hay que volver a compartir el enlace), con pool y
+     * estado de partida nuevos. Conserva el modo ⭐, el bot y la temática
+     * elegida. Alterna quién empieza cada partida y lleva la cuenta en
+     * `partida_n` (idempotencia y "Partida 2/3").
+     */
+    function reiniciar_sala(array $estado, string $tematicaId): array
+    {
+        $tematica   = cargar_tematica($tematicaId);
+        $itemsPool  = seleccionar_items_balanceados($tematica['items'], ITEMS_POR_PARTIDA);
+        $itemsIds   = array_map(static fn(array $it): string => (string) $it['id'], $itemsPool);
+        $primerItem = $itemsPool[0];
+
+        // Alterna el jugador que empieza respecto a la partida anterior.
+        $inicio = ((int) ($estado['turno_inicial_ronda'] ?? 0)) === 0 ? 1 : 0;
+
+        $estado['estado']              = 'jugando';
+        $estado['tematica']            = $tematica['id'];
+        $estado['items_mezclados']     = $itemsIds;
+        $estado['indice_item']         = 0;
+        $estado['item_actual']         = [
+            'id'            => $primerItem['id'],
+            'emoji'         => $primerItem['emoji'],
+            'precio_actual' => 0,
+            'turno_de'      => $inicio,
+            'ultimo_pujo'   => null,
+            'auto_asignado' => false,
+            'pujas'         => [],
+        ];
+        foreach ($estado['jugadores'] as $i => $j) {
+            $estado['jugadores'][$i]['dinero']        = DINERO_INICIAL;
+            $estado['jugadores'][$i]['items_ganados'] = [];
+        }
+        $estado['turno_inicial_ronda'] = $inicio;
+        $estado['ronda']               = 1;
+        $estado['asignacion_forzada_a'] = null;
+        $estado['decision_pendiente']   = null;
+        $estado['abandono_por']         = null;
+        $estado['ultimo_item']          = null;
+        $estado['emotes']               = [];
+        $estado['revancha']             = null;
+        $estado['partida_n']            = ((int) ($estado['partida_n'] ?? 1)) + 1;
+        $estado['last_seen']            = [time(), time()];
+        $estado['actualizado_en']       = time();
+        return $estado;
+    }
+}
+
 // Permite reutilizar helpers y crear_sala_nueva() desde partida_rapida.php
 // sin ejecutar la validación ni la lógica de este endpoint.
 if (defined('SALA_CORE_ONLY') && SALA_CORE_ONLY) {
