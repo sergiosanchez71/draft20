@@ -181,6 +181,18 @@ function csp_meta(): string
     return '<meta http-equiv="Content-Security-Policy" content="' . e(csp_policy()) . '">';
 }
 
+/** Sello de build (mtime del bundle del juego) para comparar app vs web. */
+function app_build(): string
+{
+    foreach (['js/app.game.min.js', 'js/app.game.js'] as $rel) {
+        $f = __DIR__ . '/../' . $rel;
+        if (is_file($f)) {
+            return (string) filemtime($f);
+        }
+    }
+    return 'dev';
+}
+
 /** Bloque manual de AdSense para contenido ('' si no hay slot configurado). */
 function ads_slot(string $clase = 'ad-articulo', int $ancho = 300, int $alto = 250): string
 {
@@ -332,6 +344,7 @@ function pagina_head(array $opts): void
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <?= csp_meta() ?>
     <meta name="theme-color" content="#0f172a">
+    <meta name="app-build" content="<?= e(app_build()) ?>">
     <title><?= e($titulo) ?></title>
     <meta name="description" content="<?= e($descripcion) ?>">
     <link rel="canonical" href="<?= e($canonical) ?>">

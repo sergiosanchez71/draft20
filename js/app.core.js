@@ -423,6 +423,19 @@
             class: 'mt-4 w-full bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap',
             onclick: m.close,
         }, t('ui.reglas.cerrar')));
+        const vp = lineaVersion();
+        if (vp) content.appendChild(vp);
+    }
+
+    /** Sello de build (meta del HTML): permite comparar app vs web de un vistazo. */
+    function buildStamp() {
+        const m = document.querySelector('meta[name="app-build"]');
+        return m ? (m.getAttribute('content') || '') : '';
+    }
+
+    function lineaVersion() {
+        const sello = buildStamp();
+        return sello ? el('div', { class: 'mt-3 text-[10px] text-slate-500 text-center' }, 'Draft 20 · build ' + sello) : null;
     }
 
     // =================== toast ===================
@@ -566,6 +579,8 @@
             class: 'mt-5 w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap',
             onclick: m.close,
         }, t('ui.reglas.cerrar')));
+        const v = lineaVersion();
+        if (v) content.appendChild(v);
         try { localStorage.setItem('draft20_reglas', '1'); } catch (e) { /* ignore */ }
     }
 

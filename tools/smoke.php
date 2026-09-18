@@ -324,6 +324,14 @@ try {
     check($rAds['code'] === 200 && strpos((string) $rAds['raw'], 'pub-9504493922636861') !== false, 'ads.txt servido con el publisher');
     check(strpos((string) $rSeoHome['raw'], 'data-ad-slot="1410891766"') !== false, 'home: bloque manual del lobby');
     $rJuegoAds = http_req('GET', $base . '/juego.php?codigo=ABC12');
+    check(strpos((string) $rJuegoAds['raw'], 'viewport-fit=cover') === false,
+        'juego: sin viewport-fit=cover (la PWA queda dentro del área segura)');
+    $mBuild = [];
+    check((bool) preg_match('/<meta name="app-build" content="(\d+|dev)">/', (string) $rJuegoAds['raw'], $mBuild),
+        'juego: meta de build para diagnóstico');
+    $buildEsperado = (string) @filemtime($root . '/js/app.game.min.js');
+    check($buildEsperado !== '' && ($mBuild[1] ?? '') === $buildEsperado,
+        'juego: el build coincide con el bundle servido');
     check($rJuegoAds['code'] === 200, 'juego: shell servido (200)');
     check(strpos((string) $rJuegoAds['raw'], 'adsbygoogle.js?client=ca-pub-9504493922636861') !== false, 'juego: loader de AdSense');
     check(strpos((string) $rJuegoAds['raw'], '"banner":"6658157047"') !== false
