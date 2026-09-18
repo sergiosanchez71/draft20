@@ -673,6 +673,9 @@
     function renderGame(prev) {
         if (!state.sala) return;
         const s = state.sala;
+        // La clase en <body> activa los ajustes CSS del tutorial (emotes fuera,
+        // guía compacta y scroll de seguridad).
+        document.body.classList.toggle('guiado', !!(state.guiado && state.bot));
 
         // Revancha aceptada: la sala vuelve a 'jugando' sin recargar la página.
         if (prev && prev.estado === 'finalizada' && s.estado === 'jugando') {
@@ -1007,12 +1010,17 @@
         if (!s) return;
         const texto = guiaTexto(s);
         if (!texto) return;
-        bar.appendChild(el('div', { class: 'mt-2 text-[11px] leading-snug text-amber-200 bg-slate-900/70 border border-amber-400/50 rounded-lg px-3 py-2 text-center' }, [
-            el('span', {}, '🎓 ' + texto),
+        // Una sola línea (los textos de la guía están recortados para que quepan)
+        // con ✕ para saltarla: en móviles cortos no debe empujar los botones fuera.
+        bar.appendChild(el('div', { class: 'mt-1.5 flex items-center gap-2 text-[11px] leading-tight text-amber-200 bg-slate-900/70 border border-amber-400/50 rounded-lg pl-3 pr-1.5 py-1.5' }, [
+            el('span', { class: 'flex-1 min-w-0 truncate' }, '🎓 ' + texto),
             el('button', {
-                class: 'block mx-auto mt-1 text-slate-400 underline btn-tap',
+                id: 'btnSaltarGuia',
+                class: 'flex-shrink-0 w-5 h-5 rounded-full bg-slate-700/80 text-slate-300 text-[10px] font-bold btn-tap',
+                'aria-label': t('ui.juego.guia_saltar'),
+                title: t('ui.juego.guia_saltar'),
                 onclick: function () { state.guiado = false; renderGame(null); },
-            }, t('ui.juego.guia_saltar')),
+            }, '✕'),
         ]));
     }
 

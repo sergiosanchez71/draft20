@@ -342,6 +342,10 @@ try {
         'CSS: los anuncios no se ocultan (política de AdSense)');
     check(strpos($cssAds, 'rgba(255, 255, 255, 0.03)') === false, 'CSS: el contenedor del anuncio ya no tiene fondo propio');
     check((bool) preg_match('/\.ad-slot\s*\{[^}]*background:\s*transparent/s', $cssAds), 'CSS: el contenedor del anuncio usa el fondo de la página');
+    check(strpos($cssAds, 'body.guiado #emoteBar') !== false
+        && strpos($cssAds, 'body.guiado .ad-juego') !== false
+        && strpos($cssAds, 'body.guiado #app') !== false,
+        'CSS: ajustes del tutorial (emotes fuera, anuncio sin márgenes y scroll)');
 
     // Favicon: rutas absolutas también en URLs bonitas (antes se rompían) y
     // tamaños múltiplos de 48 que pide Google.
