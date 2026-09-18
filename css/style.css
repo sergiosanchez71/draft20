@@ -12,7 +12,12 @@
    hace desplazable y la barra de acciones queda PEGADA abajo para que los
    botones nunca queden fuera. La tarjeta del ítem conserva un alto mínimo. */
 .game-shell { overflow-y: auto; }
-.game-shell #actionBar { position: sticky; bottom: 0; }
+.game-shell #actionBar {
+    position: sticky;
+    /* En la app instalada (standalone) la barra se ancla por encima del hueco
+       real medido (barra de gestos); en la web --app-bottom vale 0. */
+    bottom: max(var(--app-bottom, 0px), env(safe-area-inset-bottom));
+}
 .game-shell #itemCard { min-height: 13rem; }
 
 /* En pantallas bajas se recupera alto sin tocar el anuncio: fuera la barra de

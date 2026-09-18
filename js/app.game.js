@@ -36,6 +36,58 @@
     let ultimoItemAvisado = false;
     let tematicaAvisada = false;
 
+    // =================== modo app instalada (PWA standalone) ===================
+    // En la app el WebView puede dibujar por debajo de la barra de gestos y no
+    // reportarlo en env(safe-area-inset-*): medimos el hueco real entre el
+    // viewport de layout y el visual y lo exponemos como --app-bottom para que
+    // la barra de acciones se ancle por encima.
+
+    /** ¿Se está ejecutando como app instalada? */
+    function esAppInstalada() {
+        try {
+            return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+                || window.navigator.standalone === true;
+        } catch (e) { return false; }
+    }
+
+    /** Hueco inferior real: viewport de layout que queda bajo el visual. */
+    function medirHuecoInferior() {
+        const vv = window.visualViewport;
+        if (!vv) return 0;
+        return Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+    }
+
+    /** Valor real de env(safe-area-inset-bottom) en píxeles. */
+    function insetInferior() {
+        try {
+            const d = document.createElement('div');
+            d.style.cssText = 'position:fixed;left:-9999px;bottom:0;width:0;height:env(safe-area-inset-bottom)';
+            document.body.appendChild(d);
+            const h = d.getBoundingClientRect().height;
+            d.remove();
+            return Math.round(h);
+        } catch (e) { return 0; }
+    }
+
+    /** Aplica la clase de modo app y fija --app-bottom. */
+    function ajustarModoApp() {
+        const app = esAppInstalada();
+        document.body.classList.toggle('app-mode', app);
+        let hueco = 0;
+        if (app) {
+            hueco = Math.max(medirHuecoInferior(), insetInferior());
+            if (hueco === 0) {
+                hueco = 28; // App que no reporta ni viewport ni safe-area: mínimo de seguridad
+            }
+        }
+        document.documentElement.style.setProperty('--app-bottom', hueco + 'px');
+    }
+
+    window.addEventListener('resize', ajustarModoApp);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', ajustarModoApp);
+    }
+
     /** Reset de flags al empezar una revancha en la misma sala. */
     function reiniciarFlagsPartida() {
         state.finalRegistrada = false;
@@ -112,6 +164,9 @@
             } catch (e) { /* ignore */ }
             if (state.esperaRival) iniciarVigilanciaEspera();
         }
+
+        // Ajustes del modo app instalada (hueco de la barra de gestos).
+        ajustarModoApp();
 
         renderGameShell();
         await pollGameTick();

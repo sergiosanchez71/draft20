@@ -435,7 +435,18 @@
 
     function lineaVersion() {
         const sello = buildStamp();
-        return sello ? el('div', { class: 'mt-3 text-[10px] text-slate-500 text-center' }, 'Draft 20 · build ' + sello) : null;
+        if (!sello) return null;
+        // En la app instalada se añaden las métricas del hueco inferior para
+        // diagnosticar por qué la barra de acciones puede quedar tapada.
+        let extra = '';
+        if (document.body && document.body.classList.contains('app-mode')) {
+            const vv = window.visualViewport;
+            const inner = Math.round(window.innerHeight || 0);
+            const vis = vv ? Math.round(vv.height) : 0;
+            const hueco = (getComputedStyle(document.documentElement).getPropertyValue('--app-bottom') || '').trim() || '0px';
+            extra = ' · app inner=' + inner + ' vv=' + vis + ' hueco=' + hueco;
+        }
+        return el('div', { class: 'mt-3 text-[10px] text-slate-500 text-center' }, 'Draft 20 · build ' + sello + extra);
     }
 
     // =================== toast ===================

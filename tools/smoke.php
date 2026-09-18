@@ -358,6 +358,10 @@ try {
         'CSS: barra de acciones pegada abajo (no se puede perder)');
     check(strpos($cssAds, '@media (max-height: 740px)') !== false && strpos($cssAds, '#inventory .w-9') !== false,
         'CSS: compactado en pantallas bajas (emotes fuera, inventario menor)');
+    check(strpos($cssAds, '--app-bottom') !== false, 'CSS: la barra usa el hueco medido en la app instalada');
+    $rGameJs = http_req('GET', $base . '/js/app.game.min.js');
+    check(strpos((string) $rGameJs['raw'], 'app-mode') !== false && strpos((string) $rGameJs['raw'], 'visualViewport') !== false,
+        'JS: ajuste del modo app instalada en el bundle');
 
     // Favicon: rutas absolutas también en URLs bonitas (antes se rompían) y
     // tamaños múltiplos de 48 que pide Google.
