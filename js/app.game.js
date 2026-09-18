@@ -142,7 +142,7 @@
     function renderGameShell() {
         const app = $('#app');
         clear(app);
-        app.className = 'flex-1 flex flex-col min-h-0 overflow-hidden';
+        app.className = 'game-shell flex-1 flex flex-col min-h-0 overflow-hidden';
 
         // Header
         const header = el('header', { class: 'flex items-center justify-between px-3 py-1.5 bg-slate-800 border-b border-slate-700 safe-pt' }, [

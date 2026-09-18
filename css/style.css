@@ -6,6 +6,25 @@
     .safe-pb-action { padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); }
 }
 
+/* Pantalla de juego: columna de 100dvh con bloques de altura fija (cabecera,
+   anuncio, marcador, inventario, emotes y acciones). En móviles con la barra
+   del navegador visible el conjunto puede pasar de la pantalla: la columna se
+   hace desplazable y la barra de acciones queda PEGADA abajo para que los
+   botones nunca queden fuera. La tarjeta del ítem conserva un alto mínimo. */
+.game-shell { overflow-y: auto; }
+.game-shell #actionBar { position: sticky; bottom: 0; }
+.game-shell #itemCard { min-height: 13rem; }
+
+/* En pantallas bajas se recupera alto sin tocar el anuncio: fuera la barra de
+   emotes (opcional) y cuadros de inventario algo más pequeños. */
+@media (max-height: 740px) {
+    #emoteBar { display: none; }
+    #inventory .w-9 { width: 2rem; }
+    #inventory .h-9 { height: 2rem; }
+    #inventory .h-10 { height: 2.25rem; }
+    #inventory .min-h-\[36px\] { min-height: 1.75rem; }
+}
+
 /* Práctica guiada (tutorial): la pantalla es una columna fija de 100dvh, así
    que se recupera el alto que ocupa la guía y el anuncio:
    - fuera la barra de emotes (no forma parte del tutorial),

@@ -346,6 +346,10 @@ try {
         && strpos($cssAds, 'body.guiado .ad-juego') !== false
         && strpos($cssAds, 'body.guiado #app') !== false,
         'CSS: ajustes del tutorial (emotes fuera, anuncio sin márgenes y scroll)');
+    check(strpos($cssAds, '.game-shell #actionBar') !== false && strpos($cssAds, 'position: sticky') !== false,
+        'CSS: barra de acciones pegada abajo (no se puede perder)');
+    check(strpos($cssAds, '@media (max-height: 740px)') !== false && strpos($cssAds, '#inventory .w-9') !== false,
+        'CSS: compactado en pantallas bajas (emotes fuera, inventario menor)');
 
     // Favicon: rutas absolutas también en URLs bonitas (antes se rompían) y
     // tamaños múltiplos de 48 que pide Google.
