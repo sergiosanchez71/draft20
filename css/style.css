@@ -4,6 +4,7 @@
     .safe-pl { padding-left: max(1rem, env(safe-area-inset-left)); }
     .safe-pr { padding-right: max(1rem, env(safe-area-inset-right)); }
     .safe-pb-action { padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); }
+}
 
 /* Práctica guiada (tutorial): la pantalla es una columna fija de 100dvh, así
    que se recupera el alto que ocupa la guía y el anuncio:
@@ -13,7 +14,6 @@
 body.guiado #emoteBar { display: none; }
 body.guiado .ad-juego { margin-top: 0; margin-bottom: 0; }
 body.guiado #app { overflow-y: auto; }
-}
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
