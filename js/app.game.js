@@ -76,6 +76,13 @@
         let hueco = 0;
         if (app) {
             hueco = Math.max(medirHuecoInferior(), insetInferior());
+            // WebView a pantalla completa (viewport = pantalla física): las
+            // barras del sistema van superpuestas aunque no se reporten.
+            try {
+                if (window.innerHeight >= Math.round(window.screen.height) - 1) {
+                    hueco = Math.max(hueco, 32);
+                }
+            } catch (e) { /* ignore */ }
             if (hueco === 0) {
                 hueco = 28; // App que no reporta ni viewport ni safe-area: mínimo de seguridad
             }
