@@ -350,7 +350,8 @@ try {
     check((bool) preg_match('#href="/icons/icon-192\.png(\?v=\d+)?"#', $htmlFicha), 'ficha: icono con ruta absoluta');
     check(strpos($htmlFicha, 'sizes="48x48"') !== false && strpos($htmlFicha, 'sizes="96x96"') !== false,
         'ficha: iconos PNG 48 y 96 declarados');
-    foreach (['/favicon.ico', '/icons/icon-48.png', '/icons/icon-96.png', '/icons/icon-192.png'] as $rutaIco) {
+    check((bool) preg_match('#href="/icons/favicon\.ico\?v=\d+"#', $htmlFicha), 'ficha: favicon versionado en /icons');
+    foreach (['/favicon.ico', '/icons/favicon.ico', '/icons/icon-48.png', '/icons/icon-96.png', '/icons/icon-192.png'] as $rutaIco) {
         $rIco = http_req('GET', $base . $rutaIco);
         check($rIco['code'] === 200, 'icono servido: ' . $rutaIco);
     }

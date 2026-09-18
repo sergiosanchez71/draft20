@@ -347,7 +347,7 @@ function pagina_head(array $opts): void
     <meta name="twitter:title" content="<?= e($titulo) ?>">
     <meta name="twitter:description" content="<?= e($descripcion) ?>">
     <meta name="twitter:image" content="<?= e($ogImage) ?>">
-    <link rel="icon" href="<?= e(asset('favicon.ico')) ?>" sizes="any">
+    <link rel="icon" href="<?= e(asset('icons/favicon.ico')) ?>" sizes="any">
     <link rel="icon" type="image/png" sizes="48x48" href="<?= e(asset('icons/icon-48.png')) ?>">
     <link rel="icon" type="image/png" sizes="96x96" href="<?= e(asset('icons/icon-96.png')) ?>">
     <link rel="icon" type="image/png" sizes="192x192" href="<?= e(asset('icons/icon-192.png')) ?>">

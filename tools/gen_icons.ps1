@@ -45,7 +45,7 @@ $entradas = @(16, 32, 48)
 $datos = @{}
 foreach ($lado in $entradas) { $datos[$lado] = [System.IO.File]::ReadAllBytes($salidas[$lado]) }
 
-$icoPath = Join-Path $Root 'favicon.ico'
+$icoPath = Join-Path $Root 'icons\favicon.ico'
 $fs = [System.IO.File]::Create($icoPath)
 $bw = New-Object System.IO.BinaryWriter($fs)
 try {
@@ -71,6 +71,10 @@ try {
 
 foreach ($tmp in $salidas.Values) { Remove-Item $tmp -Force -ErrorAction SilentlyContinue }
 
+# Copia en la raíz para el descubrimiento por defecto de /favicon.ico
+# (el HTML declara /icons/favicon.ico con ?v= para saltar la caché del CDN).
+Copy-Item $icoPath (Join-Path $Root 'favicon.ico') -Force
+
 Write-Output ('icon-48.png: ' + (Get-Item (Join-Path $Root 'icons\icon-48.png')).Length + ' bytes')
 Write-Output ('icon-96.png: ' + (Get-Item (Join-Path $Root 'icons\icon-96.png')).Length + ' bytes')
-Write-Output ('favicon.ico: ' + (Get-Item $icoPath).Length + ' bytes (16/32/48)')
+Write-Output ('icons/favicon.ico + favicon.ico: ' + (Get-Item $icoPath).Length + ' bytes (16/32/48)')

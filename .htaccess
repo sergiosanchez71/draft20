@@ -54,8 +54,14 @@ ErrorDocument 404 /404.php
 
 <IfModule mod_headers.c>
     # Assets versionados: caché larga (se invalidan con ?v=filemtime).
-    <FilesMatch "\.(css|js|png|ico|svg|woff2?)$">
+    <FilesMatch "\.(css|js|png|svg|woff2?)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # El favicon no lleva versión en las peticiones automáticas a /favicon.ico:
+    # caché corta para que un cambio se propague sin purgar el CDN.
+    <FilesMatch "\.ico$">
+        Header set Cache-Control "public, max-age=86400"
     </FilesMatch>
 
     # sw.js y manifest siempre revalidados (van sin versión en el registro).
