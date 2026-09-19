@@ -35,9 +35,10 @@ function lobby_inicial_html(?string $tematicaPre = null): string
     $input = static fn(string $id, string $placeholder): string =>
         '<input id="' . $id . '" type="text" maxlength="20" value="" placeholder="' . e($placeholder)
         . '" class="w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base placeholder:text-slate-300">';
+    // Por defecto el modo ⭐ va ACTIVADO (igual que en renderInitialView).
     $toggle = static fn(string $wrapper): string =>
         '<div class="' . e($wrapper) . '">'
-        . '<button type="button" aria-pressed="false" class="w-full py-3 px-4 rounded-lg border text-sm font-bold btn-tap bg-slate-700 text-slate-200 border-slate-600">'
+        . '<button type="button" aria-pressed="true" class="w-full py-3 px-4 rounded-lg border text-sm font-bold btn-tap bg-amber-400 text-slate-900 border-amber-400">'
         . e($cat('mostrar_valores')) . '</button>'
         . '<div class="text-[11px] text-slate-400 mt-2 text-center">' . e($cat('mostrar_valores_ayuda')) . '</div>'
         . '</div>';

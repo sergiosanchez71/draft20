@@ -334,6 +334,9 @@ try {
         'juego: versión visible coincide con APP_VERSION');
     $pkg = json_decode((string) @file_get_contents($root . '/package.json'), true);
     check(is_array($pkg) && (string) ($pkg['version'] ?? '') === $verApp, 'package.json en sync con APP_VERSION');
+    $rHomeSsr = http_req('GET', $base . '/index.php');
+    check(substr_count((string) $rHomeSsr['raw'], 'aria-pressed="true"') >= 3,
+        'lobby SSR: los 3 toggles de ⭐ salen activados por defecto');
     $mBuild = [];
     check((bool) preg_match('/<meta name="app-build" content="(\d+|dev)">/', (string) $rJuegoAds['raw'], $mBuild),
         'juego: meta de build para diagnóstico');

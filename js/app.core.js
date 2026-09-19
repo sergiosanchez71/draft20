@@ -33,7 +33,7 @@
         botValores: null,
         partidaGuardada: false,
         botDificultad: 'normal',
-        mostrarValores: false,
+        mostrarValores: true,
         statsRegistradas: false,
         finalRegistrada: false,
         serieFinal: null,
@@ -783,10 +783,11 @@
 
         // Modo "⭐ Valores visibles" (persistido; se comparte con la sala).
         // Se muestra en Partida rápida, Crear Sala y Practicar: las tres
-        // instancias van sincronizadas.
+        // instancias van sincronizadas. Por defecto va ACTIVADO; solo se apaga
+        // si el jugador lo ha desmarcado explícitamente en este dispositivo.
         try {
-            if (localStorage.getItem('draft20_mostrar_valores') === '1') state.mostrarValores = true;
-        } catch (e) { /* ignore */ }
+            state.mostrarValores = localStorage.getItem('draft20_mostrar_valores') !== '0';
+        } catch (e) { state.mostrarValores = true; }
         const mvPintores = [];
         function crearToggleValores(claseWrapper) {
             const btn = el('button', {
