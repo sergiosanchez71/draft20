@@ -11,7 +11,7 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.1.27';
+const APP_VERSION = '1.1.28';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 const ADSENSE_SLOT_JUEGO = '6658157047';
 const ADSENSE_SLOT_FINAL = '4631951476';
@@ -183,16 +183,17 @@ function csp_meta(): string
     return '<meta http-equiv="Content-Security-Policy" content="' . e(csp_policy()) . '">';
 }
 
-/** Sello de build (mtime del bundle del juego) para comparar app vs web. */
+/** Sello de build: mtime más reciente de los bundles (app vs web). */
 function app_build(): string
 {
-    foreach (['js/app.game.min.js', 'js/app.game.js'] as $rel) {
+    $max = 0;
+    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/app.core.js', 'js/app.game.js'] as $rel) {
         $f = __DIR__ . '/../' . $rel;
         if (is_file($f)) {
-            return (string) filemtime($f);
+            $max = max($max, (int) filemtime($f));
         }
     }
-    return 'dev';
+    return $max > 0 ? (string) $max : 'dev';
 }
 
 /** Bloque manual de AdSense para contenido ('' si no hay slot configurado). */

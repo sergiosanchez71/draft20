@@ -340,9 +340,15 @@ try {
     $mBuild = [];
     check((bool) preg_match('/<meta name="app-build" content="(\d+|dev)">/', (string) $rJuegoAds['raw'], $mBuild),
         'juego: meta de build para diagnóstico');
-    $buildEsperado = (string) @filemtime($root . '/js/app.game.min.js');
-    check($buildEsperado !== '' && ($mBuild[1] ?? '') === $buildEsperado,
-        'juego: el build coincide con el bundle servido');
+    $buildEsperado = '0';
+    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/app.core.js', 'js/app.game.js'] as $relJs) {
+        $fJs = $root . '/' . $relJs;
+        if (is_file($fJs)) {
+            $buildEsperado = (string) max((int) $buildEsperado, (int) filemtime($fJs));
+        }
+    }
+    check($buildEsperado !== '0' && ($mBuild[1] ?? '') === $buildEsperado,
+        'juego: el build coincide con el bundle más reciente');
     check($rJuegoAds['code'] === 200, 'juego: shell servido (200)');
     check(strpos((string) $rJuegoAds['raw'], 'adsbygoogle.js?client=ca-pub-9504493922636861') !== false, 'juego: loader de AdSense');
     check(strpos((string) $rJuegoAds['raw'], '"banner":"6658157047"') !== false
