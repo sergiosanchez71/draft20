@@ -378,6 +378,8 @@ try {
     check(strpos($cssAds, '--app-bottom') !== false, 'CSS: la barra usa el hueco medido en la app instalada');
     check(strpos($cssAds, '--app-height') !== false && strpos($cssAds, 'body.app-mode.app-viewport') !== false,
         'CSS: alto visible y compactado en modo app');
+    check(strpos($cssAds, 'body.app-mode .ad-juego') !== false && strpos($cssAds, 'body.app-mode #emoteBar') !== false,
+        'CSS: en modo app se ocultan anuncio y emotes (sitio para los botones)');
     $rGameJs = http_req('GET', $base . '/js/app.game.min.js');
     check(strpos((string) $rGameJs['raw'], 'app-mode') !== false && strpos((string) $rGameJs['raw'], 'visualViewport') !== false,
         'JS: ajuste del modo app instalada en el bundle');

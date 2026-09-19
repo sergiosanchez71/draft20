@@ -28,6 +28,11 @@ body.app-mode.app-viewport { height: var(--app-height, 100dvh); }
 body.app-mode .game-shell #itemCard { min-height: 10rem; }
 body.app-mode .game-shell .item-emoji { height: clamp(2.5rem, 9svh, 4.5rem); }
 
+/* En la app se gana sitio para los botones: no se muestra el banner de anuncio
+   ni la barra de emotes. (La web mantiene ambos.) */
+body.app-mode .ad-juego { display: none; }
+body.app-mode #emoteBar { display: none; }
+
 /* En pantallas bajas se recupera alto sin tocar el anuncio: fuera la barra de
    emotes (opcional) y cuadros de inventario algo más pequeños. */
 @media (max-height: 740px) {
