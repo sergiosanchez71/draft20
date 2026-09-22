@@ -15,10 +15,10 @@
         { "id": "fre_pan",            "emoji": "🍞", "valor": 6  },
         { "id": "fre_tortilla",       "emoji": "🥘", "valor": 6  },
         { "id": "fre_palomitas",      "emoji": "🍿", "valor": 6  },
-        { "id": "fre_quemado",        "emoji": "⬛", "valor": 4  },
-        { "id": "fre_humo",           "emoji": "💨", "valor": 3  },
-        { "id": "fre_olor",           "emoji": "👃", "valor": 3  },
-        { "id": "fre_cesta",          "emoji": "🧺", "valor": 3  },
+        { "id": "fre_quemado",        "emoji": "⬛", "valor": 1  },
+        { "id": "fre_patatas_blandas", "emoji": "🥔", "valor": 2  },
+        { "id": "fre_nuggets_goma",   "emoji": "🐔", "valor": 1  },
+        { "id": "fre_croquetas_crudas","emoji": "🧆", "valor": 1  },
         { "id": "fre_enchufe",        "emoji": "🔌", "valor": 2  },
         { "id": "fre_fria",           "emoji": "❄️", "valor": 1  }
     ]

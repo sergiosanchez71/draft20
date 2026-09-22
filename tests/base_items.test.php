@@ -45,5 +45,17 @@ for ($i = 1; $i <= 30; $i++) {
 $sin = seleccionar_items_balanceados($pizza['items'], 8);
 check(count($sin) === 8, 'sin base_ids devuelve 8');
 
+$mundial = json_decode((string) file_get_contents(__DIR__ . '/../tematicas/mundial_2026.json'), true);
+check(($mundial['base_items'] ?? null) === ['mun_espana', 'mun_argentina'], 'mundial declara base finalistas');
+$selM = seleccionar_items_balanceados($mundial['items'], 8, $mundial['base_items'] ?? []);
+$idsM = array_map(static fn(array $it): string => (string) $it['id'], $selM);
+check(
+    count($idsM) === 8
+    && in_array('mun_espana', $idsM, true)
+    && in_array('mun_argentina', $idsM, true)
+    && count(array_unique($idsM)) === 8,
+    'mundial incluye base, 8 únicos'
+);
+
 echo "\n=== BASE ITEMS: $ok OK / $fail FAIL ===\n";
 exit($fail > 0 ? 1 : 0);

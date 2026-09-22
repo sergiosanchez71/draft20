@@ -50,13 +50,13 @@ return [
         ],
     ],
     'tacos' => [
-        'descripcion' => 'Tacos al pastor, birria con consomé, cochinita pibil y guacamole casero contra la tortilla rota y la salsa de bote. La temática mexicana del catálogo: aquí el queso y el tomate no mandan, manda la tortilla, y el taco con tenedor es el castigo definitivo.',
+        'descripcion' => 'Tacos al pastor, birria con consomé, cochinita pibil y guacamole casero contra la tortilla rota y la salsa de bote. La temática mexicana del catálogo: aquí el queso y el tomate no mandan, manda la tortilla, y la tortilla rota es el castigo definitivo.',
         'preguntas' => [
             ['q' => '¿La tortilla y el pastor salen siempre?', 'a' => 'Sí, son la base innegociable de la temática, igual que el queso y el tomate en la pizza.'],
         ],
     ],
     'freidora_aire' => [
-        'descripcion' => 'Patatas crujientes, alitas jugosas, croquetas cremosas y churros caseros frente a la cocina llena de humo y la cesta imposible de limpiar. La temática del electrodoméstico viral: todo lo que sale bien en la freidora, y todo lo que sale mal.',
+        'descripcion' => 'Patatas crujientes, alitas jugosas, croquetas cremosas y churros caseros frente a todo quemado y los nuggets de goma. La temática del electrodoméstico viral: todo lo que sale bien en la freidora, y todo lo que sale mal.',
         'preguntas' => [
             ['q' => '¿De verdad salen churros en freidora de aire?', 'a' => 'Sí, y están entre los ítems más pujados: crujientes por fuera y hechos en minutos.'],
         ],
@@ -106,7 +106,7 @@ return [
         ],
     ],
     'anime_moderno' => [
-        'descripcion' => 'Gojo, Frieren, Itadori y Denji encabezan la hornada 2024-2026 del anime: Jujutsu Kaisen, Frieren, Chainsaw Man, Solo Leveling y Dan Da Dan en la misma subasta, con el capítulo de relleno y el spoiler de Twitter como castigo. La temática para los que van al día con las temporadas.',
+        'descripcion' => 'Gojo, Frieren, Itadori y Denji encabezan la hornada 2024-2026 del anime: Jujutsu Kaisen, Frieren, Chainsaw Man, Solo Leveling y Dan Da Dan en la misma subasta, con Kazuya Kinoshita de castigo y la máquina expendedora reencarnada. La temática para los que van al día con las temporadas.',
         'preguntas' => [
             ['q' => '¿En qué se diferencia del Anime clásico?', 'a' => 'Anime reúne a los históricos; Anime Moderno es solo la hornada reciente, con series que aún están en emisión.'],
         ],
@@ -173,21 +173,39 @@ return [
         ],
     ],
     'streamers' => [
-        'descripcion' => 'Ibai Llanos, MrBeast, El Rubius y AuronPlay en una subasta con Plim Plim y 5-Minute Crafts como castigo. Es la temática natural de los que ven streams a diario, y una sorpresa agradable para los que no, porque los ítems malos son igual de entretenidos.',
+        'descripcion' => 'Ibai Llanos, MrBeast, El Rubius y AuronPlay en una subasta con Mangel y Shadoune como castigo. Es la temática natural de los que ven streams a diario, y una sorpresa agradable para los que no, porque los ítems malos son igual de entretenidos.',
         'preguntas' => [
             ['q' => '¿Sale Ibai en la temática de streamers?', 'a' => 'Sí, es uno de los ítems más pujados, junto a MrBeast y El Rubius.'],
         ],
     ],
     'la_velada' => [
-        'descripcion' => 'Ibai, IlloJuan, TheGrefg, Plex y RoRo se suben al cuadrilátero de La Cartuja con directos, actuaciones y afición entregada de fondo, mientras el KO en el primer asalto y la toalla esperan a los despistados. La temática del evento anual del streaming hispano.',
+        'descripcion' => 'Ibai, IlloJuan, TheGrefg, Plex y RoRo se suben al cuadrilátero de La Cartuja con AuronPlay, Viruzz y Coscu de fondo, mientras el KO en el primer asalto y la toalla esperan a los despistados. La temática del evento anual del streaming hispano.',
         'preguntas' => [
             ['q' => '¿La temática cambia cada año?', 'a' => 'Se refresca con cada edición de La Velada: nuevos combatientes, nuevo main event y nuevas actuaciones.'],
         ],
     ],
     'kpop' => [
-        'descripcion' => 'BTS, Jungkook, Jimin y KATSEYE con lightstick oficial y coreografía perfecta, frente a la reventa abusiva y el lightstick sin pilas. La temática de los fandoms más organizados del planeta: aquí se puja con el corazón y se paga con la cartera.',
+        'descripcion' => 'BTS, BLACKPINK, Jungkook y Stray Kids recién llegados, frente a la entrada falsa y el playback desafinado. La temática de los fandoms más organizados del planeta: aquí se puja con el corazón y se paga con la cartera.',
         'preguntas' => [
             ['q' => '¿Hay que saber de K-pop para jugarla?', 'a' => 'No: BTS y los lightsticks los reconoce todo el mundo, y los ítems malos hacen gracia hasta sin contexto.'],
+        ],
+    ],
+    'pokemon_legendarios' => [
+        'descripcion' => 'Mewtwo, Rayquaza, Lugia y Ho-Oh con Dialga y Mew, frente a Keldeo el olvidado y Phione el casi legendario. La temática de los singulares de verdad: aquí no hay imitaciones, solo legendarios de más a menos querido.',
+        'preguntas' => [
+            ['q' => '¿Por qué Phione vale tan poco?', 'a' => 'Porque es el eterno debate: ni siquiera está claro que sea legendario, y en la subasta paga esa duda.'],
+        ],
+    ],
+    'sandwich' => [
+        'descripcion' => 'Mixto, club, serranito y pepito contra el chopped, la mortadela barata y el inglés de pepino. La temática del sándwich de verdad: sin coñas de máquina expendedora, solo sándwiches de peores a mejores.',
+        'preguntas' => [
+            ['q' => '¿Cuál es el mejor sándwich?', 'a' => 'El mixto bien hecho suele ser el más disputado, con el club y el serranito muy cerca.'],
+        ],
+    ],
+    'helado' => [
+        'descripcion' => 'Stracciatella, pistacho, mango y vainilla contra el derretido, el sabor raro y el palo. La temática más veraniega del catálogo: se juega mejor con calor, como los helados.',
+        'preguntas' => [
+            ['q' => '¿Cuál es el sabor más pujado?', 'a' => 'La stracciatella suele encabezar, con el pistacho y el mango justo detrás.'],
         ],
     ],
 ];

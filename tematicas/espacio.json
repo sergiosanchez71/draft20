@@ -11,14 +11,14 @@
         { "id": "esp_perseverance",       "emoji": "🪨", "valor": 7  },
         { "id": "esp_james_webb",         "emoji": "🕸️", "valor": 6  },
         { "id": "esp_saturno_v",          "emoji": "⬆️", "valor": 6  },
-        { "id": "esp_armstrong",          "emoji": "👨‍🚀", "valor": 6  },
+        { "id": "esp_starship",           "emoji": "🛸", "valor": 8  },
         { "id": "esp_gagarin",            "emoji": "🎖️", "valor": 5  },
-        { "id": "esp_rover_marte",        "emoji": "🛻", "valor": 5  },
+        { "id": "esp_tiangong",           "emoji": "🌍", "valor": 6  },
         { "id": "esp_cubesat_juguete",    "emoji": "🧊", "valor": 1  },
         { "id": "esp_traje_fuga",         "emoji": "💨", "valor": 1  },
-        { "id": "esp_meteorito",          "emoji": "☄️", "valor": 2  },
+        { "id": "esp_satelite_carton",     "emoji": "📦", "valor": 1  },
         { "id": "esp_panel_roto",         "emoji": "🔌", "valor": 2  },
-        { "id": "esp_comida_liofilizada", "emoji": "🥫", "valor": 1  },
+        { "id": "esp_agujero_negro",      "emoji": "🕳️", "valor": 7  },
         { "id": "esp_oxigeno_justo",      "emoji": "😮‍💨", "valor": 2  },
         { "id": "esp_tornillo_flotante",  "emoji": "🔩", "valor": 1  }
     ]

@@ -9,17 +9,17 @@
         { "id": "str_kaicenat",        "emoji": "🗽", "valor": 8  },
         { "id": "str_illojuan",        "emoji": "🎮", "valor": 8  },
         { "id": "str_ishowspeed",      "emoji": "🐕", "valor": 7  },
-        { "id": "str_chino_mercadona", "emoji": "🧑‍🍳", "valor": 7  },
+        { "id": "str_xqc",              "emoji": "⚡", "valor": 7  },
         { "id": "str_vegetta",         "emoji": "🟣", "valor": 6  },
         { "id": "str_willyrex",        "emoji": "🐢", "valor": 6  },
         { "id": "str_lola_lolita",     "emoji": "💄", "valor": 6  },
-        { "id": "str_freefire",        "emoji": "🔥", "valor": 7  },
-        { "id": "str_5mincrafts",      "emoji": "✂️", "valor": 1  },
-        { "id": "str_troomtroom",      "emoji": "🧵", "valor": 1  },
-        { "id": "str_brightside",      "emoji": "🌈", "valor": 2  },
-        { "id": "str_cocomelon",       "emoji": "🍼", "valor": 2  },
-        { "id": "str_granja_zenon",    "emoji": "🐮", "valor": 2  },
-        { "id": "str_reino_infantil",  "emoji": "🧒", "valor": 2  },
-        { "id": "str_plimplim",        "emoji": "🎈", "valor": 2  }
+        { "id": "str_ninja",            "emoji": "🥷", "valor": 6  },
+        { "id": "str_mangel",           "emoji": "🎭", "valor": 3  },
+        { "id": "str_shadoune",        "emoji": "🎲", "valor": 2  },
+        { "id": "str_elmilloor",       "emoji": "🐭", "valor": 2  },
+        { "id": "str_escardi",         "emoji": "🃏", "valor": 3  },
+        { "id": "str_plex",            "emoji": "🎥", "valor": 7  },
+        { "id": "str_spreen",          "emoji": "🇦🇷", "valor": 7  },
+        { "id": "str_brightside",      "emoji": "🌈", "valor": 2  }
     ]
 }

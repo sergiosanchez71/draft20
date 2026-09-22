@@ -16,10 +16,10 @@
         { "id": "amx_rimuru",        "emoji": "💧", "valor": 6  },
         { "id": "amx_igris",         "emoji": "🛡️", "valor": 6  },
         { "id": "amx_ai",            "emoji": "🎤", "valor": 6  },
-        { "id": "amx_relleno",       "emoji": "📺", "valor": 4  },
-        { "id": "amx_resaca",        "emoji": "😴", "valor": 3  },
-        { "id": "amx_tomo_caro",     "emoji": "💸", "valor": 3  },
-        { "id": "amx_spoiler",       "emoji": "🤐", "valor": 2  },
-        { "id": "amx_movil_sin_bat", "emoji": "🔋", "valor": 1  }
+        { "id": "amx_kazuya",         "emoji": "🤡", "valor": 1  },
+        { "id": "amx_vending",        "emoji": "🥫", "valor": 1  },
+        { "id": "amx_uzumaki_cutre",  "emoji": "📺", "valor": 2  },
+        { "id": "amx_anya",           "emoji": "🥜", "valor": 6  },
+        { "id": "amx_power",          "emoji": "🩸", "valor": 6  }
     ]
 }

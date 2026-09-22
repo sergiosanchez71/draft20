@@ -8,18 +8,18 @@
         { "id": "vel_plex",          "emoji": "📹", "valor": 8  },
         { "id": "vel_roro",          "emoji": "💪", "valor": 7  },
         { "id": "vel_marta_diaz",    "emoji": "💃", "valor": 7  },
-        { "id": "vel_directos",      "emoji": "🔴", "valor": 7  },
-        { "id": "vel_actuaciones",   "emoji": "🎶", "valor": 6  },
-        { "id": "vel_guantes",       "emoji": "🧤", "valor": 6  },
-        { "id": "vel_sudor",         "emoji": "💦", "valor": 6  },
-        { "id": "vel_rueda_prensa",  "emoji": "🎙️", "valor": 5  },
+        { "id": "vel_coscu",         "emoji": "🇦🇷", "valor": 7  },
+        { "id": "vel_momo",          "emoji": "🇦🇷", "valor": 4  },
+        { "id": "vel_viruzz",        "emoji": "🤼", "valor": 5  },
+        { "id": "vel_auron",         "emoji": "😈", "valor": 8  },
+        { "id": "vel_jagger",        "emoji": "🤣", "valor": 4  },
         { "id": "vel_aficion",       "emoji": "🗣️", "valor": 5  },
         { "id": "vel_entradas",      "emoji": "💸", "valor": 5  },
         { "id": "vel_ko",            "emoji": "💫", "valor": 4  },
         { "id": "vel_sangre",        "emoji": "🩸", "valor": 4  },
         { "id": "vel_decision",      "emoji": "📋", "valor": 4  },
         { "id": "vel_huevazos",      "emoji": "🥚", "valor": 3  },
-        { "id": "vel_toalla",        "emoji": "🧻", "valor": 3  },
-        { "id": "vel_vendaje",       "emoji": "🩹", "valor": 2  }
+        { "id": "vel_amouranth",     "emoji": "🌸", "valor": 3  },
+        { "id": "vel_rubius",        "emoji": "🍑", "valor": 7  }
     ]
 }

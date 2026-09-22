@@ -1,0 +1,25 @@
+{
+    "id": "sandwich",
+    "items": [
+        { "id": "snd_mixto",       "emoji": "🥪", "valor": 10 },
+        { "id": "snd_club",        "emoji": "🥖", "valor": 9  },
+        { "id": "snd_serranito",   "emoji": "🌶️", "valor": 9  },
+        { "id": "snd_pepito",      "emoji": "🥩", "valor": 8  },
+        { "id": "snd_croque",      "emoji": "🧀", "valor": 8  },
+        { "id": "snd_blt",         "emoji": "🥓", "valor": 8  },
+        { "id": "snd_vegetal",     "emoji": "🥬", "valor": 7  },
+        { "id": "snd_atun",        "emoji": "🐟", "valor": 7  },
+        { "id": "snd_york_queso",  "emoji": "🍖", "valor": 7  },
+        { "id": "snd_pavo",        "emoji": "🦃", "valor": 7  },
+        { "id": "snd_submarino",   "emoji": "🛶", "valor": 6  },
+        { "id": "snd_calamares",   "emoji": "🦑", "valor": 6  },
+        { "id": "snd_chapata",     "emoji": "🍞", "valor": 6  },
+        { "id": "snd_bagel",       "emoji": "🍩", "valor": 5  },
+        { "id": "snd_chopped",     "emoji": "🥫", "valor": 4  },
+        { "id": "snd_tramezzino",  "emoji": "🇮🇹", "valor": 4  },
+        { "id": "snd_mortadela",   "emoji": "🐷", "valor": 3  },
+        { "id": "snd_sardinas",    "emoji": "🐠", "valor": 3  },
+        { "id": "snd_manteca",     "emoji": "🧈", "valor": 2  },
+        { "id": "snd_ingles",      "emoji": "🥒", "valor": 2  }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "id": "acampada",
+    "items": [
+        { "id": "acm_tienda",       "emoji": "🏕️", "valor": 10 },
+        { "id": "acm_hoguera",      "emoji": "🔥", "valor": 9  },
+        { "id": "acm_lago",         "emoji": "🏔️", "valor": 9  },
+        { "id": "acm_smores",       "emoji": "🍫", "valor": 8  },
+        { "id": "acm_linterna",     "emoji": "🔦", "valor": 8  },
+        { "id": "acm_navaja",       "emoji": "🔪", "valor": 8  },
+        { "id": "acm_telescopio",   "emoji": "🔭", "valor": 7  },
+        { "id": "acm_mapa",         "emoji": "🗺️", "valor": 7  },
+        { "id": "acm_brujula",      "emoji": "🧭", "valor": 7  },
+        { "id": "acm_guitarra",     "emoji": "🎸", "valor": 7  },
+        { "id": "acm_atardecer",    "emoji": "🌇", "valor": 7  },
+        { "id": "acm_lena",         "emoji": "🪵", "valor": 6  },
+        { "id": "acm_rio",          "emoji": "💧", "valor": 6  },
+        { "id": "acm_picnic",       "emoji": "🧺", "valor": 6  },
+        { "id": "acm_inundada",     "emoji": "🌊", "valor": 4  },
+        { "id": "acm_mosquitos",    "emoji": "🦟", "valor": 3  },
+        { "id": "acm_calcetines",   "emoji": "🧦", "valor": 3  },
+        { "id": "acm_lata_fria",    "emoji": "🥫", "valor": 3  },
+        { "id": "acm_piedras",      "emoji": "🪨", "valor": 2  },
+        { "id": "acm_barro",        "emoji": "🟤", "valor": 2  }
+    ]
+}

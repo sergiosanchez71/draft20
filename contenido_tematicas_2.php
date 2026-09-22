@@ -38,19 +38,19 @@ return [
         ],
     ],
     'coches' => [
-        'descripcion' => 'Ferrari F40, Porsche 911, Supra turbo y McLaren F1 frente a un Seat Panda y un Yugo, con parada en el taller de barrio: nitro, neones, llantas de oro y alerón de carbono. La temática de los que cuelgan pósters de coches desde niños, con ítems que son historia del motor y otros que son historia de la vergüenza.',
+        'descripcion' => 'Ferrari F40, Porsche 911, Supra turbo y McLaren F1 frente a un Seat Panda y un Yugo, con parada en boxes: Bugatti Chiron, Aston Martin DB5, neones y llantas de oro. La temática de los que cuelgan pósters de coches desde niños, con ítems que son historia del motor y otros que son historia de la vergüenza.',
         'preguntas' => [
             ['q' => '¿Por qué sale un Seat Panda?', 'a' => 'Como homenaje al coche español por excelencia: es un ítem malo con mucho cariño, y siempre arranca alguna sonrisa.'],
         ],
     ],
     'mundial_2026' => [
-        'descripcion' => 'España campeona, Yamal, Torres, Mbappé y el Dibu Martínez contra el autogol, el VAR eterno y la entrada carísima. La temática de la resaca mundialista: el trofeo y el balón salen siempre, y el resto es historia del verano de 2026.',
+        'descripcion' => 'España campeona, Argentina, Inglaterra y Francia con Marruecos y Bélgica al acecho, frente a Haití, Uzbekistán y Chequia. La temática de las 20 selecciones del Mundial 2026: España y Argentina salen siempre como finalistas, y el resto es historia del verano de 2026.',
         'preguntas' => [
-            ['q' => '¿El trofeo y el balón salen siempre?', 'a' => 'Sí, son la base innegociable de la temática, igual que el queso y el tomate en la pizza.'],
+            ['q' => '¿España y Argentina salen siempre?', 'a' => 'Sí, son los finalistas y la base innegociable de la temática, igual que el queso y el tomate en la pizza.'],
         ],
     ],
     'padel' => [
-        'descripcion' => 'Coello, Tapia, Triay, Brea y Galán con remate ganador, salida de pared y víbora letal, frente a la bola a la red y la pala rota. La temática del deporte que se juega en cada barrio: aquí se puja por los números uno y se sufre con la verja.',
+        'descripcion' => 'Coello, Tapia, Triay, Brea y Galán con Salazar, Josemaría y la víbora letal, frente a la bola al cristal y la pala rota. La temática del deporte que se juega en cada barrio: aquí se puja por los números uno y se sufre con la verja.',
         'preguntas' => [
             ['q' => '¿Quiénes son los números uno del pádel?', 'a' => 'Coello y Tapia en chicos, Triay y Brea en chicas: dominan el circuito Premier Padel y la subasta.'],
         ],
@@ -88,13 +88,13 @@ return [
         ],
     ],
     'juguetes' => [
-        'descripcion' => 'LEGO, Tamagotchi, Funko de edición limitada y figura de acción contra el Furby y el squishy con baba. La temática del coleccionismo: aquí no se puja por lo que vale más, sino por lo que más te recuerda a los Reyes Magos de tu casa.',
+        'descripcion' => 'LEGO, Tamagotchi, Funko de edición limitada y figura de acción contra el Pet Rock y el squishy con baba. La temática del coleccionismo: aquí no se puja por lo que vale más, sino por lo que más te recuerda a los Reyes Magos de tu casa.',
         'preguntas' => [
             ['q' => '¿Cuál es el juguete más valioso?', 'a' => 'LEGO suele ser el más disputado, por delante del Tamagotchi y el Funko de edición limitada.'],
         ],
     ],
     'gta_vi' => [
-        'descripcion' => 'Vice City, atraco perfecto, Lucia y descapotable contra el WASTED, el atasco en el puente y la grúa municipal. La temática del lanzamiento más grande de la historia del videojuego, dos meses antes de que salga: hype puro en forma de subasta.',
+        'descripcion' => 'Leonida, Jason, atraco perfecto y descapotable contra el WASTED, el atasco en el puente y la grúa municipal. La temática del lanzamiento más grande de la historia del videojuego, dos meses antes de que salga: hype puro en forma de subasta.',
         'preguntas' => [
             ['q' => '¿Hace falta haber jugado a GTA para disfrutarla?', 'a' => 'No: Vice City, los atracos y el WASTED los reconoce cualquiera, y los ítems malos hacen gracia sin contexto.'],
         ],
@@ -102,9 +102,9 @@ return [
 
     // ===================== FANTASÍA =====================
     'zombies' => [
-        'descripcion' => 'Katana samurái, motosierra y búnker subterráneo frente a un contenedor de basura y un bebé llorón 24/7. Es la única temática donde los ítems no son personas sino equipo de supervivencia, y eso cambia por completo la estrategia de la subasta.',
+        'descripcion' => 'Katana samurái, motosierra y búnker subterráneo frente a un contenedor de basura y el virus T. Es la única temática donde los ítems no son personas sino equipo de supervivencia, y eso cambia por completo la estrategia de la subasta.',
         'preguntas' => [
-            ['q' => '¿Por qué hay un bebé llorón?', 'a' => 'Porque en un apocalipsis zombie es el peor compañero posible: hace ruido, no ayuda y en la subasta es un ítem malo brutal.'],
+            ['q' => '¿Qué es el virus T?', 'a' => 'El que lo empezó todo: en la subasta es el origen del apocalipsis y un ítem de los gordos.'],
         ],
     ],
     'piratas' => [
@@ -187,6 +187,12 @@ return [
         'descripcion' => 'Sherlock Holmes, Hercule Poirot, Colombo y Adrian Monk investigan una subasta con la lupa rota y el testigo mudo. La temática para los que ven series policiacas y ya lo han adivinado todo antes del final.',
         'preguntas' => [
             ['q' => '¿Quién es Adrian Monk?', 'a' => 'El detective obsesivo-compulsivo de la serie Monk; es uno de los ítems más queridos de la temática.'],
+        ],
+    ],
+    'acampada' => [
+        'descripcion' => 'Tienda de campaña, hoguera, lago y smores contra la tienda inundada, los mosquitos y el barro. La temática de dormir fuera de casa: todo lo bueno de la acampada y todo lo que sale mal.',
+        'preguntas' => [
+            ['q' => '¿Qué no puede faltar en la acampada?', 'a' => 'La tienda y la hoguera: sin ellas no hay acampada que valga, ni en el juego ni fuera.'],
         ],
     ],
 ];

@@ -18,8 +18,8 @@
         { "id": "tap_calamares_goma",    "emoji": "🦑", "valor": 2  },
         { "id": "tap_aceituna_sola",     "emoji": "🫒", "valor": 1  },
         { "id": "tap_sobras_domingo",    "emoji": "🍽️", "valor": 2  },
-        { "id": "tap_vaso_pintalabios",  "emoji": "🥃", "valor": 1  },
-        { "id": "tap_cenicero_lleno",    "emoji": "🚬", "valor": 2  },
-        { "id": "tap_servilleta_usada",  "emoji": "🧻", "valor": 1  }
+        { "id": "tap_tortilla_seca",      "emoji": "🥘", "valor": 2  },
+        { "id": "tap_croqueta_bolsa",    "emoji": "🥔", "valor": 1  },
+        { "id": "tap_jamon_lata",        "emoji": "🍖", "valor": 1  }
     ]
 }

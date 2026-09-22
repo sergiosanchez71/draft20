@@ -16,10 +16,10 @@
         { "id": "atr_coche_huida",        "emoji": "🚙", "valor": 5  },
         { "id": "atr_pistola_agua",       "emoji": "💦", "valor": 1  },
         { "id": "atr_cuchara_cavar",      "emoji": "🥄", "valor": 1  },
-        { "id": "atr_disfraz_payaso",     "emoji": "🤡", "valor": 2  },
+        { "id": "atr_alarma_activa",      "emoji": "🚨", "valor": 1  },
         { "id": "atr_guantes_olvidados",  "emoji": "🧤", "valor": 1  },
         { "id": "atr_maletin_sandwiches", "emoji": "🥪", "valor": 2  },
-        { "id": "atr_pasamontanas",       "emoji": "🎿", "valor": 1  },
+        { "id": "atr_pasamontanas",       "emoji": "🎿", "valor": 7  },
         { "id": "atr_llave_equivocada",   "emoji": "🔑", "valor": 2  }
     ]
 }

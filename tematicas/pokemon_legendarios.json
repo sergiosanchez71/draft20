@@ -1,0 +1,25 @@
+{
+    "id": "pokemon_legendarios",
+    "items": [
+        { "id": "pkl_mewtwo",    "emoji": "👁️", "valor": 10 },
+        { "id": "pkl_rayquaza",  "emoji": "🐉", "valor": 10 },
+        { "id": "pkl_lugia",     "emoji": "🌊", "valor": 9  },
+        { "id": "pkl_hooh",      "emoji": "🔥", "valor": 9  },
+        { "id": "pkl_dialga",    "emoji": "🔷", "valor": 9  },
+        { "id": "pkl_mew",       "emoji": "🌸", "valor": 8  },
+        { "id": "pkl_kyogre",    "emoji": "🌧️", "valor": 8  },
+        { "id": "pkl_palkia",    "emoji": "🪐", "valor": 7  },
+        { "id": "pkl_giratina",  "emoji": "🌪️", "valor": 7  },
+        { "id": "pkl_reshiram",  "emoji": "☀️", "valor": 7  },
+        { "id": "pkl_zekrom",    "emoji": "⚡", "valor": 7  },
+        { "id": "pkl_articuno",  "emoji": "❄️", "valor": 7  },
+        { "id": "pkl_zapdos",    "emoji": "⛈️", "valor": 6  },
+        { "id": "pkl_moltres",   "emoji": "☄️", "valor": 6  },
+        { "id": "pkl_celebi",    "emoji": "🍀", "valor": 6  },
+        { "id": "pkl_jirachi",   "emoji": "⭐", "valor": 6  },
+        { "id": "pkl_victini",   "emoji": "🎖️", "valor": 5  },
+        { "id": "pkl_shaymin",   "emoji": "🌻", "valor": 5  },
+        { "id": "pkl_keldeo",    "emoji": "🗡️", "valor": 4  },
+        { "id": "pkl_phione",    "emoji": "💧", "valor": 2  }
+    ]
+}

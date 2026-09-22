@@ -14,10 +14,10 @@
         { "id": "jdm_uno",              "emoji": "🔴", "valor": 6  },
         { "id": "jdm_jenga",            "emoji": "🧱", "valor": 5  },
         { "id": "jdm_dobble",           "emoji": "👀", "valor": 5  },
-        { "id": "jdm_monopoly",         "emoji": "🎩", "valor": 1  },
-        { "id": "jdm_parchis",          "emoji": "🎯", "valor": 1  },
+        { "id": "jdm_monopoly",         "emoji": "🎩", "valor": 8  },
+        { "id": "jdm_parchis",          "emoji": "🎯", "valor": 9  },
         { "id": "jdm_operacion",        "emoji": "🚑", "valor": 1  },
-        { "id": "jdm_risk",             "emoji": "🌍", "valor": 2  },
+        { "id": "jdm_risk",             "emoji": "🌍", "valor": 8  },
         { "id": "jdm_quien_es_quien",   "emoji": "👓", "valor": 2  },
         { "id": "jdm_hundir_flota",     "emoji": "🚢", "valor": 2  },
         { "id": "jdm_damas",            "emoji": "⚪", "valor": 2  }

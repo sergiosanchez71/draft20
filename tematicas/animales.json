@@ -5,8 +5,8 @@
         { "id": "ani_aguila_real",        "emoji": "🦅", "valor": 9  },
         { "id": "ani_delfin_inteligente", "emoji": "🐬", "valor": 8  },
         { "id": "ani_perro_fiel",         "emoji": "🐕", "valor": 7  },
-        { "id": "ani_cachorro_labrador",  "emoji": "🐶", "valor": 7  },
-        { "id": "ani_gatito_naranja",     "emoji": "🐱", "valor": 7  },
+        { "id": "ani_tigre_bengala",      "emoji": "🐯", "valor": 8  },
+        { "id": "ani_caballo",            "emoji": "🐎", "valor": 7  },
         { "id": "ani_gato_independiente", "emoji": "🐈", "valor": 6  },
         { "id": "ani_loro_parlanchin",    "emoji": "🦜", "valor": 6  },
         { "id": "ani_conejo_enano",       "emoji": "🐰", "valor": 6  },
@@ -20,6 +20,6 @@
         { "id": "ani_serpiente_escape",   "emoji": "🐍", "valor": 2  },
         { "id": "ani_cucaracha_mascota",  "emoji": "🪳", "valor": 1  },
         { "id": "ani_mosquito_zumbador",  "emoji": "🦟", "valor": 1  },
-        { "id": "ani_gato_vago",          "emoji": "😾", "valor": 1  }
+        { "id": "ani_tortuga_paciente",   "emoji": "🐢", "valor": 5  }
     ]
 }

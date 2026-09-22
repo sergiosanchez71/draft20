@@ -22,6 +22,8 @@ return [
         ['id' => 'cerveza',       'emoji' => '🍺'],
         ['id' => 'tacos',         'emoji' => '🌮', 'destacado' => true],
         ['id' => 'freidora_aire', 'emoji' => '🍟', 'destacado' => true],
+        ['id' => 'sandwich',      'emoji' => '🥪', 'destacado' => true],
+        ['id' => 'helado',        'emoji' => '🍦', 'destacado' => true],
     ]],
     ['id' => 'cultura', 'emoji' => '🎬', 'tematicas' => [
         ['id' => 'peliculas',     'emoji' => '🎬'],
@@ -47,6 +49,7 @@ return [
         ['id' => 'streamers',   'emoji' => '🎥'],
         ['id' => 'la_velada',   'emoji' => '🥊', 'destacado' => true],
         ['id' => 'kpop',        'emoji' => '💃', 'destacado' => true],
+        ['id' => 'pokemon_legendarios', 'emoji' => '🐉', 'destacado' => true],
     ]],
     ['id' => 'deporte', 'emoji' => '⚽', 'tematicas' => [
         ['id' => 'futbol',      'emoji' => '⚽', 'destacado' => true],
@@ -84,6 +87,7 @@ return [
         ['id' => 'animales',       'emoji' => '🦁'],
         ['id' => 'dinosaurios',    'emoji' => '🦖'],
         ['id' => 'granja',         'emoji' => '🚜'],
+        ['id' => 'acampada',       'emoji' => '🏕️', 'destacado' => true],
     ]],
     ['id' => 'crimen', 'emoji' => '🕵️', 'tematicas' => [
         ['id' => 'atraco',      'emoji' => '🏦'],

@@ -16,11 +16,11 @@
         { "id": "tac_camaron",        "emoji": "🍤", "valor": 6  },
         { "id": "tac_chicharron",     "emoji": "🥓", "valor": 5  },
         { "id": "tac_horchata",       "emoji": "🥛", "valor": 5  },
-        { "id": "tac_tortilla_rota",  "emoji": "💔", "valor": 4  },
+        { "id": "tac_tortilla_rota",  "emoji": "💔", "valor": 1  },
         { "id": "tac_salsa_bote",     "emoji": "🥫", "valor": 3  },
         { "id": "tac_lechuga_mustia", "emoji": "🥬", "valor": 3  },
         { "id": "tac_frio",           "emoji": "🧊", "valor": 2  },
-        { "id": "tac_tenedor",        "emoji": "🍴", "valor": 1  },
-        { "id": "tac_servilleta",     "emoji": "🧻", "valor": 1  }
+        { "id": "tac_graso_frio",     "emoji": "🧈", "valor": 1  },
+        { "id": "tac_harina_seca",    "emoji": "🌾", "valor": 2  }
     ]
 }

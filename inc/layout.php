@@ -11,7 +11,7 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.2.4';
+const APP_VERSION = '1.2.5';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 const ADSENSE_SLOT_JUEGO = '6658157047';
 const ADSENSE_SLOT_FINAL = '4631951476';
@@ -67,7 +67,7 @@ function mapa_tematicas(): array
 /** IDs de ⭐ Destacados en orden de presentación (fuente única SSR + JS vía window.__DESTACADOS). */
 function destacados_ids(): array
 {
-    return ['mundial_2026', 'gta_vi', 'la_velada', 'pizza', 'hamburguesa', 'anime', 'kpop', 'padel', 'tacos', 'marvel_dc', 'harry_potter', 'star_wars', 'pokemon', 'futbol', 'videojuegos', 'anime_moderno', 'freidora_aire'];
+    return ['mundial_2026', 'gta_vi', 'la_velada', 'pizza', 'hamburguesa', 'anime', 'kpop', 'padel', 'tacos', 'marvel_dc', 'harry_potter', 'star_wars', 'pokemon', 'futbol', 'videojuegos', 'anime_moderno', 'freidora_aire', 'pokemon_legendarios', 'sandwich', 'acampada', 'helado'];
 }
 
 /** Entradas de ⭐ Destacados (solo las que existen en el catálogo). @return array<int, array{id:string,emoji:string}> */

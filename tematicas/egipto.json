@@ -14,12 +14,12 @@
         { "id": "egi_hatshepsut",           "emoji": "🧕", "valor": 6  },
         { "id": "egi_akenaton",             "emoji": "🪞", "valor": 5  },
         { "id": "egi_escarabajo_sagrado",   "emoji": "🪲", "valor": 5  },
-        { "id": "egi_momia",                "emoji": "🧟", "valor": 2  },
+        { "id": "egi_momia",                "emoji": "🧟", "valor": 7  },
         { "id": "egi_escarabajo_comun",     "emoji": "🪳", "valor": 1  },
-        { "id": "egi_bandeja_arena",        "emoji": "🍽️", "valor": 1  },
+        { "id": "egi_piramide_carton",      "emoji": "📦", "valor": 1  },
         { "id": "egi_jeroglifico_ilegible", "emoji": "🖋️", "valor": 2  },
         { "id": "egi_sarcofago_roto",       "emoji": "⚰️", "valor": 2  },
         { "id": "egi_papiro_mojado",        "emoji": "📜", "valor": 1  },
-        { "id": "egi_gato_flaco",           "emoji": "🐈", "valor": 1  }
+        { "id": "egi_bastet_kitsch",        "emoji": "🐈", "valor": 2  }
     ]
 }

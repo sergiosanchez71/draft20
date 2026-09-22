@@ -14,11 +14,11 @@
         { "id": "dino_agua_lago",           "emoji": "💧", "valor": 6  },
         { "id": "dino_dominio_paddock",     "emoji": "🚧", "valor": 6  },
         { "id": "dino_amigos_vegetarianos", "emoji": "🌿", "valor": 5  },
-        { "id": "dino_mosquitos_ambar",     "emoji": "🦟", "valor": 2  },
-        { "id": "dino_raptores_listos",     "emoji": "🦎", "valor": 2  },
+        { "id": "dino_braquiosaurio",       "emoji": "🦒", "valor": 7  },
+        { "id": "dino_velociraptor",        "emoji": "🦎", "valor": 8  },
         { "id": "dino_tormenta_tropical",   "emoji": "🌧️", "valor": 2  },
         { "id": "dino_comida_escasa",       "emoji": "🍖", "valor": 2  },
-        { "id": "dino_meteorito",           "emoji": "☄️", "valor": 1  },
+        { "id": "dino_ambar_falso",         "emoji": "🪳", "valor": 1  },
         { "id": "dino_jaula_off",           "emoji": "🔌", "valor": 1  },
         { "id": "dino_volcan_activo",       "emoji": "🌋", "valor": 1  }
     ]

@@ -1,0 +1,25 @@
+{
+    "id": "helado",
+    "items": [
+        { "id": "hel_stracciatella", "emoji": "🍫", "valor": 10 },
+        { "id": "hel_pistacho",      "emoji": "💚", "valor": 9  },
+        { "id": "hel_mango",         "emoji": "🍑", "valor": 9  },
+        { "id": "hel_vainilla",      "emoji": "🥛", "valor": 9  },
+        { "id": "hel_chocolate",     "emoji": "🟤", "valor": 9  },
+        { "id": "hel_limon",         "emoji": "🍋", "valor": 8  },
+        { "id": "hel_turron",        "emoji": "🍮", "valor": 8  },
+        { "id": "hel_nata",          "emoji": "🍨", "valor": 8  },
+        { "id": "hel_fresa",         "emoji": "🍓", "valor": 8  },
+        { "id": "hel_menta",         "emoji": "🌿", "valor": 7  },
+        { "id": "hel_cafe",          "emoji": "☕", "valor": 7  },
+        { "id": "hel_coco",          "emoji": "🥥", "valor": 7  },
+        { "id": "hel_platano",       "emoji": "🍌", "valor": 7  },
+        { "id": "hel_sandia",        "emoji": "🍉", "valor": 7  },
+        { "id": "hel_derretido",     "emoji": "💧", "valor": 4  },
+        { "id": "hel_sin_cucurucho", "emoji": "🥄", "valor": 4  },
+        { "id": "hel_sabor_raro",    "emoji": "🤪", "valor": 3  },
+        { "id": "hel_arena",         "emoji": "🏖️", "valor": 3  },
+        { "id": "hel_hielo",         "emoji": "🧊", "valor": 2  },
+        { "id": "hel_palo",          "emoji": "🪵", "valor": 2  }
+    ]
+}

@@ -15,11 +15,11 @@
         { "id": "ref_camion_blindado",     "emoji": "🚛", "valor": 6  },
         { "id": "com_medico_militar",      "emoji": "🧑‍⚕️", "valor": 7  },
         { "id": "com_hacker",              "emoji": "💻", "valor": 5  },
-        { "id": "com_gato_callejero",      "emoji": "🐱", "valor": 4  },
+        { "id": "zom_horda",                "emoji": "🧟", "valor": 10 },
         { "id": "arm_tenedor",             "emoji": "🍴", "valor": 3  },
-        { "id": "ref_cueva_humeda",        "emoji": "🕳️", "valor": 2  },
+        { "id": "zom_superviviente",        "emoji": "🏹", "valor": 8  },
         { "id": "ref_contenedor_basura",   "emoji": "🗑️", "valor": 2  },
-        { "id": "com_bebe_lloron",         "emoji": "👶", "valor": 1  },
+        { "id": "zom_virus_t",             "emoji": "🦠", "valor": 9  },
         { "id": "com_perro_3_patas",       "emoji": "🐕", "valor": 2  }
     ]
 }
