@@ -226,6 +226,29 @@ if (!function_exists('seleccionar_items_balanceados')) {
      * - El orden final se baraja para que la subasta no sea predecible.
      */
     function seleccionar_items_balanceados(array $items, int $n): array {
+        // --- FORZAR items base obligatorios (ej. queso y tomate en pizza) ---
+        $items_base = [];
+        if (!empty($items['base_items'])) {
+            foreach ($items['base_items'] as $bid) {
+                foreach ($items as $it) {
+                    if ($it['id'] === $bid) {
+                        $items_base[] = $it;
+                        // Filtrar $items para remover este ID
+                        $items_sin_base = [];
+                        foreach ($items as $iit) {
+                            if ($iit['id'] !== $bid) $items_sin_base[] = $iit;
+                        }
+                        $items = $items_sin_base;
+                        break;
+                    }
+                }
+            }
+        }
+        // Ajustar n: solo seleccionar el resto
+        $n_restante = $n - count($items_base);
+        $elegidos = $items_base; // empezar con los base ya incluidos
+        // --- FIN FORZAR items base ---
+
         // 1) Agrupar por tier y barajar cada grupo (aleatoriedad intra-tier).
         $pools = ['premium' => [], 'medio' => [], 'malo' => []];
         foreach ($items as $it) {
@@ -250,7 +273,6 @@ if (!function_exists('seleccionar_items_balanceados')) {
         // 3) Sorteo ponderado con castigo + forzado de mínimos.
         $pesos    = SORTEO_PESOS_INICIALES;
         $conteo   = ['premium' => 0, 'medio' => 0, 'malo' => 0];
-        $elegidos = [];
 
         while (count($elegidos) < $n) {
             $restantes  = $n - count($elegidos);
