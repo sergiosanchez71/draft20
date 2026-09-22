@@ -25,13 +25,14 @@
 body.app-mode.app-viewport { height: var(--app-height, 100dvh); }
 
 /* ...y el cuadro del ítem se compacta para dejar sitio a inventario y botones. */
-body.app-mode .game-shell #itemCard { min-height: 10rem; }
+body.app-mode .game-shell #itemCard { min-height: 9rem; }
 body.app-mode .game-shell .item-emoji { height: clamp(2.5rem, 9svh, 4.5rem); }
 
-/* En la app se gana sitio para los botones: no se muestra el banner de anuncio
-   ni la barra de emotes. (La web mantiene ambos.) */
-body.app-mode .ad-juego { display: none; }
+/* En la app el anuncio SIEMPRE se muestra (política de AdSense: nunca oculto,
+   ni siquiera con display:none). El sitio para los botones sale de: barra de
+   emotes fuera, banner sin márgenes y cuadro un poco más compacto. */
 body.app-mode #emoteBar { display: none; }
+body.app-mode .ad-juego { margin-top: 0; margin-bottom: 0; }
 
 /* En pantallas bajas se recupera alto sin tocar el anuncio: fuera la barra de
    emotes (opcional) y cuadros de inventario algo más pequeños. */

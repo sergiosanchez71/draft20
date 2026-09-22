@@ -378,8 +378,17 @@ try {
     check(strpos($cssAds, '--app-bottom') !== false, 'CSS: la barra usa el hueco medido en la app instalada');
     check(strpos($cssAds, '--app-height') !== false && strpos($cssAds, 'body.app-mode.app-viewport') !== false,
         'CSS: alto visible y compactado en modo app');
-    check(strpos($cssAds, 'body.app-mode .ad-juego') !== false && strpos($cssAds, 'body.app-mode #emoteBar') !== false,
-        'CSS: en modo app se ocultan anuncio y emotes (sitio para los botones)');
+    check(strpos($cssAds, 'body.app-mode #emoteBar') !== false && strpos($cssAds, 'body.app-mode .ad-juego') !== false,
+        'CSS: en modo app el anuncio sigue visible (sin márgenes) y los emotes fuera');
+    $adOculto = false;
+    if (preg_match_all('/([^{}]+)\{([^}]*)\}/s', $cssAds, $mmAds, PREG_SET_ORDER)) {
+        foreach ($mmAds as $mAds) {
+            if (strpos($mAds[1], '.ad-') !== false && preg_match('/display\s*:\s*none|visibility\s*:\s*hidden/i', $mAds[2])) {
+                $adOculto = true;
+            }
+        }
+    }
+    check(!$adOculto, 'CSS: ningún selector oculta slots de anuncio, presentes o futuros (AdSense)');
     $rGameJs = http_req('GET', $base . '/js/app.game.min.js');
     check(strpos((string) $rGameJs['raw'], 'app-mode') !== false && strpos((string) $rGameJs['raw'], 'visualViewport') !== false,
         'JS: ajuste del modo app instalada en el bundle');
