@@ -67,7 +67,7 @@ function mapa_tematicas(): array
 /** IDs de ⭐ Destacados en orden de presentación (fuente única SSR + JS vía window.__DESTACADOS). */
 function destacados_ids(): array
 {
-    return ['mundial_2026', 'gta_vi', 'la_velada', 'pizza', 'hamburguesa', 'anime', 'kpop', 'padel', 'tacos', 'marvel_dc', 'harry_potter', 'star_wars', 'pokemon', 'futbol', 'videojuegos', 'anime_moderno', 'freidora_aire', 'pokemon_legendarios', 'sandwich', 'acampada', 'helado'];
+    return ['mundial_2026', 'gta_vi', 'la_velada', 'pizza', 'hamburguesa', 'anime', 'kpop', 'padel', 'tacos', 'marvel_dc', 'harry_potter', 'star_wars', 'pokemon', 'futbol', 'videojuegos', 'anime_moderno', 'freidora_aire', 'pokemon_legendarios', 'sandwich', 'acampada', 'helado', 'futbol_historicos', 'freestylers', 'raperos'];
 }
 
 /** Entradas de ⭐ Destacados (solo las que existen en el catálogo). @return array<int, array{id:string,emoji:string}> */

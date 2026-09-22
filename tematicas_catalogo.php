@@ -25,6 +25,7 @@ return [
         ['id' => 'sandwich',      'emoji' => '🥪', 'destacado' => true],
         ['id' => 'helado',        'emoji' => '🍦', 'destacado' => true],
         ['id' => 'matcha',        'emoji' => '🍵'],
+        ['id' => 'matcha',        'emoji' => '🍵'],
     ]],
     ['id' => 'cultura', 'emoji' => '🎬', 'tematicas' => [
         ['id' => 'peliculas',     'emoji' => '🎬'],
@@ -36,7 +37,8 @@ return [
         ['id' => 'karaoke',       'emoji' => '🎤'],
         ['id' => 'villanos',      'emoji' => '😈'],
         ['id' => 'anime_moderno', 'emoji' => '⛩️', 'destacado' => true],
-        ['id' => 'podcasts',      'emoji' => '🎙️'],
+        ['id' => 'podcasts', 'emoji' => '🎙️'],
+        ['id' => 'raperos',  'emoji' => '🎧', 'destacado' => true],
     ]],
     ['id' => 'viral', 'emoji' => '📱', 'tematicas' => [
         ['id' => 'simpsons',    'emoji' => '🍩'],
@@ -52,6 +54,7 @@ return [
         ['id' => 'la_velada',   'emoji' => '🥊', 'destacado' => true],
         ['id' => 'kpop',        'emoji' => '💃', 'destacado' => true],
         ['id' => 'pokemon_legendarios', 'emoji' => '🐉', 'destacado' => true],
+        ['id' => 'freestylers', 'emoji' => '🧢', 'destacado' => true],
     ]],
     ['id' => 'deporte', 'emoji' => '⚽', 'tematicas' => [
         ['id' => 'futbol',      'emoji' => '⚽', 'destacado' => true],
@@ -63,6 +66,7 @@ return [
         ['id' => 'f1',          'emoji' => '🏁'],
         ['id' => 'mundial_2026','emoji' => '🏆', 'destacado' => true],
         ['id' => 'padel',       'emoji' => '🎾', 'destacado' => true],
+        ['id' => 'futbol_historicos', 'emoji' => '🥇', 'destacado' => true],
     ]],
     ['id' => 'ocio', 'emoji' => '🎮', 'tematicas' => [
         ['id' => 'videojuegos', 'emoji' => '🎮', 'destacado' => true],

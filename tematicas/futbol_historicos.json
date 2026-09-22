@@ -1,0 +1,25 @@
+{
+    "id": "futbol_historicos",
+    "items": [
+        { "id": "fhi_di_stefano",  "emoji": "👑", "valor": 10 },
+        { "id": "fhi_cruyff",      "emoji": "🇳🇱", "valor": 10 },
+        { "id": "fhi_beckenbauer", "emoji": "🇩🇪", "valor": 9  },
+        { "id": "fhi_garrincha",   "emoji": "🇧🇷", "valor": 9  },
+        { "id": "fhi_platini",     "emoji": "🇫🇷", "valor": 9  },
+        { "id": "fhi_zico",        "emoji": "🟡", "valor": 9  },
+        { "id": "fhi_van_basten",  "emoji": "🦁", "valor": 8  },
+        { "id": "fhi_maldini",     "emoji": "🛡️", "valor": 8  },
+        { "id": "fhi_baresi",      "emoji": "🧱", "valor": 8  },
+        { "id": "fhi_yashin",      "emoji": "🧤", "valor": 8  },
+        { "id": "fhi_puskas",      "emoji": "🌶️", "valor": 7  },
+        { "id": "fhi_eusebio",     "emoji": "🐆", "valor": 7  },
+        { "id": "fhi_best",        "emoji": "🍺", "valor": 7  },
+        { "id": "fhi_charlton",    "emoji": "☕", "valor": 7  },
+        { "id": "fhi_zoff",        "emoji": "🧤", "valor": 6  },
+        { "id": "fhi_socrates",    "emoji": "🩺", "valor": 6  },
+        { "id": "fhi_romario",     "emoji": "🇧🇷", "valor": 6  },
+        { "id": "fhi_baggio",      "emoji": "🇮🇹", "valor": 6  },
+        { "id": "fhi_batistuta",   "emoji": "🇦🇷", "valor": 5  },
+        { "id": "fhi_cubillas",    "emoji": "🦙", "valor": 2  }
+    ]
+}

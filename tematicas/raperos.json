@@ -1,0 +1,25 @@
+{
+    "id": "raperos",
+    "items": [
+        { "id": "rap_canserbero",  "emoji": "🎙️", "valor": 10 },
+        { "id": "rap_kaseo",       "emoji": "🇪🇸", "valor": 10 },
+        { "id": "rap_nach",        "emoji": "📖", "valor": 9  },
+        { "id": "rap_residente",   "emoji": "🎤", "valor": 9  },
+        { "id": "rap_mala",        "emoji": "💃", "valor": 8  },
+        { "id": "rap_sfdk",        "emoji": "🏙️", "valor": 8  },
+        { "id": "rap_natos_waor",  "emoji": "🏢", "valor": 8  },
+        { "id": "rap_violadores",  "emoji": "🎤", "valor": 8  },
+        { "id": "rap_orishas",     "emoji": "🥁", "valor": 7  },
+        { "id": "rap_vico",        "emoji": "🎙️", "valor": 7  },
+        { "id": "rap_tego",        "emoji": "🦍", "valor": 7  },
+        { "id": "rap_ana_tijoux",  "emoji": "🗣", "valor": 7  },
+        { "id": "rap_control",     "emoji": "🇲🇽", "valor": 6  },
+        { "id": "rap_akapellah",   "emoji": "🎧", "valor": 6  },
+        { "id": "rap_lil_supa",    "emoji": "🦸", "valor": 6  },
+        { "id": "rap_alcolirykoz", "emoji": "☕", "valor": 6  },
+        { "id": "rap_etnnia",      "emoji": "🥁", "valor": 5  },
+        { "id": "rap_chojin",      "emoji": "👓", "valor": 5  },
+        { "id": "rap_foyone",      "emoji": "🔥", "valor": 4  },
+        { "id": "rap_toteking",    "emoji": "👑", "valor": 3  }
+    ]
+}

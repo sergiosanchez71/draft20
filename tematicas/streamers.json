@@ -20,6 +20,6 @@
         { "id": "str_escardi",         "emoji": "🃏", "valor": 3  },
         { "id": "str_plex",            "emoji": "🎥", "valor": 7  },
         { "id": "str_spreen",          "emoji": "🇦🇷", "valor": 7  },
-        { "id": "str_brightside",      "emoji": "🌈", "valor": 2  }
+        { "id": "str_dalas",           "emoji": "🍿", "valor": 2  }
     ]
 }

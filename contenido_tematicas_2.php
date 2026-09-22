@@ -195,4 +195,16 @@ return [
             ['q' => '¿Qué no puede faltar en la acampada?', 'a' => 'La tienda y la hoguera: sin ellas no hay acampada que valga, ni en el juego ni fuera.'],
         ],
     ],
+    'futbol_historicos' => [
+        'descripcion' => 'Di Stéfano, Cruyff, Beckenbauer y Garrincha contra Cubillas, el peruano poco conocido que cierra la lista. La temática de los retirados: aquí no entran Messi ni Cristiano, que ya tienen su propia temática en Fútbol.',
+        'preguntas' => [
+            ['q' => '¿Por qué no están Messi o Cristiano?', 'a' => 'Porque siguen en activo en la memoria reciente y tienen su sitio en Fútbol; aquí solo leyendas retiradas.'],
+        ],
+    ],
+    'true_crime' => [
+        'descripcion' => 'Alcàsser, Zodiac, Dalia Negra y Jack el Destripador contra el vidente, el tabloide y el rumor de bar. La temática de los casos reales: solo historia y leyenda, nada de víctimas recientes.',
+        'preguntas' => [
+            ['q' => '¿Son casos reales todos?', 'a' => 'Sí, históricos o legendarios; la temática evita expresamente casos recientes o sensibles.'],
+        ],
+    ],
 ];

@@ -208,4 +208,28 @@ return [
             ['q' => '¿Cuál es el sabor más pujado?', 'a' => 'La stracciatella suele encabezar, con el pistacho y el mango justo detrás.'],
         ],
     ],
+    'podcasts' => [
+        'descripcion' => 'Nadie Sabe Nada, La Ruina, ROCA Project y The Wild Project contra la tertulia eterna, el invitado plantado y el anuncio a mitad. La temática de lo que suena en todos los móviles: aquí se puja por programas, no por canciones.',
+        'preguntas' => [
+            ['q' => '¿Cuál es el podcast más pujado?', 'a' => 'Nadie Sabe Nada suele encabezar, con La Ruina muy cerca en las decisiones.'],
+        ],
+    ],
+    'matcha' => [
+        'descripcion' => 'Uji, latte, cosecha y bowl contra el sucedáneo, el bote abierto y los grumos. La temática del boom verde: ceremonia japonesa frente a polvos de dudosa procedencia.',
+        'preguntas' => [
+            ['q' => '¿Por qué hay escasez de matcha?', 'a' => 'Porque la demanda se disparó y las plantaciones no dan abasto: en la subasta, lo escaso vale oro.'],
+        ],
+    ],
+    'raperos' => [
+        'descripcion' => 'Canserbero, Kase.O, Nach y Residente contra Foyone y ToteKing, con Mala Rodríguez, SFDK y Natos y Waor en medio. La temática de los MCs de estudio: aquí mandan las letras, no la improvisación.',
+        'preguntas' => [
+            ['q' => '¿Salen gallos como Aczino o Trueno?', 'a' => 'No: los batalleros tienen su propia temática en Freestylers; aquí solo entran raperos de estudio.'],
+        ],
+    ],
+    'freestylers' => [
+        'descripcion' => 'Chuty, Gazir, Aczino y Wos con Skone, Blon y El Menor contra Tirpa, Force y Bnet. La temática de las batallas de gallos: puro ingenio improvisado, sin nada escrito.',
+        'preguntas' => [
+            ['q' => '¿Quién es el GOAT del freestyle?', 'a' => 'El debate eterno es Chuty contra Aczino, y esta subasta no lo va a resolver.'],
+        ],
+    ],
 ];

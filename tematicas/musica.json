@@ -14,11 +14,11 @@
         { "id": "mus_aitana",            "emoji": "💫", "valor": 5  },
         { "id": "mus_lola_indigo",       "emoji": "💃", "valor": 5  },
         { "id": "mus_joaquin_sabina",    "emoji": "🎸", "valor": 6  },
-        { "id": "mus_st_anger",          "emoji": "🗑️", "valor": 1  },
-        { "id": "mus_chinese_democracy", "emoji": "⏰", "valor": 2  },
-        { "id": "mus_lulu",              "emoji": "🚮", "valor": 1  },
-        { "id": "mus_cut_the_crap",      "emoji": "✂️", "valor": 1  },
-        { "id": "mus_the_elder",         "emoji": "🧙", "valor": 2  },
+        { "id": "mus_psy",               "emoji": "🕺", "valor": 1  },
+        { "id": "mus_crazy_frog",        "emoji": "🐸", "valor": 2  },
+        { "id": "mus_lmfao",             "emoji": "🎉", "valor": 1  },
+        { "id": "mus_bieber_baby",       "emoji": "👶", "valor": 1  },
+        { "id": "mus_lou_bega",          "emoji": "🎺", "valor": 2  },
         { "id": "mus_las_ketchup",       "emoji": "🍅", "valor": 2  },
         { "id": "mus_chikilicuatre",     "emoji": "🪕", "valor": 1  }
     ]

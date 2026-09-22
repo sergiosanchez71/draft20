@@ -1,0 +1,25 @@
+{
+    "id": "freestylers",
+    "items": [
+        { "id": "frs_chuty",     "emoji": "🇪🇸", "valor": 10 },
+        { "id": "frs_gazir",     "emoji": "🧠", "valor": 10 },
+        { "id": "frs_aczino",    "emoji": "🇲🇽", "valor": 10 },
+        { "id": "frs_wos",       "emoji": "🇦🇷", "valor": 9  },
+        { "id": "frs_skone",     "emoji": "🎤", "valor": 9  },
+        { "id": "frs_blon",      "emoji": "📜", "valor": 8  },
+        { "id": "frs_walls",     "emoji": "🧱", "valor": 8  },
+        { "id": "frs_mecha",     "emoji": "⚙️", "valor": 8  },
+        { "id": "frs_larrix",    "emoji": "🏆", "valor": 8  },
+        { "id": "frs_el_menor",  "emoji": "🏔", "valor": 8  },
+        { "id": "frs_nitro",     "emoji": "💥", "valor": 7  },
+        { "id": "frs_letra",     "emoji": "✍️", "valor": 7  },
+        { "id": "frs_teorema",   "emoji": "📐", "valor": 7  },
+        { "id": "frs_marithea",  "emoji": "🌊", "valor": 6  },
+        { "id": "frs_sara_socas","emoji": "🎲", "valor": 6  },
+        { "id": "frs_arkano",    "emoji": "📚", "valor": 6  },
+        { "id": "frs_tirpa",     "emoji": "🎯", "valor": 4  },
+        { "id": "frs_force",     "emoji": "💪", "valor": 3  },
+        { "id": "frs_sweet_pain","emoji": "🍬", "valor": 3  },
+        { "id": "frs_bnet",      "emoji": "🔌", "valor": 2  }
+    ]
+}

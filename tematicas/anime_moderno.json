@@ -17,8 +17,8 @@
         { "id": "amx_igris",         "emoji": "🛡️", "valor": 6  },
         { "id": "amx_ai",            "emoji": "🎤", "valor": 6  },
         { "id": "amx_kazuya",         "emoji": "🤡", "valor": 1  },
-        { "id": "amx_vending",        "emoji": "🥫", "valor": 1  },
-        { "id": "amx_uzumaki_cutre",  "emoji": "📺", "valor": 2  },
+        { "id": "amx_mami_nanami",    "emoji": "💔", "valor": 1  },
+        { "id": "amx_ruka_sarashina", "emoji": "📱", "valor": 2  },
         { "id": "amx_anya",           "emoji": "🥜", "valor": 6  },
         { "id": "amx_power",          "emoji": "🩸", "valor": 6  }
     ]
