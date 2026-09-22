@@ -488,7 +488,17 @@ try {
     check($rcancel['code'] === 200 && ($rcancel['json']['ok'] ?? false) === true, 'salir de sala privada: cancelar → 200');
     $rprivEstado = http_req('GET', $base . '/api/estado.php?codigo=' . $codPriv . '&jugador_id=' . $j1Priv);
     check($rprivEstado['code'] === 404, 'salir de sala privada: la sala se borra');
+
+    // 14) Ranking de partidas (solo lectura con clave).
+    $rRank403 = http_req('GET', $base . '/api/ranking.php');
+    check($rRank403['code'] === 403, 'ranking sin clave → 403');
+    $claveRank = 'smoke-' . bin2hex(random_bytes(8));
+    @file_put_contents($root . '/api/datos/clave_ranking.txt', $claveRank);
+    $rRank200 = http_req('GET', $base . '/api/ranking.php?clave=' . urlencode($claveRank));
+    check($rRank200['code'] === 200 && ($rRank200['json']['ok'] ?? false) === true && isset($rRank200['json']['porTematica']), 'ranking con clave → 200 con agregado');
+    @unlink($root . '/api/datos/clave_ranking.txt');
 } finally {
+    @unlink($root . '/api/datos/clave_ranking.txt');
     foreach ($codigos as $c) {
         if ($c !== '') {
             @unlink($salasDir . $c . '.json');

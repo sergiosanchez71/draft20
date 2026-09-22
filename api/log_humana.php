@@ -6,11 +6,12 @@
  * registrar_partida_humana() y se carga con require_once desde
  * api/accion.php (los 4 puntos donde una partida queda 'finalizada').
  *
- * Cada partida terminada entre humanos añade UNA línea JSON a
+ * Cada partida terminada (humanas y contra la CPU) añade UNA línea JSON a
  * api/datos/partidas_humanas.jsonl:
  *   {ts, tematica, visibles, tipo, rondas, resultado, durSeg}
- * Sin nombres, IDs de jugador, códigos de sala ni IPs. Las salas de bot
- * se excluyen (ya se registran vía api/registrar_partida.php).
+ * donde tipo es privada|rapida|revancha|bot. Sin nombres, IDs de jugador,
+ * códigos de sala ni IPs. Las partidas de bot también dejan su detalle
+ * de calibración vía api/registrar_partida.php (propósito distinto).
  * Rotación como partidas.jsonl: al superar 5 MB se conserva la mitad
  * más reciente. Idempotente por sala (flag log_humana, que
  * reiniciar_sala() limpia al empezar la revancha).
@@ -25,7 +26,6 @@ if (!function_exists('registrar_partida_humana')) {
     function registrar_partida_humana(array &$sala, string $logPath = ''): void
     {
         if (!empty($sala['log_humana'])) return;
-        if (($sala['bot_slot'] ?? null) !== null) return;
         if (($sala['estado'] ?? '') !== 'finalizada') return;
 
         $tematica = strtolower((string) ($sala['tematica'] ?? ''));
@@ -55,9 +55,11 @@ if (!function_exists('registrar_partida_humana')) {
             'ts'        => $ahora,
             'tematica'  => $tematica,
             'visibles'  => !empty($sala['mostrar_valores']) ? 1 : 0,
-            'tipo'      => !empty($sala['rapida'])
-                ? 'rapida'
-                : (((int) ($sala['partida_n'] ?? 1)) > 1 ? 'revancha' : 'privada'),
+            'tipo'      => ($sala['bot_slot'] ?? null) !== null
+                ? 'bot'
+                : (!empty($sala['rapida'])
+                    ? 'rapida'
+                    : (((int) ($sala['partida_n'] ?? 1)) > 1 ? 'revancha' : 'privada')),
             'rondas'    => max(0, (int) ($sala['ronda'] ?? 0)),
             'resultado' => $resultado,
             'durSeg'    => max(0, $ahora - (int) ($sala['creado_en'] ?? $ahora)),
