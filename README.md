@@ -423,21 +423,20 @@ Reglas:
 - Mínimo **8 ítems** (se sirven 8 por partida con reparto equilibrado por tiers: ver `seleccionar_items_balanceados()` en `api/crear_sala.php`).
 - Cada `id` debe existir en `lang/<iso>.json::items` para resolverse en UI.
 
-### Temáticas incluidas (72, agrupadas en 10 categorías)
+### Temáticas incluidas (55, agrupadas en 9 categorías + ⭐ Destacados)
 
 El estilo sigue el trend viral del *$20 draft* (["You Have $20!"](https://youhave20.com)): cada ítem es un **nombre propio reconocible** (personaje, obra, modelo, marca) y los “malos” son también cosas concretas (objetos cutres, títulos malos legendarios, personajes ridículos) — nunca acciones ni estados. Las últimas incorporaciones salen de investigar los virales del TikTok español: Mundial 2026, Eurovisión/Benidorm Fest, Mercadona, nostalgia Tuenti/MSN, Navidad, programas de TV y F1.
 
 El lobby y el modal de revancha las presentan con un **desplegable nativo agrupado por categoría** (todas las temáticas visibles, sin menús que se corten). La opción por defecto es **✨ Todas (aleatoria)**: al crear/revancha se sortea una temática del catálogo; el usuario puede fijar una concreta. La estructura vive en `tematicas_catalogo.php` (fuente única vía `window.__CATEGORIAS`).
 
-- 🍔 **Comida y bebida** — hamburguesa, tapas, pizza, barbacoa, sushi, postres, cerveza, snacks, cereales, mercadona.
-- 🎬 **Cine, series y música** — peliculas, series, anime, comics, libros, musica, karaoke, teatro, villanos, eurovision, programas_tv.
-- 📱 **Viral (personajes)** — simpsons, disney, marvel_dc, dragon_ball, one_piece, harry_potter, star_wars, pokemon, pop_stars, streamers, wwe, dibujos.
-- ⚽ **Deporte y motor** — futbol, nba, tenis, boxeo, esports, coches, olimpiadas, mundial, f1.
-- 🎮 **Ocio y juegos** — videojuegos, juegos_mesa, consolas, moviles, juguetes, nostalgia.
-- 🐉 **Fantasía y aventura** — zombies, piratas, vikingos, romanos, egipto, samurais, vaqueros, poderes.
-- 🚀 **Ciencia y tecnología** — espacio, robots, inventos, criptos.
-- 🌴 **Naturaleza y viajes** — vacaciones, animales, dinosaurios, fondo_marino, granja, selva, montana, isla_desierta.
-- 🏠 **Vida y sociedad** — parejas, navidad.
+- 🍔 **Comida y bebida** — hamburguesa, tapas, pizza, barbacoa, sushi, postres, cerveza.
+- 🎬 **Cine, series y música** — peliculas, series, anime, comics, libros, musica, karaoke, teatro, villanos.
+- 📱 **Viral (personajes)** — simpsons, disney, marvel_dc, dragon_ball, one_piece, harry_potter, star_wars, pokemon, pop_stars, streamers, wwe.
+- ⚽ **Deporte y motor** — futbol, nba, tenis, boxeo, esports, coches, olimpiadas, f1.
+- 🎮 **Ocio y juegos** — videojuegos, juegos_mesa, consolas, moviles, juguetes.
+- 🐉 **Fantasía y aventura** — zombies, piratas, vikingos, romanos, egipto, samurais, vaqueros.
+- 🚀 **Ciencia y tecnología** — espacio, robots.
+- 🌴 **Naturaleza y animales** — animales, dinosaurios, fondo_marino, granja.
 - 🕵️ **Crimen y misterio** — atraco, detective.
 
 Estándar de calidad del catálogo (validado por `test_catalogo.php`): 20 ítems por temática (6 premium / 7 medios / 7 malos), IDs únicos con formato slug, `valor` 1-10, sin prefijos compartidos entre temáticas, y traducción/label para cada ID en `lang/es.json`.

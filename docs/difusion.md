@@ -18,7 +18,7 @@ Propuesta de valor: *juego de subasta por turnos para 2 jugadores, gratis, en el
 
 ### Guion B — "POV: te toca un ítem malísimo"
 - **Hook**: "POV: pujas 8 monedas por un ítem y luego resulta ser el peor de la lista".
-- **Cuerpo**: partida real a la temática de Mercadona o Programas de TV; reacciones exageradas.
+- **Cuerpo**: partida real a la temática de Pizza o Streamers; reacciones exageradas.
 - **CTA**: "Elige tu temática y reta a alguien: draft20.es".
 
 ### Guion C — "Cuánto sabes de tu mejor amigo"
