@@ -201,6 +201,7 @@ $langCliente = [
 
 $inlineFirst = 'window.LANG = ' . json_encode($langCliente, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . ';'
     . 'window.__CATEGORIAS = ' . json_encode($categorias, JSON_UNESCAPED_UNICODE) . ';'
+    . 'window.__DESTACADOS = ' . json_encode(destacados(), JSON_UNESCAPED_UNICODE) . ';'
     . ($tematicaPre !== null ? 'window.__tematicaPre = ' . json_encode($tematicaPre) . ';' : '');
 
 $inline = '(function () {'

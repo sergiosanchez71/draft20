@@ -57,6 +57,14 @@
     function tTematica(id) { return (window.LANG.tematicas && window.LANG.tematicas[id]) || id; }
     function catLabel(id) { return (window.LANG.tematicas_categorias && window.LANG.tematicas_categorias[id]) || id; }
     function categoriasData() { return Array.isArray(window.__CATEGORIAS) ? window.__CATEGORIAS : []; }
+    function destacadosData() {
+        if (Array.isArray(window.__DESTACADOS) && window.__DESTACADOS.length) return window.__DESTACADOS;
+        const out = [];
+        categoriasData().forEach(function (c) {
+            (c.tematicas || []).forEach(function (tm) { if (tm.destacado) out.push(tm); });
+        });
+        return out;
+    }
 
     function tematicaEmoji(id) {
         const cats = categoriasData();
@@ -956,6 +964,14 @@
             },
         });
         select.appendChild(el('option', { value: TEMATICA_RANDOM }, t('ui.lobby.tematica_aleatoria')));
+        const dest = destacadosData();
+        if (dest.length) {
+            const groupD = el('optgroup', { label: '⭐ ' + catLabel('destacados') });
+            dest.forEach(function (tm) {
+                groupD.appendChild(el('option', { value: tm.id }, (tm.emoji || '🎲') + ' ' + tTematica(tm.id)));
+            });
+            select.appendChild(groupD);
+        }
         cats.forEach(function (c) {
             const group = el('optgroup', { label: (c.emoji || '🎲') + ' ' + catLabel(c.id) });
             (c.tematicas || []).forEach(function (tm) {

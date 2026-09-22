@@ -50,7 +50,7 @@ return [
         'enlaces' => [
             ['href' => '/como-jugar', 'texto' => 'Cómo se juega paso a paso'],
             ['href' => '/tematica/futbol', 'texto' => 'Temática de fútbol'],
-            ['href' => '/tematica/mercadona', 'texto' => 'Temática de Mercadona'],
+            ['href' => '/tematica/tapas', 'texto' => 'Temática de tapas'],
             ['href' => '/guia/mejores-tematicas', 'texto' => 'Las 10 temáticas más divertidas'],
         ],
     ],
@@ -124,7 +124,7 @@ return [
         'enlaces' => [
             ['href' => '/como-jugar', 'texto' => 'Reglas completas'],
             ['href' => '/tematica/futbol', 'texto' => 'Temática de fútbol'],
-            ['href' => '/tematica/mercadona', 'texto' => 'Temática de Mercadona'],
+            ['href' => '/tematica/tapas', 'texto' => 'Temática de tapas'],
             ['href' => '/guia/mejores-tematicas', 'texto' => 'Top temáticas para practicar'],
         ],
     ],

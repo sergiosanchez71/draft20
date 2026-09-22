@@ -224,12 +224,13 @@ if (!function_exists('seleccionar_items_balanceados')) {
      *   medios), medios 0-4. Los mínimos se fuerzan si quedan pocos huecos.
      * - Si un tier se agota, sus cupos pasan a los demás (fallback).
      * - El orden final se baraja para que la subasta no sea predecible.
+     * - $baseIds: IDs que entran sí o sí (ej. queso y tomate en pizza).
      */
-    function seleccionar_items_balanceados(array $items, int $n): array {
+    function seleccionar_items_balanceados(array $items, int $n, array $baseIds = []): array {
         // --- FORZAR items base obligatorios (ej. queso y tomate en pizza) ---
         $items_base = [];
-        if (!empty($items['base_items'])) {
-            foreach ($items['base_items'] as $bid) {
+        if ($baseIds !== []) {
+            foreach ($baseIds as $bid) {
                 foreach ($items as $it) {
                     if ($it['id'] === $bid) {
                         $items_base[] = $it;
@@ -244,8 +245,6 @@ if (!function_exists('seleccionar_items_balanceados')) {
                 }
             }
         }
-        // Ajustar n: solo seleccionar el resto
-        $n_restante = $n - count($items_base);
         $elegidos = $items_base; // empezar con los base ya incluidos
         // --- FIN FORZAR items base ---
 
@@ -394,7 +393,7 @@ if (!function_exists('crear_sala_nueva')) {
         // Selección equilibrada por tiers (8 = 4 por persona): sorteo ponderado con
         // castigo por repetición y límites duros → evita partidas cargadas de malos.
         // Guardamos SOLO los IDs en la sala → agnóstico de idioma (i18n).
-        $itemsPool      = seleccionar_items_balanceados($tematica['items'], ITEMS_POR_PARTIDA);
+        $itemsPool      = seleccionar_items_balanceados($tematica['items'], ITEMS_POR_PARTIDA, $tematica['base_items'] ?? []);
         $itemsMezclados = array_map(
             static fn(array $it): string => (string) $it['id'],
             $itemsPool
@@ -470,7 +469,7 @@ if (!function_exists('reiniciar_sala')) {
     function reiniciar_sala(array $estado, string $tematicaId): array
     {
         $tematica   = cargar_tematica($tematicaId);
-        $itemsPool  = seleccionar_items_balanceados($tematica['items'], ITEMS_POR_PARTIDA);
+        $itemsPool  = seleccionar_items_balanceados($tematica['items'], ITEMS_POR_PARTIDA, $tematica['base_items'] ?? []);
         $itemsIds   = array_map(static fn(array $it): string => (string) $it['id'], $itemsPool);
         $primerItem = $itemsPool[0];
 

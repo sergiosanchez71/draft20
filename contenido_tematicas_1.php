@@ -20,9 +20,9 @@ return [
         ],
     ],
     'pizza' => [
-        'descripcion' => 'Una temática de pizzería napolitana de verdad: masa madre fermentada 48 horas, mozzarella di bufala, horno de leña y setas porcini compiten con un queso rallado de bolsa que no funde y una pizza recalentada en microondas. El contraste entre lo artesano y lo cutre es lo que hace esta subasta tan divertida.',
+        'descripcion' => 'La temática de la pizza de verdad: queso y tomate siempre en mesa, con pepperoni, jamón, champiñones y un borde relleno que lo cambia todo, frente a la masa congelada y el ketchup de sobre. El contraste entre lo artesano y lo cutre es lo que hace esta subasta tan divertida.',
         'preguntas' => [
-            ['q' => '¿Se puede pujar por el horno de leña?', 'a' => 'Sí, el horno napolitano es uno de los ítems estrella; tenerlo o no cambia por completo la partida.'],
+            ['q' => '¿El queso y el tomate salen siempre?', 'a' => 'Sí, son la base innegociable de la temática: aparecen en todas las partidas, y el resto de ingredientes se sortea alrededor.'],
         ],
     ],
     'barbacoa' => [
@@ -38,33 +38,15 @@ return [
         ],
     ],
     'postres' => [
-        'descripcion' => 'Tiramisú, coulant de chocolate, cheesecake y tarta de Santiago se disputan el puesto de mejor final de comida. Entre medias, una gelatina de sobre y un turrón duro de sobra. Es una de las temáticas más rápidas de jugar y de las que más remontadas permite, porque los ítems buenos se reparten a lo largo de todas las rondas.',
+        'descripcion' => 'Tiramisú, coulant de chocolate, tarta de queso vasca y cookies de Nutella se disputan el puesto de mejor final de comida. Entre medias, un flan de sobre y un pastel derretido. Es una de las temáticas más rápidas de jugar y de las que más remontadas permite, porque los ítems buenos se reparten a lo largo de todas las rondas.',
         'preguntas' => [
-            ['q' => '¿Cuál es el postre más deseado de la temática?', 'a' => 'El coulant y el tiramisú suelen ser los que más pujas levantan, con el cheesecake pegado detrás.'],
+            ['q' => '¿Cuál es el postre más deseado de la temática?', 'a' => 'El coulant y el tiramisú suelen ser los que más pujas levantan, con la tarta de queso vasca pegada detrás.'],
         ],
     ],
     'cerveza' => [
-        'descripcion' => 'Aquí se puja por marcas de siempre: Guinness, Heineken, Mahou y Estrella Galicia, con el contraste de un barril de garrafa o una cerveza que sabe a plástico. Funciona especialmente bien como temática de previa: partida rápida, risas rápidas y revancha inmediata.',
+        'descripcion' => 'IPA turbia, trigo bávaro, stout cremosa y envejecida en barrica de roble frente a la cerveza caliente y el vaso sucio. La temática craft del catálogo: partida rápida, risas rápidas y revancha inmediata, ideal para jugar de previa.',
         'preguntas' => [
-            ['q' => '¿Hay cerveza artesana en la temática?', 'a' => 'La selección tira de clásicos reconocibles; los ítems malos son precisamente los que parecen artesanos y saben a garrafa.'],
-        ],
-    ],
-    'snacks' => [
-        'descripcion' => 'Kinder Bueno, Oreo, Doritos y Pringles contra las pipas saladas y la bolsa caducada de la gasolinera. Es la temática más reconocible al instante: nadie necesita pensar para saber qué es un buen snack, así que las pujas son rapidísimas y las remontadas muy frecuentes.',
-        'preguntas' => [
-            ['q' => '¿Es una temática fácil para jugar con alguien que no conoce Draft 20?', 'a' => 'Sí, es de las mejores para empezar: los ítems se reconocen al instante y las reglas se entienden en una ronda.'],
-        ],
-    ],
-    'cereales' => [
-        'descripcion' => 'Chocapic, Frosties, Corn Flakes y Honey Loops se enfrentan al cereal de marca blanca y a la fruta escarchada de los cereales "de mayores". Una temática nostálgica y de pique generacional: cada ítem tiene su defensor y su detractor en la mesa.',
-        'preguntas' => [
-            ['q' => '¿Por qué funciona tan bien la temática de cereales?', 'a' => 'Porque todo el mundo tiene un cereal de infancia favorito y lo defiende como si valiera una fortuna.'],
-        ],
-    ],
-    'mercadona' => [
-        'descripcion' => 'La temática más española del catálogo: tarta de queso, torreznos hacendado, helado de peanut butter cups y hasta el chino de Mercadona. La compra semanal convertida en subasta, con ítems que han pasado de marca blanca a icono popular.',
-        'preguntas' => [
-            ['q' => '¿Es una temática de broma o se puede jugar en serio?', 'a' => 'Se juega en serio: los ítems tienen valores muy repartidos y es una de las temáticas más igualadas del catálogo.'],
+            ['q' => '¿Toda la temática es cerveza artesana?', 'a' => 'Casi: la selección tira de estilos craft reconocibles, y los ítems malos son justo lo que arruina una buena birra.'],
         ],
     ],
 
@@ -123,19 +105,6 @@ return [
             ['q' => '¿Cuál es el villano más valioso?', 'a' => 'Hannibal Lecter y Sauron suelen ser los más codiciados, muy por delante de los villanos de relleno.'],
         ],
     ],
-    'eurovision' => [
-        'descripcion' => 'Chanel, Melody, Nebulossa y Blanca Paloma representan a la España eurovisiva, con el contrapunto de Manel Navarro y su gallo en directo. Una temática para nostálgicos del festival y para los que todavía se saben el "Europapa" de memoria.',
-        'preguntas' => [
-            ['q' => '¿Sale el chico del gallo de Eurovisión?', 'a' => 'Sí, Manel Navarro es uno de los ítems malos más recordados, junto a John Cobra y el histórico cero de Jemini.'],
-        ],
-    ],
-    'programas_tv' => [
-        'descripcion' => 'MasterChef, Pasapalabra, El Hormiguero y La Resistencia frente a Sálvame y Gandía Shore. Es la temática de la tele que todos hemos visto sin reconocerlo, y la que más carcajadas genera cuando sale un ítem que el rival no quiere ni de regalo.',
-        'preguntas' => [
-            ['q' => '¿Por qué es una temática tan divertida?', 'a' => 'Porque mezcla programas respetables con telebasura histórica, y nadie quiere reconocer cuántos ha visto.'],
-        ],
-    ],
-
     // ===================== VIRAL =====================
     'simpsons' => [
         'descripcion' => 'Homer, Bart, Lisa y Marge encabezan una subasta que también incluye a Ralph Wiggum, el Dr. Nick y las gemelas Sherri y Terri. Es una temática de consenso: casi todo el mundo reconoce cada ítem, así que la partida se decide por estrategia y no por conocimiento.',
@@ -201,12 +170,6 @@ return [
         'descripcion' => 'The Rock, John Cena, The Undertaker y Stone Cold Steve Austin con el contraste de Gillberg y el Gobbledy Gooker. La temática más nostálgica para los que crecieron viendo lucha libre, y la más sorprendente para quien descubre que esos nombres son reales.',
         'preguntas' => [
             ['q' => '¿Qué es el Gobbledy Gooker?', 'a' => 'Un personaje histórico de la WWE que salió de un huevo gigante y se convirtió en leyenda por lo ridículo; en la subasta es de los peores ítems.'],
-        ],
-    ],
-    'dibujos' => [
-        'descripcion' => 'Bob Esponja, Tom y Jerry, Scooby-Doo y el Pato Donald contra Barney y Zig y Sharko. La temática más tierna sobre el papel, hasta que alguien tiene que pujar por Fanboy y Chum Chum. Perfecta para jugar en familia un domingo por la mañana.',
-        'preguntas' => [
-            ['q' => '¿Es apta para todas las edades?', 'a' => 'Sí, todos los ítems son dibujos reconocibles y las reglas son las mismas para todos.'],
         ],
     ],
 ];

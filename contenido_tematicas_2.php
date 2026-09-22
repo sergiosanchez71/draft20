@@ -1,7 +1,7 @@
 <?php
 /**
  * Draft 20 — Contenido SEO: fichas de temática (parte 2: deporte, ocio, fantasía,
- * ciencia, naturaleza, vida y crimen). Sin valores ⭐.
+ * ciencia, naturaleza y crimen). Sin valores ⭐.
  */
 declare(strict_types=1);
 
@@ -38,7 +38,7 @@ return [
         ],
     ],
     'coches' => [
-        'descripcion' => 'Ferrari F40, Porsche 911, Lamborghini Countach y McLaren F1 frente a un Seat Panda y un Yugo. La temática de los que cuelgan pósters de coches desde niños, con ítems que son historia del motor y otros que son historia de la vergüenza.',
+        'descripcion' => 'Ferrari F40, Porsche 911, Supra turbo y McLaren F1 frente a un Seat Panda y un Yugo, con parada en el taller de barrio: nitro, neones, llantas de oro y alerón de carbono. La temática de los que cuelgan pósters de coches desde niños, con ítems que son historia del motor y otros que son historia de la vergüenza.',
         'preguntas' => [
             ['q' => '¿Por qué sale un Seat Panda?', 'a' => 'Como homenaje al coche español por excelencia: es un ítem malo con mucho cariño, y siempre arranca alguna sonrisa.'],
         ],
@@ -47,12 +47,6 @@ return [
         'descripcion' => 'Usain Bolt, Michael Phelps, Simone Biles y Nadia Comaneci en una subasta de leyendas olímpicas, con el Eddie el Águila y Tonya Harding en el lado opuesto. Es la temática de los récords y de las historias increíbles, tanto para bien como para mal.',
         'preguntas' => [
             ['q' => '¿Quién fue Eddie el Águila?', 'a' => 'Un saltador de esquí británico que compitió sin opciones y se hizo famoso por su espíritu; en el juego es un ítem malo muy querido.'],
-        ],
-    ],
-    'mundial' => [
-        'descripcion' => 'España, Brasil, Argentina y Francia como selecciones estrella, con Gibraltar, Bután y Andorra como los ítems que nadie quiere. La temática perfecta para jugar durante un Mundial o una Eurocopa, y para discutir qué selección tiene más historia.',
-        'preguntas' => [
-            ['q' => '¿Es una temática actualizable?', 'a' => 'Sí, está pensada para poder añadir selecciones según los torneos, manteniendo siempre las potencias y los equipos sorpresa.'],
         ],
     ],
     'f1' => [
@@ -88,15 +82,9 @@ return [
         ],
     ],
     'juguetes' => [
-        'descripcion' => 'LEGO, Scalextric, Playmobil y Tamagotchi contra el Furby y el squishy con baba. La temática de la infancia: aquí no se puja por lo que vale más, sino por lo que más te recuerda a los Reyes Magos de tu casa.',
+        'descripcion' => 'LEGO, Tamagotchi, Funko de edición limitada y figura de acción contra el Furby y el squishy con baba. La temática del coleccionismo: aquí no se puja por lo que vale más, sino por lo que más te recuerda a los Reyes Magos de tu casa.',
         'preguntas' => [
-            ['q' => '¿Cuál es el juguete más valioso?', 'a' => 'LEGO suele ser el más disputado, por delante del Scalextric y el Tamagotchi.'],
-        ],
-    ],
-    'nostalgia' => [
-        'descripcion' => 'Tuenti, MSN Messenger, Pokémon GO y el iPod Classic en una subasta que es puro 2010. Los ítems malos también son nostálgicos: el Tuenti caído, el Messenger sin ti y el imán que borraba el disquete. Una temática para jugar con alguien que creció contigo.',
-        'preguntas' => [
-            ['q' => '¿Qué significa "Tuenti caído"?', 'a' => 'Es un guiño a las caídas de la red social en su época dorada; en el juego funciona como ítem malo y muy reconocible.'],
+            ['q' => '¿Cuál es el juguete más valioso?', 'a' => 'LEGO suele ser el más disputado, por delante del Tamagotchi y el Funko de edición limitada.'],
         ],
     ],
 
@@ -143,13 +131,6 @@ return [
             ['q' => '¿Quién es Doc Holliday?', 'a' => 'El dentista y pistolero que acompañó a Wyatt Earp en el duelo de O.K. Corral; es uno de los ítems más pujados.'],
         ],
     ],
-    'poderes' => [
-        'descripcion' => 'Kamehameha, telaraña, rayo de Zeus y Mjolnir frente a la superlentitud y el teletransporte de un centímetro. Es la temática más imaginativa del catálogo: en lugar de personas, se puja por poderes, y eso da partidas muy distintas a las demás.',
-        'preguntas' => [
-            ['q' => '¿Hay poderes malos de verdad?', 'a' => 'Sí, y son los más divertidos: la superlentitud o el teletransporte de un centímetro son castigos con mucha gracia.'],
-        ],
-    ],
-
     // ===================== CIENCIA =====================
     'espacio' => [
         'descripcion' => 'Apolo 11, el telescopio Hubble, la Voyager 1 y el rover Curiosity compiten con un traje con fuga y un tornillo flotante. La temática más fascinante del catálogo, y la que mejor funciona con alguien que disfruta explicando misiones espaciales.',
@@ -163,28 +144,9 @@ return [
             ['q' => '¿Es una temática de cine o de tecnología real?', 'a' => 'Mezcla: los ítems principales son robots de ficción muy reconocibles, con algún guiño a la robótica real.'],
         ],
     ],
-    'inventos' => [
-        'descripcion' => 'La rueda, la bombilla, la imprenta y la penicilina frente a Google Glass y el Metaverso. Es la temática más educativa del catálogo: se puja por inventos que cambiaron el mundo, y los ítems malos son recordatorios de que no todo lo nuevo funciona.',
-        'preguntas' => [
-            ['q' => '¿Por qué el Metaverso es un ítem malo?', 'a' => 'Porque se presentó como la siguiente revolución y se quedó en un experimento; en la subasta es castigo.'],
-        ],
-    ],
-    'criptos' => [
-        'descripcion' => 'Bitcoin original, Ledger offline, Ethereum de verdad y un whitepaper claro contra el rug pull y el gas por las nubes. La temática más actual y la que más chistes saca entre los que vivieron el ciclo cripto de cerca.',
-        'preguntas' => [
-            ['q' => '¿Qué es un rug pull?', 'a' => 'Una estafa en la que los creadores de un token desaparecen con el dinero; en el juego es uno de los peores ítems.'],
-        ],
-    ],
-
     // ===================== NATURALEZA =====================
-    'vacaciones' => [
-        'descripcion' => 'Playa del Caribe, hotel de cinco estrellas, Tokio y París frente a la patera y el autobús de 16 horas. La temática más veraniega: los ítems buenos son destinos soñados y los malos son vacaciones que todos hemos sufrido.',
-        'preguntas' => [
-            ['q' => '¿Cuál es el ítem más deseado?', 'a' => 'La playa del Caribe y el hotel de cinco estrellas suelen ser los más pujados.'],
-        ],
-    ],
     'animales' => [
-        'descripcion' => 'León salvaje, águila real, orca libre y tigre de Bengala compiten con la cucaracha mascota y el mosquito zumbador. Es la temática más naturalista del catálogo, y también la que más gracia hace cuando aparecen los ítems malos.',
+        'descripcion' => 'León salvaje, águila real y delfín compiten con el cachorro de labrador, el gatito naranja y hasta un ajolote, mientras la cucaracha mascota y el mosquito zumbador esperan su momento. Es la temática más tierna del catálogo, y también la que más gracia hace cuando aparecen los ítems malos.',
         'preguntas' => [
             ['q' => '¿Es apta para jugar con niños?', 'a' => 'Sí, aunque la cucaracha mascota siempre da un poco de grima: es parte de la diversión.'],
         ],
@@ -202,41 +164,9 @@ return [
         ],
     ],
     'granja' => [
-        'descripcion' => 'Tractor John Deere, gallina ponedora, vaca lechera e invernadero con la plaga de pulgones y la gallina clueca. La temática más rural del catálogo: perfecta para jugar con familia que veranea en el pueblo.',
+        'descripcion' => 'Tractor John Deere, vaca lechera, gallina ponedora y cabaña del bosque con la plaga de pulgones y el estiércol. La temática más rural del catálogo: perfecta para jugar con familia que veranea en el pueblo.',
         'preguntas' => [
-            ['q' => '¿Por qué la gallina clueca es mala?', 'a' => 'Porque no pone huevos cuando más falta hace; en la subasta es un ítem malo de lo más rural.'],
-        ],
-    ],
-    'selva' => [
-        'descripcion' => 'Jaguar, anaconda, Tarzán y el okapi frente a la liana rota y la araña gigante. Una temática de exploración con animales reales y héroes de ficción, donde los ítems malos son tan peligrosos como inútiles.',
-        'preguntas' => [
-            ['q' => '¿Qué es un okapi?', 'a' => 'Un mamífero africano emparentado con la jirafa, poco conocido y muy reconocible; es uno de los ítems curiosos de la temática.'],
-        ],
-    ],
-    'montana' => [
-        'descripcion' => 'Everest, K2, Kilimanjaro y Mont Blanc con el piolet sin punta y la brújula loca como castigo. La temática más épica de la categoría: si te tocan los ochomiles y sabes repartir el presupuesto, puedes hacer una colección de leyenda.',
-        'preguntas' => [
-            ['q' => '¿Cuál es el ítem más valioso del alpinismo?', 'a' => 'El Everest suele ser el más pujado, con el K2 justo detrás.'],
-        ],
-    ],
-    'isla_desierta' => [
-        'descripcion' => 'Robinson Crusoe, Wilson, coco fresco y hoguera frente al alga apestosa y el sol que quema. La temática más clásica de supervivencia, con una lista de ítems que parece sacada de una novela de aventuras.',
-        'preguntas' => [
-            ['q' => '¿Quién es Wilson?', 'a' => 'El balón con cara de la película Náufrago; en la subasta es uno de los ítems más queridos.'],
-        ],
-    ],
-
-    // ===================== VIDA =====================
-    'parejas' => [
-        'descripcion' => 'Romeo y Julieta, Shrek y Fiona, Bonnie y Clyde y Morticia y Gómez en una subasta de parejas legendarias, con Bella y Edward y Tom y Katie como castigo. La temática para jugar en San Valentín… o para reírse de las parejas ajenas.',
-        'preguntas' => [
-            ['q' => '¿Cuál es la pareja más valiosa?', 'a' => 'Romeo y Julieta suelen ser los más pujados, con Shrek y Fiona como sorpresa habitual en las decisiones.'],
-        ],
-    ],
-    'navidad' => [
-        'descripcion' => 'Lotería de Navidad, El Gordo, las campanadas y Papá Noel compiten con el carbón y las uvas atragantadas. La temática más española de diciembre, ideal para jugar después de la cena de Nochebuena o mientras se espera la lotería.',
-        'preguntas' => [
-            ['q' => '¿Cuándo es mejor jugar esta temática?', 'a' => 'En diciembre, sobre todo en comidas y cenas familiares: engancha a cualquiera que haya jugado alguna vez a la lotería.'],
+            ['q' => '¿El tractor John Deere es tan bueno como dicen?', 'a' => 'Sí, es el ítem más pujado de la temática: sin tractor no hay granja que funcione.'],
         ],
     ],
 

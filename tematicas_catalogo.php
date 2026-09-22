@@ -5,67 +5,62 @@
  * Fuente única del listado de temáticas para el lobby (index.php) y el juego
  * (juego.php, para header y revancha). Devuelve un array de categorías:
  *   [ ['id' => 'comida', 'emoji' => '🍔', 'tematicas' => [ ['id' => ..., 'emoji' => ...], ... ]], ... ]
+ *
+ * Las temáticas con 'destacado' => true salen además en la sección
+ * ⭐ Destacados al principio de los selectores (SSR + JS).
  */
 declare(strict_types=1);
 
 return [
     ['id' => 'comida', 'emoji' => '🍔', 'tematicas' => [
-        ['id' => 'hamburguesa', 'emoji' => '🍔'],
+        ['id' => 'hamburguesa', 'emoji' => '🍔', 'destacado' => true],
         ['id' => 'tapas',       'emoji' => '🍤'],
-        ['id' => 'pizza',       'emoji' => '🍕'],
+        ['id' => 'pizza',       'emoji' => '🍕', 'destacado' => true],
         ['id' => 'barbacoa',    'emoji' => '🥩'],
         ['id' => 'sushi',       'emoji' => '🍣'],
         ['id' => 'postres',     'emoji' => '🍰'],
         ['id' => 'cerveza',     'emoji' => '🍺'],
-        ['id' => 'snacks',      'emoji' => '🍫'],
-        ['id' => 'cereales',    'emoji' => '🥣'],
-        ['id' => 'mercadona',   'emoji' => '🛒'],
     ]],
     ['id' => 'cultura', 'emoji' => '🎬', 'tematicas' => [
         ['id' => 'peliculas',   'emoji' => '🎬'],
         ['id' => 'series',      'emoji' => '📺'],
-        ['id' => 'anime',       'emoji' => '🌸'],
+        ['id' => 'anime',       'emoji' => '🌸', 'destacado' => true],
         ['id' => 'comics',      'emoji' => '💥'],
         ['id' => 'libros',      'emoji' => '📚'],
         ['id' => 'musica',      'emoji' => '🎸'],
         ['id' => 'karaoke',     'emoji' => '🎤'],
         ['id' => 'teatro',      'emoji' => '🎭'],
         ['id' => 'villanos',    'emoji' => '😈'],
-        ['id' => 'eurovision',  'emoji' => '🎤'],
-        ['id' => 'programas_tv','emoji' => '📺'],
     ]],
     ['id' => 'viral', 'emoji' => '📱', 'tematicas' => [
         ['id' => 'simpsons',    'emoji' => '🍩'],
         ['id' => 'disney',      'emoji' => '🏰'],
-        ['id' => 'marvel_dc',   'emoji' => '🦸'],
+        ['id' => 'marvel_dc',   'emoji' => '🦸', 'destacado' => true],
         ['id' => 'dragon_ball', 'emoji' => '🐉'],
         ['id' => 'one_piece',   'emoji' => '🏴‍☠️'],
-        ['id' => 'harry_potter','emoji' => '🪄'],
-        ['id' => 'star_wars',   'emoji' => '🌌'],
-        ['id' => 'pokemon',     'emoji' => '⚡'],
+        ['id' => 'harry_potter','emoji' => '🪄', 'destacado' => true],
+        ['id' => 'star_wars',   'emoji' => '🌌', 'destacado' => true],
+        ['id' => 'pokemon',     'emoji' => '⚡', 'destacado' => true],
         ['id' => 'pop_stars',   'emoji' => '🌟'],
         ['id' => 'streamers',   'emoji' => '🎥'],
         ['id' => 'wwe',         'emoji' => '🤼'],
-        ['id' => 'dibujos',     'emoji' => '🧽'],
     ]],
     ['id' => 'deporte', 'emoji' => '⚽', 'tematicas' => [
-        ['id' => 'futbol',      'emoji' => '⚽'],
+        ['id' => 'futbol',      'emoji' => '⚽', 'destacado' => true],
         ['id' => 'nba',         'emoji' => '🏀'],
         ['id' => 'tenis',       'emoji' => '🎾'],
         ['id' => 'boxeo',       'emoji' => '🥊'],
         ['id' => 'esports',     'emoji' => '🖥️'],
         ['id' => 'coches',      'emoji' => '🏎️'],
         ['id' => 'olimpiadas',  'emoji' => '🥇'],
-        ['id' => 'mundial',     'emoji' => '🏆'],
         ['id' => 'f1',          'emoji' => '🏁'],
     ]],
     ['id' => 'ocio', 'emoji' => '🎮', 'tematicas' => [
-        ['id' => 'videojuegos', 'emoji' => '🎮'],
+        ['id' => 'videojuegos', 'emoji' => '🎮', 'destacado' => true],
         ['id' => 'juegos_mesa', 'emoji' => '🎲'],
         ['id' => 'consolas',    'emoji' => '🕹️'],
         ['id' => 'moviles',     'emoji' => '📱'],
         ['id' => 'juguetes',    'emoji' => '🧸'],
-        ['id' => 'nostalgia',   'emoji' => '📼'],
     ]],
     ['id' => 'fantasia', 'emoji' => '🐉', 'tematicas' => [
         ['id' => 'zombies',     'emoji' => '🧟'],
@@ -75,27 +70,16 @@ return [
         ['id' => 'egipto',      'emoji' => '🔺'],
         ['id' => 'samurais',    'emoji' => '🥋'],
         ['id' => 'vaqueros',    'emoji' => '🤠'],
-        ['id' => 'poderes',     'emoji' => '✨'],
     ]],
     ['id' => 'ciencia', 'emoji' => '🚀', 'tematicas' => [
         ['id' => 'espacio',     'emoji' => '🚀'],
         ['id' => 'robots',      'emoji' => '🤖'],
-        ['id' => 'inventos',    'emoji' => '💡'],
-        ['id' => 'criptos',     'emoji' => '🪙'],
     ]],
     ['id' => 'naturaleza', 'emoji' => '🌴', 'tematicas' => [
-        ['id' => 'vacaciones',     'emoji' => '🏖️'],
         ['id' => 'animales',       'emoji' => '🦁'],
         ['id' => 'dinosaurios',    'emoji' => '🦖'],
         ['id' => 'fondo_marino',   'emoji' => '🐋'],
         ['id' => 'granja',         'emoji' => '🚜'],
-        ['id' => 'selva',          'emoji' => '🐆'],
-        ['id' => 'montana',        'emoji' => '🏔️'],
-        ['id' => 'isla_desierta',  'emoji' => '🏝️'],
-    ]],
-    ['id' => 'vida', 'emoji' => '🏠', 'tematicas' => [
-        ['id' => 'parejas',     'emoji' => '❤️'],
-        ['id' => 'navidad',     'emoji' => '🎄'],
     ]],
     ['id' => 'crimen', 'emoji' => '🕵️', 'tematicas' => [
         ['id' => 'atraco',      'emoji' => '🏦'],

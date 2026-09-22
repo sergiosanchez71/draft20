@@ -19,6 +19,15 @@ function lobby_inicial_html(?string $tematicaPre = null): string
         $lang = cargar_lang();
         $html = '<option value="__random__"' . ($sel === '__random__' ? ' selected' : '') . '>'
             . e((string) ($lang['ui']['lobby']['tematica_aleatoria'] ?? '')) . '</option>';
+        $dest = destacados();
+        if ($dest !== []) {
+            $html .= '<optgroup label="' . e('⭐ ' . nombre_categoria('destacados')) . '">';
+            foreach ($dest as $tm) {
+                $html .= '<option value="' . e((string) $tm['id']) . '"' . ($sel === $tm['id'] ? ' selected' : '') . '>'
+                    . e(($tm['emoji'] ?? '🎲') . ' ' . nombre_tematica((string) $tm['id'])) . '</option>';
+            }
+            $html .= '</optgroup>';
+        }
         foreach (categorias() as $c) {
             $html .= '<optgroup label="' . e(($c['emoji'] ?? '🎲') . ' ' . nombre_categoria((string) $c['id'])) . '">';
             foreach ($c['tematicas'] as $tm) {

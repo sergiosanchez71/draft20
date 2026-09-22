@@ -1,14 +1,14 @@
 {
     "name": "draft20",
     "private": true,
-    "version": "1.1.29",
+    "version": "1.2.0",
     "description": "Draft 20 — build de CSS (Tailwind) y minificado de JS",
     "scripts": {
         "build:css": "tailwindcss -i css/tailwind.src.css -o css/tailwind.css --minify",
         "build:js": "terser js/app.core.js -c -m -o js/app.core.min.js && terser js/app.game.js -c -m -o js/app.game.min.js && terser js/bot_policy.js -c -m -o js/bot_policy.min.js",
         "build": "npm run build:css && npm run build:js",
         "test": "npm run test:php && npm run test:node && npm run check:css",
-        "test:php": "php tools/test_catalogo.php && php tests/rate_limit.test.php",
+        "test:php": "php tools/test_catalogo.php && php tests/rate_limit.test.php && php tests/base_items.test.php",
         "test:node": "node tests/bot_policy.test.js && node tests/a11y.test.js && node tests/ssr_lobby.test.js",
         "check:css": "npm run build:css && git diff --exit-code -- css/tailwind.css",
         "smoke": "php tools/smoke.php",

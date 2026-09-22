@@ -71,7 +71,7 @@ return [
             ['href' => '/', 'texto' => 'Crear una sala de Draft 20'],
             ['href' => '/como-jugar', 'texto' => 'Cómo se juega'],
             ['href' => '/tematica/musica', 'texto' => 'Temática de música'],
-            ['href' => '/tematica/mercadona', 'texto' => 'Temática de Mercadona'],
+            ['href' => '/tematica/tapas', 'texto' => 'Temática de tapas'],
             ['href' => '/tematica/futbol', 'texto' => 'Temática de fútbol'],
             ['href' => '/guia/draft-de-20-monedas', 'texto' => 'Qué es el draft de 20 monedas'],
             ['href' => '/guia/juegos-de-subasta-online', 'texto' => 'Juegos de subasta online'],
@@ -97,7 +97,7 @@ return [
                     'Plataforma: You Have $20 es una app iOS (App Store); Draft 20 se juega en el navegador, en Android, iPhone o PC.',
                     'Precio: en You Have $20 los juegos con categoría aleatoria son gratis y las opciones extra (elegir categoría o crearlas con IA) van con suscripción PRO; Draft 20 es gratis y sin anuncios, con todas las temáticas disponibles.',
                     'Jugadores: en You Have $20 dos personas pujan en el mismo teléfono y el resto hace de jurado; en Draft 20 juegan exactamente dos, cada uno en su dispositivo, con un código de sala.',
-                    'Contenido: You Have $20 ofrece unas 40 categorías en 25 idiomas; Draft 20 tiene 72 temáticas con 20 ítems cada una, con acento muy español (Mercadona, Eurovisión, programas de TV, nostalgia Tuenti).',
+                    'Contenido: You Have $20 ofrece unas 40 categorías en 25 idiomas; Draft 20 tiene 55 temáticas con 20 ítems cada una, con acento muy español (tapas, fútbol, streamers).',
                     'Registro: ninguno de los dos lo pide.',
                 ],
             ],
@@ -131,14 +131,14 @@ return [
         'enlaces' => [
             ['href' => '/', 'texto' => 'Probar Draft 20 gratis'],
             ['href' => '/guia/draft-de-20-monedas', 'texto' => 'Qué es el draft de 20 monedas'],
-            ['href' => '/tematica/mercadona', 'texto' => 'Temática de Mercadona'],
-            ['href' => '/tematica/eurovision', 'texto' => 'Temática de Eurovisión'],
+            ['href' => '/tematica/tapas', 'texto' => 'Temática de tapas'],
+            ['href' => '/tematica/musica', 'texto' => 'Temática de música'],
         ],
     ],
 
     'mejores-tematicas' => [
         'titulo' => 'Las 10 temáticas más divertidas de Draft 20 (y por qué)',
-        'desc' => 'Ranking de las 10 temáticas más divertidas de Draft 20: de Mercadona a los programas de TV, con el motivo por el que funcionan tan bien en la subasta.',
+        'desc' => 'Ranking de las 10 temáticas más divertidas de Draft 20: de la Pizza al Fútbol, con el motivo por el que funcionan tan bien en la subasta.',
         'h1' => 'Las 10 temáticas más divertidas de Draft 20',
         'fecha' => '2026-09-17',
         'secciones' => [
@@ -150,9 +150,9 @@ return [
                 ],
             ],
             [
-                'h' => '1. Mercadona',
+                'h' => '1. Pizza',
                 'p' => [
-                    'La temática más española del catálogo: tarta de queso, torreznos hacendado, helado de peanut butter cups y hasta el chino de Mercadona. Todo el mundo reconoce cada ítem y todos tienen una opinión, lo que convierte cada puja en una discusión de supermercado.',
+                    'La favorita para empezar: queso y tomate siempre en mesa, con pepperoni, jamón y champiñones contra la masa congelada y el ketchup de sobre. Todo el mundo reconoce cada ingrediente y las partidas salen igualadísimas.',
                 ],
             ],
             [
@@ -174,48 +174,48 @@ return [
                 ],
             ],
             [
-                'h' => '5. Eurovisión y Benidorm Fest',
+                'h' => '5. Pokémon',
                 'p' => [
-                    'Chanel, Melody, Nebulossa y Blanca Paloma con Manel Navarro y su gallo como castigo eterno. La temática que más carcajadas levanta cuando sale el ítem malo.',
+                    'Pikachu, Charizard, Mewtwo y Gengar con Bidoof y Stunfisk como castigo. La temática más generacional de todas: todo el mundo tiene un Pokémon favorito y todos creen que el suyo debería valer más.',
                 ],
             ],
             [
-                'h' => '6. Programas de TV',
+                'h' => '6. Anime',
                 'p' => [
-                    'MasterChef, Pasapalabra y El Hormiguero contra Sálvame y Gandía Shore. La tele que todos hemos visto sin reconocerlo, y el mejor medidor de la edad de cada jugador.',
+                    'Héroes y villanos del anime con transformaciones legendarias y rellenos inolvidables. Ideal si creciste viendo la tele después del cole: cada puja reabre el debate de qué saga es mejor.',
                 ],
             ],
             [
-                'h' => '7. Nostalgia 2010s',
+                'h' => '7. Marvel y DC',
                 'p' => [
-                    'Tuenti, MSN Messenger, Pokémon GO y el iPod Classic. Una temática que desbloquea recuerdos y que funciona especialmente bien si los dos jugadores tenéis la misma edad.',
+                    'Iron Man, Batman, Spider-Man y Wonder Woman contra villanos de saldo. Duelo de universos en toda regla, con el pique extra de defender tu saga favorita mientras pujas.',
                 ],
             ],
             [
-                'h' => '8. Apocalipsis Zombie',
+                'h' => '8. Harry Potter',
+                'p' => [
+                    'Magia contra castigos con mucha gracia: perfecta para jugar con quien se sabe los libros de memoria y cree que su casa de Hogwarts vale más que las demás.',
+                ],
+            ],
+            [
+                'h' => '9. Apocalipsis Zombie',
                 'p' => [
                     'La única temática de equipo: katana, motosierra, búnker y hasta un bebé llorón 24/7. Cambia la estrategia porque aquí no se puja por personas, sino por lo que te salvaría la vida.',
                 ],
             ],
             [
-                'h' => '9. Parejas Famosas',
+                'h' => '10. Star Wars',
                 'p' => [
-                    'Romeo y Julieta, Shrek y Fiona, Bonnie y Clyde y Morticia y Gómez, con Bella y Edward como castigo. Perfecta para San Valentín, para jugar en pareja o para incordiar a tus amigos con sus parejas favoritas.',
-                ],
-            ],
-            [
-                'h' => '10. Pokémon',
-                'p' => [
-                    'Pikachu, Charizard, Mewtwo y Gengar con Bidoof y Stunfisk como castigo. La temática más generacional de todas: todo el mundo tiene un Pokémon favorito y todos creen que el suyo debería valer más.',
+                    'Sables láser y la Fuerza contra el lado oscuro de baratillo. La banda sonora la pones tú mientras pujas, y el debate de precuelas contra originales viene gratis.',
                 ],
             ],
         ],
         'faq' => [
-            ['q' => '¿Cuál es la mejor temática para empezar?', 'a' => 'Hamburguesa, Los Simpson o Snacks: los ítems se reconocen al instante y las partidas son muy igualadas.'],
-            ['q' => '¿Se puede jugar con la temática aleatoria?', 'a' => 'Sí: la opción «Todas (aleatoria)» sortea una de las 72 temáticas al crear la partida, que es la forma más justa de jugar revanchas.'],
+            ['q' => '¿Cuál es la mejor temática para empezar?', 'a' => 'Pizza, Hamburguesa o Los Simpson: los ítems se reconocen al instante y las partidas son muy igualadas.'],
+            ['q' => '¿Se puede jugar con la temática aleatoria?', 'a' => 'Sí: la opción «Todas (aleatoria)» sortea una de las 55 temáticas al crear la partida, que es la forma más justa de jugar revanchas.'],
         ],
         'enlaces' => [
-            ['href' => '/tematica/mercadona', 'texto' => 'Temática de Mercadona'],
+            ['href' => '/tematica/pizza', 'texto' => 'Temática de pizza'],
             ['href' => '/tematica/futbol', 'texto' => 'Temática de fútbol'],
             ['href' => '/tematica/hamburguesa', 'texto' => 'Temática de hamburguesa'],
             ['href' => '/categoria/viral', 'texto' => 'Todas las temáticas virales'],

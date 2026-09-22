@@ -105,7 +105,7 @@ foreach ($catalogo as $cat) {
 $catalogoIds = array_values(array_unique($catalogoIds));
 
 echo "\n=== CATÁLOGO: $totalTematicas temáticas, $totalItems items, $totalTraducciones traducciones, $totalLabels labels ===\n";
-ass(true, $totalTematicas >= 60, 'catálogo con >= 60 temáticas');
+ass(true, $totalTematicas >= 50, 'catálogo con >= 50 temáticas');
 ass($totalTematicas, count($catalogoIds), 'temáticas de tematicas_catalogo.php == archivos');
 foreach ($catalogoIds as $cid) {
     if (!in_array($cid, array_map(static fn($p) => basename($p, '.json'), $tematicasFiles), true)) {

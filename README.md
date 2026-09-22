@@ -113,7 +113,7 @@ draft20/
 ├── inc/layout.php         # Helpers SEO: metas, canonical, OG, JSON-LD, footer, assets
 ├── tematicas_catalogo.php # Catálogo de temáticas por categoría (fuente única)
 ├── lang/es.json           # Strings UI + temáticas + ítems + textos SEO (i18n)
-├── tematicas/             # 72 temáticas (20 ítems c/u; id + emoji + valor)
+├── tematicas/             # 55 temáticas (20 ítems c/u; id + emoji + valor)
 ├── api/                   # Backend PHP (todos devuelven JSON)
 │   ├── crear_sala.php     # POST: crea sala + GC oportunista
 │   ├── unirse_sala.php    # POST: J2 entra a sala existente + GC oportunista

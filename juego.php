@@ -46,6 +46,7 @@ csp_headers();
     <?= tailwind_tag() ?><link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
     <script nonce="<?= e(csp_nonce()) ?>">window.LANG = <?= json_encode($LANG, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
     <script nonce="<?= e(csp_nonce()) ?>">window.__CATEGORIAS = <?= json_encode($categorias, JSON_UNESCAPED_UNICODE) ?>;</script>
+    <script nonce="<?= e(csp_nonce()) ?>">window.__DESTACADOS = <?= json_encode(destacados(), JSON_UNESCAPED_UNICODE) ?>;</script>
 </head>
 <body class="app-viewport bg-slate-900 text-slate-100 flex flex-col">
     <main id="app" class="flex-1 flex flex-col"></main>
