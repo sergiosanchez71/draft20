@@ -1,5 +1,6 @@
 {
     "id": "pizza",
+    "base_items": ["piz_mozzarella_bufala", "piz_san_marzano"],
     "items": [
         { "id": "piz_masa_madre",           "emoji": "🫓", "valor": 10 },
         { "id": "piz_mozzarella_bufala",    "emoji": "🐃", "valor": 9  },
