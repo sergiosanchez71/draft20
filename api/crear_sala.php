@@ -501,6 +501,7 @@ if (!function_exists('reiniciar_sala')) {
         $estado['ultimo_item']          = null;
         $estado['emotes']               = [];
         $estado['revancha']             = null;
+        unset($estado['log_humana']); // la próxima final sí se registra
         $estado['partida_n']            = ((int) ($estado['partida_n'] ?? 1)) + 1;
         $estado['last_seen']            = [time(), time()];
         $estado['actualizado_en']       = time();

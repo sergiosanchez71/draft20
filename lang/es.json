@@ -377,7 +377,7 @@
         "privacidad_desc": "Política de privacidad de Draft 20: datos mínimos, publicidad de Google y control de tus preferencias.",
         "privacidad_intro": "Draft 20 está diseñado para jugar sin registrarte y con datos mínimos. Esto es lo que hay que saber.",
         "priv_datos_titulo": "Qué datos usamos",
-        "priv_datos_texto": "No hay cuentas ni perfiles. Las salas guardan solo el nombre que escribes (opcional) y el estado de la partida en el servidor, y se borran automáticamente al cabo de unas horas. Al terminar una partida de práctica se guarda un registro anónimo (nivel, modo, resultado y movimientos; sin nombres ni identificadores) para calibrar la dificultad del bot.",
+        "priv_datos_texto": "No hay cuentas ni perfiles. Las salas guardan solo el nombre que escribes (opcional) y el estado de la partida en el servidor, y se borran automáticamente al cabo de unas horas. Al terminar una partida de práctica se guarda un registro anónimo (nivel, modo, resultado y movimientos; sin nombres ni identificadores) para calibrar la dificultad del bot. Al terminar una partida entre humanos se guarda un registro anónimo (temática, modo, hora y resultado; sin nombres ni identificadores) para las estadísticas de modos jugados.",
         "priv_local_titulo": "Almacenamiento local",
         "priv_local_texto": "Tu navegador guarda en localStorage datos del juego (sesión de la sala, récord de victorias, dificultad del bot y registro de tus partidas de práctica). No salen de tu dispositivo y puedes borrarlos limpiando los datos del sitio.",
         "priv_metricas_titulo": "Métricas propias",

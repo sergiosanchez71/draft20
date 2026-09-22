@@ -37,6 +37,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../inc/sala_publica.php';
 require_once __DIR__ . '/../inc/rate_limit.php';
+require_once __DIR__ . '/log_humana.php';
 
 // ============================================================================
 //  Config & constantes
@@ -192,6 +193,7 @@ function asignar_item_ganador(array &$sala, int $winner, int $price, array $emoj
     if ($sala['item_actual'] === null) {
         $sala['estado'] = 'finalizada';
         registrar_ultimo_item($sala);
+        registrar_partida_humana($sala);
     }
 }
 
@@ -221,6 +223,7 @@ function procesar_auto_asignaciones(array &$sala, array $emojiMap, array $valorM
     if ($sala['item_actual'] === null) {
         $sala['estado'] = 'finalizada';
         registrar_ultimo_item($sala);
+        registrar_partida_humana($sala);
     }
 }
 
@@ -477,6 +480,7 @@ try {
         if ($estado['item_actual'] === null) {
             $estado['estado'] = 'finalizada';
             registrar_ultimo_item($estado);
+            registrar_partida_humana($estado);
         }
         $estado['actualizado_en'] = time();
         ftruncate($fp, 0); rewind($fp);
@@ -600,6 +604,7 @@ try {
         if ($estado['item_actual'] === null) {
             $estado['estado'] = 'finalizada';
             registrar_ultimo_item($estado);
+            registrar_partida_humana($estado);
         }
     }
     else { // bajar
