@@ -1,7 +1,7 @@
 # Materiales de difusión — Draft 20
 
 Enlaces: **https://draft20.es** · Contacto: contacto@draft20.es
-Propuesta de valor: *juego de subasta por turnos para 2 jugadores, gratis, en el navegador, sin registro y con 59 temáticas (fútbol, anime, pizza, Mundial 2026, streamers…)*.
+Propuesta de valor: *juego de subasta por turnos para 2 jugadores, gratis, en el navegador, sin registro y con 63 temáticas (fútbol, anime, pizza, Mundial 2026, streamers…)*.
 
 ---
 
@@ -47,7 +47,7 @@ Propuesta de valor: *juego de subasta por turnos para 2 jugadores, gratis, en el
 > **Título**: Hice un juego gratis de subasta por turnos para jugar con un amigo desde el móvil (sin registro)
 >
 > **Texto**: Buenas! He creado Draft 20: un duelo de subasta para dos jugadores. Cada uno tiene 20 monedas y se subastan 8 ítems; puedes PUJAR +1, PUJAR +3 o bajarte (paga el último que pujó). El valor de cada ítem es secreto hasta el final, así que va de leer al rival.
-> Se juega en el navegador, cada uno desde su móvil con un código de sala de 5 caracteres. Gratis, sin anuncios, sin cuentas y con 59 temáticas (fútbol, anime, pizza, Mundial 2026, streamers…). También hay bot para practicar.
+> Se juega en el navegador, cada uno desde su móvil con un código de sala de 5 caracteres. Gratis, sin anuncios, sin cuentas y con 63 temáticas (fútbol, anime, pizza, Mundial 2026, streamers…). También hay bot para practicar.
 > https://draft20.es — cualquier comentario me ayuda :)
 
 **Reglas**: lee las normas de cada subred (autopromoción limitada), publica como texto (no solo enlace), responde a todos los comentarios y no lo repitas en menos de una semana.
@@ -57,10 +57,10 @@ Propuesta de valor: *juego de subasta por turnos para 2 jugadores, gratis, en el
 ## 3) Directorios de juegos
 
 ### Descripción corta (≤160 caracteres)
-> Draft 20: subasta por turnos para 2 jugadores. 20 monedas, 8 ítems, 59 temáticas. Gratis, en el navegador y sin registro.
+> Draft 20: subasta por turnos para 2 jugadores. 20 monedas, 8 ítems, 63 temáticas. Gratis, en el navegador y sin registro.
 
 ### Descripción larga (~600 caracteres)
-> Draft 20 es un juego de subasta por turnos para dos jugadores que se juega en el navegador del móvil. Cada partida tiene 8 rondas y una temática (59 disponibles: fútbol, anime, pizza, Mundial 2026, streamers…). Los jugadores pujan +1 o +3 y pueden bajarse: el último que pujó paga y se lleva el ítem. El valor de cada ítem es secreto hasta el final, así que la partida va de leer al rival. Cada jugador entra desde su propio móvil con un código de sala; no hay registro, anuncios ni descargas. Incluye modo de práctica contra un bot con cuatro niveles y revancha al mejor de 3.
+> Draft 20 es un juego de subasta por turnos para dos jugadores que se juega en el navegador del móvil. Cada partida tiene 8 rondas y una temática (63 disponibles: fútbol, anime, pizza, Mundial 2026, streamers…). Los jugadores pujan +1 o +3 y pueden bajarse: el último que pujó paga y se lleva el ítem. El valor de cada ítem es secreto hasta el final, así que la partida va de leer al rival. Cada jugador entra desde su propio móvil con un código de sala; no hay registro, anuncios ni descargas. Incluye modo de práctica contra un bot con cuatro niveles y revancha al mejor de 3.
 
 **Tags**: multiplayer, 2 players, browser game, auction, party game, turn-based, spanish, mobile.
 
@@ -82,7 +82,7 @@ Propuesta de valor: *juego de subasta por turnos para 2 jugadores, gratis, en el
 >
 > He visto que juegas a juegos rápidos con amigos en directo y te escribo por si te apetece probar uno que he hecho: **Draft 20** (draft20.es), un duelo de subasta para dos personas que se juega en el navegador en cinco minutos.
 >
-> Es gratis, sin registro y sin anuncios. Puedes crear una sala y pasarle el código a otro invitado, y si os pica, hay revancha con temática nueva (59 temáticas: fútbol, anime, pizza, Mundial 2026, streamers…).
+> Es gratis, sin registro y sin anuncios. Puedes crear una sala y pasarle el código a otro invitado, y si os pica, hay revancha con temática nueva (63 temáticas: fútbol, anime, pizza, Mundial 2026, streamers…).
 >
 > Si te sirve, te mando un clip de 30 segundos con la partida ya montada y capturas para el directo. ¡Gracias!
 

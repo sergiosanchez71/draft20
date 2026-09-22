@@ -1,0 +1,25 @@
+{
+    "id": "podcasts",
+    "items": [
+        { "id": "pod_nadie",       "emoji": "🎙️", "valor": 10 },
+        { "id": "pod_ruina",       "emoji": "😂", "valor": 10 },
+        { "id": "pod_roca",        "emoji": "🎧", "valor": 9  },
+        { "id": "pod_wild",        "emoji": "🦁", "valor": 8  },
+        { "id": "pod_crimi",       "emoji": "🔪", "valor": 8  },
+        { "id": "pod_partidazo",   "emoji": "⚽", "valor": 8  },
+        { "id": "pod_larguero",    "emoji": "📻", "valor": 7  },
+        { "id": "pod_formula",     "emoji": "🎯", "valor": 7  },
+        { "id": "pod_tengo",       "emoji": "💰", "valor": 7  },
+        { "id": "pod_loop",        "emoji": "💻", "valor": 7  },
+        { "id": "pod_escobula",    "emoji": "🧹", "valor": 7  },
+        { "id": "pod_dossier",     "emoji": "🕵️", "valor": 7  },
+        { "id": "pod_cotorrisa",   "emoji": "📞", "valor": 7  },
+        { "id": "pod_spicy",       "emoji": "🌶️", "valor": 6  },
+        { "id": "pod_vino",        "emoji": "🍷", "valor": 6  },
+        { "id": "pod_tertulia",    "emoji": "💤", "valor": 3  },
+        { "id": "pod_cuna",        "emoji": "📢", "valor": 3  },
+        { "id": "pod_invitado",    "emoji": "🚶", "valor": 2  },
+        { "id": "pod_episodio",    "emoji": "🗑️", "valor": 2  },
+        { "id": "pod_anuncio",     "emoji": "🤐", "valor": 1  }
+    ]
+}

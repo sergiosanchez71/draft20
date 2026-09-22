@@ -13,13 +13,13 @@
         { "id": "ser_casa_papel",             "emoji": "🎭", "valor": 6  },
         { "id": "ser_dark",                   "emoji": "🕳️", "valor": 6  },
         { "id": "ser_peak_blinders",          "emoji": "🎩", "valor": 6  },
-        { "id": "ser_aqui_no_hay_quien_viva", "emoji": "🏠", "valor": 5  },
+        { "id": "ser_aqui_no_hay_quien_viva", "emoji": "🏠", "valor": 7  },
         { "id": "ser_riverdale",              "emoji": "🎠", "valor": 2  },
         { "id": "ser_emily_in_paris",         "emoji": "🥐", "valor": 2  },
         { "id": "ser_the_idol",               "emoji": "💊", "valor": 2  },
         { "id": "ser_velma",                  "emoji": "👓", "valor": 2  },
-        { "id": "ser_fisica_quimica",         "emoji": "📚", "valor": 2  },
-        { "id": "ser_rebelde_way",            "emoji": "🎸", "valor": 2  },
+        { "id": "ser_cowboy_bebop_netflix",   "emoji": "🤠", "valor": 1  },
+        { "id": "ser_inhumans",               "emoji": "🦸", "valor": 1  },
         { "id": "ser_13_razones",             "emoji": "🔪", "valor": 2  }
     ]
 }

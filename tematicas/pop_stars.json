@@ -19,7 +19,7 @@
         { "id": "pop_jedward",         "emoji": "👯", "valor": 1  },
         { "id": "pop_milli_vanilli",   "emoji": "🎭", "valor": 2  },
         { "id": "pop_nickelback",      "emoji": "🪨", "valor": 2  },
-        { "id": "pop_pitbull",         "emoji": "🌴", "valor": 2  },
-        { "id": "pop_yoko_ono",        "emoji": "🎨", "valor": 1  }
+        { "id": "pop_dua_lipa",        "emoji": "🪩", "valor": 6  },
+        { "id": "pop_ed_sheeran",      "emoji": "🎸", "valor": 6  }
     ]
 }

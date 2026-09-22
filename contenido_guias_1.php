@@ -145,7 +145,7 @@ return [
             [
                 'h' => 'Draft 20 (web, 2 jugadores, gratis)',
                 'p' => [
-                    'Es un duelo de subasta por turnos para dos jugadores: 8 rondas, 20 monedas y una temática por partida entre 72 disponibles. Cada jugador usa su propio móvil y entra con un código de 5 caracteres, sin registro ni descarga.',
+                    'Es un duelo de subasta por turnos para dos jugadores: 8 rondas, 20 monedas y una temática por partida entre 63 disponibles. Cada jugador usa su propio móvil y entra con un código de 5 caracteres, sin registro ni descarga.',
                     'Lo que lo hace distinto es el valor secreto: no ves el ⭐ de cada ítem hasta el final, así que la subasta va de leer al rival, no de calcular. Si quieres probarlo, puedes crear una sala o practicar contra el bot.',
                 ],
             ],

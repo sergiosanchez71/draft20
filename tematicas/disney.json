@@ -14,12 +14,12 @@
         { "id": "dis_mulan",        "emoji": "⚔️", "valor": 6  },
         { "id": "dis_pinocho",      "emoji": "🪵", "valor": 5  },
         { "id": "dis_peter_pan",    "emoji": "🧚", "valor": 5  },
-        { "id": "dis_scar",         "emoji": "🖤", "valor": 3  },
-        { "id": "dis_ursula",       "emoji": "🐙", "valor": 2  },
-        { "id": "dis_gaston",       "emoji": "💪", "valor": 2  },
-        { "id": "dis_jafar",        "emoji": "🐍", "valor": 2  },
-        { "id": "dis_cruella",      "emoji": "🐕", "valor": 2  },
+        { "id": "dis_scar",         "emoji": "🖤", "valor": 7  },
+        { "id": "dis_ursula",       "emoji": "🐙", "valor": 6  },
+        { "id": "dis_pete",         "emoji": "🐈‍⬛", "valor": 2  },
+        { "id": "dis_jafar",        "emoji": "🐍", "valor": 6  },
+        { "id": "dis_cruella",      "emoji": "🐕", "valor": 6  },
         { "id": "dis_captain_hook", "emoji": "🪝", "valor": 2  },
-        { "id": "dis_sid",          "emoji": "🔩", "valor": 1  }
+        { "id": "dis_gus",          "emoji": "🐭", "valor": 1  }
     ]
 }

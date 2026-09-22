@@ -212,7 +212,7 @@ return [
         ],
         'faq' => [
             ['q' => '¿Cuál es la mejor temática para empezar?', 'a' => 'Pizza, Hamburguesa o Los Simpson: los ítems se reconocen al instante y las partidas son muy igualadas.'],
-            ['q' => '¿Se puede jugar con la temática aleatoria?', 'a' => 'Sí: la opción «Todas (aleatoria)» sortea una de las 59 temáticas al crear la partida, que es la forma más justa de jugar revanchas.'],
+            ['q' => '¿Se puede jugar con la temática aleatoria?', 'a' => 'Sí: la opción «Todas (aleatoria)» sortea una de las 63 temáticas al crear la partida, que es la forma más justa de jugar revanchas.'],
         ],
         'enlaces' => [
             ['href' => '/tematica/mundial_2026', 'texto' => 'Temática Mundial 2026'],

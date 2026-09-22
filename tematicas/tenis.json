@@ -14,12 +14,12 @@
         { "id": "ten_alcaraz",      "emoji": "⚡", "valor": 6  },
         { "id": "ten_becker",       "emoji": "🍺", "valor": 5  },
         { "id": "ten_conchita",     "emoji": "🐜", "valor": 5  },
-        { "id": "ten_kyrgios",      "emoji": "🎭", "valor": 2  },
+        { "id": "ten_kyrgios",      "emoji": "🎭", "valor": 5  },
         { "id": "ten_tomic",        "emoji": "🍔", "valor": 1  },
-        { "id": "ten_braasch",      "emoji": "🍻", "valor": 1  },
+        { "id": "ten_fognini",      "emoji": "🤬", "valor": 3  },
         { "id": "ten_gulbis",       "emoji": "🎲", "valor": 2  },
         { "id": "ten_dustin_brown", "emoji": "🥎", "valor": 2  },
         { "id": "ten_paire",        "emoji": "🧀", "valor": 1  },
-        { "id": "ten_spadea",       "emoji": "🍕", "valor": 2  }
+        { "id": "ten_badosa",       "emoji": "🇪🇸", "valor": 5  }
     ]
 }

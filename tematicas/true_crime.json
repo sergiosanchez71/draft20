@@ -1,0 +1,25 @@
+{
+    "id": "true_crime",
+    "items": [
+        { "id": "cri_alcasser",   "emoji": "🕯️", "valor": 10 },
+        { "id": "cri_zodiac",     "emoji": "🔪", "valor": 9  },
+        { "id": "cri_dahlia",     "emoji": "🌹", "valor": 9  },
+        { "id": "cri_ripper",     "emoji": "🎩", "valor": 9  },
+        { "id": "cri_cooper",     "emoji": "💵", "valor": 9  },
+        { "id": "cri_mapa",       "emoji": "🗺️", "valor": 8  },
+        { "id": "cri_cinta",      "emoji": "🚧", "valor": 8  },
+        { "id": "cri_expediente", "emoji": "📦", "valor": 8  },
+        { "id": "cri_interro",    "emoji": "☕", "valor": 8  },
+        { "id": "cri_forense",    "emoji": "🔬", "valor": 8  },
+        { "id": "cri_huella",     "emoji": "🔍", "valor": 7  },
+        { "id": "cri_madrugada",  "emoji": "🌙", "valor": 7  },
+        { "id": "cri_llamada",    "emoji": "📞", "valor": 7  },
+        { "id": "cri_sumario",    "emoji": "🤐", "valor": 7  },
+        { "id": "cri_ovni",       "emoji": "👽", "valor": 4  },
+        { "id": "cri_vidente",    "emoji": "🔮", "valor": 4  },
+        { "id": "cri_tabloide",   "emoji": "📰", "valor": 4  },
+        { "id": "cri_pista",      "emoji": "❄️", "valor": 3  },
+        { "id": "cri_vecino",     "emoji": "👀", "valor": 3  },
+        { "id": "cri_rumor",      "emoji": "🍺", "valor": 2  }
+    ]
+}

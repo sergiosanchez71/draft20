@@ -16,10 +16,10 @@
         { "id": "lib_celestina",         "emoji": "🧙", "valor": 5  },
         { "id": "lib_crepusculo",        "emoji": "🌘", "valor": 1  },
         { "id": "lib_50_sombras",        "emoji": "⛓️", "valor": 2  },
-        { "id": "lib_autoayuda",         "emoji": "🧘", "valor": 1  },
-        { "id": "lib_codigo_da_vinci",   "emoji": "🔺", "valor": 2  },
+        { "id": "lib_after",             "emoji": "💔", "valor": 1  },
+        { "id": "lib_codigo_da_vinci",   "emoji": "🔺", "valor": 6  },
         { "id": "lib_wwz",               "emoji": "🦠", "valor": 2  },
-        { "id": "lib_libro_youtuber",    "emoji": "📹", "valor": 2  },
+        { "id": "lib_boulevard",         "emoji": "🌷", "valor": 1  },
         { "id": "lib_wattpad",           "emoji": "📱", "valor": 1  }
     ]
 }

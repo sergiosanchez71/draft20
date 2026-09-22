@@ -1,0 +1,25 @@
+{
+    "id": "matcha",
+    "items": [
+        { "id": "mat_uji",       "emoji": "🏯", "valor": 10 },
+        { "id": "mat_latte",     "emoji": "🥛", "valor": 9  },
+        { "id": "mat_cosecha",   "emoji": "🌿", "valor": 9  },
+        { "id": "mat_bowl",      "emoji": "🍚", "valor": 8  },
+        { "id": "mat_espuma",    "emoji": "☁️", "valor": 8  },
+        { "id": "mat_iced",      "emoji": "🧊", "valor": 7  },
+        { "id": "mat_avena",     "emoji": "🌾", "valor": 7  },
+        { "id": "mat_taza",      "emoji": "♨️", "valor": 7  },
+        { "id": "mat_kit",       "emoji": "📦", "valor": 7  },
+        { "id": "mat_merienda",  "emoji": "🍰", "valor": 7  },
+        { "id": "mat_wagashi",   "emoji": "🍬", "valor": 6  },
+        { "id": "mat_helado",    "emoji": "🍨", "valor": 6  },
+        { "id": "mat_otono",     "emoji": "🍁", "valor": 6  },
+        { "id": "mat_burbujas",  "emoji": "🫧", "valor": 6  },
+        { "id": "mat_sucedaneo", "emoji": "🧪", "valor": 4  },
+        { "id": "mat_bote",      "emoji": "🥫", "valor": 4  },
+        { "id": "mat_grumos",    "emoji": "🥣", "valor": 3  },
+        { "id": "mat_agua",      "emoji": "💧", "valor": 3  },
+        { "id": "mat_tenedor",   "emoji": "🍴", "valor": 3  },
+        { "id": "mat_cara",      "emoji": "🍋", "valor": 3  }
+    ]
+}

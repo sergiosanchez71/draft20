@@ -6,7 +6,7 @@
         { "id": "box_mayweather",       "emoji": "💰", "valor": 9  },
         { "id": "box_pacquiao",         "emoji": "🇵🇭", "valor": 9  },
         { "id": "box_canelo",           "emoji": "🇲🇽", "valor": 8  },
-        { "id": "box_rocky",            "emoji": "🪨", "valor": 8  },
+        { "id": "box_klitschko",        "emoji": "🔨", "valor": 6  },
         { "id": "box_foreman",          "emoji": "🔨", "valor": 7  },
         { "id": "box_frazier",          "emoji": "🪓", "valor": 7  },
         { "id": "box_sugar_ray",        "emoji": "🍬", "valor": 7  },
@@ -17,9 +17,9 @@
         { "id": "box_butterbean",       "emoji": "🧈", "valor": 1  },
         { "id": "box_charlie_zelenoff", "emoji": "🤪", "valor": 1  },
         { "id": "box_peter_mcneeley",   "emoji": "🥴", "valor": 1  },
-        { "id": "box_jake_paul",        "emoji": "🛴", "valor": 2  },
-        { "id": "box_logan_paul",       "emoji": "🧴", "valor": 2  },
-        { "id": "box_mia_st_john",      "emoji": "💅", "valor": 2  },
-        { "id": "box_james_toney",      "emoji": "🗣️", "valor": 1  }
+        { "id": "box_jake_paul",        "emoji": "🛴", "valor": 4  },
+        { "id": "box_logan_paul",       "emoji": "🧴", "valor": 4  },
+        { "id": "box_crawford",         "emoji": "🥇", "valor": 6  },
+        { "id": "box_james_toney",      "emoji": "🗣️", "valor": 5  }
     ]
 }

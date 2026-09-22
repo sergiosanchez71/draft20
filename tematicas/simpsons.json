@@ -15,11 +15,11 @@
         { "id": "smp_nelson",   "emoji": "😂", "valor": 5  },
         { "id": "smp_abuelo",   "emoji": "👴", "valor": 4  },
         { "id": "smp_gil",      "emoji": "📉", "valor": 2  },
-        { "id": "smp_todd",     "emoji": "🙏", "valor": 2  },
+        { "id": "smp_maggie",    "emoji": "🍼", "valor": 8  },
         { "id": "smp_ralph",    "emoji": "🤤", "valor": 2  },
-        { "id": "smp_skinner",  "emoji": "🏫", "valor": 3  },
+        { "id": "smp_skinner",  "emoji": "🏫", "valor": 5  },
         { "id": "smp_dr_nick",  "emoji": "💊", "valor": 2  },
-        { "id": "smp_sherri",   "emoji": "👯", "valor": 1  },
-        { "id": "smp_barney",   "emoji": "🍻", "valor": 3  }
+        { "id": "smp_duffman",   "emoji": "🍺", "valor": 5  },
+        { "id": "smp_barney",   "emoji": "🍻", "valor": 5  }
     ]
 }

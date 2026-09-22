@@ -16,10 +16,10 @@
         { "id": "sw_lando",           "emoji": "🎲", "valor": 5  },
         { "id": "sw_jar_jar",         "emoji": "🤪", "valor": 2  },
         { "id": "sw_watto",           "emoji": "🛠️", "valor": 2  },
-        { "id": "sw_jabba",           "emoji": "🐌", "valor": 2  },
+        { "id": "sw_jabba",           "emoji": "🐌", "valor": 6  },
         { "id": "sw_greedo",          "emoji": "🦎", "valor": 1  },
-        { "id": "sw_nute_gunray",     "emoji": "🎩", "valor": 1  },
+        { "id": "sw_palpatine",       "emoji": "⚡", "valor": 9  },
         { "id": "sw_anakin_nino",     "emoji": "🏎️", "valor": 2  },
-        { "id": "sw_salacious_crumb", "emoji": "🐒", "valor": 1  }
+        { "id": "sw_boba",            "emoji": "🚀", "valor": 7  }
     ]
 }

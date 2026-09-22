@@ -24,6 +24,7 @@ return [
         ['id' => 'freidora_aire', 'emoji' => '🍟', 'destacado' => true],
         ['id' => 'sandwich',      'emoji' => '🥪', 'destacado' => true],
         ['id' => 'helado',        'emoji' => '🍦', 'destacado' => true],
+        ['id' => 'matcha',        'emoji' => '🍵'],
     ]],
     ['id' => 'cultura', 'emoji' => '🎬', 'tematicas' => [
         ['id' => 'peliculas',     'emoji' => '🎬'],
@@ -35,6 +36,7 @@ return [
         ['id' => 'karaoke',       'emoji' => '🎤'],
         ['id' => 'villanos',      'emoji' => '😈'],
         ['id' => 'anime_moderno', 'emoji' => '⛩️', 'destacado' => true],
+        ['id' => 'podcasts',      'emoji' => '🎙️'],
     ]],
     ['id' => 'viral', 'emoji' => '📱', 'tematicas' => [
         ['id' => 'simpsons',    'emoji' => '🍩'],
@@ -92,5 +94,6 @@ return [
     ['id' => 'crimen', 'emoji' => '🕵️', 'tematicas' => [
         ['id' => 'atraco',      'emoji' => '🏦'],
         ['id' => 'detective',   'emoji' => '🔍'],
+        ['id' => 'true_crime',  'emoji' => '🩸'],
     ]],
 ];

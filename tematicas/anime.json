@@ -11,14 +11,14 @@
         { "id": "anm_my_hero_academia", "emoji": "💪", "valor": 7  },
         { "id": "anm_berserk_97",       "emoji": "⚔️", "valor": 7  },
         { "id": "anm_sailor_moon",      "emoji": "🌙", "valor": 6  },
-        { "id": "anm_evangelion",       "emoji": "🤖", "valor": 6  },
-        { "id": "anm_cowboy_bebop",     "emoji": "🎷", "valor": 6  },
+        { "id": "anm_evangelion",       "emoji": "🤖", "valor": 9  },
+        { "id": "anm_cowboy_bebop",     "emoji": "🎷", "valor": 8  },
         { "id": "anm_vinland_saga",     "emoji": "🪓", "valor": 6  },
         { "id": "anm_berserk_2016",     "emoji": "🐺", "valor": 1  },
         { "id": "anm_ex_arm",           "emoji": "💥", "valor": 1  },
         { "id": "anm_school_days",      "emoji": "💔", "valor": 1  },
         { "id": "anm_boku_no_pico",     "emoji": "🍼", "valor": 1  },
-        { "id": "anm_elfen_lied",       "emoji": "🩸", "valor": 2  },
+        { "id": "anm_mars_destruction", "emoji": "👾", "valor": 1  },
         { "id": "anm_hand_shakers",     "emoji": "👋", "valor": 2  },
         { "id": "anm_pupa",             "emoji": "🐛", "valor": 2  }
     ]

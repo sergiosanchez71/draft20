@@ -11,15 +11,15 @@
         { "id": "pkm_eevee",      "emoji": "🦊", "valor": 7  },
         { "id": "pkm_greninja",   "emoji": "🥷", "valor": 7  },
         { "id": "pkm_lucario",    "emoji": "🥊", "valor": 6  },
-        { "id": "pkm_arceus",     "emoji": "✨", "valor": 6  },
-        { "id": "pkm_blastoise",  "emoji": "💧", "valor": 6  },
-        { "id": "pkm_venusaur",   "emoji": "🌿", "valor": 5  },
+        { "id": "pkm_arceus",     "emoji": "✨", "valor": 9  },
+        { "id": "pkm_blastoise",  "emoji": "💧", "valor": 7  },
+        { "id": "pkm_venusaur",   "emoji": "🌿", "valor": 7  },
         { "id": "pkm_magikarp",   "emoji": "🐟", "valor": 1  },
         { "id": "pkm_mr_mime",    "emoji": "🤡", "valor": 2  },
-        { "id": "pkm_jynx",       "emoji": "💄", "valor": 1  },
+        { "id": "pkm_meowth",     "emoji": "🐱", "valor": 7  },
         { "id": "pkm_bidoof",     "emoji": "🦫", "valor": 1  },
         { "id": "pkm_smeargle",   "emoji": "🖌️", "valor": 2  },
         { "id": "pkm_stunfisk",   "emoji": "🥞", "valor": 1  },
-        { "id": "pkm_kricketune", "emoji": "🦗", "valor": 2  }
+        { "id": "pkm_psyduck",    "emoji": "🦆", "valor": 3  }
     ]
 }

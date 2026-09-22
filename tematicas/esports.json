@@ -13,13 +13,13 @@
         { "id": "egam_doublelift",       "emoji": "💧", "valor": 6  },
         { "id": "egam_theshy",           "emoji": "🎮", "valor": 5  },
         { "id": "egam_caps",             "emoji": "🧢", "valor": 5  },
-        { "id": "egam_rekkles",          "emoji": "🦁", "valor": 5  },
+        { "id": "egam_rekkles",          "emoji": "🦁", "valor": 7  },
         { "id": "egam_shanghai_dragons", "emoji": "🐲", "valor": 1  },
         { "id": "egam_denial",           "emoji": "❌", "valor": 1  },
-        { "id": "egam_mousesports",      "emoji": "🐭", "valor": 2  },
-        { "id": "egam_cloud9",           "emoji": "☁️", "valor": 2  },
+        { "id": "egam_heretics",         "emoji": "🇪🇸", "valor": 7  },
+        { "id": "egam_koi",              "emoji": "💜", "valor": 6  },
         { "id": "egam_tsm",              "emoji": "🗑️", "valor": 1  },
-        { "id": "egam_astralis",         "emoji": "📉", "valor": 2  },
+        { "id": "egam_og",               "emoji": "🌸", "valor": 6  },
         { "id": "egam_renegades",        "emoji": "🐸", "valor": 1  }
     ]
 }

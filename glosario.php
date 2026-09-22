@@ -16,7 +16,7 @@ $terminos = [
     ['id' => 'ultimo-pujador', 'nombre' => 'Último pujador', 'def' => 'Jugador que marcó el precio actual. Si el rival se baja, él paga y se lleva el ítem; por eso conviene medir cuándo pujar.', 'enlace' => '/guia/como-ganar-draft-20'],
     ['id' => 'valor', 'nombre' => 'Valor (⭐)', 'def' => 'Calidad intrínseca de cada ítem, en una escala de 1 a 10. Es secreto hasta el final de la partida y decide al ganador.', 'enlace' => '/como-jugar'],
     ['id' => 'item', 'nombre' => 'Ítem', 'def' => 'Cada elemento que se subasta: un personaje, un objeto o un plato. Cada temática tiene 20 ítems distintos.', 'enlace' => '/#tematicas'],
-    ['id' => 'tematica', 'nombre' => 'Temática', 'def' => 'La lista de 20 ítems sobre la que se juega la partida (fútbol, anime, comida, streamers…). Draft 20 tiene 59 temáticas.', 'enlace' => '/#tematicas'],
+    ['id' => 'tematica', 'nombre' => 'Temática', 'def' => 'La lista de 20 ítems sobre la que se juega la partida (fútbol, anime, comida, streamers…). Draft 20 tiene 63 temáticas.', 'enlace' => '/#tematicas'],
     ['id' => 'cap', 'nombre' => 'Cap de 4 ítems', 'def' => 'Máximo de ítems por jugador. Al llegar a 4, los ítems que salgan después pasan automáticamente al rival.', 'enlace' => '/guia/como-ganar-draft-20'],
     ['id' => 'deadlock', 'nombre' => 'PASAR (sin monedas)', 'def' => 'Si te toca un ítem fresco y no tienes dinero, pulsas PASAR: el rival decide si se lo queda por 1 🪙 o te lo regala.', 'enlace' => '/como-jugar'],
     ['id' => 'valores-visibles', 'nombre' => 'Valores visibles', 'def' => 'Modo opcional que muestra el ⭐ de cada ítem durante la partida. Lo fija quien crea la sala y afecta a los dos jugadores.', 'enlace' => '/como-jugar'],
