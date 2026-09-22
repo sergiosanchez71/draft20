@@ -12,7 +12,7 @@ return [
         'titulo' => 'Temáticas de comida y bebida para jugar a Draft 20',
         'intro' => [
             'La comida es la categoría más jugada de Draft 20, y no es casualidad: todo el mundo tiene una opinión fuerte sobre una hamburguesa, una tortilla de patatas o una bandeja de sushi. Aquí el pique no va de quién sabe más, sino de quién puja mejor por lo que le apetece.',
-            'Siete temáticas que van del bar de siempre a la pizza, pasando por el asado del domingo, la repostería viral o la cerveza artesana. Ideal para jugar antes de cenar o para discutir qué entra en una hamburguesa perfecta.',
+            'Nueve temáticas que van del bar de siempre a la pizza, pasando por los tacos, la freidora de aire, el asado del domingo, la repostería viral o la cerveza artesana. Ideal para jugar antes de cenar o para discutir qué entra en una hamburguesa perfecta.',
         ],
     ],
     'cultura' => [
@@ -26,21 +26,21 @@ return [
         'titulo' => 'Temáticas virales: personajes y sagas para Draft 20',
         'intro' => [
             'La categoría más compartida por WhatsApp: sagas y personajes que todo el mundo reconoce al instante. Da igual si has visto todas las películas o ninguna; saber quién es Darth Vader o Pikachu es suficiente para entrar a pujar.',
-            'Once temáticas que mezclan nostalgia y cultura de internet, con ítems legendarios y algún que otro personaje que nadie quiere que le toque.',
+            'Doce temáticas que mezclan nostalgia, cultura de internet y fandoms (del K-pop a La Velada), con ítems legendarios y algún que otro personaje que nadie quiere que le toque.',
         ],
     ],
     'deporte' => [
         'titulo' => 'Temáticas de deporte y motor para jugar a Draft 20',
         'intro' => [
             'Del fútbol a la Fórmula 1: la categoría para los que discuten alineaciones y comparan épocas. Cada temática tiene sus leyendas intocables y sus fichajes que salieron mal, y ahí está la salsa de la subasta.',
-            'Ocho temáticas con deportes de equipo, individuales, eSports y motor. Perfecta para jugar con un rival que se sabe todos los récords… o que finge saberlos.',
+            'Nueve temáticas con deportes de equipo, individuales, pádel, Mundial, eSports y motor. Perfecta para jugar con un rival que se sabe todos los récords… o que finge saberlos.',
         ],
     ],
     'ocio' => [
         'titulo' => 'Temáticas de ocio y juegos para Draft 20',
         'intro' => [
             'Videojuegos, consolas, coleccionismo y móviles icónicos: la categoría más generacional y, probablemente, la que más anécdotas saca durante la partida.',
-            'Cinco temáticas para jugar con alguien de tu edad y ganar (o perder) por detalles que solo vosotros recordáis.',
+            'Seis temáticas para jugar con alguien de tu edad y ganar (o perder) por detalles que solo vosotros recordáis, del GTA VI al Tamagotchi.',
         ],
     ],
     'fantasia' => [
@@ -60,7 +60,7 @@ return [
     'naturaleza' => [
         'titulo' => 'Temáticas de naturaleza y animales para Draft 20',
         'intro' => [
-            'De la sabana al fondo del mar: cuatro temáticas con mascotas, dinosaurios y océano. Es la categoría con los ítems más dispares, desde la ballena azul hasta una sandalia perdida en el fondo del mar.',
+            'De la sabana a la granja: tres temáticas con mascotas y dinosaurios. Es la categoría con los ítems más dispares, desde el león salvaje hasta la cucaracha mascota.',
             'Ideal para jugar en familia o para los que siempre están planeando la próxima escapada.',
         ],
     ],

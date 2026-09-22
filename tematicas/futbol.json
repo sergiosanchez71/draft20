@@ -15,11 +15,11 @@
         { "id": "fut_casillas",      "emoji": "🧤", "valor": 6  },
         { "id": "fut_nico_williams", "emoji": "⚡", "valor": 6  },
         { "id": "fut_maguire",       "emoji": "🐢", "valor": 2  },
-        { "id": "fut_antony",        "emoji": "🌀", "valor": 2  },
+        { "id": "fut_torres",         "emoji": "⚽", "valor": 8  },
+        { "id": "fut_mbappe",         "emoji": "👟", "valor": 8  },
+        { "id": "fut_martinez",       "emoji": "🧤", "valor": 8  },
         { "id": "fut_karius",        "emoji": "🧈", "valor": 2  },
         { "id": "fut_bendtner",      "emoji": "🍷", "valor": 2  },
-        { "id": "fut_hazard_rm",     "emoji": "🍔", "valor": 3  },
-        { "id": "fut_gravesen",      "emoji": "🦌", "valor": 2  },
-        { "id": "fut_dembele",       "emoji": "🚑", "valor": 2  }
+        { "id": "fut_gravesen",      "emoji": "🦌", "valor": 2  }
     ]
 }

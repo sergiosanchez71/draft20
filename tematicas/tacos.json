@@ -1,0 +1,26 @@
+{
+    "id": "tacos",
+    "base_items": ["tac_tortilla", "tac_pastor"],
+    "items": [
+        { "id": "tac_pastor",         "emoji": "🌮", "valor": 10 },
+        { "id": "tac_tortilla",       "emoji": "🌽", "valor": 9  },
+        { "id": "tac_birria",         "emoji": "🍲", "valor": 9  },
+        { "id": "tac_cochinita",      "emoji": "🐷", "valor": 8  },
+        { "id": "tac_guacamole",      "emoji": "🥑", "valor": 8  },
+        { "id": "tac_carnitas",       "emoji": "🥩", "valor": 7  },
+        { "id": "tac_queso",          "emoji": "🧀", "valor": 7  },
+        { "id": "tac_cebolla",        "emoji": "🧅", "valor": 6  },
+        { "id": "tac_cilantro",       "emoji": "🌿", "valor": 6  },
+        { "id": "tac_salsa_roja",     "emoji": "🌶️", "valor": 6  },
+        { "id": "tac_pescado",        "emoji": "🐟", "valor": 6  },
+        { "id": "tac_camaron",        "emoji": "🍤", "valor": 6  },
+        { "id": "tac_chicharron",     "emoji": "🥓", "valor": 5  },
+        { "id": "tac_horchata",       "emoji": "🥛", "valor": 5  },
+        { "id": "tac_tortilla_rota",  "emoji": "💔", "valor": 4  },
+        { "id": "tac_salsa_bote",     "emoji": "🥫", "valor": 3  },
+        { "id": "tac_lechuga_mustia", "emoji": "🥬", "valor": 3  },
+        { "id": "tac_frio",           "emoji": "🧊", "valor": 2  },
+        { "id": "tac_tenedor",        "emoji": "🍴", "valor": 1  },
+        { "id": "tac_servilleta",     "emoji": "🧻", "valor": 1  }
+    ]
+}

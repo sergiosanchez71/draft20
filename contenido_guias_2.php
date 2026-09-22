@@ -150,57 +150,57 @@ return [
                 ],
             ],
             [
-                'h' => '1. Pizza',
+                'h' => '1. Mundial 2026',
+                'p' => [
+                    'España campeona, Yamal, Torres y Mbappé con el trofeo y el balón siempre en mesa, contra el autogol y el VAR eterno. La temática del verano de 2026: euforia recién salida del televisor.',
+                ],
+            ],
+            [
+                'h' => '2. GTA VI',
+                'p' => [
+                    'Vice City, Lucia, atraco perfecto y descapotable contra el WASTED y la grúa municipal. La temática del lanzamiento más esperado de la historia, dos meses antes de que salga el juego.',
+                ],
+            ],
+            [
+                'h' => '3. Pizza',
                 'p' => [
                     'La favorita para empezar: queso y tomate siempre en mesa, con pepperoni, jamón y champiñones contra la masa congelada y el ketchup de sobre. Todo el mundo reconoce cada ingrediente y las partidas salen igualadísimas.',
                 ],
             ],
             [
-                'h' => '2. Fútbol',
+                'h' => '4. La Velada',
+                'p' => [
+                    'Ibai, IlloJuan, TheGrefg y Plex con La Cartuja de fondo, contra el KO en el primer asalto y la toalla. El evento del streaming hispano convertido en subasta.',
+                ],
+            ],
+            [
+                'h' => '5. K-pop',
+                'p' => [
+                    'BTS, Jungkook, Jimin y KATSEYE con lightstick oficial, contra la reventa abusiva y el lightstick sin pilas. Aquí se puja con el corazón del fandom.',
+                ],
+            ],
+            [
+                'h' => '6. Fútbol',
                 'p' => [
                     'Messi, Cristiano, Lamine Yamal y Maradona en la misma subasta, con Lord Bendtner y Gravesen de castigo. Es la temática con más contexto: cada ítem lleva una época, un club y una polémica, y eso se nota en la mesa.',
                 ],
             ],
             [
-                'h' => '3. Hamburguesa',
+                'h' => '7. Hamburguesa',
                 'p' => [
                     'La temática original y el mejor tutorial del juego: carne Wagyu, trufa y pan brioche contra un queso naranja industrial. Si es tu primera partida, empieza por aquí.',
                 ],
             ],
             [
-                'h' => '4. Los Simpson',
+                'h' => '8. Anime Moderno',
                 'p' => [
-                    'Homer, Bart, Lisa y Marge con Ralph Wiggum y el Dr. Nick de relleno. Es la temática más rápida de entender y una de las más igualadas: ideal para jugar con cualquier persona, sepa o no de series.',
+                    'Gojo, Frieren, Denji y Sung Jinwoo: la hornada 2024-2026 con el capítulo de relleno y el spoiler de Twitter como castigo. Para los que van al día con las temporadas.',
                 ],
             ],
             [
-                'h' => '5. Pokémon',
+                'h' => '9. Pokémon',
                 'p' => [
                     'Pikachu, Charizard, Mewtwo y Gengar con Bidoof y Stunfisk como castigo. La temática más generacional de todas: todo el mundo tiene un Pokémon favorito y todos creen que el suyo debería valer más.',
-                ],
-            ],
-            [
-                'h' => '6. Anime',
-                'p' => [
-                    'Héroes y villanos del anime con transformaciones legendarias y rellenos inolvidables. Ideal si creciste viendo la tele después del cole: cada puja reabre el debate de qué saga es mejor.',
-                ],
-            ],
-            [
-                'h' => '7. Marvel y DC',
-                'p' => [
-                    'Iron Man, Batman, Spider-Man y Wonder Woman contra villanos de saldo. Duelo de universos en toda regla, con el pique extra de defender tu saga favorita mientras pujas.',
-                ],
-            ],
-            [
-                'h' => '8. Harry Potter',
-                'p' => [
-                    'Magia contra castigos con mucha gracia: perfecta para jugar con quien se sabe los libros de memoria y cree que su casa de Hogwarts vale más que las demás.',
-                ],
-            ],
-            [
-                'h' => '9. Apocalipsis Zombie',
-                'p' => [
-                    'La única temática de equipo: katana, motosierra, búnker y hasta un bebé llorón 24/7. Cambia la estrategia porque aquí no se puja por personas, sino por lo que te salvaría la vida.',
                 ],
             ],
             [
@@ -212,12 +212,12 @@ return [
         ],
         'faq' => [
             ['q' => '¿Cuál es la mejor temática para empezar?', 'a' => 'Pizza, Hamburguesa o Los Simpson: los ítems se reconocen al instante y las partidas son muy igualadas.'],
-            ['q' => '¿Se puede jugar con la temática aleatoria?', 'a' => 'Sí: la opción «Todas (aleatoria)» sortea una de las 55 temáticas al crear la partida, que es la forma más justa de jugar revanchas.'],
+            ['q' => '¿Se puede jugar con la temática aleatoria?', 'a' => 'Sí: la opción «Todas (aleatoria)» sortea una de las 59 temáticas al crear la partida, que es la forma más justa de jugar revanchas.'],
         ],
         'enlaces' => [
+            ['href' => '/tematica/mundial_2026', 'texto' => 'Temática Mundial 2026'],
+            ['href' => '/tematica/gta_vi', 'texto' => 'Temática GTA VI'],
             ['href' => '/tematica/pizza', 'texto' => 'Temática de pizza'],
-            ['href' => '/tematica/futbol', 'texto' => 'Temática de fútbol'],
-            ['href' => '/tematica/hamburguesa', 'texto' => 'Temática de hamburguesa'],
             ['href' => '/categoria/viral', 'texto' => 'Todas las temáticas virales'],
             ['href' => '/guia/como-ganar-draft-20', 'texto' => 'Cómo ganar en Draft 20'],
         ],

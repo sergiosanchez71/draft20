@@ -1,0 +1,25 @@
+{
+    "id": "padel",
+    "items": [
+        { "id": "pad_coello",         "emoji": "🥇", "valor": 10 },
+        { "id": "pad_tapia",          "emoji": "🏆", "valor": 9  },
+        { "id": "pad_triay",          "emoji": "👑", "valor": 9  },
+        { "id": "pad_brea",           "emoji": "💎", "valor": 9  },
+        { "id": "pad_galan",          "emoji": "⚡", "valor": 8  },
+        { "id": "pad_chingotto",      "emoji": "🔥", "valor": 8  },
+        { "id": "pad_lebron",         "emoji": "💪", "valor": 7  },
+        { "id": "pad_remate",         "emoji": "💥", "valor": 7  },
+        { "id": "pad_globo",          "emoji": "🎈", "valor": 7  },
+        { "id": "pad_pared",          "emoji": "🧱", "valor": 7  },
+        { "id": "pad_volea",          "emoji": "👋", "valor": 7  },
+        { "id": "pad_dejada",         "emoji": "🪶", "valor": 6  },
+        { "id": "pad_vibora",         "emoji": "🐍", "valor": 6  },
+        { "id": "pad_drive",          "emoji": "🚗", "valor": 6  },
+        { "id": "pad_red",            "emoji": "🕸️", "valor": 4  },
+        { "id": "pad_verja",          "emoji": "⛓️", "valor": 4  },
+        { "id": "pad_pala_rota",      "emoji": "🪵", "valor": 4  },
+        { "id": "pad_pelotas",        "emoji": "🎾", "valor": 3  },
+        { "id": "pad_resbalon",       "emoji": "🧊", "valor": 3  },
+        { "id": "pad_calcetin",       "emoji": "🧦", "valor": 2  }
+    ]
+}

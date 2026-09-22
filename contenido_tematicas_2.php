@@ -43,10 +43,16 @@ return [
             ['q' => '¿Por qué sale un Seat Panda?', 'a' => 'Como homenaje al coche español por excelencia: es un ítem malo con mucho cariño, y siempre arranca alguna sonrisa.'],
         ],
     ],
-    'olimpiadas' => [
-        'descripcion' => 'Usain Bolt, Michael Phelps, Simone Biles y Nadia Comaneci en una subasta de leyendas olímpicas, con el Eddie el Águila y Tonya Harding en el lado opuesto. Es la temática de los récords y de las historias increíbles, tanto para bien como para mal.',
+    'mundial_2026' => [
+        'descripcion' => 'España campeona, Yamal, Torres, Mbappé y el Dibu Martínez contra el autogol, el VAR eterno y la entrada carísima. La temática de la resaca mundialista: el trofeo y el balón salen siempre, y el resto es historia del verano de 2026.',
         'preguntas' => [
-            ['q' => '¿Quién fue Eddie el Águila?', 'a' => 'Un saltador de esquí británico que compitió sin opciones y se hizo famoso por su espíritu; en el juego es un ítem malo muy querido.'],
+            ['q' => '¿El trofeo y el balón salen siempre?', 'a' => 'Sí, son la base innegociable de la temática, igual que el queso y el tomate en la pizza.'],
+        ],
+    ],
+    'padel' => [
+        'descripcion' => 'Coello, Tapia, Triay, Brea y Galán con remate ganador, salida de pared y víbora letal, frente a la bola a la red y la pala rota. La temática del deporte que se juega en cada barrio: aquí se puja por los números uno y se sufre con la verja.',
+        'preguntas' => [
+            ['q' => '¿Quiénes son los números uno del pádel?', 'a' => 'Coello y Tapia en chicos, Triay y Brea en chicas: dominan el circuito Premier Padel y la subasta.'],
         ],
     ],
     'f1' => [
@@ -85,6 +91,12 @@ return [
         'descripcion' => 'LEGO, Tamagotchi, Funko de edición limitada y figura de acción contra el Furby y el squishy con baba. La temática del coleccionismo: aquí no se puja por lo que vale más, sino por lo que más te recuerda a los Reyes Magos de tu casa.',
         'preguntas' => [
             ['q' => '¿Cuál es el juguete más valioso?', 'a' => 'LEGO suele ser el más disputado, por delante del Tamagotchi y el Funko de edición limitada.'],
+        ],
+    ],
+    'gta_vi' => [
+        'descripcion' => 'Vice City, atraco perfecto, Lucia y descapotable contra el WASTED, el atasco en el puente y la grúa municipal. La temática del lanzamiento más grande de la historia del videojuego, dos meses antes de que salga: hype puro en forma de subasta.',
+        'preguntas' => [
+            ['q' => '¿Hace falta haber jugado a GTA para disfrutarla?', 'a' => 'No: Vice City, los atracos y el WASTED los reconoce cualquiera, y los ítems malos hacen gracia sin contexto.'],
         ],
     ],
 
@@ -155,12 +167,6 @@ return [
         'descripcion' => 'T-Rex alpha, fósil completo, Triceratops y ADN perfecto frente al meteorito aproximándose y la cerca eléctrica sin luz. La temática de Jurassic Park llevada al juego, con ítems que suenan a película de aventuras.',
         'preguntas' => [
             ['q' => '¿El meteorito es de verdad un ítem malo?', 'a' => 'Sí, y muy temido: es el recordatorio de que a los dinosaurios les fue fatal.'],
-        ],
-    ],
-    'fondo_marino' => [
-        'descripcion' => 'Ballena azul, tiburón blanco, Kraken y Nessie en una subasta marina con el alga verde y la sandalia perdida como castigo. La temática más misteriosa de la categoría, con fauna real y leyendas mezcladas.',
-        'preguntas' => [
-            ['q' => '¿Sale el Kraken?', 'a' => 'Sí, es uno de los ítems más pujados por su leyenda, junto a la ballena azul.'],
         ],
     ],
     'granja' => [

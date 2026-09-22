@@ -49,6 +49,18 @@ return [
             ['q' => '¿Toda la temática es cerveza artesana?', 'a' => 'Casi: la selección tira de estilos craft reconocibles, y los ítems malos son justo lo que arruina una buena birra.'],
         ],
     ],
+    'tacos' => [
+        'descripcion' => 'Tacos al pastor, birria con consomé, cochinita pibil y guacamole casero contra la tortilla rota y la salsa de bote. La temática mexicana del catálogo: aquí el queso y el tomate no mandan, manda la tortilla, y el taco con tenedor es el castigo definitivo.',
+        'preguntas' => [
+            ['q' => '¿La tortilla y el pastor salen siempre?', 'a' => 'Sí, son la base innegociable de la temática, igual que el queso y el tomate en la pizza.'],
+        ],
+    ],
+    'freidora_aire' => [
+        'descripcion' => 'Patatas crujientes, alitas jugosas, croquetas cremosas y churros caseros frente a la cocina llena de humo y la cesta imposible de limpiar. La temática del electrodoméstico viral: todo lo que sale bien en la freidora, y todo lo que sale mal.',
+        'preguntas' => [
+            ['q' => '¿De verdad salen churros en freidora de aire?', 'a' => 'Sí, y están entre los ítems más pujados: crujientes por fuera y hechos en minutos.'],
+        ],
+    ],
 
     // ===================== CULTURA =====================
     'peliculas' => [
@@ -93,10 +105,10 @@ return [
             ['q' => '¿Cuál es el ítem más buscado del Karaoke?', 'a' => 'Bohemian Rhapsody, casi siempre: es el que más pujas levanta y el que más se canta al terminar la partida.'],
         ],
     ],
-    'teatro' => [
-        'descripcion' => 'El Rey León, Hamilton, Mamma Mia! y El Fantasma de la Ópera convierten la subasta en un patio de butacas. Los ítems malos son leyendas de Broadway: Spider-Man: Turn Off the Dark y King Kong: El Musical, dos producciones que costaron fortunas y duraron poco.',
+    'anime_moderno' => [
+        'descripcion' => 'Gojo, Frieren, Itadori y Denji encabezan la hornada 2024-2026 del anime: Jujutsu Kaisen, Frieren, Chainsaw Man, Solo Leveling y Dan Da Dan en la misma subasta, con el capítulo de relleno y el spoiler de Twitter como castigo. La temática para los que van al día con las temporadas.',
         'preguntas' => [
-            ['q' => '¿Hay musicales malos de verdad en la temática?', 'a' => 'Sí, y son reales: Spider-Man y King Kong estuvieron a punto de arruinar a más de un productor.'],
+            ['q' => '¿En qué se diferencia del Anime clásico?', 'a' => 'Anime reúne a los históricos; Anime Moderno es solo la hornada reciente, con series que aún están en emisión.'],
         ],
     ],
     'villanos' => [
@@ -166,10 +178,16 @@ return [
             ['q' => '¿Sale Ibai en la temática de streamers?', 'a' => 'Sí, es uno de los ítems más pujados, junto a MrBeast y El Rubius.'],
         ],
     ],
-    'wwe' => [
-        'descripcion' => 'The Rock, John Cena, The Undertaker y Stone Cold Steve Austin con el contraste de Gillberg y el Gobbledy Gooker. La temática más nostálgica para los que crecieron viendo lucha libre, y la más sorprendente para quien descubre que esos nombres son reales.',
+    'la_velada' => [
+        'descripcion' => 'Ibai, IlloJuan, TheGrefg, Plex y RoRo se suben al cuadrilátero de La Cartuja con directos, actuaciones y afición entregada de fondo, mientras el KO en el primer asalto y la toalla esperan a los despistados. La temática del evento anual del streaming hispano.',
         'preguntas' => [
-            ['q' => '¿Qué es el Gobbledy Gooker?', 'a' => 'Un personaje histórico de la WWE que salió de un huevo gigante y se convirtió en leyenda por lo ridículo; en la subasta es de los peores ítems.'],
+            ['q' => '¿La temática cambia cada año?', 'a' => 'Se refresca con cada edición de La Velada: nuevos combatientes, nuevo main event y nuevas actuaciones.'],
+        ],
+    ],
+    'kpop' => [
+        'descripcion' => 'BTS, Jungkook, Jimin y KATSEYE con lightstick oficial y coreografía perfecta, frente a la reventa abusiva y el lightstick sin pilas. La temática de los fandoms más organizados del planeta: aquí se puja con el corazón y se paga con la cartera.',
+        'preguntas' => [
+            ['q' => '¿Hay que saber de K-pop para jugarla?', 'a' => 'No: BTS y los lightsticks los reconoce todo el mundo, y los ítems malos hacen gracia hasta sin contexto.'],
         ],
     ],
 ];

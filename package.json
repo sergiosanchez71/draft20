@@ -1,7 +1,7 @@
 {
     "name": "draft20",
     "private": true,
-    "version": "1.2.2",
+    "version": "1.2.3",
     "description": "Draft 20 — build de CSS (Tailwind) y minificado de JS",
     "scripts": {
         "build:css": "tailwindcss -i css/tailwind.src.css -o css/tailwind.css --minify",

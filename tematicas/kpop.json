@@ -1,0 +1,25 @@
+{
+    "id": "kpop",
+    "items": [
+        { "id": "kpo_bts",            "emoji": "💜", "valor": 10 },
+        { "id": "kpo_jungkook",       "emoji": "🎤", "valor": 9  },
+        { "id": "kpo_jimin",          "emoji": "🕺", "valor": 9  },
+        { "id": "kpo_katseye",        "emoji": "🌟", "valor": 8  },
+        { "id": "kpo_lightstick",     "emoji": "💡", "valor": 8  },
+        { "id": "kpo_jhope",          "emoji": "☀️", "valor": 7  },
+        { "id": "kpo_coreografia",    "emoji": "🪞", "valor": 7  },
+        { "id": "kpo_album",          "emoji": "💿", "valor": 6  },
+        { "id": "kpo_fanchant",       "emoji": "📢", "valor": 6  },
+        { "id": "kpo_merch",          "emoji": "👕", "valor": 6  },
+        { "id": "kpo_challenge",      "emoji": "📱", "valor": 6  },
+        { "id": "kpo_fanmeeting",     "emoji": "🤝", "valor": 6  },
+        { "id": "kpo_comeback",       "emoji": "☄️", "valor": 6  },
+        { "id": "kpo_encore",         "emoji": "🎶", "valor": 6  },
+        { "id": "kpo_reventa",        "emoji": "💸", "valor": 4  },
+        { "id": "kpo_pilas",          "emoji": "🔋", "valor": 3  },
+        { "id": "kpo_lluvia",         "emoji": "🌧️", "valor": 3  },
+        { "id": "kpo_firma",          "emoji": "🖊️", "valor": 2  },
+        { "id": "kpo_jetlag",         "emoji": "😴", "valor": 2  },
+        { "id": "kpo_sin_cobertura",  "emoji": "📵", "valor": 1  }
+    ]
+}

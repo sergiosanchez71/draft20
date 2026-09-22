@@ -63,7 +63,7 @@ return [
 
     'juegos-verano' => [
         'titulo' => 'Juegos para el verano: temáticas para jugar al sol',
-        'desc' => 'Temáticas de verano para jugar a Draft 20 en la playa, la piscina o el camping: océano, tapas, cerveza y más, sin instalar nada.',
+        'desc' => 'Temáticas de verano para jugar a Draft 20 en la playa, la piscina o el camping: tapas, cerveza, asado y más, sin instalar nada.',
         'h1' => 'Juegos para el verano con Draft 20',
         'fecha' => '2026-09-17',
         'secciones' => [
@@ -77,7 +77,7 @@ return [
             [
                 'h' => 'Las temáticas más veraniegas',
                 'p' => [
-                    'Para los que pasan el día en el agua, Océano (ballena azul, tiburón blanco, Kraken y Nessie) es un imán. Y para el plan de chiringuito, nada como Tapas y Barra con una Craft Beer bien fría: jamón ibérico, tortilla y pulpo a la gallega contra la última aceituna del plato.',
+                    'Para el plan de chiringuito, nada como Tapas y Barra con una Craft Beer bien fría: jamón ibérico, tortilla y pulpo a la gallega contra la última aceituna del plato. Y si hay brasas de por medio, el Asado de Domingo alarga la sobremesa con chuletón contra carbón húmedo.',
                     'Si el plan es jugar justo después de volver de viaje, la aleatoria («Todas») es la mejor opción: nadie puede preparar estrategia y cada duelo sabe distinto.',
                 ],
             ],
@@ -105,11 +105,11 @@ return [
         ],
         'faq' => [
             ['q' => '¿Se puede jugar sin conexión en la playa?', 'a' => 'Necesitas conexión para sincronizar los turnos entre los dos móviles, aunque con datos móviles es suficiente: la partida pesa muy poco.'],
-            ['q' => '¿Cuál es la temática más divertida para el verano?', 'a' => 'Océano, Tapas y Craft Beer suelen ser las favoritas, sobre todo si el grupo es de playa o de chiringuito.'],
+            ['q' => '¿Cuál es la temática más divertida para el verano?', 'a' => 'Tapas, Craft Beer y Asado de Domingo suelen ser las favoritas, sobre todo si el grupo es de playa, chiringuito o barbacoa.'],
         ],
         'enlaces' => [
             ['href' => '/tematica/tapas', 'texto' => 'Temática de tapas'],
-            ['href' => '/tematica/fondo_marino', 'texto' => 'Temática Océano'],
+            ['href' => '/tematica/barbacoa', 'texto' => 'Temática Asado de Domingo'],
             ['href' => '/tematica/cerveza', 'texto' => 'Temática Craft Beer'],
             ['href' => '/guia/juegos-por-whatsapp', 'texto' => 'Cómo montar la partida por WhatsApp'],
         ],

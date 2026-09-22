@@ -1,0 +1,25 @@
+{
+    "id": "freidora_aire",
+    "items": [
+        { "id": "fre_patatas",        "emoji": "🍟", "valor": 10 },
+        { "id": "fre_alitas",         "emoji": "🍗", "valor": 9  },
+        { "id": "fre_croquetas",      "emoji": "🧆", "valor": 8  },
+        { "id": "fre_churros",        "emoji": "🥨", "valor": 8  },
+        { "id": "fre_nuggets",        "emoji": "🐔", "valor": 7  },
+        { "id": "fre_verduras",       "emoji": "🥗", "valor": 7  },
+        { "id": "fre_salmon",         "emoji": "🐟", "valor": 7  },
+        { "id": "fre_pizza",          "emoji": "🍕", "valor": 7  },
+        { "id": "fre_empanadillas",   "emoji": "🥟", "valor": 7  },
+        { "id": "fre_bacon",          "emoji": "🥓", "valor": 7  },
+        { "id": "fre_queso",          "emoji": "🫕", "valor": 6  },
+        { "id": "fre_pan",            "emoji": "🍞", "valor": 6  },
+        { "id": "fre_tortilla",       "emoji": "🥘", "valor": 6  },
+        { "id": "fre_palomitas",      "emoji": "🍿", "valor": 6  },
+        { "id": "fre_quemado",        "emoji": "⬛", "valor": 4  },
+        { "id": "fre_humo",           "emoji": "💨", "valor": 3  },
+        { "id": "fre_olor",           "emoji": "👃", "valor": 3  },
+        { "id": "fre_cesta",          "emoji": "🧺", "valor": 3  },
+        { "id": "fre_enchufe",        "emoji": "🔌", "valor": 2  },
+        { "id": "fre_fria",           "emoji": "❄️", "valor": 1  }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "id": "anime_moderno",
+    "items": [
+        { "id": "amx_gojo",          "emoji": "🕶️", "valor": 10 },
+        { "id": "amx_frieren",       "emoji": "🧝", "valor": 9  },
+        { "id": "amx_itadori",       "emoji": "👊", "valor": 8  },
+        { "id": "amx_sukuna",        "emoji": "😈", "valor": 8  },
+        { "id": "amx_fern",          "emoji": "🏹", "valor": 8  },
+        { "id": "amx_denji",         "emoji": "🪚", "valor": 8  },
+        { "id": "amx_stark",         "emoji": "🪓", "valor": 7  },
+        { "id": "amx_reze",          "emoji": "💣", "valor": 7  },
+        { "id": "amx_sung",          "emoji": "🗡️", "valor": 7  },
+        { "id": "amx_pochita",       "emoji": "🐶", "valor": 7  },
+        { "id": "amx_momo",          "emoji": "👽", "valor": 6  },
+        { "id": "amx_okarun",        "emoji": "🛸", "valor": 6  },
+        { "id": "amx_rimuru",        "emoji": "💧", "valor": 6  },
+        { "id": "amx_igris",         "emoji": "🛡️", "valor": 6  },
+        { "id": "amx_ai",            "emoji": "🎤", "valor": 6  },
+        { "id": "amx_relleno",       "emoji": "📺", "valor": 4  },
+        { "id": "amx_resaca",        "emoji": "😴", "valor": 3  },
+        { "id": "amx_tomo_caro",     "emoji": "💸", "valor": 3  },
+        { "id": "amx_spoiler",       "emoji": "🤐", "valor": 2  },
+        { "id": "amx_movil_sin_bat", "emoji": "🔋", "valor": 1  }
+    ]
+}

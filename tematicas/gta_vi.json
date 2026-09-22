@@ -1,0 +1,25 @@
+{
+    "id": "gta_vi",
+    "items": [
+        { "id": "gta_vice_city",     "emoji": "🌴", "valor": 10 },
+        { "id": "gta_atraco",        "emoji": "💰", "valor": 9  },
+        { "id": "gta_lucia",         "emoji": "👩", "valor": 9  },
+        { "id": "gta_descapotable",  "emoji": "🚗", "valor": 8  },
+        { "id": "gta_mansion",       "emoji": "🏝️", "valor": 8  },
+        { "id": "gta_helicoptero",   "emoji": "🚁", "valor": 7  },
+        { "id": "gta_motero",        "emoji": "🏍️", "valor": 7  },
+        { "id": "gta_neones",        "emoji": "💡", "valor": 6  },
+        { "id": "gta_crucero",       "emoji": "🚢", "valor": 6  },
+        { "id": "gta_playa",         "emoji": "🏖️", "valor": 6  },
+        { "id": "gta_radio",         "emoji": "📼", "valor": 6  },
+        { "id": "gta_persecucion",   "emoji": "🚔", "valor": 5  },
+        { "id": "gta_mapa",          "emoji": "🗺️", "valor": 5  },
+        { "id": "gta_mision",        "emoji": "🎯", "valor": 5  },
+        { "id": "gta_taco_truck",    "emoji": "🌮", "valor": 5  },
+        { "id": "gta_wasted",        "emoji": "💀", "valor": 3  },
+        { "id": "gta_trafico",       "emoji": "🚙", "valor": 3  },
+        { "id": "gta_pinchazo",      "emoji": "🛞", "valor": 3  },
+        { "id": "gta_resaca",        "emoji": "🍾", "valor": 2  },
+        { "id": "gta_grua",          "emoji": "🪝", "valor": 1  }
+    ]
+}

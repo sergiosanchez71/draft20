@@ -1,0 +1,26 @@
+{
+    "id": "mundial_2026",
+    "base_items": ["mun_trofeo", "mun_balon"],
+    "items": [
+        { "id": "mun_trofeo",          "emoji": "🏆", "valor": 10 },
+        { "id": "mun_balon",           "emoji": "⚽", "valor": 9  },
+        { "id": "mun_espana",          "emoji": "🇪🇸", "valor": 9  },
+        { "id": "mun_yamal",           "emoji": "⭐", "valor": 9  },
+        { "id": "mun_torres",          "emoji": "🥅", "valor": 8  },
+        { "id": "mun_mbappe",          "emoji": "👟", "valor": 8  },
+        { "id": "mun_martinez",        "emoji": "🧤", "valor": 8  },
+        { "id": "mun_messi",           "emoji": "🐐", "valor": 7  },
+        { "id": "mun_marruecos",       "emoji": "🌙", "valor": 7  },
+        { "id": "mun_inglaterra",      "emoji": "🦁", "valor": 6  },
+        { "id": "mun_francia",         "emoji": "🐓", "valor": 6  },
+        { "id": "mun_brasil",          "emoji": "🟡", "valor": 6  },
+        { "id": "mun_final_nyc",       "emoji": "📺", "valor": 5  },
+        { "id": "mun_prorroga",        "emoji": "⏰", "valor": 5  },
+        { "id": "mun_tanda",           "emoji": "🎯", "valor": 4  },
+        { "id": "mun_autogol",         "emoji": "🥅", "valor": 3  },
+        { "id": "mun_var_eterno",      "emoji": "🔍", "valor": 3  },
+        { "id": "mun_entrada_cara",    "emoji": "🎫", "valor": 2  },
+        { "id": "mun_balon_pinchado",  "emoji": "🎈", "valor": 2  },
+        { "id": "mun_resaca",          "emoji": "🥴", "valor": 1  }
+    ]
+}
