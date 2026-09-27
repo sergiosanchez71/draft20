@@ -28,6 +28,7 @@ const PAGINAS = [
     '/guia/draft-de-20-monedas',
     '/guia/juegos-por-videollamada',
     '/privacidad',
+    '/ranking',
 ];
 
 const esperar = (ms) => new Promise(function (r) { setTimeout(r, ms); });

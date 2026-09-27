@@ -11,6 +11,7 @@ declare(strict_types=1);
 require __DIR__ . '/inc/layout.php';
 require_once __DIR__ . '/inc/lobby_inicial.php';
 require_once __DIR__ . '/contenido_seo.php';
+require_once __DIR__ . '/api/ranking_lib.php';
 
 $LANG = cargar_lang();
 $SEO  = is_array($LANG['seo'] ?? null) ? $LANG['seo'] : [];
@@ -131,6 +132,36 @@ pagina_head([
                     <time class="block text-[11px] text-slate-400 mt-2" datetime="<?= e(date('Y-m-d')) ?>"><?= e(date('d/m/Y')) ?></time>
                 </a>
             </section>
+
+            <?php
+            // Teaser del ranking: primero del último mes con datos (sin cifras).
+            // Se omite si no hay datos o el log pesa demasiado para la landing.
+            $teaserRanking = null;
+            $logRanking = __DIR__ . '/api/datos/partidas_humanas.jsonl';
+            if (is_file($logRanking) && filesize($logRanking) < 262144) {
+                $aggRanking = ranking_humanas($logRanking, 0);
+                $mesesRanking = array_keys($aggRanking['porMes']);
+                if ($mesesRanking !== []) {
+                    rsort($mesesRanking);
+                    $ultimoMes = $mesesRanking[0];
+                    $topMes = $aggRanking['porMes'][$ultimoMes]['top'] ?? [];
+                    if (isset($topMes[0], mapa_tematicas()[$topMes[0]])) {
+                        $teaserRanking = ['mes' => $ultimoMes, 'id' => $topMes[0]];
+                    }
+                }
+            }
+            $MESES_ES = ['01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo', '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio', '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre', '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'];
+            ?>
+            <?php if ($teaserRanking !== null): ?>
+            <?php [$yT, $mT] = explode('-', $teaserRanking['mes']) + [null, null]; ?>
+            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+                <a href="/ranking" class="block bg-slate-800 border border-slate-700 hover:border-amber-400 rounded-lg p-4">
+                    <div class="text-xs uppercase tracking-wide text-amber-400 font-bold mb-1">Lo más jugado en <?= e(($MESES_ES[$mT ?? ''] ?? $teaserRanking['mes'])) ?> <?= e($yT ?? '') ?></div>
+                    <div class="text-lg font-bold text-slate-100">🥇 <?= emoji_icono((string) mapa_tematicas()[$teaserRanking['id']]['emoji'], 20, '') ?> <?= e(nombre_tematica($teaserRanking['id'])) ?></div>
+                    <div class="text-sm font-semibold text-amber-400 mt-1">Ver ranking →</div>
+                </a>
+            </section>
+            <?php endif; ?>
 
             <section id="tematicas" class="max-w-5xl mx-auto w-full px-4 mt-10">
                 <h2 class="text-2xl font-bold text-slate-100 mb-2"><?= e((string) ($SEO['tematicas_titulo'] ?? '')) ?></h2>

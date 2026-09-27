@@ -11,7 +11,7 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.2.8';
+const APP_VERSION = '1.2.9';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 const ADSENSE_SLOT_JUEGO = '6658157047';
 const ADSENSE_SLOT_FINAL = '4631951476';
@@ -287,6 +287,7 @@ function nav_links(): array
             ['href' => '/como-jugar', 'texto' => 'Cómo se juega'],
             ['href' => '/guias', 'texto' => 'Guías'],
             ['href' => '/glosario', 'texto' => 'Glosario'],
+        ['href' => '/ranking', 'texto' => 'Ranking'],
             ['href' => '/juegos-de-subasta', 'texto' => 'Juegos de subasta'],
         ['href' => '/acerca', 'texto' => 'Acerca de'],
         ['href' => '/contacto', 'texto' => 'Contacto'],

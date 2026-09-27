@@ -506,6 +506,13 @@ try {
     $rRank200 = http_req('GET', $base . '/api/ranking.php?clave=' . urlencode($claveRank));
     check($rRank200['code'] === 200 && ($rRank200['json']['ok'] ?? false) === true && isset($rRank200['json']['porTematica']), 'ranking con clave → 200 con agregado');
     @unlink($root . '/api/datos/clave_ranking.txt');
+
+    // 15) Página pública /ranking (top-10 sin cifras, sin anuncios).
+    // Nota: php -S ignora .htaccess, se pide el .php directo igual que el resto.
+    $rRankPub = http_req('GET', $base . '/ranking.php');
+    $rawRankPub = (string) ($rRankPub['raw'] ?? '');
+    check($rRankPub['code'] === 200 && strpos($rawRankPub, 'Ranking de temáticas') !== false, 'ranking público → 200');
+    check(strpos($rawRankPub, 'data-ad-slot') === false, 'ranking público sin slots de anuncio');
 } finally {
     @unlink($root . '/api/datos/clave_ranking.txt');
     foreach ($codigos as $c) {

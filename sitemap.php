@@ -36,6 +36,7 @@ $urls = [
     ['loc' => SITE_URL . '/privacidad', 'lastmod' => $mtime('privacidad.php'), 'changefreq' => 'yearly', 'priority' => '0.3'],
     ['loc' => SITE_URL . '/aviso-legal', 'lastmod' => $mtime('aviso_legal.php'), 'changefreq' => 'yearly', 'priority' => '0.3'],
     ['loc' => SITE_URL . '/glosario', 'lastmod' => $mtime('glosario.php'), 'changefreq' => 'monthly', 'priority' => '0.6'],
+    ['loc' => SITE_URL . '/ranking', 'lastmod' => $mtimeMax(['ranking.php', 'api/ranking_lib.php']), 'changefreq' => 'monthly', 'priority' => '0.7'],
     ['loc' => SITE_URL . '/juegos-de-subasta', 'lastmod' => $mtimeMax(['juegos_de_subasta.php', 'contenido_hub_subasta.php']), 'changefreq' => 'monthly', 'priority' => '0.9'],
 ];
 
