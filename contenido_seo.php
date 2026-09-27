@@ -14,7 +14,8 @@ function contenido_seo(): array
         $tematicas = (require __DIR__ . '/contenido_tematicas_1.php') + (require __DIR__ . '/contenido_tematicas_2.php');
         $guias = (require __DIR__ . '/contenido_guias_1.php')
             + (require __DIR__ . '/contenido_guias_2.php')
-            + (require __DIR__ . '/contenido_guias_3.php');
+            + (require __DIR__ . '/contenido_guias_3.php')
+            + (require __DIR__ . '/contenido_guias_4.php');
         $data = [
             'ui' => [
                 'guias_titulo' => 'Guías de Draft 20',
@@ -45,6 +46,8 @@ function contenido_seo(): array
                 'juegos-san-valentin',
                 'juegos-por-videollamada',
                 'juegos-online-gratis-sin-registro',
+                'juegos-para-dos-personas',
+                'juegos-rapidos-cinco-minutos',
             ],
         ];
     }

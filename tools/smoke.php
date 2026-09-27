@@ -354,7 +354,7 @@ try {
     check(strpos((string) $rJuegoAds['raw'], '"banner":"6658157047"') !== false
         && strpos((string) $rJuegoAds['raw'], '"final":"4631951476"') !== false,
         'juego: slots banner/final en window.__ADS');
-    foreach (['/tematica.php?id=futbol', '/guia.php?slug=draft-de-20-monedas', '/juegos_de_subasta.php', '/como_jugar.php'] as $rutaCont) {
+    foreach (['/tematica.php?id=futbol', '/guia.php?slug=draft-de-20-monedas', '/guia.php?slug=juegos-para-dos-personas', '/guia.php?slug=juegos-rapidos-cinco-minutos', '/juegos_de_subasta.php', '/como_jugar.php'] as $rutaCont) {
         $rCont = http_req('GET', $base . $rutaCont);
         check($rCont['code'] === 200 && strpos((string) $rCont['raw'], 'data-ad-slot="1818472919"') !== false,
             'contenido ' . $rutaCont . ': bloque in-article');
@@ -516,7 +516,10 @@ try {
 
     // 16) Acceso rápido al bot desde la ficha (?tematica_bot=<id>).
     $rFichaBot = http_req('GET', $base . '/tematica.php?id=pizza');
-    check($rFichaBot['code'] === 200 && strpos((string) ($rFichaBot['raw'] ?? ''), 'href="/?tematica_bot=pizza"') !== false, 'ficha pizza enlaza a jugar contra el bot (sin #app para no pelear con el scroll)');
+    $rawFichaBot = (string) ($rFichaBot['raw'] ?? '');
+    check($rFichaBot['code'] === 200 && strpos($rawFichaBot, 'id="btnBotTema"') !== false, 'ficha pizza: botón de jugar contra el bot en 1 clic');
+    check(substr_count($rawFichaBot, 'data-dif=') === 4, 'ficha pizza: 4 píldoras de dificultad del bot');
+    check(strpos($rawFichaBot, 'draft20_bot_dificultad') !== false, 'ficha pizza: el bot respeta la dificultad guardada');
     $rBotPre = http_req('GET', $base . '/index.php?tematica_bot=pizza');
     $rawBotPre = (string) ($rBotPre['raw'] ?? '');
     check($rBotPre['code'] === 200 && preg_match('/<div id="tematicaBotSelector".*?<option value="pizza" selected>/s', $rawBotPre) === 1, '?tematica_bot=pizza preselecciona el selector del bot');

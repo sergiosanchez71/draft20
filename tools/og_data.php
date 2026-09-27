@@ -36,7 +36,7 @@ foreach (array_keys($cats) as $id) {
 }
 
 // Guías: nombre corto a partir del h1 (sin paréntesis, recortado).
-$guiaFiles = ['contenido_guias_1.php', 'contenido_guias_2.php', 'contenido_guias_3.php'];
+$guiaFiles = ['contenido_guias_1.php', 'contenido_guias_2.php', 'contenido_guias_3.php', 'contenido_guias_4.php'];
 $guias = [];
 foreach ($guiaFiles as $f) {
     $part = is_file($root . '/' . $f) ? require $root . '/' . $f : null;

@@ -99,8 +99,18 @@ pagina_head([
         <p class="text-xs text-slate-400 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', (int) filemtime($jsonTema))) ?></p>
         <?php endif; ?>
 
-        <button id="btnJugarTema" type="button" data-tematica="<?= e($id) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-2 disabled:opacity-60"><?= e((string) ($SEO['tematica_cta'] ?? 'Jugar')) ?></button>
-        <a href="/?tematica_bot=<?= e($id) ?>" class="inline-block bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-3 px-6 rounded-lg btn-tap mb-2 sm:ml-2">🤖 Jugar contra el bot</a>
+        <div class="flex flex-wrap gap-2 mb-2">
+            <button id="btnJugarTema" type="button" data-tematica="<?= e($id) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap disabled:opacity-60"><?= e((string) ($SEO['tematica_cta'] ?? 'Jugar')) ?></button>
+            <button id="btnBotTema" type="button" data-tematica="<?= e($id) ?>" class="inline-block bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-3 px-6 rounded-lg btn-tap disabled:opacity-60">🤖 Jugar contra el bot</button>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 mb-2">
+            <span class="text-xs text-slate-400">Dificultad del bot:</span>
+            <div id="difBotTema" class="flex flex-wrap gap-2">
+                <?php foreach (['facil', 'normal', 'dificil', 'extremo'] as $dif): ?>
+                <button type="button" data-dif="<?= e($dif) ?>" class="px-3 py-1.5 rounded-full text-xs border btn-tap bg-slate-700 text-slate-200 border-slate-600"><?= e((string) ($LANG['ui']['lobby']['bot_' . $dif] ?? $dif)) ?></button>
+                <?php endforeach; ?>
+            </div>
+        </div>
         <p class="text-xs text-slate-400 mb-8"><a class="hover:text-amber-400" href="/?tematica=<?= e($id) ?>#app"><?= e('o elige temática en el lobby') ?></a></p>
 
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(str_replace('{t}', $nombre, (string) ($SEO['tematica_items_titulo'] ?? 'Ítems de {t}'))) ?></h2>
@@ -203,4 +213,57 @@ $jsJugar = '(function () {'
     . ' });'
     . '})();';
 
-pagina_foot(['inline' => $jsJugar]);
+// Partida contra el bot en 1 clic: crea la sala con la temática de la ficha,
+// sienta al bot con la dificultad marcada y entra directo al juego.
+// Réplica de iniciarPartidaBot() (js/app.core.js): la dificultad vive en
+// localStorage y el juego la lee de ahí. Si algo falla, cae al lobby con
+// la temática ya preseleccionada en el selector del bot.
+$jsBot = '(function () {'
+    . ' var b = document.getElementById("btnBotTema"); if (!b) return;'
+    . ' var tema = b.getAttribute("data-tematica");'
+    . ' var NOMBRES = ["Botín", "Doña Subasta", "El Martillo", "Chollo", "La Puja", "Remate", "Subastín", "Doña Puja"];'
+    . ' var difSel = "normal";'
+    . ' try { var g = localStorage.getItem("draft20_bot_dificultad"); if (g === "facil" || g === "normal" || g === "dificil" || g === "extremo") difSel = g; } catch (e) {}'
+    . ' function pintar() {'
+    . '  var ps = document.querySelectorAll("#difBotTema [data-dif]");'
+    . '  for (var i = 0; i < ps.length; i++) {'
+    . '   var p = ps[i]; var on = p.getAttribute("data-dif") === difSel;'
+    . '   p.className = "px-3 py-1.5 rounded-full text-xs border btn-tap " + (on ? "bg-amber-400 text-slate-900 border-amber-400 font-bold" : "bg-slate-700 text-slate-200 border-slate-600");'
+    . '  }'
+    . ' }'
+    . ' var box = document.getElementById("difBotTema");'
+    . ' if (box) { box.addEventListener("click", function (ev) {'
+    . '  var t = ev.target; if (!t || !t.getAttribute) return;'
+    . '  var d = t.getAttribute("data-dif"); if (!d) return;'
+    . '  difSel = d; try { localStorage.setItem("draft20_bot_dificultad", d); } catch (e) {}'
+    . '  pintar();'
+    . ' }); }'
+    . ' pintar();'
+    . ' b.addEventListener("click", function () {'
+    . '  b.disabled = true;'
+    . '  var nombre = ""; var mv = false; try { nombre = localStorage.getItem("draft20_nombre") || ""; mv = localStorage.getItem("draft20_mostrar_valores") === "1"; } catch (e) {}'
+    . '  var fallback = function () { b.disabled = false; window.location.href = "/?tematica_bot=" + encodeURIComponent(tema); };'
+    . '  fetch("/api/crear_sala.php", { method: "POST", headers: { "Content-Type": "application/json" },'
+    . '   credentials: "same-origin",'
+    . '   body: JSON.stringify({ tematica: tema, nombre: nombre, mostrar_valores: mv }) })'
+    . '  .then(function (r) { return r.json(); })'
+    . '  .then(function (r) {'
+    . '   if (!r || !r.ok) { fallback(); return; }'
+    . '   var botNombre = "🤖 " + NOMBRES[Math.floor(Math.random() * NOMBRES.length)];'
+    . '   fetch("/api/unirse_sala.php", { method: "POST", headers: { "Content-Type": "application/json" },'
+    . '    credentials: "same-origin",'
+    . '    body: JSON.stringify({ codigo: r.codigo, nombre: botNombre, bot: true, creador_id: r.jugador_id }) })'
+    . '   .then(function (r2) { return r2.json(); })'
+    . '   .then(function (r2) {'
+    . '    if (!r2 || !r2.ok) { fallback(); return; }'
+    . '    try { localStorage.setItem("draft20_bot_" + r.codigo, JSON.stringify({ jugadorId: r2.jugador_id, dificultad: difSel })); } catch (e) {}'
+    . '    try { localStorage.setItem("draft20_" + r.codigo, JSON.stringify({ jugadorId: r.jugador_id, jugadorNombre: nombre || "Jugador 1", ts: Date.now() })); } catch (e) {}'
+    . '    window.location.href = "/juego.php?codigo=" + encodeURIComponent(r.codigo);'
+    . '   })'
+    . '   .catch(fallback);'
+    . '  })'
+    . '  .catch(fallback);'
+    . ' });'
+    . '})();';
+
+pagina_foot(['inline' => $jsJugar . $jsBot]);
