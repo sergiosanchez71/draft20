@@ -4,10 +4,10 @@
  *
  * Uso:  php tests/ranking_humana.test.php
  *
- * Usa un fichero temporal como log: simula 3 finales reales (privada,
- * rápida y revancha con empate), 1 abandono (no debe loguearse), 1 sala
- * de bot (tampoco) y 1 doble llamada (idempotencia). Luego verifica el
- * ranking agregado sobre lo registrado.
+ * Usa un fichero temporal como log: simula finales reales (privada,
+ * rápida, revancha humana con empate, bot y revancha contra bot),
+ * 1 abandono (no debe loguearse) y 1 doble llamada (idempotencia).
+ * Luego verifica el ranking agregado (incluido dias=0 y porMes).
  */
 declare(strict_types=1);
 
@@ -78,23 +78,37 @@ $s5 = sala_base([$it(10)], [$it(1)], ['bot_slot' => 1]);
 registrar_partida_humana($s5, $log);
 check(!empty($s5['log_humana']), 'bot se registra con tipo=bot');
 
+// 5b) Revancha contra bot → tipo=revancha_bot.
+$s5b = sala_base([$it(10)], [$it(1)], ['bot_slot' => 1, 'partida_n' => 2, 'tematica' => 'tacos']);
+registrar_partida_humana($s5b, $log);
+check(!empty($s5b['log_humana']), 'revancha bot marca log_humana');
+
 // 6) Doble llamada → una sola línea (idempotencia).
 registrar_partida_humana($s1, $log);
 
 $lineas = array_values(array_filter(explode("\n", trim((string) @file_get_contents($log))), static fn(string $l): bool => $l !== ''));
-check(count($lineas) === 4, '4 líneas en el log (3 humanas + 1 bot, sin abandono/doble)');
+check(count($lineas) === 5, '5 líneas en el log (sin abandono/doble)');
 $rs = array_map(static fn(string $l): array => json_decode($l, true), $lineas);
 check($rs[0]['tematica'] === 'pizza' && $rs[0]['resultado'] === 'j1' && $rs[0]['tipo'] === 'privada' && $rs[0]['visibles'] === 0, 'línea 1: pizza privada j1 oculta');
 check($rs[1]['tematica'] === 'futbol' && $rs[1]['resultado'] === 'j2' && $rs[1]['tipo'] === 'rapida' && $rs[1]['visibles'] === 1, 'línea 2: futbol rápida j2 visible');
-check($rs[2]['resultado'] === 'empate' && $rs[2]['tipo'] === 'revancha' && $rs[2]['rondas'] === 8 && $rs[2]['durSeg'] >= 290, 'línea 3: revancha empate con rondas y duración');
+check($rs[2]['resultado'] === 'empate' && $rs[2]['tipo'] === 'revancha_humano' && $rs[2]['rondas'] === 8 && $rs[2]['durSeg'] >= 290, 'línea 3: revancha humana con rondas y duración');
 check($rs[3]['tipo'] === 'bot' && $rs[3]['tematica'] === 'pizza', 'línea 4: bot con distinción');
+check($rs[4]['tipo'] === 'revancha_bot' && $rs[4]['tematica'] === 'tacos', 'línea 5: revancha contra bot');
 check(isset($rs[0]['ts']) && $rs[0]['ts'] > 0, 'línea con hora (ts)');
 
 // 7) Agregado compartido CLI+HTTP.
 $agg = ranking_humanas($log, 30);
-check($agg['total'] === 4, 'agregado total 4');
+check($agg['total'] === 5, 'agregado total 5');
 check(($agg['porTematica']['pizza'] ?? 0) === 2 && ($agg['porTematica']['futbol'] ?? 0) === 1, 'agregado por temática');
 check(($agg['porTipo']['bot'] ?? 0) === 1 && ($agg['porTipo']['privada'] ?? 0) === 1, 'agregado por tipo con bot');
+check(($agg['porTipo']['revancha_humano'] ?? 0) === 1 && ($agg['porTipo']['revancha_bot'] ?? 0) === 1, 'agregado distingue revanchas');
+
+// 8) dias=0 (todo el histórico) + desglose por meses.
+$aggAll = ranking_humanas($log, 0);
+check($aggAll['total'] === 5, 'dias=0 trae todo');
+$mesActual = date('Y-m');
+check(isset($aggAll['porMes'][$mesActual]) && $aggAll['porMes'][$mesActual]['total'] === 5, 'porMes agrupa el mes en curso');
+check(($aggAll['porMes'][$mesActual]['topTematica'] ?? '') === 'pizza', 'porMes top temática');
 
 @unlink($log);
 echo "\n=== RANKING HUMANA: $ok OK / $fail FAIL ===\n";

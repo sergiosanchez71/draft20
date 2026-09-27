@@ -56,10 +56,10 @@ if (!function_exists('registrar_partida_humana')) {
             'tematica'  => $tematica,
             'visibles'  => !empty($sala['mostrar_valores']) ? 1 : 0,
             'tipo'      => ($sala['bot_slot'] ?? null) !== null
-                ? 'bot'
+                ? (((int) ($sala['partida_n'] ?? 1)) > 1 ? 'revancha_bot' : 'bot')
                 : (!empty($sala['rapida'])
                     ? 'rapida'
-                    : (((int) ($sala['partida_n'] ?? 1)) > 1 ? 'revancha' : 'privada')),
+                    : (((int) ($sala['partida_n'] ?? 1)) > 1 ? 'revancha_humano' : 'privada')),
             'rondas'    => max(0, (int) ($sala['ronda'] ?? 0)),
             'resultado' => $resultado,
             'durSeg'    => max(0, $ahora - (int) ($sala['creado_en'] ?? $ahora)),

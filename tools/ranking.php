@@ -6,7 +6,8 @@
  *
  * Lee api/datos/partidas_humanas.jsonl (una línea por partida terminada:
  * ts, tematica, visibles, tipo, rondas, resultado, durSeg) e imprime
- * ranking por temática, modo, tipo, resultado y franja horaria.
+ * ranking por temática, modo, tipo, resultado y franja horaria, más
+ * desglose por meses. Con días=0, todo el histórico sin filtro.
  * El mismo agregado sirve api/ranking.php (JSON con clave).
  */
 declare(strict_types=1);
@@ -20,11 +21,13 @@ if (PHP_SAPI !== 'cli') {
 $root = dirname(__DIR__);
 require_once $root . '/api/ranking_lib.php';
 
-$dias = isset($argv[1]) ? max(1, (int) $argv[1]) : 30;
+$dias = isset($argv[1]) ? max(0, (int) $argv[1]) : 30;
 $agg = ranking_humanas($root . '/api/datos/partidas_humanas.jsonl', $dias);
 $n = $agg['total'];
 
-echo "=== Ranking humanas (últimos $dias días, n=$n) ===\n";
+echo $dias <= 0
+    ? "=== Ranking humanas (todo el histórico, n=$n) ===\n"
+    : "=== Ranking humanas (últimos $dias días, n=$n) ===\n";
 if ($n === 0) {
     echo "  (sin partidas en el periodo)\n";
     exit(0);
@@ -35,4 +38,13 @@ foreach (['porTematica' => '-- Por temática --', 'porModo' => '-- Por modo --',
     foreach ($agg[$k] as $et => $c) {
         echo sprintf("  %-18s %4d  (%5.1f%%)\n", (string) $et, $c, 100 * $c / $n);
     }
+}
+echo "-- Por meses --\n";
+foreach ($agg['porMes'] as $mes => $datos) {
+    echo sprintf("  %s: %d partidas (top: %s)\n", $mes, $datos['total'], $datos['topTematica']);
+    $pares = [];
+    foreach ($datos['porTipo'] as $t => $c) {
+        $pares[] = $t . ' ' . $c;
+    }
+    echo '    ' . implode(' · ', $pares) . "\n";
 }
