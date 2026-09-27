@@ -50,11 +50,8 @@ pagina_head([
         </nav>
 
         <h1 class="text-3xl font-bold text-slate-100 mb-3">Ranking de temáticas</h1>
-        <p class="text-sm text-slate-300 leading-relaxed mb-2">
-            Lo más jugado cada mes, ordenado por partidas terminadas. Sin cifras: aquí mandan las medallas.
-        </p>
-        <p class="text-xs text-slate-400 leading-relaxed mb-8">
-            Datos anónimos (temática, modo y hora; sin nombres ni identificadores) que se actualizan solos al terminar cada partida. Más detalle en la <a class="text-amber-400 hover:text-amber-300" href="/privacidad">privacidad</a>.
+        <p class="text-sm text-slate-300 leading-relaxed mb-8">
+            Lo más jugado cada mes, ordenado por partidas terminadas.
         </p>
 
         <?php if ($meses === []): ?>
