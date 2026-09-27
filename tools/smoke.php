@@ -516,7 +516,7 @@ try {
 
     // 16) Acceso rápido al bot desde la ficha (?tematica_bot=<id>).
     $rFichaBot = http_req('GET', $base . '/tematica.php?id=pizza');
-    check($rFichaBot['code'] === 200 && strpos((string) ($rFichaBot['raw'] ?? ''), '/?tematica_bot=pizza#app') !== false, 'ficha pizza enlaza a jugar contra el bot');
+    check($rFichaBot['code'] === 200 && strpos((string) ($rFichaBot['raw'] ?? ''), 'href="/?tematica_bot=pizza"') !== false, 'ficha pizza enlaza a jugar contra el bot (sin #app para no pelear con el scroll)');
     $rBotPre = http_req('GET', $base . '/index.php?tematica_bot=pizza');
     $rawBotPre = (string) ($rBotPre['raw'] ?? '');
     check($rBotPre['code'] === 200 && preg_match('/<div id="tematicaBotSelector".*?<option value="pizza" selected>/s', $rawBotPre) === 1, '?tematica_bot=pizza preselecciona el selector del bot');

@@ -649,19 +649,21 @@
     /**
      * Lleva la vista a la tarjeta de práctica y la resalta unos segundos.
      * Usada al llegar desde la ficha de una temática (?tematica_bot=<id>).
-     * El resaltado se aplica diferido para no alterar el DOM hidratado
-     * (paridad SSR ↔ JS); el scroll no muta el DOM.
+     * Todo diferido ~500 ms: con layout estable (anuncio del lobby y banner
+     * de partida ya pintados) y sin pelear con ningún scroll del navegador
+     * (el enlace de la ficha ya no trae fragmento #app). Sin mutación
+     * síncrona del DOM (paridad SSR ↔ JS); el scroll no muta el DOM.
      */
     function resaltarPractica() {
-        try {
-            const btn = $('#btnPractice');
-            const card = btn && btn.closest ? btn.closest('section') : null;
-            if (!card) return;
-            if (card.scrollIntoView) {
-                try { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-                catch (e) { try { card.scrollIntoView(); } catch (e2) { /* ignore */ } }
-            }
-            setTimeout(function () {
+        setTimeout(function () {
+            try {
+                const btn = $('#btnPractice');
+                const card = btn && btn.closest ? btn.closest('section') : null;
+                if (!card) return;
+                if (card.scrollIntoView) {
+                    try { card.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                    catch (e) { try { card.scrollIntoView(); } catch (e2) { /* ignore */ } }
+                }
                 try {
                     card.style.outline = '2px solid #fbbf24';
                     card.style.outlineOffset = '4px';
@@ -669,8 +671,8 @@
                         try { card.style.outline = ''; card.style.outlineOffset = ''; } catch (e) { /* ignore */ }
                     }, 2600);
                 } catch (e) { /* ignore */ }
-            }, 60);
-        } catch (e) { /* ignore */ }
+            } catch (e) { /* ignore */ }
+        }, 500);
     }
 
     /**
