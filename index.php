@@ -26,6 +26,12 @@ if (!is_string($tematicaPre) || !isset(mapa_tematicas()[$tematicaPre])) {
     $tematicaPre = null;
 }
 
+// Preselección del selector del bot: llega desde la ficha (?tematica_bot=<id>).
+$tematicaBotPre = $_GET['tematica_bot'] ?? null;
+if (!is_string($tematicaBotPre) || !isset(mapa_tematicas()[$tematicaBotPre])) {
+    $tematicaBotPre = null;
+}
+
 $categorias = categorias();
 $numTematicas = count(mapa_tematicas());
 $num = static fn(string $s): string => str_replace('{n}', (string) $numTematicas, $s);
@@ -87,7 +93,7 @@ pagina_head([
         </header>
 
         <main class="flex-1 flex flex-col">
-            <div id="app" class="flex flex-col"><?= lobby_inicial_html($tematicaPre) ?></div>
+            <div id="app" class="flex flex-col"><?= lobby_inicial_html($tematicaPre, $tematicaBotPre) ?></div>
 
             <?php if (ADSENSE_SLOT_LOBBY !== ''): ?>
             <section class="max-w-5xl mx-auto w-full px-4 mt-10">
@@ -233,7 +239,8 @@ $langCliente = [
 $inlineFirst = 'window.LANG = ' . json_encode($langCliente, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . ';'
     . 'window.__CATEGORIAS = ' . json_encode($categorias, JSON_UNESCAPED_UNICODE) . ';'
     . 'window.__DESTACADOS = ' . json_encode(destacados(), JSON_UNESCAPED_UNICODE) . ';'
-    . ($tematicaPre !== null ? 'window.__tematicaPre = ' . json_encode($tematicaPre) . ';' : '');
+    . ($tematicaPre !== null ? 'window.__tematicaPre = ' . json_encode($tematicaPre) . ';' : '')
+    . ($tematicaBotPre !== null ? 'window.__tematicaBotPre = ' . json_encode($tematicaBotPre) . ';' : '');
 
 $inline = '(function () {'
     . ' const linkSala = ' . json_encode($salaFromLink, JSON_UNESCAPED_UNICODE) . ';'

@@ -9,7 +9,7 @@
  */
 declare(strict_types=1);
 
-function lobby_inicial_html(?string $tematicaPre = null): string
+function lobby_inicial_html(?string $tematicaPre = null, ?string $tematicaBotPre = null): string
 {
     $L = cargar_lang()['ui']['lobby'] ?? [];
     $cat = static fn(string $k): string => (string) ($L[$k] ?? '');
@@ -98,7 +98,7 @@ function lobby_inicial_html(?string $tematicaPre = null): string
         . '<div class="text-center text-slate-400 text-xs my-2">— o —</div>'
         . '<section class="bg-slate-800 p-6 rounded-lg m-4 fade-in">'
         . '<label class="block text-sm text-slate-400 mb-2">' . e($cat('selector_tematica_bot')) . '</label>'
-        . $select('tematicaBotSelector', null)
+        . $select('tematicaBotSelector', $tematicaBotPre)
         . '<label class="block text-sm text-slate-400 mb-2 text-center">' . e($cat('bot_dificultad')) . '</label>'
         . $dificultad('mt-2')
         . $toggle('mt-4')

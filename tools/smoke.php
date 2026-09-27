@@ -513,6 +513,16 @@ try {
     $rawRankPub = (string) ($rRankPub['raw'] ?? '');
     check($rRankPub['code'] === 200 && strpos($rawRankPub, 'Ranking de temáticas') !== false, 'ranking público → 200');
     check(strpos($rawRankPub, 'data-ad-slot') === false, 'ranking público sin slots de anuncio');
+
+    // 16) Acceso rápido al bot desde la ficha (?tematica_bot=<id>).
+    $rFichaBot = http_req('GET', $base . '/tematica.php?id=pizza');
+    check($rFichaBot['code'] === 200 && strpos((string) ($rFichaBot['raw'] ?? ''), '/?tematica_bot=pizza#app') !== false, 'ficha pizza enlaza a jugar contra el bot');
+    $rBotPre = http_req('GET', $base . '/index.php?tematica_bot=pizza');
+    $rawBotPre = (string) ($rBotPre['raw'] ?? '');
+    check($rBotPre['code'] === 200 && preg_match('/<div id="tematicaBotSelector".*?<option value="pizza" selected>/s', $rawBotPre) === 1, '?tematica_bot=pizza preselecciona el selector del bot');
+    $crearSel = '';
+    if (preg_match('/<div id="tematicaSelector".*?<\/select>/s', $rawBotPre, $m)) { $crearSel = $m[0]; }
+    check($crearSel !== '' && strpos($crearSel, '<option value="pizza" selected>') === false, '?tematica_bot no toca el selector de crear sala');
 } finally {
     @unlink($root . '/api/datos/clave_ranking.txt');
     foreach ($codigos as $c) {

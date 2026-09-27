@@ -616,6 +616,18 @@
             }
             if (pre && esTematicaValida(pre)) state.tematicaSeleccionada = pre;
         }
+        // Preselección del selector del bot: ?tematica_bot=<id> o
+        // window.__tematicaBotPre (servidor). Llega desde la ficha de una
+        // temática ("Jugar contra el bot") y baja a la tarjeta de práctica.
+        let preBot = window.__tematicaBotPre || null;
+        if (!preBot) {
+            try { preBot = new URLSearchParams(window.location.search).get('tematica_bot'); } catch (e) { preBot = null; }
+        }
+        const irAPractica = !!(preBot && esTematicaValida(preBot) && !linkSala);
+        if (irAPractica) {
+            ctxBot.tematicaSeleccionada = preBot;
+            try { localStorage.setItem('draft20_tematica_bot', preBot); } catch (e) { /* ignore */ }
+        }
         // Si viene ?sala=CODE en URL, mostrar vista "join" con código pre-rellenado
         if (linkSala) {
             const session = loadSession(linkSala);
@@ -627,10 +639,38 @@
             renderJoinView(linkSala, '');
         } else {
             renderInitialView();
+            if (irAPractica) resaltarPractica();
             buscarPartidaEnCurso().then(function (partida) {
                 if (partida) pintarBannerPartida(partida);
             });
         }
+    }
+
+    /**
+     * Lleva la vista a la tarjeta de práctica y la resalta unos segundos.
+     * Usada al llegar desde la ficha de una temática (?tematica_bot=<id>).
+     * El resaltado se aplica diferido para no alterar el DOM hidratado
+     * (paridad SSR ↔ JS); el scroll no muta el DOM.
+     */
+    function resaltarPractica() {
+        try {
+            const btn = $('#btnPractice');
+            const card = btn && btn.closest ? btn.closest('section') : null;
+            if (!card) return;
+            if (card.scrollIntoView) {
+                try { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                catch (e) { try { card.scrollIntoView(); } catch (e2) { /* ignore */ } }
+            }
+            setTimeout(function () {
+                try {
+                    card.style.outline = '2px solid #fbbf24';
+                    card.style.outlineOffset = '4px';
+                    setTimeout(function () {
+                        try { card.style.outline = ''; card.style.outlineOffset = ''; } catch (e) { /* ignore */ }
+                    }, 2600);
+                } catch (e) { /* ignore */ }
+            }, 60);
+        } catch (e) { /* ignore */ }
     }
 
     /**

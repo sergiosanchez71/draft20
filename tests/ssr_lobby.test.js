@@ -19,7 +19,7 @@ const ROOT = path.join(__dirname, '..');
 const PORT = 9800 + (process.pid % 150);
 const BASE = 'http://127.0.0.1:' + PORT;
 
-const RUTAS = ['/index.php', '/index.php?tematica=hamburguesa'];
+const RUTAS = ['/index.php', '/index.php?tematica=hamburguesa', '/index.php?tematica_bot=pizza'];
 const IDS = [
     'nameRapida', 'nameCreate', 'codeJoin', 'nameJoin', 'btnRapida', 'btnCreate',
     'btnJoin', 'btnPractice', 'btnGuiada', 'tematicaSelector', 'tematicaBotSelector',
@@ -103,11 +103,12 @@ function valorSeleccionado(doc, id) {
                 });
                 assert.ok(firma(app).hijos.length > 0, ruta + ': #app se sirve vacío (SSR ausente)');
 
-                const esperado = ruta.indexOf('tematica=') !== -1 ? 'hamburguesa' : '__random__';
-                assert.strictEqual(valorSeleccionado(doc, 'tematicaSelector'), esperado,
+                const esBot = ruta.indexOf('tematica_bot=') !== -1;
+                const esperadoCrear = !esBot && ruta.indexOf('tematica=') !== -1 ? 'hamburguesa' : '__random__';
+                assert.strictEqual(valorSeleccionado(doc, 'tematicaSelector'), esperadoCrear,
                     ruta + ': el selector de crear sala no refleja ?tematica=');
-                assert.strictEqual(valorSeleccionado(doc, 'tematicaBotSelector'), '__random__',
-                    ruta + ': el selector de práctica debe empezar en aleatoria');
+                assert.strictEqual(valorSeleccionado(doc, 'tematicaBotSelector'), esBot ? 'pizza' : '__random__',
+                    ruta + ': el selector de práctica no refleja ?tematica_bot=');
 
                 const antes = firma(app);
                 const bootstrap = Array.from(doc.querySelectorAll('script:not([src])'))
