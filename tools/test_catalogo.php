@@ -114,9 +114,39 @@ foreach ($catalogoIds as $cid) {
 }
 ass(true, $totalLabels >= $totalTematicas, 'lang.tematicas cubre el catálogo');
 
+// --- Pilares de contenido: mínimos de palabras (revisión AdSense) ---
+$contarPalabras = static function (array $d): int {
+    $t = ($d['titulo'] ?? '') . ' ' . ($d['desc'] ?? '') . ' ' . ($d['h1'] ?? '');
+    foreach (['intro', 'bloques'] as $k) {
+        foreach ((array) ($d[$k] ?? []) as $b) {
+            if (is_string($b)) {
+                $t .= ' ' . $b;
+                continue;
+            }
+            foreach ((array) $b as $v) {
+                $t .= ' ' . (is_array($v) ? implode(' ', $v) : (string) $v);
+            }
+        }
+    }
+    foreach ((array) ($d['enlaces'] ?? []) as $l) {
+        $t .= ' ' . (string) ($l['texto'] ?? '');
+    }
+    foreach ((array) ($d['faq'] ?? []) as $f) {
+        $t .= ' ' . (string) ($f['q'] ?? '') . ' ' . (string) ($f['a'] ?? '');
+    }
+    preg_match_all('/\p{L}+/u', $t, $m);
+    return count($m[0]);
+};
+$estrategiaData = require $root . '/contenido_estrategia.php';
+$faqData = require $root . '/contenido_faq.php';
+$nEst = $contarPalabras(is_array($estrategiaData) ? $estrategiaData : []);
+$nFaq = $contarPalabras(is_array($faqData) ? $faqData : []);
+ass(true, $nEst >= 800, "estrategia >= 800 palabras ($nEst)");
+ass(true, $nFaq >= 500, "faq >= 500 palabras ($nFaq)");
+
 // --- Enlaces internos de las guías: sin rutas rotas (SEO/enlazado interno) ---
 require_once $root . '/contenido_seo.php';
-$rutasFijas = ['/', '/como-jugar', '/guias', '/glosario', '/juegos-de-subasta', '/acerca', '/contacto', '/privacidad', '/aviso-legal'];
+$rutasFijas = ['/', '/como-jugar', '/como-jugar-y-estrategia', '/preguntas-frecuentes', '/terminos', '/guias', '/glosario', '/juegos-de-subasta', '/acerca', '/contacto', '/privacidad', '/aviso-legal'];
 $categoriasIds = array_map(static fn($c) => (string) $c['id'], $catalogo);
 $guiasSlugs = array_keys(guias_ordenadas());
 $enlacesValidos = 0;

@@ -86,6 +86,8 @@ pagina_head([
         </section>
         <?php endif; ?>
 
+        <p class="text-sm text-slate-300 leading-relaxed mb-6">¿Quieres ganar más a menudo? Lee la <a class="text-amber-400 hover:text-amber-300 font-semibold" href="/como-jugar-y-estrategia">guía completa de estrategia</a>: banca, psicología de la puja y tácticas por temática.</p>
+
         <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
     </main>
 <?php

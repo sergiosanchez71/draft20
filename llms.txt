@@ -6,10 +6,12 @@
 
 - [Inicio](https://draft20.es/): crear una sala privada, unirse con código o partida rápida.
 - [Cómo se juega](https://draft20.es/como-jugar): reglas paso a paso.
+- [Estrategia](https://draft20.es/como-jugar-y-estrategia): banca, psicología de la puja y tácticas por temática.
+- [Preguntas frecuentes](https://draft20.es/preguntas-frecuentes): salas, puntuación, desconexiones y móvil.
 - [Juegos de subasta](https://draft20.es/juegos-de-subasta): qué son y cómo elegir uno.
 - [Guías](https://draft20.es/guias): estrategia, comparativas y juegos para dos personas.
 - [Glosario](https://draft20.es/glosario): puja, ME BAJO, cap, deadlock y más.
-- [Temáticas](https://draft20.es/#tematicas): 72 listas de 20 ítems por categoría.
+- [Temáticas](https://draft20.es/#tematicas): 69 listas de 20 ítems por categoría.
 
 ## Contacto
 

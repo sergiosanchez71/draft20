@@ -354,7 +354,7 @@ try {
     check(strpos((string) $rJuegoAds['raw'], '"banner":"6658157047"') !== false
         && strpos((string) $rJuegoAds['raw'], '"final":"4631951476"') !== false,
         'juego: slots banner/final en window.__ADS');
-    foreach (['/tematica.php?id=futbol', '/guia.php?slug=draft-de-20-monedas', '/guia.php?slug=juegos-para-dos-personas', '/guia.php?slug=juegos-rapidos-cinco-minutos', '/juegos_de_subasta.php', '/como_jugar.php'] as $rutaCont) {
+    foreach (['/tematica.php?id=futbol', '/guia.php?slug=draft-de-20-monedas', '/guia.php?slug=juegos-para-dos-personas', '/guia.php?slug=juegos-rapidos-cinco-minutos', '/juegos_de_subasta.php', '/como_jugar.php', '/estrategia.php', '/preguntas-frecuentes.php'] as $rutaCont) {
         $rCont = http_req('GET', $base . $rutaCont);
         check($rCont['code'] === 200 && strpos((string) $rCont['raw'], 'data-ad-slot="1818472919"') !== false,
             'contenido ' . $rutaCont . ': bloque in-article');
@@ -411,6 +411,10 @@ try {
         && (bool) preg_match('#<loc>https://draft20\.es/privacidad</loc>\s*<lastmod>([^<]+)</lastmod>#', (string) $rSitemap['raw'], $mSitemap),
         'sitemap: /privacidad con lastmod');
     check(($mSitemap[1] ?? '') === date('Y-m-d', (int) filemtime($root . '/privacidad.php')), 'sitemap: lastmod real de /privacidad');
+    $rawSitemap = (string) $rSitemap['raw'];
+    check(strpos($rawSitemap, '<loc>https://draft20.es/como-jugar-y-estrategia</loc>') !== false, 'sitemap: /como-jugar-y-estrategia');
+    check(strpos($rawSitemap, '<loc>https://draft20.es/preguntas-frecuentes</loc>') !== false, 'sitemap: /preguntas-frecuentes');
+    check(strpos($rawSitemap, '<loc>https://draft20.es/terminos</loc>') !== false, 'sitemap: /terminos');
 
     // 11) Contador anónimo de eventos + beacon en las páginas SEO.
     $rEv = http_req('POST', $base . '/api/evento.php', ['evento' => 'page:home']);
@@ -522,6 +526,21 @@ try {
     check(strpos($rawFichaBot, 'draft20_bot_dificultad') !== false, 'ficha pizza: el bot respeta la dificultad guardada');
     $rBotPre = http_req('GET', $base . '/index.php?tematica_bot=pizza');
     $rawBotPre = (string) ($rBotPre['raw'] ?? '');
+    // 17) Pilares de contenido (1.3.1): estrategia + FAQ + términos.
+    $rEst = http_req('GET', $base . '/estrategia.php');
+    $rawEst = (string) ($rEst['raw'] ?? '');
+    check($rEst['code'] === 200 && strpos($rawEst, 'Cómo jugar a Draft 20 y ganar') !== false, 'estrategia → 200 con H1');
+    check(substr_count($rawEst, '<h3') >= 5, 'estrategia con subsecciones H3');
+    check(strpos($rawEst, 'href="/como-jugar"') !== false, 'estrategia enlaza a las reglas');
+    $rFaq = http_req('GET', $base . '/preguntas-frecuentes.php');
+    $rawFaq = (string) ($rFaq['raw'] ?? '');
+    check($rFaq['code'] === 200 && substr_count($rawFaq, '<details') >= 10, 'faq → 200 con acordeones');
+    check(strpos($rawFaq, '"@type":"FAQPage"') !== false, 'faq con schema FAQPage');
+    $rTerm = http_req('GET', $base . '/terminos.php');
+    $rawTerm = (string) ($rTerm['raw'] ?? '');
+    check($rTerm['code'] === 200 && strpos($rawTerm, 'Términos de uso') !== false, 'términos → 200');
+    check(strpos($rawTerm, 'data-ad-slot') === false, 'términos sin slots de anuncio');
+
     check($rBotPre['code'] === 200 && preg_match('/<div id="tematicaBotSelector".*?<option value="pizza" selected>/s', $rawBotPre) === 1, '?tematica_bot=pizza preselecciona el selector del bot');
     $crearSel = '';
     if (preg_match('/<div id="tematicaSelector".*?<\/select>/s', $rawBotPre, $m)) { $crearSel = $m[0]; }

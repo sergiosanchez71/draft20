@@ -40,6 +40,9 @@ Options -Indexes
     RewriteRule ^(README\.md|package(-lock)?\.json|composer\.(json|lock)|draft20\.iml|phpunit\.xml|AGENTS\.md)$ - [F,L]
     RewriteRule (^|/)\.(?!well-known/) - [F,L]
     RewriteRule ^como-jugar/?$ como_jugar.php [L]
+    RewriteRule ^como-jugar-y-estrategia/?$ estrategia.php [L]
+    RewriteRule ^preguntas-frecuentes/?$ preguntas-frecuentes.php [L]
+    RewriteRule ^terminos/?$ terminos.php [L]
     RewriteRule ^acerca/?$ acerca.php [L]
     RewriteRule ^contacto/?$ contacto.php [L]
     RewriteRule ^privacidad/?$ privacidad.php [L]
@@ -92,7 +95,7 @@ ErrorDocument 404 /404.php
         SetEnvIf Request_URI "^/index\.php$" es_landing
         Header set Cache-Control "public, max-age=0, s-maxage=600" env=es_landing
 
-        SetEnvIf Request_URI "^/(tematica|guia|guias|categoria|como-jugar|acerca|contacto|privacidad|aviso-legal|glosario|juegos-de-subasta|ranking)/?([a-z0-9_-]+)?/?$" es_contenido
+        SetEnvIf Request_URI "^/(tematica|guia|guias|categoria|como-jugar|como-jugar-y-estrategia|preguntas-frecuentes|terminos|acerca|contacto|privacidad|aviso-legal|glosario|juegos-de-subasta|ranking)/?([a-z0-9_-]+)?/?$" es_contenido
         SetEnvIf Request_URI "^/feed\.xml$" es_contenido
         Header set Cache-Control "public, max-age=0, s-maxage=600" env=es_contenido
     </IfModule>

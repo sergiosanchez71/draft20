@@ -21,6 +21,9 @@ const BASE = 'http://127.0.0.1:' + PORT;
 const PAGINAS = [
     '/index.php',
     '/como-jugar',
+    '/como-jugar-y-estrategia',
+    '/preguntas-frecuentes',
+    '/terminos',
     '/glosario',
     '/juegos-de-subasta',
     '/tematica/futbol',
