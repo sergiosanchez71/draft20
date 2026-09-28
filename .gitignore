@@ -2,5 +2,6 @@ api/salas/*.json
 node_modules/
 api/datos/*.jsonl
 api/datos/*.json
+api/datos/clave_ranking.txt
 api/datos/rl/
 api/datos/stats/

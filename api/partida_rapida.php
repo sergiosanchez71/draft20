@@ -325,13 +325,15 @@ try {
             return $v['codigo'] !== $elegida['codigo'];
         }));
         cola_guardar($fp, $cola);
+        // Desencolado atómico ya persistido: soltar la cola ANTES del trabajo
+        // de sala (apertura, join y escritura) para no serializar el matchmaking.
+        flock($fp, LOCK_UN);
+        fclose($fp);
 
         $codigo = (string) $elegida['codigo'];
         $path = SALAS_DIR . $codigo . '.json';
         $fpSala = @fopen($path, 'c+b');
         if ($fpSala === false) {
-            flock($fp, LOCK_UN);
-            fclose($fp);
             responder(['ok' => false, 'error' => 'La sala ya no está disponible. Vuelve a intentarlo.'], 409);
         }
         flock($fpSala, LOCK_EX);
@@ -343,8 +345,6 @@ try {
             || ($sala['jugadores'][1]['id'] ?? null) !== null) {
             flock($fpSala, LOCK_UN);
             fclose($fpSala);
-            flock($fp, LOCK_UN);
-            fclose($fp);
             responder(['ok' => false, 'error' => 'La sala ya no está disponible. Vuelve a intentarlo.'], 409);
         }
 
@@ -367,8 +367,6 @@ try {
         fflush($fpSala);
         flock($fpSala, LOCK_UN);
         fclose($fpSala);
-        flock($fp, LOCK_UN);
-        fclose($fp);
 
         try { limpiar_salas_antiguas(); } catch (Throwable $e) { /* best-effort */ }
 
@@ -377,22 +375,40 @@ try {
     }
 
     // 2) No hay nadie → creamos sala con temática aleatoria y esperamos.
-    $cola['espera'] = $vivasFmt;
-    if (count($cola['espera']) >= COLA_MAX) {
+    // La creación (glob+escritura+GC) ocurre SIN el lock de cola para no
+    // serializar el matchmaking; al volver se re-bloquea, se purga de nuevo
+    // y se rechequea el tope por si la cola se llenó mientras tanto.
+    if (count($vivasFmt) >= COLA_MAX) {
         flock($fp, LOCK_UN);
         fclose($fp);
         responder(['ok' => false, 'error' => 'Hay demasiada gente esperando. Prueba en un minuto.'], 503);
     }
+    flock($fp, LOCK_UN);
+    fclose($fp);
 
     $res = crear_sala_nueva(tema_aleatoria(), $nombre, ['rapida' => true, 'mostrar_valores' => $mvBuscador]);
-    $cola['espera'][] = [
+    $fp2 = cola_abrir();
+    if (!flock($fp2, LOCK_EX)) {
+        fclose($fp2);
+        @unlink(SALAS_DIR . $res['codigo'] . '.json');
+        responder(['ok' => false, 'error' => 'No se pudo bloquear la cola.'], 500);
+    }
+    $cola2 = cola_leer($fp2);
+    $cola2['espera'] = cola_purgar((array) ($cola2['espera'] ?? []));
+    if (count($cola2['espera']) >= COLA_MAX) {
+        flock($fp2, LOCK_UN);
+        fclose($fp2);
+        @unlink(SALAS_DIR . $res['codigo'] . '.json');
+        responder(['ok' => false, 'error' => 'Hay demasiada gente esperando. Prueba en un minuto.'], 503);
+    }
+    $cola2['espera'][] = [
         'codigo'     => $res['codigo'],
         'jugador_id' => $res['jugador_id'],
         'creado_en'  => time(),
     ];
-    cola_guardar($fp, $cola);
-    flock($fp, LOCK_UN);
-    fclose($fp);
+    cola_guardar($fp2, $cola2);
+    flock($fp2, LOCK_UN);
+    fclose($fp2);
 
     responder(['ok' => true, 'rol' => 'creador', 'codigo' => $res['codigo'], 'jugador_id' => $res['jugador_id'],
         'mostrar_valores' => $mvBuscador], 200);

@@ -272,6 +272,13 @@ if (!function_exists('seleccionar_items_balanceados')) {
         // 3) Sorteo ponderado con castigo + forzado de mínimos.
         $pesos    = SORTEO_PESOS_INICIALES;
         $conteo   = ['premium' => 0, 'medio' => 0, 'malo' => 0];
+        // Las bases obligatorias ocupan cupo de su tier: si no, 2 bases +
+        // sorteo podrían superar los máximos de partida (5/4/3 suman 12,
+        // de sobra para los 6 huecos restantes: sin riesgo de inanición).
+        foreach ($items_base as $ib) {
+            $tBase = clasificar_tier((int) ($ib['valor'] ?? 0));
+            if (isset($conteo[$tBase])) $conteo[$tBase]++;
+        }
 
         while (count($elegidos) < $n) {
             $restantes  = $n - count($elegidos);

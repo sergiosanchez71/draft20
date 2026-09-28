@@ -15,7 +15,7 @@ if ($LANG === []) {
 }
 
 $codigo = $_GET['codigo'] ?? null;
-if (!is_string($codigo) || !preg_match('/^[A-Z0-9]{5}$/', $codigo)) {
+if (!is_string($codigo) || !preg_match('/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/', $codigo)) {
     header('Location: /');
     exit;
 }

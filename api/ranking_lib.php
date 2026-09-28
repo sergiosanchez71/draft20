@@ -82,7 +82,7 @@ if (!function_exists('ranking_humanas')) {
             $out['porMes'][$mes] = [
                 'total' => $datos['total'],
                 'topTematica' => is_string($top) ? $top : '',
-                'top' => array_slice($ordenadas, 0, 10),
+                'top' => array_slice($ordenadasMes, 0, 10),
                 'porTipo' => $datos['porTipo'],
             ];
         }

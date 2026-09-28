@@ -323,7 +323,10 @@ try {
     $rAds = http_req('GET', $base . '/ads.txt');
     check($rAds['code'] === 200 && strpos((string) $rAds['raw'], 'pub-9504493922636861') !== false, 'ads.txt servido con el publisher');
     check(strpos((string) $rSeoHome['raw'], 'data-ad-slot="1410891766"') !== false, 'home: bloque manual del lobby');
-    $rJuegoAds = http_req('GET', $base . '/juego.php?codigo=ABC12');
+    $rJuegoAds = http_req('GET', $base . '/juego.php?codigo=ABCDE');
+    $rJuegoMalo = http_req('GET', $base . '/juego.php?codigo=ABC12');
+    $cabMalo = implode("\n", (array) ($rJuegoMalo['headers'] ?? []));
+    check(strpos($cabMalo, ' 302') !== false && strpos($cabMalo, 'Location: /') !== false, 'juego: código fuera de CHARSET (ABC12) redirige al inicio');
     check(strpos((string) $rJuegoAds['raw'], 'viewport-fit=cover') === false,
         'juego: sin viewport-fit=cover (la PWA queda dentro del área segura)');
     $mVer = [];

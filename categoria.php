@@ -79,7 +79,7 @@ pagina_head([
     'titulo' => $titulo . ' - ' . SITE_NOMBRE,
     'descripcion' => $descripcion,
     'canonical' => '/categoria/' . $cat['id'],
-    'og_image' => SITE_URL . '/og/categoria/' . $cat['id'] . '.png',
+    'og_image' => is_file(__DIR__ . '/og/categoria/' . $cat['id'] . '.png') ? SITE_URL . '/og/categoria/' . $cat['id'] . '.png' : SITE_URL . '/og-image.png',
     'json_ld' => $jsonLd,
 ]);
 ?>

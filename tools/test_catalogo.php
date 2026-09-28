@@ -147,8 +147,20 @@ $nFaq = $contarPalabras(is_array($faqData) ? $faqData : []);
 ass(true, $nEst >= 800, "estrategia >= 800 palabras ($nEst)");
 ass(true, $nFaq >= 500, "faq >= 500 palabras ($nFaq)");
 
-// --- Enlaces internos de las guías: sin rutas rotas (SEO/enlazado interno) ---
+// --- Intros de categoría sin cifras de conteo (caducan con cada temática nueva) ---
 require_once $root . '/contenido_seo.php';
+$cifrasMal = [];
+foreach ((contenido_seo()['categorias'] ?? []) as $cid => $c) {
+    // Cada texto por separado: al unir título ("…Draft 20") e intro
+    // ("Temáticas…") saldría un falso "20 Temáticas" en la frontera.
+    $textosCat = array_merge([(string) ($c['titulo'] ?? '')], array_map('strval', (array) ($c['intro'] ?? [])));
+    foreach ($textosCat as $textoCat) {
+        if (preg_match('/(\d+|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince)\s+temáticas?/iu', $textoCat, $m)) {
+            $cifrasMal[] = $cid . ' → «' . $m[0] . '»';
+        }
+    }
+}
+ass([], $cifrasMal, 'intros de categoría sin conteos que caduquen');
 $rutasFijas = ['/', '/como-jugar', '/como-jugar-y-estrategia', '/preguntas-frecuentes', '/terminos', '/guias', '/glosario', '/juegos-de-subasta', '/acerca', '/contacto', '/privacidad', '/aviso-legal'];
 $categoriasIds = array_map(static fn($c) => (string) $c['id'], $catalogo);
 $guiasSlugs = array_keys(guias_ordenadas());

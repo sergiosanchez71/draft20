@@ -110,6 +110,13 @@ $mesActual = date('Y-m');
 check(isset($aggAll['porMes'][$mesActual]) && $aggAll['porMes'][$mesActual]['total'] === 5, 'porMes agrupa el mes en curso');
 check(($aggAll['porMes'][$mesActual]['topTematica'] ?? '') === 'pizza', 'porMes top temática');
 
+// 9) El top de cada mes usa su propio mes, no el global repetido.
+$mesPasado = date('Y-m', strtotime('first day of last month'));
+file_put_contents($log, json_encode(['ts' => strtotime($mesPasado . '-15 12:00:00'), 'tematica' => 'futbol', 'visibles' => 0, 'tipo' => 'privada', 'rondas' => 8, 'resultado' => 'j1', 'durSeg' => 300], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
+$aggMeses = ranking_humanas($log, 0);
+check(($aggMeses['porMes'][$mesPasado]['top'][0] ?? '') === 'futbol', 'top mensual del mes pasado es futbol');
+check(($aggMeses['porMes'][$mesActual]['top'][0] ?? '') === 'pizza', 'top mensual actual es pizza (no el global)');
+
 @unlink($log);
 echo "\n=== RANKING HUMANA: $ok OK / $fail FAIL ===\n";
 exit($fail > 0 ? 1 : 0);

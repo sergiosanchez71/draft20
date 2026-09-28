@@ -141,10 +141,12 @@ pagina_head([
 
             <?php
             // Teaser del ranking: primero del último mes con datos (sin cifras).
-            // Se omite si no hay datos o el log pesa demasiado para la landing.
+            // Se omite si no hay datos o el log pesa demasiado para la landing
+            // (1 MB; la home va cacheada 10 min en CDN y el ranking completo
+            // sigue funcionando en /ranking sin límite).
             $teaserRanking = null;
             $logRanking = __DIR__ . '/api/datos/partidas_humanas.jsonl';
-            if (is_file($logRanking) && filesize($logRanking) < 262144) {
+            if (is_file($logRanking) && filesize($logRanking) < 1048576) {
                 $aggRanking = ranking_humanas($logRanking, 0);
                 $mesesRanking = array_keys($aggRanking['porMes']);
                 if ($mesesRanking !== []) {

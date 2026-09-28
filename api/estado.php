@@ -187,11 +187,12 @@ if ($jugadorId !== '') {
     }
 }
 
-$estado['actualizado_en'] = time();
-
 // Persistir solo si hemos tocado algo (last_seen, abandono o compatibilidad):
 // el poll del lobby sin jugador_id no debe escribir en disco cada segundo.
+// (actualizado_en solo cambia con persistencia: si no, la respuesta diría
+// una hora distinta a la de disco en cada poll.)
 if ($cambio) {
+    $estado['actualizado_en'] = time();
     ftruncate($fp, 0); rewind($fp);
     fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     fflush($fp);
