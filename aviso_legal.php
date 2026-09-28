@@ -30,8 +30,9 @@ pagina_head([
         <section class="mb-6">
             <h2 class="text-lg font-bold text-amber-300 mb-2">Objeto</h2>
             <p class="text-sm text-slate-300 leading-relaxed">
-                El sitio ofrece un juego gratuito de subasta por turnos para dos jugadores. No requiere registro,
-                no tiene anuncios ni pagos, y no se recogen datos personales más allá de lo descrito en la
+                El sitio ofrece un juego gratuito de subasta por turnos para dos jugadores. No requiere registro
+                ni pagos; muestra publicidad de terceros (Google AdSense), y no se recogen datos personales más
+                allá de lo descrito en la
                 <a class="hover:text-amber-400" href="/privacidad">política de privacidad</a>.
             </p>
         </section>

@@ -25,7 +25,6 @@ return [
         ['id' => 'sandwich',      'emoji' => '🥪', 'destacado' => true],
         ['id' => 'helado',        'emoji' => '🍦', 'destacado' => true],
         ['id' => 'matcha',        'emoji' => '🍵'],
-        ['id' => 'matcha',        'emoji' => '🍵'],
     ]],
     ['id' => 'cultura', 'emoji' => '🎬', 'tematicas' => [
         ['id' => 'peliculas',     'emoji' => '🎬'],

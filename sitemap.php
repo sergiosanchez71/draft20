@@ -1,7 +1,7 @@
 <?php
 /**
  * Draft 20 — sitemap.xml dinámico.
- * Incluye: home, páginas de soporte y las 72 fichas de temática.
+ * Incluye: home, páginas de soporte y las 69 fichas de temática.
  * Se sirve en https://draft20.es/sitemap.xml (rewrite en .htaccess).
  */
 declare(strict_types=1);

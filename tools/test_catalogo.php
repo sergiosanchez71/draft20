@@ -102,6 +102,9 @@ $catalogoIds = [];
 foreach ($catalogo as $cat) {
     foreach ($cat['tematicas'] as $tm) $catalogoIds[] = $tm['id'];
 }
+// Sin duplicados: el desplegable del lobby itera el catálogo tal cual,
+// así que un id repetido saldría dos veces (antes lo tapaba el unique).
+ass(count($catalogoIds), count(array_unique($catalogoIds)), 'catálogo sin temáticas duplicadas');
 $catalogoIds = array_values(array_unique($catalogoIds));
 
 echo "\n=== CATÁLOGO: $totalTematicas temáticas, $totalItems items, $totalTraducciones traducciones, $totalLabels labels ===\n";
