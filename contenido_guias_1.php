@@ -45,7 +45,7 @@ return [
         'faq' => [
             ['q' => '¿Hace falta descargar una app para jugar al draft de 20 monedas?', 'a' => 'No. Draft 20 se juega en el navegador del móvil: creas una sala, compartes el código y listo. No hay registro ni instalación.'],
             ['q' => '¿Cuántos jugadores se necesitan?', 'a' => 'Dos, cada uno con su propio móvil. También hay un modo de práctica contra la máquina con cuatro niveles.'],
-            ['q' => '¿Es gratis?', 'a' => 'Sí, es gratis y sin anuncios ni cuentas de usuario.'],
+            ['q' => '¿Es gratis?', 'a' => 'Sí, es gratis y sin cuentas de usuario; se sostiene con publicidad discreta de Google.'],
         ],
         'enlaces' => [
             ['href' => '/como-jugar', 'texto' => 'Cómo se juega paso a paso'],
@@ -145,7 +145,7 @@ return [
             [
                 'h' => 'Draft 20 (web, 2 jugadores, gratis)',
                 'p' => [
-                    'Es un duelo de subasta por turnos para dos jugadores: 8 rondas, 20 monedas y una temática por partida entre 63 disponibles. Cada jugador usa su propio móvil y entra con un código de 5 caracteres, sin registro ni descarga.',
+                    'Es un duelo de subasta por turnos para dos jugadores: 8 rondas, 20 monedas y una temática por partida entre 69 disponibles. Cada jugador usa su propio móvil y entra con un código de 5 caracteres, sin registro ni descarga.',
                     'Lo que lo hace distinto es el valor secreto: no ves el ⭐ de cada ítem hasta el final, así que la subasta va de leer al rival, no de calcular. Si quieres probarlo, puedes crear una sala o practicar contra el bot.',
                 ],
             ],
@@ -177,7 +177,7 @@ return [
         ],
         'faq' => [
             ['q' => '¿Cuál es el mejor juego de subasta para dos personas?', 'a' => 'Si buscas partidas rápidas y desde el móvil, Draft 20 está diseñado exactamente para dos jugadores con información oculta. Para sesiones largas, los clásicos de Board Game Arena.'],
-            ['q' => '¿Hay juegos de subasta gratis?', 'a' => 'Sí: Draft 20 es gratis y sin anuncios, y Board Game Arena tiene un plan gratuito con catálogo completo.'],
+            ['q' => '¿Hay juegos de subasta gratis?', 'a' => 'Sí: Draft 20 es gratis (con publicidad), y Board Game Arena tiene un plan gratuito con catálogo completo.'],
         ],
         'enlaces' => [
             ['href' => '/', 'texto' => 'Jugar a Draft 20'],

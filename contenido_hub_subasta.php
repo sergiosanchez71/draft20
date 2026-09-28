@@ -40,7 +40,7 @@ return [
             'p' => [
                 'Draft 20 lleva esta mecánica a un duelo de dos jugadores en el navegador: 20 monedas cada uno, 8 rondas y una temática por partida (fútbol, comida, anime, streamers y 68 más). En cada ronda sale un ítem a subasta y se puja por turnos con PUJAR +1 o PUJAR +3; quien se baja deja que el último pujador pague el precio y se quede el ítem.',
                 'Hay dos reglas que le dan carácter: cada jugador puede atesorar un máximo de 4 ítems (a partir de ahí, los ítems van al rival) y, si te quedas sin monedas en una ronda nueva, cedes el ítem y el rival decide si se lo queda por 1 moneda o te lo regala. Al final gana quien suma más ⭐ y, en caso de empate, quien conserve más monedas.',
-                'No hay cuenta, ni descarga, ni anuncios dentro de la partida: se crea una sala, se comparte el código o el enlace y se juega. También hay partida rápida (emparejamiento automático) y práctica contra el bot en cuatro dificultades.',
+                'No hay cuenta ni descarga: se crea una sala, se comparte el código o el enlace y se juega (con publicidad discreta junto al contenido). También hay partida rápida (emparejamiento automático) y práctica contra el bot en cuatro dificultades.',
             ],
         ],
         [

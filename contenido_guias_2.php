@@ -95,9 +95,9 @@ return [
                 'h' => 'Comparativa rápida',
                 'p' => [
                     'Plataforma: You Have $20 es una app iOS (App Store); Draft 20 se juega en el navegador, en Android, iPhone o PC.',
-                    'Precio: en You Have $20 los juegos con categoría aleatoria son gratis y las opciones extra (elegir categoría o crearlas con IA) van con suscripción PRO; Draft 20 es gratis y sin anuncios, con todas las temáticas disponibles.',
+                    'Precio: en You Have $20 los juegos con categoría aleatoria son gratis y las opciones extra (elegir categoría o crearlas con IA) van con suscripción PRO; Draft 20 es gratis, con todas las temáticas disponibles y publicidad discreta.',
                     'Jugadores: en You Have $20 dos personas pujan en el mismo teléfono y el resto hace de jurado; en Draft 20 juegan exactamente dos, cada uno en su dispositivo, con un código de sala.',
-                    'Contenido: You Have $20 ofrece unas 40 categorías en 25 idiomas; Draft 20 tiene 55 temáticas con 20 ítems cada una, con acento muy español (tapas, fútbol, streamers).',
+                    'Contenido: You Have $20 ofrece unas 40 categorías en 25 idiomas; Draft 20 tiene 69 temáticas con 20 ítems cada una, con acento muy español (tapas, fútbol, streamers).',
                     'Registro: ninguno de los dos lo pide.',
                 ],
             ],

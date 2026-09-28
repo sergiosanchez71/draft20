@@ -239,7 +239,7 @@ return [
             [
                 'h' => 'Draft 20: gratis, en el navegador y sin cuentas',
                 'p' => [
-                    'Draft 20 es un duelo de subastas para dos jugadores que funciona exactamente así: entras, eliges temática (o dejas que salga aleatoria), compartes el enlace y jugáis 8 rondas de pujas. No hay cuenta, no hay descarga obligatoria y no hay anuncios dentro de la partida.',
+                    'Draft 20 es un duelo de subastas para dos jugadores que funciona exactamente así: entras, eliges temática (o dejas que salga aleatoria), compartes el enlace y jugáis 8 rondas de pujas. No hay cuenta ni descarga obligatoria, y los anuncios aparecen junto al contenido sin interrumpir la partida.',
                     'Tampoco se piden datos para jugar: la sesión vive en tu navegador y el progreso local (récord, logros y serie) se guarda en tu propio dispositivo. Es gratis en el navegador y, si lo prefieres, se puede instalar como aplicación desde el propio móvil con un botón, sin pasar por una tienda.',
                     'Y si nadie está disponible para jugar en ese momento, hay partida rápida contra otra persona o práctica contra el bot con cuatro dificultades.',
                 ],
@@ -255,7 +255,7 @@ return [
         'faq' => [
             ['q' => '¿Draft 20 pide correo o cuenta?', 'a' => 'No. Solo un nombre para mostrar en la partida, que puede ser lo que quieras. No hay registro ni contraseña.'],
             ['q' => '¿Hay que descargar algo?', 'a' => 'No es obligatorio: se juega en el navegador. Si quieres, puedes instalarlo como app web desde el propio móvil (Compartir → Añadir a pantalla de inicio en iPhone, o el botón de instalar en Android).'],
-            ['q' => '¿Tiene anuncios o microtransacciones?', 'a' => 'No hay anuncios dentro de la partida ni compras: las 20 monedas y las 8 rondas son iguales para todos.'],
+            ['q' => '¿Tiene anuncios o microtransacciones?', 'a' => 'Hay anuncios discretos de Google junto al contenido (nunca interrumpen la partida) y no hay compras ni microtransacciones: las 20 monedas y las 8 rondas son iguales para todos.'],
             ['q' => '¿Necesito crear una sala o puedo jugar ya?', 'a' => 'Puedes pulsar Partida rápida y el sistema te empareja con la primera persona que esté buscando; o crear una sala y compartir el código.'],
         ],
         'enlaces' => [
