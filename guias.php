@@ -63,6 +63,8 @@ pagina_head([
             <?php endforeach; ?>
         </ul>
 
+        <?= ads_slot() ?>
+
         <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
     </main>
 <?php

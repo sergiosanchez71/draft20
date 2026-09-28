@@ -34,7 +34,7 @@ csp_headers();
     <meta name="app-build" content="<?= e(app_build()) ?>">
     <title>Draft 20 — Partida</title>
     <meta name="robots" content="noindex, follow">
-    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="<?= e(asset('icons/favicon.ico')) ?>" sizes="any">
     <link rel="apple-touch-icon" href="<?= e(asset('icons/icon-180.png')) ?>">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="apple-mobile-web-app-capable" content="yes">

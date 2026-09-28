@@ -11,7 +11,7 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.3.3';
+const APP_VERSION = '1.3.4';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 const ADSENSE_SLOT_JUEGO = '6658157047';
 const ADSENSE_SLOT_FINAL = '4631951476';
@@ -239,6 +239,15 @@ function evento_pagina_actual(): string
         'guias.php' => 'page:guias',
         'glosario.php' => 'page:glosario',
         'como_jugar.php' => 'page:como-jugar',
+        'estrategia.php' => 'page:estrategia',
+        'preguntas-frecuentes.php' => 'page:faq',
+        'terminos.php' => 'page:terminos',
+        'ranking.php' => 'page:ranking',
+        'juegos_de_subasta.php' => 'page:subasta',
+        'acerca.php' => 'page:acerca',
+        'contacto.php' => 'page:contacto',
+        'privacidad.php' => 'page:privacidad',
+        'aviso_legal.php' => 'page:aviso',
     ];
     $script = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
     return $mapa[$script] ?? '';

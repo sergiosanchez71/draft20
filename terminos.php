@@ -4,7 +4,8 @@
  *
  * Condiciones del servicio: uso gratuito sin cuenta, conducta, disponibilidad
  * y límites. Complementa al aviso legal (datos del titular, LSSI-CE) y a la
- * política de privacidad (datos). Sin anuncios por ser página legal.
+ * política de privacidad (datos). Sin slots de publicidad, como el resto
+ * de páginas legales (privacidad, aviso legal) y de servicio (contacto).
  */
 declare(strict_types=1);
 

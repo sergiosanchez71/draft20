@@ -29,7 +29,19 @@ pagina_head([
         <?php foreach ($secciones as $s): ?>
         <section class="mb-6">
             <h2 class="text-lg font-bold text-amber-300 mb-2"><?= e((string) ($SEO[$s[0]] ?? '')) ?></h2>
-            <p class="text-sm text-slate-300 leading-relaxed"><?= e((string) ($SEO[$s[1]] ?? '')) ?></p>
+            <?php
+            $textoPriv = e((string) ($SEO[$s[1]] ?? ''));
+            if ($s[0] === 'priv_terceros_titulo') {
+                // Enlaces blanqueados (origen: nuestros propios textos, ya escapados).
+                $textoPriv = str_replace(
+                    ['adssettings.google.com', 'policies.google.com/technologies/ads'],
+                    ['<a class="text-amber-400 hover:text-amber-300" href="https://adssettings.google.com" rel="noopener nofollow">adssettings.google.com</a>',
+                     '<a class="text-amber-400 hover:text-amber-300" href="https://policies.google.com/technologies/ads" rel="noopener nofollow">policies.google.com/technologies/ads</a>'],
+                    $textoPriv
+                );
+            }
+            ?>
+            <p class="text-sm text-slate-300 leading-relaxed"><?= $textoPriv ?></p>
         </section>
         <?php endforeach; ?>
         <p class="text-xs text-slate-400 mt-8 mb-6">Última actualización: <?= e(date('m/Y')) ?></p>

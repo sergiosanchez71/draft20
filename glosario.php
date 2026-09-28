@@ -83,6 +83,8 @@ pagina_head([
             <?php endforeach; ?>
         </dl>
 
+        <?= ads_slot() ?>
+
         <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6">Jugar ahora</a>
     </main>
 <?php

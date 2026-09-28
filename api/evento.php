@@ -25,7 +25,9 @@ const CUERPO_MAX  = 300;
 const RETENCION_D = 180; // días de contadores que se conservan
 const EVENTOS = [
     'page:home', 'page:tematica', 'page:categoria', 'page:guia', 'page:guias',
-    'page:glosario', 'page:como-jugar',
+    'page:glosario', 'page:como-jugar', 'page:estrategia', 'page:faq',
+    'page:terminos', 'page:ranking', 'page:subasta', 'page:acerca',
+    'page:contacto', 'page:privacidad', 'page:aviso',
     'game:creada', 'game:rapida', 'game:bot', 'game:fin', 'pwa:install',
 ];
 

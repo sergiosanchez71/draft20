@@ -1,7 +1,7 @@
 <?php
 /**
  * Draft 20 — sitemap.xml dinámico.
- * Incluye: home, páginas de soporte y las 69 fichas de temática.
+ * Incluye: home, páginas de soporte y pilares, categorías, guías y las 69 fichas de temática.
  * Se sirve en https://draft20.es/sitemap.xml (rewrite en .htaccess).
  */
 declare(strict_types=1);
@@ -33,7 +33,7 @@ $urls = [
     ['loc' => SITE_URL . '/como-jugar-y-estrategia', 'lastmod' => $mtimeMax(['estrategia.php', 'contenido_estrategia.php']), 'changefreq' => 'monthly', 'priority' => '0.9'],
     ['loc' => SITE_URL . '/preguntas-frecuentes', 'lastmod' => $mtimeMax(['preguntas-frecuentes.php', 'contenido_faq.php']), 'changefreq' => 'monthly', 'priority' => '0.8'],
     ['loc' => SITE_URL . '/terminos', 'lastmod' => $mtime('terminos.php'), 'changefreq' => 'yearly', 'priority' => '0.3'],
-    ['loc' => SITE_URL . '/guias', 'lastmod' => $mtimeMax(['guias.php', 'contenido_seo.php', 'contenido_guias_1.php', 'contenido_guias_2.php', 'contenido_guias_3.php']), 'changefreq' => 'weekly', 'priority' => '0.8'],
+    ['loc' => SITE_URL . '/guias', 'lastmod' => $mtimeMax(['guias.php', 'contenido_seo.php', 'contenido_guias_1.php', 'contenido_guias_2.php', 'contenido_guias_3.php', 'contenido_guias_4.php']), 'changefreq' => 'weekly', 'priority' => '0.8'],
     ['loc' => SITE_URL . '/acerca', 'lastmod' => $mtime('acerca.php'), 'changefreq' => 'monthly', 'priority' => '0.5'],
     ['loc' => SITE_URL . '/contacto', 'lastmod' => $mtime('contacto.php'), 'changefreq' => 'yearly', 'priority' => '0.4'],
     ['loc' => SITE_URL . '/privacidad', 'lastmod' => $mtime('privacidad.php'), 'changefreq' => 'yearly', 'priority' => '0.3'],

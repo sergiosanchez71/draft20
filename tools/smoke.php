@@ -354,7 +354,7 @@ try {
     check(strpos((string) $rJuegoAds['raw'], '"banner":"6658157047"') !== false
         && strpos((string) $rJuegoAds['raw'], '"final":"4631951476"') !== false,
         'juego: slots banner/final en window.__ADS');
-    foreach (['/tematica.php?id=futbol', '/guia.php?slug=draft-de-20-monedas', '/guia.php?slug=juegos-para-dos-personas', '/guia.php?slug=juegos-rapidos-cinco-minutos', '/juegos_de_subasta.php', '/como_jugar.php', '/estrategia.php', '/preguntas-frecuentes.php'] as $rutaCont) {
+    foreach (['/tematica.php?id=futbol', '/guia.php?slug=draft-de-20-monedas', '/guia.php?slug=juegos-para-dos-personas', '/guia.php?slug=juegos-rapidos-cinco-minutos', '/juegos_de_subasta.php', '/como_jugar.php', '/estrategia.php', '/preguntas-frecuentes.php', '/categoria.php?id=comida', '/guias.php', '/glosario.php'] as $rutaCont) {
         $rCont = http_req('GET', $base . $rutaCont);
         check($rCont['code'] === 200 && strpos((string) $rCont['raw'], 'data-ad-slot="1818472919"') !== false,
             'contenido ' . $rutaCont . ': bloque in-article');
@@ -419,6 +419,8 @@ try {
     // 11) Contador anónimo de eventos + beacon en las páginas SEO.
     $rEv = http_req('POST', $base . '/api/evento.php', ['evento' => 'page:home']);
     check($rEv['code'] === 204, 'evento válido → 204');
+    $rEvFaq = http_req('POST', $base . '/api/evento.php', ['evento' => 'page:faq']);
+    check($rEvFaq['code'] === 204, 'evento de pilar nuevo → 204');
     $rEv2 = http_req('POST', $base . '/api/evento.php', ['evento' => 'evento:inventado']);
     check($rEv2['code'] === 400, 'evento fuera de la lista blanca → 400');
     $rEv3 = http_req('GET', $base . '/api/evento.php');

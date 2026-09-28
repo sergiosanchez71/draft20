@@ -117,6 +117,8 @@ pagina_head([
             <?php endforeach; ?>
         </ul>
 
+        <?= ads_slot() ?>
+
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(seo_ui('categoria_otras_titulo')) ?></h2>
         <ul class="flex flex-wrap gap-2 mb-6">
             <?php foreach ($categorias as $otra): if ($otra['id'] === $cat['id']) continue; ?>
