@@ -117,6 +117,8 @@
             "ultima_ronda": "¡Última ronda!",
             "sin_conexion": "Sin conexión · reintentando…",
             "conexion_restablecida": "Conexión restablecida",
+            "error_timeout": "Sin respuesta (15 s). Revisa tus datos o WiFi: la partida sigue guardada, toca de nuevo.",
+            "error_servidor": "El servidor no responde. Espera unos segundos y reintenta.",
             "msg_rival_ausente": "⚠️ {nombre} lleva {seg}s sin responder. Esperando reconexión…",
             "rival_ha_vuelto": "🏃 {nombre} ha vuelto a la partida",
             "msg_deadlock_decide_corto": "El otro jugador cedió. Decide:",

@@ -101,7 +101,9 @@
             data._status = r.status;
             return data;
         } catch (e) {
-            return { ok: false, _status: 0, error: 'network' };
+            // Distinguir timeout (abort) de fallo de red: mensajes descriptivos.
+            const expiro = (e && e.name === 'AbortError') || (ctl && ctl.signal && ctl.signal.aborted);
+            return { ok: false, _status: 0, error: expiro ? 'timeout' : 'network' };
         } finally {
             if (temporizador) clearTimeout(temporizador);
         }
@@ -1084,6 +1086,13 @@
         $('#codeJoin').focus();
     }
 
+    /** Error de red/timeout con mensaje humano (la sala no se pierde). */
+    function errorRedHumano(codigo) {
+        if (codigo === 'timeout') return t('ui.juego.error_timeout');
+        if (codigo === 'network') return t('ui.juego.sin_conexion');
+        return codigo || 'Error';
+    }
+
     function showLobbyError(msg) {
         const box = $('#lobbyError');
         if (!box) return;
@@ -1103,7 +1112,7 @@
             mostrar_valores: !!state.mostrarValores,
         });
         btn.disabled = false; btn.classList.remove('opacity-50');
-        if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
+        if (!r.ok) { showLobbyError(errorRedHumano(r.error)); vibrate([100, 50, 100]); return; }
         state.codigo = r.codigo;
         state.jugadorId = r.jugador_id;
         state.jugadorNombre = (nombre || '').trim() || ('Jugador 1');
@@ -1140,7 +1149,7 @@
             mostrar_valores: mv,
             torre: esTorre,
         });
-        if (!r.ok) { toast(r.error || 'Error'); return false; }
+        if (!r.ok) { toast(errorRedHumano(r.error)); return false; }
         const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: nombreBot(), bot: true, creador_id: r.jugador_id });
         if (!r2.ok) { toast(r2.error || 'Error'); return false; }
         try {
@@ -1296,7 +1305,7 @@
         btn.disabled = true; btn.classList.add('opacity-50');
         const r = await api('POST', 'api/unirse_sala.php', { codigo: codigo, nombre: nombre });
         btn.disabled = false; btn.classList.remove('opacity-50');
-        if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
+        if (!r.ok) { showLobbyError(errorRedHumano(r.error)); vibrate([100, 50, 100]); return; }
         state.codigo = codigo;
         state.jugadorId = r.jugador_id;
         state.jugadorNombre = (nombre || '').trim() || ('Jugador 2');
@@ -1373,7 +1382,7 @@
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
         const r = await api('POST', 'api/partida_rapida.php', { nombre: nombre, mostrar_valores: !!state.mostrarValores });
         if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
-        if (!r.ok) { showLobbyError(r.error || 'Error'); vibrate([100, 50, 100]); return; }
+        if (!r.ok) { showLobbyError(errorRedHumano(r.error)); vibrate([100, 50, 100]); return; }
 
         state.codigo = r.codigo;
         state.jugadorId = r.jugador_id;

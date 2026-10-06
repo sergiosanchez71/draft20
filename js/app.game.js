@@ -337,6 +337,10 @@
             // un 4xx/5xx del servidor no debe mostrar el banner offline.
             if (r._status === 0) {
                 state.pollFailures = (state.pollFailures || 0) + 1;
+                // Primer fallo: avisar ya (no esperar al banner del 3º).
+                if (state.pollFailures === 1) {
+                    toast(r.error === 'timeout' ? t('ui.juego.error_timeout') : t('ui.juego.sin_conexion'), 4000);
+                }
                 if (state.pollFailures >= 3) {
                     setOfflineBanner(true);
                     state.offlineActivo = true;
@@ -1767,7 +1771,7 @@
                 accion: 'reiniciar',
                 tematica: tematica,
             });
-            if (!r.ok) { toast(r.error || 'Error'); return; }
+            if (!r.ok) { toast(errorJuegoHumano(r.error, r._status)); return; }
             cerrar();
             aplicarSalaReiniciada(r.sala);
             return;
@@ -1780,7 +1784,7 @@
             tematica: tematica,
         });
         if (!r.ok) {
-            toast(r.error || 'Error');
+            toast(errorJuegoHumano(r.error, r._status));
             if (r._status === 409) await pollGameTick(); // p. ej. el rival ya propuso
             return;
         }
@@ -1797,7 +1801,7 @@
             jugador_id: state.jugadorId,
             accion: 'aceptar',
         });
-        if (!r.ok) { toast(r.error || 'Error'); return; }
+        if (!r.ok) { toast(errorJuegoHumano(r.error, r._status)); return; }
         aplicarSalaReiniciada(r.sala);
     }
 
@@ -1807,7 +1811,7 @@
             jugador_id: state.jugadorId,
             accion: 'cancelar',
         });
-        if (!r.ok) { toast(r.error || 'Error'); return; }
+        if (!r.ok) { toast(errorJuegoHumano(r.error, r._status)); return; }
         state.propuestaEnviada = false;
         state.sala = r.sala;
         toast(t('ui.juego.msg_propuesta_cancelada'));
@@ -1827,7 +1831,7 @@
             state.lastRenderSig = salaSignature(state.sala);
             renderGame(null);
         } else {
-            toast(r.error || 'Error');
+            toast(errorJuegoHumano(r.error, r._status));
         }
     }
 
@@ -1840,6 +1844,14 @@
     }
     async function onAbandonar() {
         await sendAction('abandonar');
+    }
+
+    /** Error de API con mensaje humano (timeout/red vs servidor). */
+    function errorJuegoHumano(codigo, _status) {
+        if (codigo === 'timeout') return t('ui.juego.error_timeout');
+        if (codigo === 'network') return t('ui.juego.sin_conexion');
+        if (!_status || _status >= 500) return t('ui.juego.error_servidor');
+        return codigo || 'Error';
     }
 
     async function sendAction(accion, incremento, extras) {
@@ -1855,8 +1867,10 @@
         try {
             const r = await api('POST', 'api/accion.php', body);
             if (!r.ok) {
-                // Sin conexión (timeout incluido): mensaje humano, no el crudo.
-                toast(r.error === 'network' ? t('ui.juego.sin_conexion') : (r.error || 'Error'));
+                // Mensaje descriptivo según la causa: timeout, red o servidor.
+                // La partida sigue guardada en el servidor: reintentar es seguro.
+                if (r.error === 'timeout') toast(t('ui.juego.error_timeout'), 5000);
+                else toast(errorJuegoHumano(r.error, r._status));
                 vibrate([100, 50, 100]);
                 return;
             }
