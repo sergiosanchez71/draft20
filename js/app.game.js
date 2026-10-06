@@ -2068,28 +2068,6 @@
         window.location.href = 'index.php';
     }
 
-    /** Piso superado (no final): desglose + logros + siguiente/guardar. */
-    function torrePantallaWin(d, r, nuevos) {
-        const run = window.Torre.cargar();
-        const sk = torreEsqueleto();
-        if (!sk) return;
-        torreDesglose(sk.top, 'win', d, r, run.partidasGanadas);
-        const banner = torreBannerLogros(nuevos);
-        if (banner) sk.top.appendChild(banner);
-        sk.top.appendChild(el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
-            t('ui.torre.siguiente', { tema: tTematica(torreTemaNext), prox: run.pisoActual })));
-        const box = torreAcciones();
-        if (!box) return;
-        box.appendChild(el('button', {
-            class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
-            onclick: async function () { await torreJugarSiguienteReal(torreTemaNext); },
-        }, t('ui.torre.btn_siguiente')));
-        box.appendChild(el('button', {
-            class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
-            onclick: function () { torreIrLobby(); },
-        }, t('ui.torre.btn_guardar')));
-    }
-
     let torreTemaNext = null;
     let torreUltimo = null;
 
@@ -2159,11 +2137,12 @@
         return box;
     }
 
-    function torrePantallaWin(d, r, nuevos, pisoGanado) {
+    /** Piso superado (no final): desglose + nueva partida + guardar. */
+    function torrePantallaWin(d, r, nuevos) {
         const run = window.Torre.cargar();
         const sk = torreEsqueleto();
         if (!sk) return;
-        torreDesglose(sk.top, 'win', d, r, pisoGanado);
+        torreDesglose(sk.top, 'win', d, r, run.partidasGanadas);
         const banner = torreBannerLogros(nuevos);
         if (banner) sk.top.appendChild(banner);
         sk.top.appendChild(el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
@@ -2173,7 +2152,7 @@
         box.appendChild(el('button', {
             class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
             onclick: async function () { await torreJugarSiguienteReal(torreTemaNext); },
-        }, t('ui.torre.btn_siguiente')));
+        }, t('ui.torre.btn_nueva', { n: run.pisoActual })));
         box.appendChild(el('button', {
             class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
             onclick: function () { torreIrLobby(); },
@@ -2190,11 +2169,15 @@
         await iniciarPartidaBot(tema, window.Torre.DIFICULTAD, state.jugadorNombre || 'Tú', false, { torre: true });
     }
 
-    /** Derrota: desglose + revive (si hay) o fin directo; todo inline. */
+    /** Derrota: desglose + titular de batalla perdida + revive (si hay) o fin; todo inline. */
     function torrePantallaDerrota(d, r, piso, resultado) {
         const sk = torreEsqueleto();
         if (!sk) return;
         torreDesglose(sk.top, resultado, d, r, piso);
+        sk.top.appendChild(el('div', { class: 'p-4 rounded-lg mb-4 text-center fade-in bg-slate-800 border border-rose-500' }, [
+            el('p', { class: 'text-base font-bold text-rose-400' }, t('ui.torre.perdida_titulo')),
+            el('p', { class: 'text-xs text-slate-300 mt-1' }, t('ui.torre.perdida_sub')),
+        ]));
         const run = window.Torre.cargar();
         const puedeRevivir = window.Torre.REVIVES_ACTIVOS && run && run.enProgreso && run.vidasRestantes > 0;
         const box = torreAcciones();
@@ -2306,14 +2289,10 @@
         } catch (e) { /* sin portapapeles */ }
     }
 
-    /** Fin de la subida tras derrota: run ya terminado; reintentar u salir. */
+    /** Fin de la subida tras derrota: solo acciones (el titular ya está visible). */
     function torrePantallaFin(piso) {
         const box = torreAcciones();
         if (!box) { window.location.href = 'index.php'; return; }
-        box.appendChild(el('div', { class: 'text-center' }, [
-            el('h2', { class: 'text-xl font-bold text-rose-400 mb-1' }, t('ui.torre.fin_titulo')),
-            el('p', { class: 'text-sm text-slate-300 mb-1' }, t('ui.torre.fin_sub', { piso: piso })),
-        ]));
         box.appendChild(el('button', {
             class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap mt-2',
             onclick: async function () {
