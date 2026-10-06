@@ -1605,6 +1605,9 @@
                     torreOk = true;
                     try { evento('torre:final_ok'); } catch (e) { /* ignore */ }
                 } catch (e) {
+                    // Chivato visible: si el flujo Torre falla, se sabe al
+                    // instante (antes caía en silencio a la final normal).
+                    try { toast(t('ui.torre.fallback'), 4000); } catch (e3) { /* ignore */ }
                     try { evento('torre:final_fallback'); } catch (e2) { /* ignore */ }
                 }
                 try { if (typeof stopPollingGame === 'function') stopPollingGame(); } catch (e) { /* ignore */ }
@@ -2127,6 +2130,25 @@
         top.appendChild(torreFilaEquipo(t('ui.torre.res_rival'), d.rivalItems, r.rivalScore, r.rivalGastado, d.rivalDinero));
     }
 
+    /**
+     * Bloque de resultado best-effort: si el desglose falla por lo que sea,
+     * se pinta un titular mínimo. Las acciones se pintan SIEMPRE después,
+     * así ningún fallo deja la pantalla sin salida.
+     */
+    function torreBloqueResultado(sk, resultado, d, r, piso, extra) {
+        try {
+            torreDesglose(sk.top, resultado, d, r, piso);
+            if (extra) extra();
+        } catch (e) {
+            try {
+                sk.top.appendChild(el('p', { class: 'text-base font-bold text-center text-slate-100 mb-4' },
+                    resultado === 'win'
+                        ? t('ui.torre.res_gana_tu', { piso: piso })
+                        : t('ui.torre.perdida_titulo')));
+            } catch (e2) { /* ignore */ }
+        }
+    }
+
     /** Contenedor de acciones (se repinta por estado; para el timer previo). */
     function torreAcciones() {
         let box = document.getElementById('torreAcciones');
@@ -2146,11 +2168,12 @@
         const run = window.Torre.cargar();
         const sk = torreEsqueleto();
         if (!sk) return;
-        torreDesglose(sk.top, 'win', d, r, run.partidasGanadas);
-        const banner = torreBannerLogros(nuevos);
-        if (banner) sk.top.appendChild(banner);
-        sk.top.appendChild(el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
-            t('ui.torre.siguiente', { tema: tTematica(torreTemaNext), prox: run.pisoActual })));
+        torreBloqueResultado(sk, 'win', d, r, run.partidasGanadas, function () {
+            const banner = torreBannerLogros(nuevos);
+            if (banner) sk.top.appendChild(banner);
+            sk.top.appendChild(el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
+                t('ui.torre.siguiente', { tema: tTematica(torreTemaNext), prox: run.pisoActual })));
+        });
         const box = torreAcciones();
         if (!box) return;
         box.appendChild(el('button', {
@@ -2177,11 +2200,12 @@
     function torrePantallaDerrota(d, r, piso, resultado) {
         const sk = torreEsqueleto();
         if (!sk) return;
-        torreDesglose(sk.top, resultado, d, r, piso);
-        sk.top.appendChild(el('div', { class: 'p-4 rounded-lg mb-4 text-center fade-in bg-slate-800 border border-rose-500' }, [
-            el('p', { class: 'text-base font-bold text-rose-400' }, t('ui.torre.perdida_titulo')),
-            el('p', { class: 'text-xs text-slate-300 mt-1' }, t('ui.torre.perdida_sub')),
-        ]));
+        torreBloqueResultado(sk, resultado, d, r, piso, function () {
+            sk.top.appendChild(el('div', { class: 'p-4 rounded-lg mb-4 text-center fade-in bg-slate-800 border border-rose-500' }, [
+                el('p', { class: 'text-base font-bold text-rose-400' }, t('ui.torre.perdida_titulo')),
+                el('p', { class: 'text-xs text-slate-300 mt-1' }, t('ui.torre.perdida_sub')),
+            ]));
+        });
         const run = window.Torre.cargar();
         const puedeRevivir = window.Torre.REVIVES_ACTIVOS && run && run.enProgreso && run.vidasRestantes > 0;
         const box = torreAcciones();
@@ -2236,12 +2260,13 @@
         const sk = torreEsqueleto();
         if (!sk) return;
         sk.top.appendChild(el('div', { class: 'text-center text-5xl mb-2' }, '🏆'));
-        torreDesglose(sk.top, 'win', d, r, 10);
-        sk.top.appendChild(el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
-            t('ui.torre.victoria_stats', { gastado: stats.gastado, rev: stats.rev, temas: stats.temas })));
-        const banner = torreBannerLogros(nuevos);
-        if (banner) sk.top.appendChild(banner);
-        sk.top.appendChild(torreHueco());
+        torreBloqueResultado(sk, 'win', d, r, 10, function () {
+            sk.top.appendChild(el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
+                t('ui.torre.victoria_stats', { gastado: stats.gastado, rev: stats.rev, temas: stats.temas })));
+            const banner = torreBannerLogros(nuevos);
+            if (banner) sk.top.appendChild(banner);
+            sk.top.appendChild(torreHueco());
+        });
         const box = torreAcciones();
         if (!box) return;
         const runStats = { gastado: stats.gastado, vidasRestantes: 3 - stats.rev, tematicasJugadas: [] };

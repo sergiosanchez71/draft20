@@ -94,6 +94,7 @@
             "fin_titulo": "Fin de la subida",
             "fin_sub": "Caíste en el Piso {piso}. Puedes intentarlo de nuevo.",
             "perdida_titulo": "💀 Has perdido la batalla de la Torre",
+            "fallback": "Torre no disponible aquí: final normal",
             "perdida_sub": "El run termina aquí. La Torre se conquista del tirón: vuelve a empezar desde el Piso 1.",
             "btn_nueva": "Nueva partida · Piso {n} ⚔️",
             "hud_piso": "🗼 Piso {piso}/10",
