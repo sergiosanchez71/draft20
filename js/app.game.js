@@ -187,6 +187,7 @@
                 const meta = window.Torre.cargar();
                 if (meta && meta.enProgreso && meta.codigoSala === codigo && state.bot) {
                     state.torre = meta;
+                    evento('torre:vinculada');
                 }
             }
         } catch (e) { state.torre = null; }
@@ -1602,7 +1603,10 @@
                         desempate: porDesempate, tema: (s.tematica || ''),
                     });
                     torreOk = true;
-                } catch (e) { /* fallback a final normal */ }
+                    try { evento('torre:final_ok'); } catch (e) { /* ignore */ }
+                } catch (e) {
+                    try { evento('torre:final_fallback'); } catch (e2) { /* ignore */ }
+                }
                 try { if (typeof stopPollingGame === 'function') stopPollingGame(); } catch (e) { /* ignore */ }
                 if (torreOk) return;
             } else {
