@@ -1251,7 +1251,8 @@
         if (!run || !run.enProgreso) return; // SSR ya pintó el botón de empezar
         clear(box);
         box.appendChild(el('p', { class: 'text-center text-amber-300 font-bold text-sm mb-3' },
-            t('ui.torre.estado', { piso: run.pisoActual, vidas: run.vidasRestantes })));
+            t('ui.torre.hud_piso', { piso: run.pisoActual })
+            + (window.Torre.REVIVES_ACTIVOS ? ' · ❤️' + run.vidasRestantes : '')));
         box.appendChild(el('button', {
             id: 'btnTorreContinuar',
             class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap text-sm',

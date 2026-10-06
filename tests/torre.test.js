@@ -71,18 +71,35 @@ const r10b = Object.assign({}, r0, { partidasGanadas: 10, vidasRestantes: 2 });
 check(!Torre.logrosGanados(r10b, true).includes('torre_intocable'), 'con revive no hay intocable');
 check(!Torre.logrosGanados(r10, false).includes('torre_piso10'), 'piso 10 exige victoria');
 
-// 7) Victoria y texto para compartir.
+// 7) Desglose del piso para la pantalla de resultados.
+const itv = (v, p) => ({ id: 'x', valor: v, precio: p });
+const dz1 = Torre.resumenPiso([itv(9, 6), itv(7, 4)], [itv(8, 8), itv(5, 5)], 10, 7);
+check(dz1.resultado === 'win' && dz1.miScore === 16 && dz1.rivalScore === 13, 'desglose: gana por estrellas');
+check(dz1.miGastado === 10 && dz1.rivalGastado === 13 && dz1.desempate === false, 'desglose: gasto por dinero restante');
+const dz2 = Torre.resumenPiso([itv(6, 4)], [itv(6, 9)], 12, 5);
+check(dz2.resultado === 'win' && dz2.desempate === true, 'desglose: desempate por monedas');
+const dz3 = Torre.resumenPiso([itv(6, 1)], [itv(6, 1)], 8, 8);
+check(dz3.resultado === 'tablas' && dz3.desempate === false, 'desglose: tablas exacta');
+
+// 8) Anti-reproceso: salas ya resueltas (volver atrás/recarga).
+check(Torre.pisoHecho('ZZZZZ') === false, 'sala nueva no procesada');
+Torre.marcarPisoHecho('ZZZZZ');
+check(Torre.pisoHecho('ZZZZZ') === true, 'sala marcada como procesada');
+Torre.marcarPisoHecho('ZZZZZ');
+check(Torre.pisoHecho('ZZZZZ') === true, 'marcar dos veces no duplica');
+
+// 9) Victoria y texto para compartir.
 check(Torre.victoria(r10) === true, 'victoria con 10 ganadas');
 check(Torre.victoria(r7) === false, 'sin victoria con 7');
 const txt = Torre.textoCompartir(r10, 'Sergio');
 check(txt.includes('10/10') && txt.includes('https://draft20.es/'), 'texto para compartir con enlace');
 
-// 8) Terminar limpia.
+// 9) Terminar limpia.
 Torre.terminar();
 const rFin = Torre.cargar();
 check(rFin.enProgreso === false && rFin.pisoActual === 1, 'terminar: run limpio');
 
-// 9) Mock de anuncio recompensado (3 s y éxito; sin red).
+// 10) Mock de anuncio recompensado (3 s y éxito; sin red).
 let mockOk = false;
 Torre.mostrarAnuncioRecompensado(() => { mockOk = true; }, () => {});
 setTimeout(() => {

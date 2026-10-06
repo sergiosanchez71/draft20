@@ -93,6 +93,15 @@
             "btn_otra": "Reiniciar desde el Piso 1",
             "fin_titulo": "Fin de la subida",
             "fin_sub": "Caíste en el Piso {piso}. Puedes intentarlo de nuevo.",
+            "hud_piso": "🗼 Piso {piso}/10",
+            "res_tu_equipo": "Tu equipo",
+            "res_rival": "Rival",
+            "res_totales": "{puntos}⭐ · {gasto}🪙 gastadas · {resto}🪙 restantes",
+            "res_gana_tu": "¡Piso {piso} superado!",
+            "res_gana_bot": "El bot gana el Piso {piso}",
+            "res_tablas": "Tablas en el Piso {piso}",
+            "res_desempate": "Desempate por monedas restantes",
+            "res_salir": "Salir al menú",
             "logro_nuevo": "🏅 Logro de Torre:"
         },
         "juego": {

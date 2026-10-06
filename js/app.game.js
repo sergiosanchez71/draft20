@@ -178,6 +178,12 @@
         state.torre = null;
         try {
             if (window.Torre) {
+                // Sala ya resuelta y vuelta atrás/recarga: al lobby (el run
+                // ya avanzó; reentrar reprocesaría el piso).
+                if (window.Torre.pisoHecho(codigo)) {
+                    window.location.href = 'index.php';
+                    return;
+                }
                 const meta = window.Torre.cargar();
                 if (meta && meta.enProgreso && meta.codigoSala === codigo && state.bot) {
                     state.torre = meta;
@@ -1571,11 +1577,19 @@
         else if (myMoney > rivalMoney) { resultado = 'win'; porDesempate = true; }
         else if (rivalMoney > myMoney) { resultado = 'loss'; porDesempate = true; }
         // Torre: flujo propio (sin serie/stats/ranking normales) y sin revancha.
+        // Guardián: la pantalla final se repinta en cada tick; cada sala se
+        // procesa una sola vez (si no, doble avance o modales apilados).
         if (state.torre && window.Torre) {
-            torreAlTerminarPiso(resultado, {
-                score: myScore, rival: rivalScore, dinero: myMoney,
-                tema: (s.tematica || ''),
-            });
+            if (state.torreHecha !== state.codigo) {
+                state.torreHecha = state.codigo;
+                try { window.Torre.marcarPisoHecho(state.codigo); } catch (e) { /* ignore */ }
+                torreAlTerminarPiso(resultado, {
+                    miItems: myItems, rivalItems: rivalItems,
+                    miDinero: myMoney, rivalDinero: rivalMoney,
+                    miGastado: mySpent, rivalGastado: rivalSpent,
+                    desempate: porDesempate, tema: (s.tematica || ''),
+                });
+            }
             return;
         }
         registrarResultado(resultado);
@@ -1923,6 +1937,11 @@
         return ids;
     }
 
+    /** Vidas solo si los revives están activos; si no, solo el piso (1 vida). */
+    function torreVidasTxt(run) {
+        return (window.Torre.REVIVES_ACTIVOS && run) ? ' · ❤️' + run.vidasRestantes : '';
+    }
+
     function torrePintarHud() {
         if (!state.torre || !window.Torre) return;
         let bar = document.getElementById('torreHud');
@@ -1932,7 +1951,7 @@
             if (app && app.firstChild) app.insertBefore(bar, app.firstChild);
             else if (app) app.appendChild(bar);
         }
-        bar.textContent = t('ui.torre.hud', { piso: state.torre.pisoActual, vidas: state.torre.vidasRestantes });
+        bar.textContent = t('ui.torre.hud_piso', { piso: state.torre.pisoActual }) + torreVidasTxt(state.torre);
     }
 
     /**
@@ -2021,40 +2040,116 @@
         window.location.href = 'index.php';
     }
 
-    /** Rendirse: el tema jugado cuenta como visto y se vuelve al menú. */
-    function torreRendirse() {
-        try {
-            const run = window.Torre.cargar();
-            if (run && run.enProgreso && run.temaPiso && run.tematicasJugadas.indexOf(run.temaPiso) === -1) {
-                run.tematicasJugadas.push(run.temaPiso);
-                window.Torre.guardar(run);
-            }
-        } catch (e) { /* ignore */ }
-        torreIrLobby();
+    /** Piso superado (no final): desglose + logros + siguiente/guardar. */
+    function torrePantallaWin(d, r, nuevos) {
+        const run = window.Torre.cargar();
+        const sk = torreEsqueleto();
+        if (!sk) return;
+        torreDesglose(sk.top, 'win', d, r, run.partidasGanadas);
+        const banner = torreBannerLogros(nuevos);
+        if (banner) sk.top.appendChild(banner);
+        sk.top.appendChild(el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
+            t('ui.torre.siguiente', { tema: tTematica(torreTemaNext), prox: run.pisoActual })));
+        const box = torreAcciones();
+        if (!box) return;
+        box.appendChild(el('button', {
+            class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
+            onclick: async function () { await torreJugarSiguienteReal(torreTemaNext); },
+        }, t('ui.torre.btn_siguiente')));
+        box.appendChild(el('button', {
+            class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+            onclick: function () { torreIrLobby(); },
+        }, t('ui.torre.btn_guardar')));
     }
 
-    function torreModalTransicion(nuevos, temaSiguiente) {
-        const run = window.Torre.cargar();
-        const content = el('div', {}, [
-            el('h2', { class: 'text-xl font-bold text-emerald-400 mb-2 text-center' },
-                t('ui.torre.piso_superado', { piso: run.partidasGanadas })),
-            el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
-                t('ui.torre.siguiente', { tema: tTematica(temaSiguiente), prox: run.pisoActual })),
+    let torreTemaNext = null;
+    let torreUltimo = null;
+
+    /** Esqueleto de pantalla final de Torre sobre #itemCard (sin modales). */
+    function torreEsqueleto() {
+        torrePararTimer();
+        const card = $('#itemCard');
+        if (!card) return null;
+        card.classList.remove('pr-20', 'sm:pr-24');
+        clear(card);
+        const top = el('div', { id: 'finalTop' });
+        const bottom = el('div', { id: 'finalBottom' });
+        const host = el('div', { id: 'adFinalHost' });
+        const adFinal = crearAd('final', 'ad-final', 300, 250);
+        if (adFinal) host.appendChild(adFinal);
+        card.appendChild(top);
+        card.appendChild(host);
+        card.appendChild(bottom);
+        if (adFinal) pedirAd();
+        vibrate([100, 50, 100]);
+        try { sfx('fin'); } catch (e) { /* ignore */ }
+        return { top: top, bottom: bottom };
+    }
+
+    function torreFilaEquipo(titulo, items, score, gastado, resto) {
+        const filas = (items || []).map(function (it) {
+            const val = (it && +it.valor) || 0;
+            const pre = (it && it.precio !== undefined && it.precio !== null) ? ' · ' + it.precio + '🪙' : '';
+            return el('li', { class: 'flex items-center gap-2 bg-slate-700/60 rounded px-2 py-1.5 text-sm' }, [
+                el('span', { class: 'text-lg leading-none' }, (it && it.emoji) || '❔'),
+                el('span', { class: 'flex-1 truncate text-slate-100' }, (it && it.id) ? tItem(it.id) : ''),
+                el('span', { class: 'font-bold text-amber-300 font-mono' }, '★' + val + pre),
+            ]);
+        });
+        return el('div', { class: 'bg-slate-800 border border-slate-700 rounded-lg p-3 mb-3' }, [
+            el('div', { class: 'text-sm font-bold text-slate-100 mb-1' }, titulo),
+            el('ul', { class: 'space-y-1.5 mb-2' }, filas.length ? filas : [el('li', { class: 'text-xs text-slate-400' }, '—')]),
+            el('div', { class: 'text-xs text-slate-300' }, t('ui.torre.res_totales', { puntos: score, gasto: gastado, resto: resto })),
         ]);
+    }
+
+    /** Desglose completo del piso: resultado + equipos + totales. */
+    function torreDesglose(top, resultado, d, r, piso) {
+        let cab, clase;
+        if (resultado === 'win') { cab = t('ui.torre.res_gana_tu', { piso: piso }); clase = 'bg-emerald-500 text-slate-900'; }
+        else if (resultado === 'loss') { cab = t('ui.torre.res_gana_bot', { piso: piso }); clase = 'bg-rose-600 text-white'; }
+        else { cab = t('ui.torre.res_tablas', { piso: piso }); clase = 'bg-slate-700 text-slate-100'; }
+        const celdas = [el('p', { class: 'text-base font-bold' }, cab)];
+        if (r.desempate) celdas.push(el('p', { class: 'text-xs mt-1 opacity-80' }, t('ui.torre.res_desempate')));
+        top.appendChild(el('div', { class: 'text-center text-xs uppercase tracking-wide text-amber-400 font-bold mb-1' }, t('ui.torre.hud_piso', { piso: piso })));
+        top.appendChild(el('div', { class: 'p-4 rounded-lg mb-4 text-center fade-in ' + clase }, celdas));
+        top.appendChild(torreFilaEquipo(t('ui.torre.res_tu_equipo'), d.miItems, r.miScore, r.miGastado, d.miDinero));
+        top.appendChild(torreFilaEquipo(t('ui.torre.res_rival'), d.rivalItems, r.rivalScore, r.rivalGastado, d.rivalDinero));
+    }
+
+    /** Contenedor de acciones (se repinta por estado; para el timer previo). */
+    function torreAcciones() {
+        let box = document.getElementById('torreAcciones');
+        if (!box) {
+            const bottom = document.getElementById('finalBottom');
+            if (!bottom) return null;
+            box = el('div', { id: 'torreAcciones', class: 'flex flex-col gap-2 mt-2' });
+            bottom.appendChild(box);
+        }
+        torrePararTimer();
+        clear(box);
+        return box;
+    }
+
+    function torrePantallaWin(d, r, nuevos, pisoGanado) {
+        const run = window.Torre.cargar();
+        const sk = torreEsqueleto();
+        if (!sk) return;
+        torreDesglose(sk.top, 'win', d, r, pisoGanado);
         const banner = torreBannerLogros(nuevos);
-        if (banner) content.appendChild(banner);
-        content.appendChild(torreHueco());
-        const m = showModal(content);
-        content.appendChild(el('div', { class: 'flex flex-col gap-2 mt-4' }, [
-            el('button', {
-                class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
-                onclick: async function () { m.close(); await torreJugarSiguienteReal(temaSiguiente); },
-            }, t('ui.torre.btn_siguiente')),
-            el('button', {
-                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
-                onclick: function () { m.close(); torreIrLobby(); },
-            }, t('ui.torre.btn_guardar')),
-        ]));
+        if (banner) sk.top.appendChild(banner);
+        sk.top.appendChild(el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
+            t('ui.torre.siguiente', { tema: tTematica(torreTemaNext), prox: run.pisoActual })));
+        const box = torreAcciones();
+        if (!box) return;
+        box.appendChild(el('button', {
+            class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
+            onclick: async function () { await torreJugarSiguienteReal(torreTemaNext); },
+        }, t('ui.torre.btn_siguiente')));
+        box.appendChild(el('button', {
+            class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+            onclick: function () { torreIrLobby(); },
+        }, t('ui.torre.btn_guardar')));
     }
 
     /** Juega el piso con la temática ya asignada en la transición. */
@@ -2067,114 +2162,87 @@
         await iniciarPartidaBot(tema, window.Torre.DIFICULTAD, state.jugadorNombre || 'Tú', false, { torre: true });
     }
 
-    function torreMockModal() {
-        let hecho = false;
-        const content = el('div', {}, [
-            el('div', { class: 'text-4xl text-center mb-2' }, '📺'),
-            el('p', { class: 'text-sm text-slate-300 text-center mb-1' }, t('ui.torre.mock_anuncio')),
-            el('p', { id: 'torreMockTimer', class: 'text-4xl font-mono font-bold text-amber-400 text-center my-3' }, '3'),
-        ]);
-        const m = showModal(content);
-        const timer = torreCuentaAtras(3,
-            function (s) { const n = document.getElementById('torreMockTimer'); if (n) n.textContent = s; },
-            function () { if (hecho) return; hecho = true; m.close(); torreReintentar(); });
-        content.appendChild(el('button', {
-            class: 'w-full bg-slate-700 text-slate-200 py-2 rounded-lg btn-tap text-xs mt-2',
-            onclick: function () { if (hecho) return; hecho = true; timer.cancelar(); m.close(); torreModalDerrota(); },
-        }, t('ui.torre.mock_cerrar')));
+    /** Derrota: desglose + revive (si hay) o fin directo; todo inline. */
+    function torrePantallaDerrota(d, r, piso, resultado) {
+        const sk = torreEsqueleto();
+        if (!sk) return;
+        torreDesglose(sk.top, resultado, d, r, piso);
+        const run = window.Torre.cargar();
+        const puedeRevivir = window.Torre.REVIVES_ACTIVOS && run && run.enProgreso && run.vidasRestantes > 0;
+        const box = torreAcciones();
+        if (!box) return;
+        if (!puedeRevivir) {
+            torreTerminarYFin(piso);
+            return;
+        }
+        box.appendChild(el('p', { class: 'text-sm text-slate-300 text-center' }, t('ui.torre.derrota_sub')));
+        box.appendChild(el('p', { id: 'torreTimer', class: 'text-4xl font-mono font-bold text-amber-400 text-center my-2' }, '10'));
+        box.appendChild(el('button', {
+            class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap',
+            onclick: function () { torrePararTimer(); torreRevivir(); },
+        }, t('ui.torre.btn_revivir', { usadas: window.Torre.revivesUsados(run) })));
+        box.appendChild(el('button', {
+            class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+            onclick: function () { torrePararTimer(); torreTerminarYFin(piso); },
+        }, t('ui.torre.btn_rendirse')));
+        torreTimerActual = torreCuentaAtras(10,
+            function (s) { const n = document.getElementById('torreTimer'); if (n) n.textContent = s; },
+            function () { torreTerminarYFin(piso); });
     }
 
+    /** Mock de recompensa inline: progreso SIMULACIÓN 3 s + cerrar. */
     function torreRevivir() {
         const run = window.Torre.cargar();
         if (!run || !run.enProgreso) return;
-        if (!window.Torre.consumirRevive(run)) { torreModalDerrota(); return; }
+        if (!window.Torre.consumirRevive(run)) {
+            if (torreUltimo) torrePantallaDerrota(torreUltimo.d, torreUltimo.r, torreUltimo.piso, torreUltimo.resultado);
+            return;
+        }
         state.torre = window.Torre.cargar();
         torrePintarHud();
-        torreMockModal();
+        const box = torreAcciones();
+        if (!box) { torreReintentar(); return; }
+        box.appendChild(el('div', { class: 'text-4xl text-center mb-1' }, '📺'));
+        box.appendChild(el('p', { class: 'text-sm text-slate-300 text-center' }, t('ui.torre.mock_anuncio')));
+        box.appendChild(el('p', { id: 'torreMockTimer', class: 'text-4xl font-mono font-bold text-amber-400 text-center my-2' }, '3'));
+        box.appendChild(el('button', {
+            class: 'w-full bg-slate-700 text-slate-200 py-2 rounded-lg btn-tap text-xs mt-1',
+            onclick: function () {
+                torrePararTimer();
+                if (torreUltimo) torrePantallaDerrota(torreUltimo.d, torreUltimo.r, torreUltimo.piso, torreUltimo.resultado);
+            },
+        }, t('ui.torre.mock_cerrar')));
+        torreTimerActual = torreCuentaAtras(3,
+            function (s) { const n = document.getElementById('torreMockTimer'); if (n) n.textContent = s; },
+            function () { torreReintentar(); });
     }
 
-    function torreModalDerrota() {
-        const run = window.Torre.cargar();
-        if (!run || !run.enProgreso) { window.location.href = 'index.php'; return; }
-        const puedeRevivir = window.Torre.REVIVES_ACTIVOS && run.vidasRestantes > 0;
-        let elegido = false;
-        const content = el('div', {}, [
-            el('h2', { class: 'text-xl font-bold text-rose-400 mb-2 text-center' },
-                t('ui.torre.derrota_titulo', { piso: run.pisoActual })),
-            el('p', { class: 'text-sm text-slate-300 text-center mb-1' }, t('ui.torre.derrota_sub')),
-            el('p', { id: 'torreTimer', class: 'text-4xl font-mono font-bold text-amber-400 text-center my-3' }, '10'),
-        ]);
-        const m = showModal(content);
-        const fila = el('div', { class: 'flex flex-col gap-2 mt-4' }, []);
-        if (puedeRevivir) {
-            fila.appendChild(el('button', {
-                class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap',
-                onclick: function () { elegido = true; timer.cancelar(); m.close(); torreRevivir(); },
-            }, t('ui.torre.btn_revivir', { usadas: window.Torre.revivesUsados(run) })));
-        }
-        fila.appendChild(el('button', {
-            class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
-            onclick: function () { elegido = true; timer.cancelar(); m.close(); torreRendirse(); },
-        }, t('ui.torre.btn_rendirse')));
-        content.appendChild(fila);
-        const timer = torreCuentaAtras(10,
-            function (s) { const n = document.getElementById('torreTimer'); if (n) n.textContent = s; },
-            function () { if (!elegido) { elegido = true; m.close(); torreRendirse(); } });
-    }
-
-    function torreVictoria() {
-        const run = window.Torre.cargar();
-        const gastado = run.gastado, rev = window.Torre.revivesUsados(run), temas = run.tematicasJugadas.length;
-        const nuevos = torreDesbloquear(window.Torre.logrosGanados(run, true));
-        evento('torre:victoria');
-        window.Torre.terminar();
-        state.torre = null;
-        const content = el('div', {}, [
-            el('h2', { class: 'text-xl font-bold text-amber-400 mb-2 text-center' }, t('ui.torre.victoria_titulo')),
-            el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
-                t('ui.torre.victoria_stats', { gastado: gastado, rev: rev, temas: temas })),
-        ]);
+    function torrePantallaVictoria(d, r, stats, nuevos) {
+        const sk = torreEsqueleto();
+        if (!sk) return;
+        sk.top.appendChild(el('div', { class: 'text-center text-5xl mb-2' }, '🏆'));
+        torreDesglose(sk.top, 'win', d, r, 10);
+        sk.top.appendChild(el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
+            t('ui.torre.victoria_stats', { gastado: stats.gastado, rev: stats.rev, temas: stats.temas })));
         const banner = torreBannerLogros(nuevos);
-        if (banner) content.appendChild(banner);
-        content.appendChild(torreHueco());
-        const m = showModal(content);
-        content.appendChild(el('div', { class: 'flex flex-col gap-2 mt-4' }, [
-            el('button', {
-                class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
-                onclick: function () { torreCompartir(run); },
-            }, t('ui.torre.btn_compartir')),
-            el('a', {
-                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm text-center',
-                href: 'https://wa.me/?text=' + encodeURIComponent(window.Torre.textoCompartir(run, state.jugadorNombre)),
-                target: '_blank', rel: 'noopener',
-            }, 'WhatsApp'),
-            el('button', {
-                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
-                onclick: async function () {
-                    m.close();
-                    const r2 = window.Torre.empezar();
-                    evento('torre:inicio');
-                    await torreJugarSiguienteReal(window.Torre.temaParaPiso(r2.tematicasJugadas, torreIdsCatalogo()));
-                },
-            }, t('ui.torre.btn_otra')),
-        ]));
-    }
-
-    /** Fin de la subida (solo alcanzable con revives activos y agotados). */
-    function torreGameOver() {
-        const run = window.Torre.cargar();
-        const piso = run.pisoActual;
-        window.Torre.terminar();
-        state.torre = null;
-        const content = el('div', {}, [
-            el('h2', { class: 'text-xl font-bold text-rose-400 mb-2 text-center' }, t('ui.torre.fin_titulo')),
-            el('p', { class: 'text-sm text-slate-300 text-center mb-1' }, t('ui.torre.fin_sub', { piso: piso })),
-        ]);
-        const m = showModal(content);
-        content.appendChild(el('button', {
-            class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap mt-4',
+        if (banner) sk.top.appendChild(banner);
+        sk.top.appendChild(torreHueco());
+        const box = torreAcciones();
+        if (!box) return;
+        const runStats = { gastado: stats.gastado, vidasRestantes: 3 - stats.rev, tematicasJugadas: [] };
+        for (let i = 0; i < stats.temas; i++) runStats.tematicasJugadas.push('x');
+        box.appendChild(el('button', {
+            class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
+            onclick: function () { torreCompartirTexto(stats); },
+        }, t('ui.torre.btn_compartir')));
+        box.appendChild(el('a', {
+            class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm text-center',
+            href: 'https://wa.me/?text=' + encodeURIComponent(torreTextoVictoria(stats)),
+            target: '_blank', rel: 'noopener',
+        }, 'WhatsApp'));
+        box.appendChild(el('button', {
+            class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
             onclick: async function () {
-                m.close();
                 window.Torre.empezar();
                 evento('torre:inicio');
                 await torreJugarSiguienteReal(window.Torre.temaParaPiso([], torreIdsCatalogo()));
@@ -2182,8 +2250,19 @@
         }, t('ui.torre.btn_otra')));
     }
 
-    async function torreCompartir(run) {
-        const txt = window.Torre.textoCompartir(run, state.jugadorNombre);
+    function torreTextoVictoria(stats) {
+        return '🏆 ' + (state.jugadorNombre || 'Alguien')
+            + ' ha conquistado la Torre de Draft 20 (10/10 a ciegas contra el bot extremo). '
+            + 'Monedas gastadas: ' + stats.gastado + '. Revives usados: ' + stats.rev
+            + '. Temáticas: ' + stats.temas + '/10. ¿Te atreves? https://draft20.es/';
+    }
+
+    async function torreCompartir(stats) {
+        await torreCompartirTexto(stats);
+    }
+
+    async function torreCompartirTexto(stats) {
+        const txt = torreTextoVictoria(stats);
         try {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 await navigator.clipboard.writeText(txt);
@@ -2196,24 +2275,69 @@
                 ta.remove();
             }
             toast(t('ui.torre.toast_copiado'));
-        } catch (e) { /* sin portapapeles: el texto queda en el modal */ }
+        } catch (e) { /* sin portapapeles */ }
     }
+
+    /** Fin de la subida tras derrota: run ya terminado; reintentar u salir. */
+    function torrePantallaFin(piso) {
+        const box = torreAcciones();
+        if (!box) { window.location.href = 'index.php'; return; }
+        box.appendChild(el('div', { class: 'text-center' }, [
+            el('h2', { class: 'text-xl font-bold text-rose-400 mb-1' }, t('ui.torre.fin_titulo')),
+            el('p', { class: 'text-sm text-slate-300 mb-1' }, t('ui.torre.fin_sub', { piso: piso })),
+        ]));
+        box.appendChild(el('button', {
+            class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap mt-2',
+            onclick: async function () {
+                window.Torre.empezar();
+                evento('torre:inicio');
+                await torreJugarSiguienteReal(window.Torre.temaParaPiso([], torreIdsCatalogo()));
+            },
+        }, t('ui.torre.btn_otra')));
+        box.appendChild(el('button', {
+            class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+            onclick: function () { torreIrLobby(); },
+        }, t('ui.torre.res_salir')));
+    }
+
+    /** Termina el run y pinta el Fin (derrota sin revive o rendición). */
+    function torreTerminarYFin(piso) {
+        torrePararTimer();
+        try { window.Torre.terminar(); } catch (e) { /* ignore */ }
+        state.torre = null;
+        try { const hud = document.getElementById('torreHud'); if (hud) hud.remove(); } catch (e) { /* ignore */ }
+        torrePantallaFin(piso);
+    }
+
 
     function torreAlTerminarPiso(resultado, d) {
         const run = window.Torre.cargar();
         if (!run || !run.enProgreso) { window.location.href = 'index.php'; return; }
         registrarHistorial(resultado === 'tablas' ? 'draw' : resultado);
-        if (resultado === 'win') {
-            window.Torre.superarPiso(run, d.tema, d.dinero);
+        const r = window.Torre.resumenPiso(d.miItems, d.rivalItems, d.miDinero, d.rivalDinero);
+        const res = (r.resultado === 'win') ? 'win' : (r.resultado === 'loss' ? 'loss' : 'tablas');
+        if (res === 'win') {
+            window.Torre.superarPiso(run, d.tema, d.miDinero);
             const tras = window.Torre.cargar();
-            const nuevos = torreDesbloquear(window.Torre.logrosGanados(tras, false));
-            if (window.Torre.victoria(tras)) { torreVictoria(); return; }
             state.torre = tras;
             torrePintarHud();
-            torreModalTransicion(nuevos, window.Torre.temaParaPiso(tras.tematicasJugadas, torreIdsCatalogo()));
+            if (window.Torre.victoria(tras)) {
+                const stats = { gastado: tras.gastado, rev: window.Torre.revivesUsados(tras), temas: tras.tematicasJugadas.length };
+                const nuevos = torreDesbloquear(window.Torre.logrosGanados(tras, true));
+                evento('torre:victoria');
+                window.Torre.terminar();
+                state.torre = null;
+                torrePantallaVictoria(d, r, stats, nuevos);
+            } else {
+                const nuevos = torreDesbloquear(window.Torre.logrosGanados(tras, false));
+                torreTemaNext = window.Torre.temaParaPiso(tras.tematicasJugadas, torreIdsCatalogo());
+                torreUltimo = null;
+                torrePantallaWin(d, r, nuevos);
+            }
             return;
         }
-        torreModalDerrota();
+        torreUltimo = { resultado: res, d: d, r: r, piso: run.pisoActual };
+        torrePantallaDerrota(d, r, run.pisoActual, res);
     }
 
     // =================== EXPOSE ===================

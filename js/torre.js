@@ -10,6 +10,7 @@
     'use strict';
 
     var CLAVE = 'draft20_torre';
+    var CLAVE_HECHAS = 'draft20_torre_hechas';
     var TOTAL_PISOS = 10;
     var MAX_REVIVES = 3;
     // Sin red de anuncios: 1 vida efectiva. El sistema de revives está
@@ -111,6 +112,32 @@
         return 'tablas';
     }
 
+    /**
+     * Desglose del piso para la pantalla de resultados (puro y testeable).
+     * items: [{valor, precio?}]; gasto exacto = 20 − dinero restante.
+     */
+    function resumenPiso(miItems, rivalItems, miDinero, rivalDinero) {
+        function tot(items) {
+            var score = 0;
+            (Array.isArray(items) ? items : []).forEach(function (it) {
+                score += (it && +it.valor) || 0;
+            });
+            return score;
+        }
+        var miScore = tot(miItems), rivalScore = tot(rivalItems);
+        miDinero = Math.max(0, +miDinero || 0);
+        rivalDinero = Math.max(0, +rivalDinero || 0);
+        var res = resultadoPiso(miScore, rivalScore, miDinero, rivalDinero);
+        return {
+            miScore: miScore,
+            rivalScore: rivalScore,
+            miGastado: Math.max(0, MONEDAS_INICIALES - miDinero),
+            rivalGastado: Math.max(0, MONEDAS_INICIALES - rivalDinero),
+            resultado: res,
+            desempate: miScore === rivalScore && res !== 'tablas',
+        };
+    }
+
     /** Registra el piso superado (SOLO entre partidas: anti-exploit). */
     function superarPiso(run, tema, dineroRestante) {
         run.partidasGanadas += 1;
@@ -142,6 +169,34 @@
     /** Termina el run (game over o victoria): limpia el progreso activo. */
     function terminar() {
         return guardar(runVacio());
+    }
+
+    /**
+     * Salas ya procesadas (anti-reproceso al volver con atrás/recarga a una
+     * final ya resuelta: el guardián en memoria no sobrevive a la recarga).
+     */
+    function leerHechas() {
+        try {
+            var raw = store && store.getItem(CLAVE_HECHAS);
+            var lista = raw ? JSON.parse(raw) : [];
+            return Array.isArray(lista) ? lista.filter(function (x) { return typeof x === 'string'; }) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+    function pisoHecho(codigo) {
+        return leerHechas().indexOf(codigo) !== -1;
+    }
+    function marcarPisoHecho(codigo) {
+        try {
+            if (typeof codigo !== 'string' || codigo === '') return;
+            var lista = leerHechas();
+            if (lista.indexOf(codigo) === -1) {
+                lista.push(codigo);
+                while (lista.length > 10) lista.shift();
+                if (store) store.setItem(CLAVE_HECHAS, JSON.stringify(lista));
+            }
+        } catch (e) { /* ignore */ }
     }
 
     /**
@@ -205,11 +260,14 @@
         empezar: empezar,
         temaParaPiso: temaParaPiso,
         resultadoPiso: resultadoPiso,
+        resumenPiso: resumenPiso,
         superarPiso: superarPiso,
         consumirRevive: consumirRevive,
         revivesUsados: revivesUsados,
         victoria: victoria,
         terminar: terminar,
+        pisoHecho: pisoHecho,
+        marcarPisoHecho: marcarPisoHecho,
         logrosGanados: logrosGanados,
         textoCompartir: textoCompartir,
         mostrarAnuncioRecompensado: mostrarAnuncioRecompensado,
