@@ -960,11 +960,15 @@
         app.appendChild(joinForm);
         app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
         app.appendChild(practiceCard);
-        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
-        app.appendChild(torreCard);
-        const btnTorre0 = $('#btnTorre');
-        if (btnTorre0) btnTorre0.addEventListener('click', onTorreEmpezar);
-        pintarTorre();
+        // Torre oculta de momento (Torre.VISIBLE === false): ni tarjeta ni
+        // listeners; la lógica sigue intacta para reactivarla.
+        if (window.Torre && window.Torre.VISIBLE) {
+            app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
+            app.appendChild(torreCard);
+            const btnTorre0 = $('#btnTorre');
+            if (btnTorre0) btnTorre0.addEventListener('click', onTorreEmpezar);
+            pintarTorre();
+        }
 
         $('#btnCreate').addEventListener('click', onCreate);
         $('#btnJoin').addEventListener('click', onJoin);

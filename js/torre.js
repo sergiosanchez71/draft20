@@ -9,6 +9,9 @@
 (function () {
     'use strict';
 
+    // Visibilidad de la Torre en el lobby: false = oculta hasta nuevo aviso.
+    // Toda la lógica sigue intacta; al reactivar, volver a pintar la tarjeta.
+    var VISIBLE = false;
     var CLAVE = 'draft20_torre';
     var CLAVE_HECHAS = 'draft20_torre_hechas';
     var TOTAL_PISOS = 10;
@@ -250,6 +253,7 @@
     }
 
     var Torre = {
+        VISIBLE: VISIBLE,
         CLAVE: CLAVE,
         TOTAL_PISOS: TOTAL_PISOS,
         MAX_REVIVES: MAX_REVIVES,

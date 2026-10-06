@@ -107,11 +107,5 @@ function lobby_inicial_html(?string $tematicaPre = null, ?string $tematicaBotPre
         . '<button id="btnPractice" class="w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm mt-4">' . e($cat('btn_practicar')) . '</button>'
         . '<button id="btnGuiada" class="w-full bg-amber-400/90 text-slate-900 font-bold py-3 rounded-lg btn-tap text-sm mt-2">🎓 ' . e($cat('btn_guiada')) . '</button>'
         . '<p class="text-[11px] text-slate-400 mt-1 text-center">' . e($cat('guiada_ayuda')) . '</p>'
-        . '</section>'
-        . '<div class="text-center text-slate-400 text-xs my-2">— o —</div>'
-        . '<section class="bg-slate-800 p-6 rounded-lg m-4 fade-in">'
-        . '<label class="block text-sm text-slate-400 mb-2">' . e($torre('titulo')) . '</label>'
-        . '<div id="torreCardBtn"><button id="btnTorre" class="w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap text-sm">' . e($torre('btn_empezar')) . '</button></div>'
-        . '<p class="text-[11px] text-slate-400 mt-2 text-center">' . e($torre('desc')) . '</p>'
         . '</section>';
 }

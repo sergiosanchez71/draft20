@@ -23,6 +23,9 @@ function check(cond, msg) {
     console.log('FAIL ' + msg);
 }
 
+// 0) Visibilidad: oculta en lobby hasta nuevo aviso (al reactivar, quitar este check).
+check(Torre.VISIBLE === false, 'torre oculta en lobby (flag VISIBLE off)');
+
 // 1) Run nuevo y schema.
 const r0 = Torre.empezar();
 check(r0.enProgreso === true && r0.pisoActual === 1, 'empezar: piso 1 en progreso');
