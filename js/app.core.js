@@ -209,6 +209,10 @@
         { id: 'serie_ganada', icono: '🏆' },
         { id: 'explorador', icono: '🗺️' },
         { id: 'verdugo', icono: '⚔️' },
+        { id: 'torre_piso3', icono: '🪜' },
+        { id: 'torre_piso7', icono: '🗼' },
+        { id: 'torre_piso10', icono: '👑' },
+        { id: 'torre_intocable', icono: '💎' },
     ];
     function logroIcono(id) {
         for (let i = 0; i < LOGROS_META.length; i++) {
@@ -920,6 +924,20 @@
                 el('p', { class: 'text-[11px] text-slate-400 mt-1 text-center' }, t('ui.lobby.guiada_ayuda')),
             ]);
 
+        // Torre de Batalla: desafío en solitario (10 pisos a ciegas vs extremo).
+        // El contenido depende del run guardado; pintarTorre() lo repinta.
+        const torreBox = el('div', { id: 'torreCardBtn' }, [
+            el('button', {
+                id: 'btnTorre',
+                class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap text-sm',
+            }, t('ui.torre.btn_empezar')),
+        ]);
+        const torreCard = el('section', { class: 'bg-slate-800 p-6 rounded-lg m-4 fade-in' }, [
+            el('label', { class: 'block text-sm text-slate-400 mb-2' }, t('ui.torre.titulo')),
+            torreBox,
+            el('p', { class: 'text-[11px] text-slate-400 mt-2 text-center' }, t('ui.torre.desc')),
+        ]);
+
         app.appendChild(errorBox);
         app.appendChild(rapidaForm);
         app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
@@ -928,6 +946,11 @@
         app.appendChild(joinForm);
         app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
         app.appendChild(practiceCard);
+        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
+        app.appendChild(torreCard);
+        const btnTorre0 = $('#btnTorre');
+        if (btnTorre0) btnTorre0.addEventListener('click', onTorreEmpezar);
+        pintarTorre();
 
         $('#btnCreate').addEventListener('click', onCreate);
         $('#btnJoin').addEventListener('click', onJoin);
@@ -1091,9 +1114,10 @@
         return '🤖 ' + BOT_NOMBRES[Math.floor(Math.random() * BOT_NOMBRES.length)];
     }
 
-    async function iniciarPartidaBot(tematica, dificultad, nombre, mostrarValores) {
+    async function iniciarPartidaBot(tematica, dificultad, nombre, mostrarValores, opts) {
         const nombreFinal = (nombre && nombre.trim()) || state.jugadorNombre || 'Tú';
         const mv = (mostrarValores === undefined) ? !!state.mostrarValores : !!mostrarValores;
+        const esTorre = !!(opts && opts.torre);
         // Guarda: si llega la constante de aleatoria sin resolver, se sortea aquí.
         const temaFinal = (tematica === TEMATICA_RANDOM || !tematica)
             ? resolverTematica({ tematicaSeleccionada: TEMATICA_RANDOM })
@@ -1102,6 +1126,7 @@
             tematica: temaFinal,
             nombre: nombreFinal,
             mostrar_valores: mv,
+            torre: esTorre,
         });
         if (!r.ok) { toast(r.error || 'Error'); return false; }
         const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: nombreBot(), bot: true, creador_id: r.jugador_id });
@@ -1112,6 +1137,16 @@
                 dificultad: dificultad || 'normal',
             }));
         } catch (e) { /* ignore */ }
+        // Torre: vincular la sala al piso en curso antes de redirigir.
+        if (esTorre && window.Torre) {
+            try {
+                const meta = window.Torre.cargar();
+                if (meta && meta.enProgreso) {
+                    meta.codigoSala = r.codigo;
+                    window.Torre.guardar(meta);
+                }
+            } catch (e) { /* ignore */ }
+        }
         state.codigo = r.codigo;
         state.jugadorId = r.jugador_id;
         state.jugadorNombre = nombreFinal;
@@ -1140,6 +1175,93 @@
         try { localStorage.setItem('draft20_guiada', '1'); } catch (e) { /* ignore */ }
         await iniciarPartidaBot(resolverTematica(ctxBot), 'facil', nombre, true);
         if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+    }
+
+    // =================== TORRE DE BATALLA (lobby) ===================
+    /** IDs planos del catálogo para el sorteo sin repetir de la Torre. */
+    function idsCatalogo() {
+        const ids = [];
+        categoriasData().forEach(function (c) {
+            ((c && c.tematicas) || []).forEach(function (tm) {
+                if (tm && tm.id) ids.push(tm.id);
+            });
+        });
+        return ids;
+    }
+
+    function nombreTorre() {
+        try {
+            const n = localStorage.getItem('draft20_nombre') || '';
+            if (n.trim()) return n.trim();
+        } catch (e) { /* ignore */ }
+        const nc = $('#nameCreate');
+        return (nc && nc.value.trim()) || 'Tú';
+    }
+
+    /** Juega un piso de la Torre: tema (sin repetir), extremo y secreto. */
+    async function torreJugarPiso(run) {
+        if (!window.Torre) return;
+        const tema = window.Torre.temaParaPiso(run.tematicasJugadas, idsCatalogo());
+        run.temaPiso = tema;
+        window.Torre.guardar(run);
+        evento('torre:piso_' + run.pisoActual);
+        await iniciarPartidaBot(tema, window.Torre.DIFICULTAD, nombreTorre(), false, { torre: true });
+    }
+
+    async function onTorreEmpezar() {
+        if (!window.Torre) return;
+        const run = window.Torre.empezar();
+        evento('torre:inicio');
+        pintarTorre();
+        await torreJugarPiso(run);
+    }
+
+    async function onTorreContinuar() {
+        if (!window.Torre) return;
+        const run = window.Torre.cargar();
+        if (!run || !run.enProgreso) { pintarTorre(); return; }
+        // ¿Sala del piso aún viva? Se reanuda; si no, se reintenta el piso.
+        if (run.codigoSala) {
+            const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(run.codigoSala) + '&t=' + Date.now());
+            const est = r && r.sala && r.sala.estado;
+            if (r && r.ok && (est === 'jugando' || est === 'esperando')) {
+                window.location.href = 'juego.php?codigo=' + encodeURIComponent(run.codigoSala);
+                return;
+            }
+        }
+        const tema = run.temaPiso || window.Torre.temaParaPiso(run.tematicasJugadas, idsCatalogo());
+        run.temaPiso = tema;
+        window.Torre.guardar(run);
+        evento('torre:piso_' + run.pisoActual);
+        await iniciarPartidaBot(tema, window.Torre.DIFICULTAD, nombreTorre(), false, { torre: true });
+    }
+
+    function onTorreReiniciar() {
+        if (!window.Torre) return;
+        window.Torre.terminar();
+        pintarTorre();
+    }
+
+    /** Repinta la tarjeta según haya run activo (SSR = estado inicial). */
+    function pintarTorre() {
+        const box = $('#torreCardBtn');
+        if (!box || !window.Torre) return;
+        let run = null;
+        try { run = window.Torre.cargar(); } catch (e) { run = null; }
+        if (!run || !run.enProgreso) return; // SSR ya pintó el botón de empezar
+        clear(box);
+        box.appendChild(el('p', { class: 'text-center text-amber-300 font-bold text-sm mb-3' },
+            t('ui.torre.estado', { piso: run.pisoActual, vidas: run.vidasRestantes })));
+        box.appendChild(el('button', {
+            id: 'btnTorreContinuar',
+            class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap text-sm',
+            onclick: onTorreContinuar,
+        }, t('ui.torre.btn_continuar', { n: run.pisoActual })));
+        box.appendChild(el('button', {
+            id: 'btnTorreReiniciar',
+            class: 'w-full bg-slate-700 text-slate-200 py-2 rounded-lg btn-tap text-xs mt-2',
+            onclick: onTorreReiniciar,
+        }, t('ui.torre.btn_reiniciar')));
     }
 
     async function onJoin() {

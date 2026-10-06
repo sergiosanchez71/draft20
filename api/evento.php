@@ -29,6 +29,9 @@ const EVENTOS = [
     'page:terminos', 'page:ranking', 'page:subasta', 'page:acerca',
     'page:contacto', 'page:privacidad', 'page:aviso',
     'game:creada', 'game:rapida', 'game:bot', 'game:fin', 'pwa:install',
+    'torre:inicio', 'torre:victoria',
+    'torre:piso_1', 'torre:piso_2', 'torre:piso_3', 'torre:piso_4', 'torre:piso_5',
+    'torre:piso_6', 'torre:piso_7', 'torre:piso_8', 'torre:piso_9', 'torre:piso_10',
 ];
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {

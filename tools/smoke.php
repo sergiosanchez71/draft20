@@ -344,7 +344,7 @@ try {
     check((bool) preg_match('/<meta name="app-build" content="(\d+|dev)">/', (string) $rJuegoAds['raw'], $mBuild),
         'juego: meta de build para diagnóstico');
     $buildEsperado = '0';
-    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/app.core.js', 'js/app.game.js'] as $relJs) {
+    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/torre.min.js', 'js/app.core.js', 'js/app.game.js', 'js/torre.js'] as $relJs) {
         $fJs = $root . '/' . $relJs;
         if (is_file($fJs)) {
             $buildEsperado = (string) max((int) $buildEsperado, (int) filemtime($fJs));

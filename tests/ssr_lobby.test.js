@@ -22,8 +22,8 @@ const BASE = 'http://127.0.0.1:' + PORT;
 const RUTAS = ['/index.php', '/index.php?tematica=hamburguesa', '/index.php?tematica_bot=pizza'];
 const IDS = [
     'nameRapida', 'nameCreate', 'codeJoin', 'nameJoin', 'btnRapida', 'btnCreate',
-    'btnJoin', 'btnPractice', 'btnGuiada', 'tematicaSelector', 'tematicaBotSelector',
-    'colaInfo', 'lobbyError',
+    'btnJoin', 'btnPractice', 'btnGuiada', 'btnTorre', 'tematicaSelector', 'tematicaBotSelector',
+    'colaInfo', 'lobbyError', 'torreCardBtn',
 ];
 
 const esperar = (ms) => new Promise(function (r) { setTimeout(r, ms); });

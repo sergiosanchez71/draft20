@@ -27,6 +27,9 @@ if (!function_exists('registrar_partida_humana')) {
     {
         if (!empty($sala['log_humana'])) return;
         if (($sala['estado'] ?? '') !== 'finalizada') return;
+        // Torre de Batalla: 10 partidas sesgadas (extremo+secreto) por subida;
+        // no deben contaminar el ranking de juego normal.
+        if (!empty($sala['torre'])) return;
 
         $tematica = strtolower((string) ($sala['tematica'] ?? ''));
         $tematica = (string) preg_replace('/[^a-z0-9_]/', '', $tematica);

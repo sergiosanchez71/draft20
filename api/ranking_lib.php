@@ -2,8 +2,8 @@
 /**
  * Draft 20 — Agregado del ranking de partidas (CLI + HTTP).
  *
- * Sin top-level ejecutable: solo define ranking_humanas(). La usan
- * tools/ranking.php (CLI) y api/ranking.php (JSON con clave).
+ * Sin top-level ejecutable: solo define ranking_humanas() y resumen_torre().
+ * La usan tools/ranking.php (CLI) y api/ranking.php (JSON con clave).
  *
  * $dias <= 0 = todo el histórico sin filtro de fecha.
  */
@@ -86,6 +86,42 @@ if (!function_exists('ranking_humanas')) {
                 'porTipo' => $datos['porTipo'],
             ];
         }
+        return $out;
+    }
+}
+
+if (!function_exists('resumen_torre')) {
+    /**
+     * Funnel de la Torre de Batalla desde los contadores diarios
+     * (api/datos/stats/YYYY-MM-DD.json): alcance por piso + victorias,
+     * global y por mes. El abandono por piso se deriva (alcance_N − alcance_N+1).
+     *
+     * @return array{global:array{inicio:int,alcance:array<int,int>,victorias:int},porMes:array<string,array{inicio:int,alcance:array<int,int>,victorias:int}>}
+     */
+    function resumen_torre(string $dirStats): array
+    {
+        $vacio = static function (): array {
+            return ['inicio' => 0, 'alcance' => array_fill(1, 10, 0), 'victorias' => 0];
+        };
+        $out = ['global' => $vacio(), 'porMes' => []];
+        foreach ((array) @glob(rtrim($dirStats, '/\\') . '/*.json') as $file) {
+            $base = basename($file, '.json');
+            if (!preg_match('/^(\d{4}-\d{2})-\d{2}$/', $base, $m)) continue;
+            $mes = $m[1];
+            $data = json_decode((string) @file_get_contents($file), true);
+            if (!is_array($data)) continue;
+            if (!isset($out['porMes'][$mes])) $out['porMes'][$mes] = $vacio();
+            $out['global']['inicio'] += (int) ($data['torre:inicio'] ?? 0);
+            $out['global']['victorias'] += (int) ($data['torre:victoria'] ?? 0);
+            $out['porMes'][$mes]['inicio'] += (int) ($data['torre:inicio'] ?? 0);
+            $out['porMes'][$mes]['victorias'] += (int) ($data['torre:victoria'] ?? 0);
+            for ($p = 1; $p <= 10; $p++) {
+                $n = (int) ($data['torre:piso_' . $p] ?? 0);
+                $out['global']['alcance'][$p] += $n;
+                $out['porMes'][$mes]['alcance'][$p] += $n;
+            }
+        }
+        ksort($out['porMes']);
         return $out;
     }
 }

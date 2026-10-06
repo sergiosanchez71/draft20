@@ -215,7 +215,7 @@ function csp_meta(): string
 function app_build(): string
 {
     $max = 0;
-    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/app.core.js', 'js/app.game.js'] as $rel) {
+    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/torre.min.js', 'js/app.core.js', 'js/app.game.js', 'js/torre.js'] as $rel) {
         $f = __DIR__ . '/../' . $rel;
         if (is_file($f)) {
             $max = max($max, (int) filemtime($f));

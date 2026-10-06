@@ -117,6 +117,29 @@ $aggMeses = ranking_humanas($log, 0);
 check(($aggMeses['porMes'][$mesPasado]['top'][0] ?? '') === 'futbol', 'top mensual del mes pasado es futbol');
 check(($aggMeses['porMes'][$mesActual]['top'][0] ?? '') === 'pizza', 'top mensual actual es pizza (no el global)');
 
+// 10) Sala de Torre → no entra en el ranking (10 partidas sesgadas por subida).
+$sT = sala_base([$it(10)], [$it(1)], ['torre' => true]);
+registrar_partida_humana($sT, $log);
+check(empty($sT['log_humana']), 'torre no se registra en el ranking');
+
+// 11) Funnel de la Torre: global + por mes desde contadores diarios.
+$dirTorre = sys_get_temp_dir() . '/torre_test_' . getmypid();
+@mkdir($dirTorre, 0755, true);
+$mesA = date('Y-m');
+$mesP = date('Y-m', strtotime('first day of last month'));
+file_put_contents($dirTorre . '/' . $mesA . '-10.json', json_encode(['torre:inicio' => 3, 'torre:piso_1' => 3, 'torre:piso_2' => 2, 'torre:victoria' => 1, 'page:home' => 99]));
+file_put_contents($dirTorre . '/' . $mesP . '-20.json', json_encode(['torre:inicio' => 1, 'torre:piso_1' => 1]));
+file_put_contents($dirTorre . '/basura.txt', 'no-json');
+$fun = resumen_torre($dirTorre);
+check($fun['global']['inicio'] === 4 && $fun['global']['victorias'] === 1, 'funnel global: inicios y victorias');
+check($fun['global']['alcance'][1] === 4 && $fun['global']['alcance'][2] === 2 && $fun['global']['alcance'][3] === 0, 'funnel global: alcance por piso');
+check(($fun['porMes'][$mesA]['alcance'][2] ?? -1) === 2 && ($fun['porMes'][$mesP]['alcance'][2] ?? -1) === 0, 'funnel por mes separado');
+check(!isset($fun['porMes'][$mesA]['page:home']), 'funnel ignora otros eventos');
+@unlink($dirTorre . '/' . $mesA . '-10.json');
+@unlink($dirTorre . '/' . $mesP . '-20.json');
+@unlink($dirTorre . '/basura.txt');
+@rmdir($dirTorre);
+
 @unlink($log);
 echo "\n=== RANKING HUMANA: $ok OK / $fail FAIL ===\n";
 exit($fail > 0 ? 1 : 0);

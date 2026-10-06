@@ -50,6 +50,7 @@ csp_headers();
 </head>
 <body class="app-viewport bg-slate-900 text-slate-100 flex flex-col">
     <main id="app" class="flex-1 flex flex-col"></main>
+    <script src="<?= e(asset_js('js/torre.js')) ?>"></script>
     <script src="<?= e(asset_js('js/bot_policy.js')) ?>"></script>
     <script src="<?= e(asset_js('js/app.core.js')) ?>"></script>
     <script src="<?= e(asset_js('js/app.game.js')) ?>"></script>

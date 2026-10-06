@@ -173,6 +173,18 @@
         } catch (e) { state.bot = null; }
         state.partidaGuardada = false;
 
+        // ¿Piso de la Torre de Batalla? Vinculación estricta por código de
+        // sala (lo escribe iniciarPartidaBot con {torre:true}).
+        state.torre = null;
+        try {
+            if (window.Torre) {
+                const meta = window.Torre.cargar();
+                if (meta && meta.enProgreso && meta.codigoSala === codigo && state.bot) {
+                    state.torre = meta;
+                }
+            }
+        } catch (e) { state.torre = null; }
+
         // ¿Práctica guiada? (se consume una sola vez, y solo en partidas de bot)
         state.guiado = false;
         try {
@@ -198,6 +210,7 @@
         ajustarModoApp();
 
         renderGameShell();
+        if (state.torre) torrePintarHud();
         await pollGameTick();
         startPollingGame();
 
@@ -1557,6 +1570,14 @@
         else if (rivalScore > myScore) resultado = 'loss';
         else if (myMoney > rivalMoney) { resultado = 'win'; porDesempate = true; }
         else if (rivalMoney > myMoney) { resultado = 'loss'; porDesempate = true; }
+        // Torre: flujo propio (sin serie/stats/ranking normales) y sin revancha.
+        if (state.torre && window.Torre) {
+            torreAlTerminarPiso(resultado, {
+                score: myScore, rival: rivalScore, dinero: myMoney,
+                tema: (s.tematica || ''),
+            });
+            return;
+        }
         registrarResultado(resultado);
 
         const header = el('div', { class: 'text-center mb-4' }, [
@@ -1889,6 +1910,310 @@
         clearSession(state.codigo);
         stopPollingGame();
         window.location.href = 'index.php';
+    }
+
+    // =================== TORRE DE BATALLA ===================
+    /** IDs planos del catálogo (window.__CATEGORIAS lo sirve en juego.php). */
+    function torreIdsCatalogo() {
+        const ids = [];
+        const cats = (typeof window !== 'undefined' && Array.isArray(window.__CATEGORIAS)) ? window.__CATEGORIAS : [];
+        cats.forEach(function (c) {
+            ((c && c.tematicas) || []).forEach(function (tm) { if (tm && tm.id) ids.push(tm.id); });
+        });
+        return ids;
+    }
+
+    function torrePintarHud() {
+        if (!state.torre || !window.Torre) return;
+        let bar = document.getElementById('torreHud');
+        if (!bar) {
+            bar = el('div', { id: 'torreHud', class: 'text-center text-sm font-bold text-amber-300 py-2' });
+            const app = $('#app');
+            if (app && app.firstChild) app.insertBefore(bar, app.firstChild);
+            else if (app) app.appendChild(bar);
+        }
+        bar.textContent = t('ui.torre.hud', { piso: state.torre.pisoActual, vidas: state.torre.vidasRestantes });
+    }
+
+    /**
+     * Cuenta atrás que se congela si la pestaña pierde el foco
+     * (visibilitychange): no penaliza notificaciones en móvil.
+     */
+    function torreCuentaAtras(segundos, onTick, onFin) {
+        let restante = segundos;
+        let timer = null;
+        let deadline = 0;
+        let terminado = false;
+        function limpiar() {
+            if (timer) clearInterval(timer);
+            timer = null;
+            document.removeEventListener('visibilitychange', onVis);
+        }
+        function fin() {
+            if (terminado) return;
+            terminado = true;
+            limpiar();
+            try { onFin(); } catch (e) { /* ignore */ }
+        }
+        function tick() {
+            if (document.hidden || terminado) return;
+            restante = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+            try { onTick(restante); } catch (e) { /* ignore */ }
+            if (restante <= 0) fin();
+        }
+        function arrancar() {
+            deadline = Date.now() + restante * 1000;
+            if (timer) clearInterval(timer);
+            timer = setInterval(tick, 250);
+            tick();
+        }
+        function onVis() {
+            if (terminado) return;
+            if (document.hidden) {
+                if (timer) clearInterval(timer);
+                timer = null;
+                restante = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+            } else if (!timer) {
+                arrancar();
+            }
+        }
+        document.addEventListener('visibilitychange', onVis);
+        arrancar();
+        return { cancelar: function () { if (!terminado) { terminado = true; limpiar(); } } };
+    }
+
+    /** Desbloquea logros de Torre en el store común (devuelve los nuevos). */
+    function torreDesbloquear(ids) {
+        const nuevos = [];
+        let g = {};
+        try { g = JSON.parse(localStorage.getItem('draft20_logros') || '{}') || {}; } catch (e) { g = {}; }
+        (ids || []).forEach(function (id) {
+            if (!g[id]) { g[id] = Date.now(); nuevos.push(id); }
+        });
+        try { localStorage.setItem('draft20_logros', JSON.stringify(g)); } catch (e) { /* ignore */ }
+        return nuevos;
+    }
+
+    function torreBannerLogros(nuevos) {
+        if (!nuevos || !nuevos.length) return null;
+        return el('div', { class: 'bg-amber-400 text-slate-900 rounded-lg p-3 mb-4 text-center fade-in' }, [
+            el('div', { class: 'text-xs font-bold uppercase' }, t('ui.torre.logro_nuevo')),
+            el('div', { class: 'text-sm font-bold mt-1' }, nuevos.map(function (id) {
+                return logroIcono(id) + ' ' + t('ui.juego.logros.' + id);
+            }).join(' · ')),
+        ]);
+    }
+
+    /** Hueco dormant para la red futura (colapsado, sin slots reales). */
+    function torreHueco() {
+        return el('div', { class: 'ad-slot', 'data-ad-pos': 'torre', 'data-ad-size': '300x250' });
+    }
+
+    /** Reintenta el piso perdido con su misma temática y sala nueva. */
+    async function torreReintentar() {
+        const run = window.Torre.cargar();
+        if (!run || !run.enProgreso || !run.temaPiso) { window.location.href = 'index.php'; return; }
+        await iniciarPartidaBot(run.temaPiso, window.Torre.DIFICULTAD, state.jugadorNombre || 'Tú', false, { torre: true });
+    }
+
+    function torreIrLobby() {
+        try { if (typeof stopPollingGame === 'function') stopPollingGame(); } catch (e) { /* ignore */ }
+        window.location.href = 'index.php';
+    }
+
+    /** Rendirse: el tema jugado cuenta como visto y se vuelve al menú. */
+    function torreRendirse() {
+        try {
+            const run = window.Torre.cargar();
+            if (run && run.enProgreso && run.temaPiso && run.tematicasJugadas.indexOf(run.temaPiso) === -1) {
+                run.tematicasJugadas.push(run.temaPiso);
+                window.Torre.guardar(run);
+            }
+        } catch (e) { /* ignore */ }
+        torreIrLobby();
+    }
+
+    function torreModalTransicion(nuevos, temaSiguiente) {
+        const run = window.Torre.cargar();
+        const content = el('div', {}, [
+            el('h2', { class: 'text-xl font-bold text-emerald-400 mb-2 text-center' },
+                t('ui.torre.piso_superado', { piso: run.partidasGanadas })),
+            el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
+                t('ui.torre.siguiente', { tema: tTematica(temaSiguiente), prox: run.pisoActual })),
+        ]);
+        const banner = torreBannerLogros(nuevos);
+        if (banner) content.appendChild(banner);
+        content.appendChild(torreHueco());
+        const m = showModal(content);
+        content.appendChild(el('div', { class: 'flex flex-col gap-2 mt-4' }, [
+            el('button', {
+                class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
+                onclick: async function () { m.close(); await torreJugarSiguienteReal(temaSiguiente); },
+            }, t('ui.torre.btn_siguiente')),
+            el('button', {
+                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+                onclick: function () { m.close(); torreIrLobby(); },
+            }, t('ui.torre.btn_guardar')),
+        ]));
+    }
+
+    /** Juega el piso con la temática ya asignada en la transición. */
+    async function torreJugarSiguienteReal(tema) {
+        const run = window.Torre.cargar();
+        if (!run || !run.enProgreso) { window.location.href = 'index.php'; return; }
+        run.temaPiso = tema;
+        window.Torre.guardar(run);
+        evento('torre:piso_' + run.pisoActual);
+        await iniciarPartidaBot(tema, window.Torre.DIFICULTAD, state.jugadorNombre || 'Tú', false, { torre: true });
+    }
+
+    function torreMockModal() {
+        let hecho = false;
+        const content = el('div', {}, [
+            el('div', { class: 'text-4xl text-center mb-2' }, '📺'),
+            el('p', { class: 'text-sm text-slate-300 text-center mb-1' }, t('ui.torre.mock_anuncio')),
+            el('p', { id: 'torreMockTimer', class: 'text-4xl font-mono font-bold text-amber-400 text-center my-3' }, '3'),
+        ]);
+        const m = showModal(content);
+        const timer = torreCuentaAtras(3,
+            function (s) { const n = document.getElementById('torreMockTimer'); if (n) n.textContent = s; },
+            function () { if (hecho) return; hecho = true; m.close(); torreReintentar(); });
+        content.appendChild(el('button', {
+            class: 'w-full bg-slate-700 text-slate-200 py-2 rounded-lg btn-tap text-xs mt-2',
+            onclick: function () { if (hecho) return; hecho = true; timer.cancelar(); m.close(); torreModalDerrota(); },
+        }, t('ui.torre.mock_cerrar')));
+    }
+
+    function torreRevivir() {
+        const run = window.Torre.cargar();
+        if (!run || !run.enProgreso) return;
+        if (!window.Torre.consumirRevive(run)) { torreModalDerrota(); return; }
+        state.torre = window.Torre.cargar();
+        torrePintarHud();
+        torreMockModal();
+    }
+
+    function torreModalDerrota() {
+        const run = window.Torre.cargar();
+        if (!run || !run.enProgreso) { window.location.href = 'index.php'; return; }
+        const puedeRevivir = window.Torre.REVIVES_ACTIVOS && run.vidasRestantes > 0;
+        let elegido = false;
+        const content = el('div', {}, [
+            el('h2', { class: 'text-xl font-bold text-rose-400 mb-2 text-center' },
+                t('ui.torre.derrota_titulo', { piso: run.pisoActual })),
+            el('p', { class: 'text-sm text-slate-300 text-center mb-1' }, t('ui.torre.derrota_sub')),
+            el('p', { id: 'torreTimer', class: 'text-4xl font-mono font-bold text-amber-400 text-center my-3' }, '10'),
+        ]);
+        const m = showModal(content);
+        const fila = el('div', { class: 'flex flex-col gap-2 mt-4' }, []);
+        if (puedeRevivir) {
+            fila.appendChild(el('button', {
+                class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap',
+                onclick: function () { elegido = true; timer.cancelar(); m.close(); torreRevivir(); },
+            }, t('ui.torre.btn_revivir', { usadas: window.Torre.revivesUsados(run) })));
+        }
+        fila.appendChild(el('button', {
+            class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+            onclick: function () { elegido = true; timer.cancelar(); m.close(); torreRendirse(); },
+        }, t('ui.torre.btn_rendirse')));
+        content.appendChild(fila);
+        const timer = torreCuentaAtras(10,
+            function (s) { const n = document.getElementById('torreTimer'); if (n) n.textContent = s; },
+            function () { if (!elegido) { elegido = true; m.close(); torreRendirse(); } });
+    }
+
+    function torreVictoria() {
+        const run = window.Torre.cargar();
+        const gastado = run.gastado, rev = window.Torre.revivesUsados(run), temas = run.tematicasJugadas.length;
+        const nuevos = torreDesbloquear(window.Torre.logrosGanados(run, true));
+        evento('torre:victoria');
+        window.Torre.terminar();
+        state.torre = null;
+        const content = el('div', {}, [
+            el('h2', { class: 'text-xl font-bold text-amber-400 mb-2 text-center' }, t('ui.torre.victoria_titulo')),
+            el('p', { class: 'text-sm text-slate-300 text-center mb-1' },
+                t('ui.torre.victoria_stats', { gastado: gastado, rev: rev, temas: temas })),
+        ]);
+        const banner = torreBannerLogros(nuevos);
+        if (banner) content.appendChild(banner);
+        content.appendChild(torreHueco());
+        const m = showModal(content);
+        content.appendChild(el('div', { class: 'flex flex-col gap-2 mt-4' }, [
+            el('button', {
+                class: 'w-full bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap',
+                onclick: function () { torreCompartir(run); },
+            }, t('ui.torre.btn_compartir')),
+            el('a', {
+                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm text-center',
+                href: 'https://wa.me/?text=' + encodeURIComponent(window.Torre.textoCompartir(run, state.jugadorNombre)),
+                target: '_blank', rel: 'noopener',
+            }, 'WhatsApp'),
+            el('button', {
+                class: 'w-full bg-slate-700 text-slate-200 py-3 rounded-lg btn-tap text-sm',
+                onclick: async function () {
+                    m.close();
+                    const r2 = window.Torre.empezar();
+                    evento('torre:inicio');
+                    await torreJugarSiguienteReal(window.Torre.temaParaPiso(r2.tematicasJugadas, torreIdsCatalogo()));
+                },
+            }, t('ui.torre.btn_otra')),
+        ]));
+    }
+
+    /** Fin de la subida (solo alcanzable con revives activos y agotados). */
+    function torreGameOver() {
+        const run = window.Torre.cargar();
+        const piso = run.pisoActual;
+        window.Torre.terminar();
+        state.torre = null;
+        const content = el('div', {}, [
+            el('h2', { class: 'text-xl font-bold text-rose-400 mb-2 text-center' }, t('ui.torre.fin_titulo')),
+            el('p', { class: 'text-sm text-slate-300 text-center mb-1' }, t('ui.torre.fin_sub', { piso: piso })),
+        ]);
+        const m = showModal(content);
+        content.appendChild(el('button', {
+            class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap mt-4',
+            onclick: async function () {
+                m.close();
+                window.Torre.empezar();
+                evento('torre:inicio');
+                await torreJugarSiguienteReal(window.Torre.temaParaPiso([], torreIdsCatalogo()));
+            },
+        }, t('ui.torre.btn_otra')));
+    }
+
+    async function torreCompartir(run) {
+        const txt = window.Torre.textoCompartir(run, state.jugadorNombre);
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(txt);
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = txt;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+            }
+            toast(t('ui.torre.toast_copiado'));
+        } catch (e) { /* sin portapapeles: el texto queda en el modal */ }
+    }
+
+    function torreAlTerminarPiso(resultado, d) {
+        const run = window.Torre.cargar();
+        if (!run || !run.enProgreso) { window.location.href = 'index.php'; return; }
+        registrarHistorial(resultado === 'tablas' ? 'draw' : resultado);
+        if (resultado === 'win') {
+            window.Torre.superarPiso(run, d.tema, d.dinero);
+            const tras = window.Torre.cargar();
+            const nuevos = torreDesbloquear(window.Torre.logrosGanados(tras, false));
+            if (window.Torre.victoria(tras)) { torreVictoria(); return; }
+            state.torre = tras;
+            torrePintarHud();
+            torreModalTransicion(nuevos, window.Torre.temaParaPiso(tras.tematicasJugadas, torreIdsCatalogo()));
+            return;
+        }
+        torreModalDerrota();
     }
 
     // =================== EXPOSE ===================

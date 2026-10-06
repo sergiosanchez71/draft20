@@ -42,6 +42,9 @@ jobs:
       - name: Test política del bot
         run: node tests/bot_policy.test.js
 
+      - name: Test Torre de Batalla
+        run: node tests/torre.test.js
+
       - name: Smoke E2E
         run: php tools/smoke.php
 
@@ -51,4 +54,4 @@ jobs:
           npm run build
 
       - name: Build commiteado (drift)
-        run: git diff --exit-code -- js/app.core.min.js js/app.game.min.js js/bot_policy.min.js css/tailwind.css
+        run: git diff --exit-code -- js/app.core.min.js js/app.game.min.js js/bot_policy.min.js js/torre.min.js css/tailwind.css

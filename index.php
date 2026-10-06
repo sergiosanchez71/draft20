@@ -256,7 +256,7 @@ if (ADS_ACTIVOS && ADSENSE_SLOT_LOBBY !== '') {
 
 pagina_foot([
     'inline_first' => $inlineFirst,
-    'scripts' => ['js/app.core.js'],
+    'scripts' => ['js/torre.js', 'js/app.core.js'],
     'inline' => $inline,
     'defer' => true,
 ]);

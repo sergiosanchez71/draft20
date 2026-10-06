@@ -58,6 +58,22 @@ if ($totales === []) {
     }
 }
 
+// ---------- Torre de Batalla (funnel) ----------
+require_once $root . '/api/ranking_lib.php';
+$funnel = resumen_torre($statsDir);
+echo "\n=== Torre de Batalla (alcance por piso) ===\n";
+if ($funnel['global']['inicio'] === 0) {
+    echo "  (sin subidas todavía)\n";
+} else {
+    $g = $funnel['global'];
+    echo '  inicios: ' . $g['inicio'] . '  victorias: ' . $g['victorias'] . "\n";
+    for ($p = 1; $p <= 10; $p++) {
+        $n = $g['alcance'][$p];
+        $pct = $g['inicio'] > 0 ? round(100 * $n / $g['inicio']) : 0;
+        echo '  piso ' . str_pad((string) $p, 2, ' ', STR_PAD_LEFT) . ': ' . str_pad((string) $n, 5, ' ', STR_PAD_LEFT) . ' (' . $pct . "%)\n";
+    }
+}
+
 // ---------- Partidas (salas) ----------
 echo "\n=== Partidas en api/salas (creadas en los últimos $dias días) ===\n";
 $salasDir = $root . '/api/salas/';

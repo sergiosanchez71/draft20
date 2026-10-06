@@ -382,7 +382,7 @@ if (!function_exists('crear_sala_nueva')) {
     /**
      * Crea una sala nueva con reparto equilibrado de ítems.
      *
-     * @param array{rapida?:bool} $opciones
+     * @param array{rapida?:bool,torre?:bool,mostrar_valores?:bool} $opciones
      * @return array{ok:bool,codigo:string,jugador_id:string}
      * @throws InvalidArgumentException|RuntimeException
      */
@@ -452,6 +452,7 @@ if (!function_exists('crear_sala_nueva')) {
             'bot_slot'             => null, // 0 | 1 si ese slot es un bot local (no pollea: sin abandono ni aviso)
             'mostrar_valores'      => !empty($opciones['mostrar_valores']), // true = mostrar ⭐ durante la partida
             'rapida'               => !empty($opciones['rapida']),          // true = sala de partida rápida
+            'torre'                => !empty($opciones['torre']),           // true = piso de la Torre (sin ranking ni stats)
             'creado_en'           => $ahora,
             'actualizado_en'      => $ahora,
         ];
@@ -538,6 +539,8 @@ $tematicaId = isset($input['tematica']) && is_string($input['tematica']) ? $inpu
 $nombreJ1   = isset($input['nombre']) && is_string($input['nombre']) ? trim($input['nombre']) : '';
 // Modo "⭐ Valores visibles": se comparte con toda la sala (lo fija quien crea).
 $mostrarValores = !empty($input['mostrar_valores']);
+// Torre de Batalla: pisos en solitario que no entran en ranking ni stats.
+$esTorre = !empty($input['torre']);
 
 if ($tematicaId === '') {
     responder(['ok' => false, 'error' => 'Falta el campo "tematica".'], 400);
@@ -551,7 +554,7 @@ if (mb_strlen($nombreJ1, 'UTF-8') > 20) {
 // ============================================================================
 
 try {
-    $res = crear_sala_nueva($tematicaId, $nombreJ1, ['mostrar_valores' => $mostrarValores]);
+    $res = crear_sala_nueva($tematicaId, $nombreJ1, ['mostrar_valores' => $mostrarValores, 'torre' => $esTorre]);
     responder($res, 200);
 
 } catch (InvalidArgumentException $e) {

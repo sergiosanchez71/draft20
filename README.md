@@ -43,6 +43,7 @@ npm run smoke     # E2E: crear → unirse → pujar → bajar → finalizar
 
 - `tools/test_catalogo.php`: 20 ítems por temática, tiers 6/7/7, ids únicos y con formato, `valor` 1-10, traducciones presentes y catálogo ↔ ficheros.
 - `tests/bot_policy.test.js`: decisiones de la política del bot + fuzz de 2000 estados (solo acciones legales y nunca `null` cuando le toca).
+- `tests/torre.test.js`: Torre de Batalla (run, temas sin repetir, regla de desempate, revives con flag, logros, mock de recompensa).
 - `tests/rate_limit.test.php`: ventana fija del limitador (permite hasta el máximo, corta, caduca, loopback exento y contadores por IP).
 - `tests/a11y.test.js`: axe-core (WCAG A/AA) sobre home, cómo jugar, glosario, ficha, categoría, guía y privacidad; falla con violaciones serious/critical.
 - `tools/smoke.php`: partida completa contra el servidor embebido de PHP, con cleanup de salas.
