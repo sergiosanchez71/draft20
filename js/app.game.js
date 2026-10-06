@@ -841,7 +841,8 @@
         }
 
         // Aviso blando si te quedas 20 s sin actuar en tu turno (una vez por partida).
-        if (s.estado === 'jugando' && s.item_actual && s.item_actual.turno_de === state.jugadorSlot) {
+        // Contra el bot no hay prisa: tiempo ilimitado para pensar (sin aviso).
+        if (s.estado === 'jugando' && !state.bot && s.item_actual && s.item_actual.turno_de === state.jugadorSlot) {
             const firmaTurno = s.item_actual.id + ':' + state.jugadorSlot;
             if (state.turnoFirma !== firmaTurno) {
                 state.turnoFirma = firmaTurno;
@@ -1535,6 +1536,9 @@
     function renderFinalScreen() {
         const card = $('#itemCard');
         if (!card) return;
+        // Torre ya resuelta: no repintar (el re-poll limpiaría el desglose).
+        if (state.torreHecha && state.torreHecha === state.codigo
+            && state.sala && state.sala.estado === 'finalizada') return;
         card.classList.remove('pr-20', 'sm:pr-24');
 
         // Estructura persistente: el anuncio vive en #adFinalHost y no se
@@ -1578,19 +1582,28 @@
         else if (rivalMoney > myMoney) { resultado = 'loss'; porDesempate = true; }
         // Torre: flujo propio (sin serie/stats/ranking normales) y sin revancha.
         // Guardián: la pantalla final se repinta en cada tick; cada sala se
-        // procesa una sola vez (si no, doble avance o modales apilados).
+        // procesa una sola vez (si no, doble avance o pantallas apiladas).
+        // Con red de seguridad: si el flujo Torre falla, se cae a la final
+        // normal antes que a una pantalla vacía y congelada.
         if (state.torre && window.Torre) {
             if (state.torreHecha !== state.codigo) {
                 state.torreHecha = state.codigo;
                 try { window.Torre.marcarPisoHecho(state.codigo); } catch (e) { /* ignore */ }
-                torreAlTerminarPiso(resultado, {
-                    miItems: myItems, rivalItems: rivalItems,
-                    miDinero: myMoney, rivalDinero: rivalMoney,
-                    miGastado: mySpent, rivalGastado: rivalSpent,
-                    desempate: porDesempate, tema: (s.tematica || ''),
-                });
+                let torreOk = false;
+                try {
+                    torreAlTerminarPiso(resultado, {
+                        miItems: myItems, rivalItems: rivalItems,
+                        miDinero: myMoney, rivalDinero: rivalMoney,
+                        miGastado: mySpent, rivalGastado: rivalSpent,
+                        desempate: porDesempate, tema: (s.tematica || ''),
+                    });
+                    torreOk = true;
+                } catch (e) { /* fallback a final normal */ }
+                try { if (typeof stopPollingGame === 'function') stopPollingGame(); } catch (e) { /* ignore */ }
+                if (torreOk) return;
+            } else {
+                return;
             }
-            return;
         }
         registrarResultado(resultado);
 
@@ -1842,7 +1855,8 @@
         try {
             const r = await api('POST', 'api/accion.php', body);
             if (!r.ok) {
-                toast(r.error || 'Error');
+                // Sin conexión (timeout incluido): mensaje humano, no el crudo.
+                toast(r.error === 'network' ? t('ui.juego.sin_conexion') : (r.error || 'Error'));
                 vibrate([100, 50, 100]);
                 return;
             }

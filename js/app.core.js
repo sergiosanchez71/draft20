@@ -78,6 +78,9 @@
     }
 
     // =================== fetch helper ===================
+    /** Llamadas a la API con timeout: lo colgado (red a goteo) falla rápido
+     *  en vez de congelar la UI sin feedback (botones muertos, sin banner). */
+    const API_TIMEOUT_MS = 15000;
     async function api(method, path, body) {
         const opts = {
             method: method,
@@ -85,13 +88,22 @@
             credentials: 'same-origin',
         };
         if (body !== undefined) opts.body = JSON.stringify(body);
+        let ctl = null;
+        let temporizador = null;
         try {
+            if (typeof AbortController !== 'undefined') {
+                ctl = new AbortController();
+                opts.signal = ctl.signal;
+                temporizador = setTimeout(function () { try { ctl.abort(); } catch (e) { /* ignore */ } }, API_TIMEOUT_MS);
+            }
             const r = await fetch(path, opts);
             const data = await r.json().catch(function () { return {}; });
             data._status = r.status;
             return data;
         } catch (e) {
             return { ok: false, _status: 0, error: 'network' };
+        } finally {
+            if (temporizador) clearTimeout(temporizador);
         }
     }
 
@@ -1242,13 +1254,24 @@
         pintarTorre();
     }
 
-    /** Repinta la tarjeta según haya run activo (SSR = estado inicial). */
+    /** Repinta la tarjeta según haya run activo (incluye vuelta al inicio). */
     function pintarTorre() {
         const box = $('#torreCardBtn');
         if (!box || !window.Torre) return;
         let run = null;
         try { run = window.Torre.cargar(); } catch (e) { run = null; }
-        if (!run || !run.enProgreso) return; // SSR ya pintó el botón de empezar
+        if (!run || !run.enProgreso) {
+            // Sin run: reconstruir el estado inicial (sin esto, Reiniciar no
+            // se nota hasta recargar; idéntico al SSR, sin romper paridad).
+            clear(box);
+            const b = el('button', {
+                id: 'btnTorre',
+                class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap text-sm',
+                onclick: onTorreEmpezar,
+            }, t('ui.torre.btn_empezar'));
+            box.appendChild(b);
+            return;
+        }
         clear(box);
         box.appendChild(el('p', { class: 'text-center text-amber-300 font-bold text-sm mb-3' },
             t('ui.torre.hud_piso', { piso: run.pisoActual })
