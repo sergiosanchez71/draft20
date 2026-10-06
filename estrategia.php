@@ -61,7 +61,7 @@ pagina_head([
         </nav>
 
         <h1 class="text-3xl font-bold text-slate-100 mb-2"><?= e((string) ($guia['h1'] ?? $titulo)) ?></h1>
-        <p class="text-xs text-slate-400 mb-8"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(fecha_es((string) ($guia['fecha'] ?? ''))) ?></p>
+        <p class="text-xs text-slate-400 mb-8"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(fecha_es((string) ($guia['fecha'] ?? ''))) ?> · Por el Equipo Draft 20</p>
 
         <?php foreach ((array) ($guia['intro'] ?? []) as $p): ?>
         <p class="text-sm text-slate-300 leading-relaxed mb-3"><?= e((string) $p) ?></p>

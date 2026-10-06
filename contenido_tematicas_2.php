@@ -12,6 +12,7 @@ return [
         'preguntas' => [
             ['q' => '¿Aparece Lamine Yamal en la temática de fútbol?', 'a' => 'Sí, es uno de los ítems más recientes y más pujados, junto a Messi y Cristiano.'],
         ],
+        'tactica' => 'El fútbol premia al que conoce épocas: las leyendas (Messi, Cristiano, Maradona) deciden partidas, pero todo el mundo las quiere y salen caras. La jugada rentable es dejar que el rival se desangre por su ídolo mientras tú cierras equipo con internacionales sólidos a mitad de precio. Y ojo con los castigos con nombre divertido: pujar por Bendtner de farol solo funciona una vez por rival.',
     ],
     'nba' => [
         'descripcion' => 'Michael Jordan, LeBron James, Kobe Bryant y Stephen Curry dominan una subasta que también incluye a Anthony Bennett y Adam Morrison, dos elecciones de draft que salieron regular. La temática favorita de los que madrugan a ver partidos y de los que solo conocen los documentales.',
@@ -48,6 +49,7 @@ return [
         'preguntas' => [
             ['q' => '¿España y Argentina salen siempre?', 'a' => 'Sí, son los finalistas y la base innegociable de la temática, igual que el queso y el tomate en la pizza.'],
         ],
+        'tactica' => 'Con España y Argentina fijas en todas las partidas, el Mundial se juega en el segundo escalón: Inglaterra, Francia, Marruecos y Bélgica deciden quién gana. No te ciegues con tu selección favorita si sale cara; las semifinalistas de verdad se compran mejor cuando el rival ya gastó en su bandera. Y recuerda que solo salen 8 de las 20 en cada partida: cada duelo sabe distinto y siempre hay plan B.',
     ],
     'padel' => [
         'descripcion' => 'Coello, Tapia, Triay, Brea y Galán con Salazar, Josemaría y la víbora letal, frente a la bola al cristal y la pala rota. La temática del deporte que se juega en cada barrio: aquí se puja por los números uno y se sufre con la verja.',

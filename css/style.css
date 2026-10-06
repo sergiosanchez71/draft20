@@ -108,10 +108,10 @@ body.guiado #app { overflow-y: auto; }
 
 .btn-tap { touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
 
-/* Bloques manuales de AdSense: tamaño reservado (CLS 0) con el MISMO fondo de
-   la página (transparente) para que un bloque sin rellenar no se vea como una
-   caja distinta. No se oculta nada: cuando AdSense sirva el anuncio, se pinta
-   encima de este hueco. */
+/* Huecos publicitarios: con red activa, tamaño reservado (CLS 0) con el MISMO
+   fondo de la página (transparente). Sin red activa, los huecos dormant
+   (vacíos) colapsan por completo (ver regla .ad-slot:empty): cero impacto
+   visual hasta que una red los rellene. */
 .ad-slot {
     display: flex;
     align-items: center;
@@ -151,6 +151,18 @@ body.guiado #app { overflow-y: auto; }
     min-height: 250px;
     margin-top: 1rem;
     margin-bottom: 1.5rem;
+}
+
+/* Huecos dormant (sin red publicitaria activa): colapsados por completo,
+   cero impacto visual. Al rellenarse con un anuncio (dejan de estar :empty)
+   recuperan su tamaño reservado anti-CLS. Hooks data-ad-pos/data-ad-size
+   para enchufar la red futura (AdinPlay) sin tocar plantillas. */
+.ad-slot:empty {
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
 }
 
 .pop-emote { animation: popEmote 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28); }

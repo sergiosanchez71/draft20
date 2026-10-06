@@ -318,11 +318,11 @@ try {
         'guía: Article con publisher de organización');
     $rLlms = http_req('GET', $base . '/llms.txt');
     check($rLlms['code'] === 200 && strpos((string) $rLlms['raw'], '# Draft 20') === 0, 'llms.txt servido con H1');
-    check(strpos((string) $rSeoHome['raw'], 'adsbygoogle.js?client=ca-pub-9504493922636861') !== false, 'home: script de AdSense en el head');
-    check(strpos($hcsp, 'pagead2.googlesyndication.com') !== false, 'CSP: dominios de AdSense permitidos');
+    check(strpos((string) $rSeoHome['raw'], 'pagead2.googlesyndication.com') === false, 'home: sin loader de AdSense (red inactiva)');
+    check(strpos($hcsp, 'pagead2.googlesyndication.com') === false && strpos($hcsp, 'fundingchoicesmessages.google.com') !== false, 'CSP: sin dominios de AdSense, con fundingchoices');
     $rAds = http_req('GET', $base . '/ads.txt');
-    check($rAds['code'] === 200 && strpos((string) $rAds['raw'], 'pub-9504493922636861') !== false, 'ads.txt servido con el publisher');
-    check(strpos((string) $rSeoHome['raw'], 'data-ad-slot="1410891766"') !== false, 'home: bloque manual del lobby');
+    check($rAds['code'] === 200 && strpos((string) $rAds['raw'], 'dormant') !== false, 'ads.txt placeholder sin red activa');
+    check(strpos((string) $rSeoHome['raw'], 'data-ad-pos="lobby"') !== false && strpos((string) $rSeoHome['raw'], 'data-ad-size="320x100"') !== false, 'home: hueco dormant del lobby');
     $rJuegoAds = http_req('GET', $base . '/juego.php?codigo=ABCDE');
     $rJuegoMalo = http_req('GET', $base . '/juego.php?codigo=ABC12');
     $cabMalo = implode("\n", (array) ($rJuegoMalo['headers'] ?? []));
@@ -353,16 +353,15 @@ try {
     check($buildEsperado !== '0' && ($mBuild[1] ?? '') === $buildEsperado,
         'juego: el build coincide con el bundle más reciente');
     check($rJuegoAds['code'] === 200, 'juego: shell servido (200)');
-    check(strpos((string) $rJuegoAds['raw'], 'adsbygoogle.js?client=ca-pub-9504493922636861') !== false, 'juego: loader de AdSense');
-    check(strpos((string) $rJuegoAds['raw'], '"banner":"6658157047"') !== false
-        && strpos((string) $rJuegoAds['raw'], '"final":"4631951476"') !== false,
-        'juego: slots banner/final en window.__ADS');
+    check(strpos((string) $rJuegoAds['raw'], 'pagead2.googlesyndication.com') === false, 'juego: sin loader (red inactiva)');
+    check(strpos((string) $rJuegoAds['raw'], 'window.__ADS') === false, 'juego: sin __ADS (huecos dormant en JS)');
     foreach (['/tematica.php?id=futbol', '/guia.php?slug=draft-de-20-monedas', '/guia.php?slug=juegos-para-dos-personas', '/guia.php?slug=juegos-rapidos-cinco-minutos', '/juegos_de_subasta.php', '/como_jugar.php', '/estrategia.php', '/preguntas-frecuentes.php', '/categoria.php?id=comida', '/guias.php', '/glosario.php'] as $rutaCont) {
         $rCont = http_req('GET', $base . $rutaCont);
-        check($rCont['code'] === 200 && strpos((string) $rCont['raw'], 'data-ad-slot="1818472919"') !== false,
-            'contenido ' . $rutaCont . ': bloque in-article');
-        check(substr_count((string) $rCont['raw'], '(window.adsbygoogle = window.adsbygoogle || []).push({});') === 1,
-            'contenido ' . $rutaCont . ': push único');
+        check($rCont['code'] === 200 && strpos((string) $rCont['raw'], 'data-ad-pos="articulo"') !== false
+            && strpos((string) $rCont['raw'], 'data-ad-slot') === false,
+            'contenido ' . $rutaCont . ': hueco dormant in-article');
+        check(substr_count((string) $rCont['raw'], '(window.adsbygoogle = window.adsbygoogle || []).push({});') === 0,
+            'contenido ' . $rutaCont . ': sin push (red inactiva)');
     }
     $rCssAds = http_req('GET', $base . '/css/style.css');
     $cssAds = (string) $rCssAds['raw'];
@@ -395,6 +394,7 @@ try {
     $rGameJs = http_req('GET', $base . '/js/app.game.min.js');
     check(strpos((string) $rGameJs['raw'], 'app-mode') !== false && strpos((string) $rGameJs['raw'], 'visualViewport') !== false,
         'JS: ajuste del modo app instalada en el bundle');
+    check(strpos((string) $rGameJs['raw'], 'data-ad-pos') !== false, 'JS: huecos dormant con hooks en el bundle');
 
     // Favicon: rutas absolutas también en URLs bonitas (antes se rompían) y
     // tamaños múltiplos de 48 que pide Google.

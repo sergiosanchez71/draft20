@@ -1,1 +1,2 @@
-google.com, pub-9504493922636861, DIRECT, f08c47fec0942fa0
+# Huecos publicitarios en modo dormant (sin red activa).
+# Al integrar la red (AdinPlay u otra), añadir aquí su línea autorizada.

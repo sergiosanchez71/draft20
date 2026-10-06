@@ -17,6 +17,18 @@ const ADSENSE_SLOT_JUEGO = '6658157047';
 const ADSENSE_SLOT_FINAL = '4631951476';
 const ADSENSE_SLOT_LOBBY = '1410891766';
 const ADSENSE_SLOT_ARTICULO = '1818472919';
+// Red publicitaria activa: 'ninguna' deja los huecos en modo dormant
+// (colapsados, con hooks data-ad-* y sin llamadas a terceros) listos para
+// enchufar AdinPlay u otra red sin tocar plantillas.
+const ADS_ACTIVOS = false;
+// Mapa de huecos: posición => tamaño reservado al activar la red.
+const AD_HUECOS = [
+    'lobby' => '320x100',
+    'juego' => '320x50',
+    'final' => '300x250',
+    'articulo' => '300x250',
+    'torre' => '300x250',
+];
 
 function e(?string $s): string
 {
@@ -180,19 +192,16 @@ function csp_headers(): void
 function csp_policy(): string
 {
     $n = csp_nonce();
+    // Sin red activa: fuera los dominios de AdSense. Se mantiene
+    // fundingchoicesmessages (reactivación) y google/gstatic genéricos.
+    // Al activar red, re-añadir sus dominios aquí (ver README Publicidad).
     return "default-src 'self'; " .
-        "script-src 'self' 'nonce-" . $n . "' https://pagead2.googlesyndication.com https://partner.googleadservices.com " .
-        "https://tpc.googlesyndication.com https://googleads.g.doubleclick.net https://adservice.google.com " .
-        "https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
+        "script-src 'self' 'nonce-" . $n . "' " .
+        "https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
         "style-src 'self' 'unsafe-inline'; " .
-        "img-src 'self' data: https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net " .
-        "https://tpc.googlesyndication.com https://www.google.com https://www.gstatic.com " .
-        "https://ep1.adtrafficquality.google https://www.googleadservices.com; " .
-        "connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net " .
-        "https://ep1.adtrafficquality.google https://csi.gstatic.com https://www.google.com https://adservice.google.com " .
-        "https://fundingchoicesmessages.google.com; " .
-        "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com " .
-        "https://www.gstatic.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com; " .
+        "img-src 'self' data: https://www.google.com https://www.gstatic.com; " .
+        "connect-src 'self' https://www.google.com https://fundingchoicesmessages.google.com; " .
+        "frame-src https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
         "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
 }
 
@@ -215,14 +224,21 @@ function app_build(): string
     return $max > 0 ? (string) $max : 'dev';
 }
 
-/** Bloque manual de AdSense para contenido ('' si no hay slot configurado). */
-function ads_slot(string $clase = 'ad-articulo', int $ancho = 300, int $alto = 250): string
+/** Bloque manual de anuncio para contenido.
+ * Con red inactiva devuelve el hueco dormant: colapsado (cero impacto
+ * visual), con hooks data-ad-* y tamaño documentado para la red futura.
+ * Con red activa, el <ins> de tamaño fijo (cero CLS) + push único en el pie.
+ */
+function ads_slot(string $clase = 'ad-articulo', string $pos = 'articulo'): string
 {
-    if (ADSENSE_SLOT_ARTICULO === '') {
-        return '';
+    $tam = AD_HUECOS[$pos] ?? '300x250';
+    [$ancho, $alto] = array_map('intval', explode('x', $tam) + [300, 250]);
+    if (!ADS_ACTIVOS || ADSENSE_SLOT_ARTICULO === '') {
+        return '<!-- hueco-ad:' . e($pos) . ' ' . e($tam) . ' -->'
+            . '<div class="ad-slot ' . e($clase) . '" data-ad-pos="' . e($pos) . '" data-ad-size="' . e($tam) . '"></div>';
     }
     $GLOBALS['__ads_pendiente'] = true;
-    return '<div class="ad-slot ' . e($clase) . '">'
+    return '<div class="ad-slot ' . e($clase) . '" data-ad-pos="' . e($pos) . '" data-ad-size="' . e($tam) . '">'
         . '<ins class="adsbygoogle" style="display:inline-block;width:' . $ancho . 'px;height:' . $alto . 'px" '
         . 'data-ad-client="' . e(ADSENSE_CLIENT) . '" data-ad-slot="' . e(ADSENSE_SLOT_ARTICULO) . '"></ins>'
         . '</div>';
@@ -406,7 +422,7 @@ function pagina_head(array $opts): void
 <?php foreach (($opts['prefetch'] ?? []) as $pf): ?>
     <link rel="prefetch" href="<?= e($pf) ?>">
 <?php endforeach; ?>
-<?php if (ADSENSE_CLIENT !== ''): ?>
+<?php if (ADS_ACTIVOS && ADSENSE_CLIENT !== ''): ?>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?= e(ADSENSE_CLIENT) ?>" crossorigin="anonymous"></script>
 <?php endif; ?>
     <?= css_tags($opts['css_inline'] ?? true) ?>
@@ -418,6 +434,29 @@ function pagina_head(array $opts): void
 <?php endforeach; ?>
 </head>
 <body class="<?= e($bodyClass) ?>">
+<?php
+    site_header();
+}
+
+/**
+ * Barra de navegación principal (SSR en todas las páginas con pagina_head).
+ * Enlaces reales para crawler y usuarios; responsive con wrap.
+ */
+function site_header(): void
+{
+    $enlaces = [
+        ['href' => '/como-jugar', 'texto' => 'Cómo se juega'],
+        ['href' => '/como-jugar-y-estrategia', 'texto' => 'Estrategia'],
+        ['href' => '/preguntas-frecuentes', 'texto' => 'Preguntas frecuentes'],
+        ['href' => '/guias', 'texto' => 'Guías'],
+        ['href' => '/ranking', 'texto' => 'Ranking'],
+    ];
+    ?>
+    <nav class="w-full bg-slate-900/95 border-b border-slate-800 px-4 py-2 flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm" aria-label="Navegación principal">
+        <?php foreach ($enlaces as $l): ?>
+        <a class="text-slate-300 hover:text-amber-400 font-semibold" href="<?= e($l['href']) ?>"><?= e($l['texto']) ?></a>
+        <?php endforeach; ?>
+    </nav>
 <?php
 }
 

@@ -24,7 +24,9 @@ return [
         'preguntas' => [
             ['q' => '¿El queso y el tomate salen siempre?', 'a' => 'Sí, son la base innegociable de la temática: aparecen en todas las partidas, y el resto de ingredientes se sortea alrededor.'],
         ],
+        'tactica' => 'En la pizza se juega a dos velocidades: los ingredientes artesanos (pepperoni, jamón, borde relleno) se pelean de verdad y los cutres sirven para inflar. Como el queso y el tomate salen siempre, no gastes en ellos más de lo necesario: guárdate las monedas para el ingrediente que complete tu equipo. Si el rival suspira por el pepperoni, súbelo de uno en uno y bájate antes de que te lo coma entero.',
     ],
+
     'barbacoa' => [
         'descripcion' => 'El asado de domingo convertido en subasta: chuletón madurado 45 días, brisket ahumado doce horas, brasas de roble y chimichurri casero frente a un carbón húmedo o una carne carbonizada. Es la temática más "de sobremesa" de todas, perfecta para jugar mientras se hace la comida de verdad.',
         'preguntas' => [

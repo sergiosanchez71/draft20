@@ -98,6 +98,24 @@ pagina_head([
         <?php $jsonTema = __DIR__ . '/tematicas/' . $id . '.json'; if (is_file($jsonTema)): ?>
         <p class="text-xs text-slate-400 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', (int) filemtime($jsonTema))) ?></p>
         <?php endif; ?>
+        <?php
+        // Puesto en el ranking del mes en curso (datos reales anonimizados).
+        // Sin datos no se pinta nada. Tope 1 MB como el teaser de la home.
+        $puestoMes = null;
+        $mesRankId = date('Y-m');
+        $logRankFicha = __DIR__ . '/api/datos/partidas_humanas.jsonl';
+        if (is_file($logRankFicha) && filesize($logRankFicha) < 1048576) {
+            require_once __DIR__ . '/api/ranking_lib.php';
+            $aggFicha = ranking_humanas($logRankFicha, 0);
+            $topFicha = array_values((array) ($aggFicha['porMes'][$mesRankId]['top'] ?? []));
+            $posFicha = array_search($id, $topFicha, true);
+            if ($posFicha !== false) $puestoMes = $posFicha + 1;
+        }
+        $MESES_FICHA = ['01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo', '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio', '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre', '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'];
+        ?>
+        <?php if ($puestoMes !== null): ?>
+        <p class="text-sm text-slate-200 mb-6">🏅 Nº <?= (int) $puestoMes ?> en <?= e(($MESES_FICHA[substr($mesRankId, 5, 2)] ?? $mesRankId)) ?> · <a class="text-amber-400 hover:text-amber-300 font-semibold" href="/ranking">Ver ranking →</a></p>
+        <?php endif; ?>
 
         <div class="flex flex-wrap gap-2 mb-2">
             <button id="btnJugarTema" type="button" data-tematica="<?= e($id) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap disabled:opacity-60"><?= e((string) ($SEO['tematica_cta'] ?? 'Jugar')) ?></button>
@@ -122,6 +140,12 @@ pagina_head([
             </li>
             <?php endforeach; ?>
         </ul>
+
+        <?php $tacticaTema = is_array($cont) ? (string) ($cont['tactica'] ?? '') : ''; ?>
+        <?php if ($tacticaTema !== ''): ?>
+        <h2 class="text-xl font-bold text-slate-100 mb-3">Cómo jugarla: táctica de <?= e($nombre) ?></h2>
+        <p class="text-sm text-slate-300 leading-relaxed mb-10"><?= e($tacticaTema) ?></p>
+        <?php endif; ?>
 
         <?= ads_slot() ?>
 

@@ -16,7 +16,8 @@ pagina_head([
 ]);
 ?>
     <main class="flex-1 w-full max-w-3xl mx-auto px-4 pt-8">
-        <h1 class="text-3xl font-bold text-slate-100 mb-6"><?= e((string) ($SEO['acerca_titulo'] ?? '')) ?></h1>
+        <h1 class="text-3xl font-bold text-slate-100 mb-2"><?= e((string) ($SEO['acerca_titulo'] ?? '')) ?></h1>
+        <p class="text-xs text-slate-400 mb-6">Por el Equipo Draft 20</p>
         <?php foreach (['acerca_p1', 'acerca_p2', 'acerca_p3'] as $clave): ?>
         <p class="text-sm text-slate-300 leading-relaxed mb-4"><?= e((string) ($SEO[$clave] ?? '')) ?></p>
         <?php endforeach; ?>

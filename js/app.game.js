@@ -123,17 +123,26 @@
     }
 
     // =================== ANUNCIOS (bloques manuales) ===================
-    /** Contenedor de un bloque manual de AdSense; null si no hay slot configurado. */
+    /** Hueco publicitario: con red activa devuelve el <ins>; sin red, el
+     *  contenedor dormant colapsado (hooks data-ad-* para la red futura). */
+    const AD_POS = { banner: 'juego', final: 'final' };
     function crearAd(clave, clase, ancho, alto) {
         const cfg = window.__ADS;
-        if (!cfg || !cfg.client || !cfg[clave]) return null;
+        const pos = AD_POS[clave] || clave;
+        const hueco = el('div', {
+            class: 'ad-slot ' + clase,
+            'data-ad-pos': pos,
+            'data-ad-size': ancho + 'x' + alto,
+        });
+        if (!cfg || !cfg.client || !cfg[clave]) return hueco;
         const ins = el('ins', {
             class: 'adsbygoogle',
             style: 'display:inline-block;width:' + ancho + 'px;height:' + alto + 'px',
             'data-ad-client': cfg.client,
             'data-ad-slot': cfg[clave],
         });
-        return el('div', { class: 'ad-slot ' + clase }, [ins]);
+        hueco.appendChild(ins);
+        return hueco;
     }
 
     /** Encola el bloque recién insertado (el loader async procesa la cola al llegar). */
@@ -143,7 +152,7 @@
 
     // =================== JUEGO ===================
     async function juegoInit(codigo) {
-        if (!codigo || !/^[A-Z0-9]{5}$/.test(codigo)) {
+        if (!codigo || !/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/.test(codigo)) {
             window.location.href = 'index.php';
             return;
         }

@@ -23,6 +23,11 @@ rsort($meses);
 $mapa = mapa_tematicas();
 $medallas = ['🥇', '🥈', '🥉'];
 
+$faqRanking = [
+    ['q' => '¿Cómo se calcula el ranking?', 'a' => 'Cada partida terminada suma un punto a su temática en el mes en curso. El orden de cada mes es el número de partidas terminadas, y los empates se desempatan por orden alfabético para que el ranking sea estable.'],
+    ['q' => '¿El ranking muestra nombres o datos personales?', 'a' => 'No: solo nombres de temáticas ordenados, sin cifras, sin nombres de jugadores ni identificadores. El registro es completamente anónimo.'],
+    ['q' => '¿Por qué no aparece mi temática favorita?', 'a' => 'Solo aparecen las temáticas con partidas terminadas ese mes. Juega una partida y entrará en el ranking automáticamente.'],
+];
 $jsonLd = [
     [
         '@context' => 'https://schema.org',
@@ -33,6 +38,10 @@ $jsonLd = [
         ],
     ],
 ];
+$faqLdRanking = json_ld_faq($faqRanking);
+if ($faqLdRanking !== null) {
+    $jsonLd[] = $faqLdRanking;
+}
 
 pagina_head([
     'titulo' => 'Ranking de temáticas más jugadas de Draft 20',
@@ -50,8 +59,14 @@ pagina_head([
         </nav>
 
         <h1 class="text-3xl font-bold text-slate-100 mb-3">Ranking de temáticas</h1>
-        <p class="text-sm text-slate-300 leading-relaxed mb-8">
+        <p class="text-sm text-slate-300 leading-relaxed mb-3">
             Lo más jugado cada mes, ordenado por partidas terminadas.
+        </p>
+        <p class="text-sm text-slate-300 leading-relaxed mb-3">
+            Cada partida terminada cuenta un punto para su temática dentro del mes en curso. El registro es anónimo: no guardamos nombres, identificadores ni códigos de sala, solo temática, modo y hora para poder agrupar por meses.
+        </p>
+        <p class="text-sm text-slate-300 leading-relaxed mb-8">
+            Aquí no verás cifras, solo el orden con medallas. Si tu temática no aparece, juega una partida y entrará sola.
         </p>
 
         <?php if ($meses === []): ?>
@@ -80,6 +95,16 @@ pagina_head([
             </ol>
         </section>
         <?php endforeach; ?>
+
+        <h2 class="text-xl font-bold text-slate-100 mt-8 mb-3">Preguntas sobre el ranking</h2>
+        <div class="mb-8">
+            <?php foreach ($faqRanking as $f): ?>
+            <details class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-2">
+                <summary class="font-semibold text-slate-100 cursor-pointer"><?= e((string) ($f['q'] ?? '')) ?></summary>
+                <p class="text-sm text-slate-300 mt-2 leading-relaxed"><?= e((string) ($f['a'] ?? '')) ?></p>
+            </details>
+            <?php endforeach; ?>
+        </div>
 
         <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6">Jugar ahora</a>
     </main>

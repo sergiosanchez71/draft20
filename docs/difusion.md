@@ -38,7 +38,7 @@ Propuesta de valor: *juego de subasta por turnos para 2 jugadores, gratis, en el
 > **Body**: Hey! I built Draft 20, a turn-based auction game for two players. You get 20 coins, 8 items come up, and you bid +1/+3 or drop out — the last bidder pays and keeps the item. Item values are hidden until the end, so it's about reading your rival, not memorizing lists.
 >
 > - Runs in the browser on phones (each player uses their own device, you share a 5-char room code)
-> - No install, no account (ad-supported)
+> - No install, no account, no ads
 > - 69 themes (football, anime, Simpsons, streamers…), plus a practice bot with 4 levels
 >
 > https://draft20.es — feedback very welcome!
