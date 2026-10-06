@@ -161,6 +161,15 @@ foreach ((contenido_seo()['categorias'] ?? []) as $cid => $c) {
     }
 }
 ass([], $cifrasMal, 'intros de categoría sin conteos que caduquen');
+$trucosMal = [];
+foreach ((contenido_seo()['categorias'] ?? []) as $cid => $c) {
+    $truco = (string) ($c['truco'] ?? '');
+    preg_match_all('/\p{L}+/u', $truco, $mm);
+    if (count($mm[0]) < 15) {
+        $trucosMal[] = $cid;
+    }
+}
+ass([], $trucosMal, 'las 9 categorías traen truco de subasta (15+ palabras)');
 $rutasFijas = ['/', '/como-jugar', '/como-jugar-y-estrategia', '/preguntas-frecuentes', '/terminos', '/guias', '/glosario', '/juegos-de-subasta', '/acerca', '/contacto', '/privacidad', '/aviso-legal'];
 $categoriasIds = array_map(static fn($c) => (string) $c['id'], $catalogo);
 $guiasSlugs = array_keys(guias_ordenadas());

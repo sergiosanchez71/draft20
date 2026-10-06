@@ -117,6 +117,12 @@ pagina_head([
             <?php endforeach; ?>
         </ul>
 
+        <?php $trucoCat = (string) ($cont['truco'] ?? ''); ?>
+        <?php if ($trucoCat !== ''): ?>
+        <h2 class="text-xl font-bold text-slate-100 mb-3">Truco de subasta en <?= e($nombreCat) ?></h2>
+        <p class="text-sm text-slate-300 leading-relaxed mb-10"><?= e($trucoCat) ?></p>
+        <?php endif; ?>
+
         <?= ads_slot() ?>
 
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(seo_ui('categoria_otras_titulo')) ?></h2>
