@@ -40,6 +40,14 @@ pagina_head([
                     $textoPriv
                 );
             }
+            if ($s[0] === 'priv_metricas_titulo') {
+                $textoPriv = str_replace(
+                    ['tools.google.com/dlpage/gaoptout', 'policies.google.com/technologies/partner-sites'],
+                    ['<a class="text-amber-400 hover:text-amber-300" href="https://tools.google.com/dlpage/gaoptout" rel="noopener nofollow">tools.google.com/dlpage/gaoptout</a>',
+                     '<a class="text-amber-400 hover:text-amber-300" href="https://policies.google.com/technologies/partner-sites" rel="noopener nofollow">policies.google.com/technologies/partner-sites</a>'],
+                    $textoPriv
+                );
+            }
             ?>
             <p class="text-sm text-slate-300 leading-relaxed"><?= $textoPriv ?></p>
         </section>

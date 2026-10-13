@@ -11,8 +11,10 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.3.5';
+const APP_VERSION = '1.3.6';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
+// Google Tag Manager (medición GA4). Vacío = no se pinta nada.
+const GTM_ID = 'GTM-M5R9JHH5';
 const ADSENSE_SLOT_JUEGO = '6658157047';
 const ADSENSE_SLOT_FINAL = '4631951476';
 const ADSENSE_SLOT_LOBBY = '1410891766';
@@ -192,16 +194,16 @@ function csp_headers(): void
 function csp_policy(): string
 {
     $n = csp_nonce();
-    // Sin red activa: fuera los dominios de AdSense. Se mantiene
-    // fundingchoicesmessages (reactivación) y google/gstatic genéricos.
+    // Medición (GTM/GA4): dominios necesarios aunque la red de anuncios
+    // esté inactiva. Sin esto el snippet GTM se bloquea.
     // Al activar red, re-añadir sus dominios aquí (ver README Publicidad).
     return "default-src 'self'; " .
         "script-src 'self' 'nonce-" . $n . "' " .
-        "https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
+        "https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
         "style-src 'self' 'unsafe-inline'; " .
-        "img-src 'self' data: https://www.google.com https://www.gstatic.com; " .
-        "connect-src 'self' https://www.google.com https://fundingchoicesmessages.google.com; " .
-        "frame-src https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
+        "img-src 'self' data: https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.google-analytics.com; " .
+        "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://www.google.com https://fundingchoicesmessages.google.com; " .
+        "frame-src https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
         "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
 }
 
@@ -222,6 +224,37 @@ function app_build(): string
         }
     }
     return $max > 0 ? (string) $max : 'dev';
+}
+
+/** Google Tag Manager (head): snippet oficial + Consent Mode por defecto
+ *  denegado. Las etiquetas de Google en modo consentimiento respetan la
+ *  señal TCF del CMP (Funding Choices); sin consentimiento no miden.
+ *  Vacío si GTM_ID está sin configurar.
+ */
+function gtm_head(): string
+{
+    if (GTM_ID === '') {
+        return '';
+    }
+    $n = e(csp_nonce());
+    $id = e(GTM_ID);
+    return '<script nonce="' . $n . '">window.dataLayer=window.dataLayer||[];'
+        . 'window.dataLayer.push({"consent":"default","ad_storage":"denied","analytics_storage":"denied","ad_user_data":"denied","ad_personalization":"denied","wait_for_update":500});</script>' . "\n"
+        . '<script nonce="' . $n . '">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":'
+        . 'new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],'
+        . 'j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src='
+        . '"https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);'
+        . '})(window,document,"script","dataLayer","' . $id . '");</script>';
+}
+
+/** Google Tag Manager (body): noscript justo tras abrir <body>. */
+function gtm_body(): string
+{
+    if (GTM_ID === '') {
+        return '';
+    }
+    return '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=' . e(GTM_ID) . '" '
+        . 'height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>';
 }
 
 /** Bloque manual de anuncio para contenido.
@@ -392,6 +425,7 @@ function pagina_head(array $opts): void
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <?= gtm_head() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <?= csp_meta() ?>
     <meta name="theme-color" content="#0f172a">
@@ -434,6 +468,7 @@ function pagina_head(array $opts): void
 <?php endforeach; ?>
 </head>
 <body class="<?= e($bodyClass) ?>">
+<?= gtm_body() ?>
 <?php
     site_header();
 }
