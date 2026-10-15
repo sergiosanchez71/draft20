@@ -201,7 +201,7 @@ function csp_policy(): string
         "script-src 'self' 'nonce-" . $n . "' " .
         "https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
         "style-src 'self' 'unsafe-inline'; " .
-        "img-src 'self' data: https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.google-analytics.com; " .
+        "img-src 'self' data: https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.google-analytics.com; " .
         "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://www.google.com https://fundingchoicesmessages.google.com; " .
         "frame-src https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
         "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
@@ -243,7 +243,8 @@ function gtm_head(): string
         . '<script nonce="' . $n . '">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":'
         . 'new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],'
         . 'j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src='
-        . '"https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);'
+        . '"https://www.googletagmanager.com/gtm.js?id="+i+dl;var n=d.querySelector("[nonce]");'
+        . 'n&&j.setAttribute("nonce",n.nonce||n.getAttribute("nonce"));f.parentNode.insertBefore(j,f);'
         . '})(window,document,"script","dataLayer","' . $id . '");</script>';
 }
 

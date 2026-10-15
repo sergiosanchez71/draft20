@@ -320,8 +320,9 @@ try {
     check($rLlms['code'] === 200 && strpos((string) $rLlms['raw'], '# Draft 20') === 0, 'llms.txt servido con H1');
     check(strpos((string) $rSeoHome['raw'], 'pagead2.googlesyndication.com') === false, 'home: sin loader de AdSense (red inactiva)');
     check(strpos($hcsp, 'pagead2.googlesyndication.com') === false && strpos($hcsp, 'fundingchoicesmessages.google.com') !== false, 'CSP: sin dominios de AdSense, con fundingchoices');
-    check(strpos($hcsp, 'https://www.googletagmanager.com') !== false && strpos((string) $rSeoHome['raw'], 'googletagmanager.com/gtm.js?id=') !== false && strpos((string) $rSeoHome['raw'], 'GTM-M5R9JHH5') !== false, 'GTM: CSP lo permite y el head lleva el snippet');
+    check(strpos($hcsp, 'https://www.googletagmanager.com') !== false && strpos($metaCsp, 'img-src') !== false && strpos($metaCsp, 'https://www.googletagmanager.com') !== false && strpos((string) $rSeoHome['raw'], 'googletagmanager.com/gtm.js?id=') !== false && strpos((string) $rSeoHome['raw'], 'GTM-M5R9JHH5') !== false, 'GTM: CSP lo permite (incl. img-src) y el head lleva el snippet');
     check((bool) preg_match('/<script nonce="[A-Za-z0-9+\/=]+">window\.dataLayer=window\.dataLayer\|\|/', (string) $rSeoHome['raw']), 'GTM: consent mode denegado por defecto con nonce');
+    check(strpos((string) $rSeoHome['raw'], 'querySelector("[nonce]")') !== false, 'GTM: el snippet propaga el nonce a los scripts inyectados');
     check(strpos((string) $rSeoHome['raw'], 'googletagmanager.com/ns.html?id=GTM-M5R9JHH5') !== false, 'GTM: noscript tras abrir body');
     $rAds = http_req('GET', $base . '/ads.txt');
     check($rAds['code'] === 200 && strpos((string) $rAds['raw'], 'dormant') !== false, 'ads.txt placeholder sin red activa');
