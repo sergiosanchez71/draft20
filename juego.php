@@ -27,7 +27,7 @@ csp_headers();
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <?= gtm_head() ?>
+    <?= ga_head() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= csp_meta() ?>
     <meta name="theme-color" content="#0f172a">
@@ -50,7 +50,7 @@ csp_headers();
     <script nonce="<?= e(csp_nonce()) ?>">window.__DESTACADOS = <?= json_encode(destacados(), JSON_UNESCAPED_UNICODE) ?>;</script>
 </head>
 <body class="app-viewport bg-slate-900 text-slate-100 flex flex-col">
-    <?= gtm_body() ?>
+    <?= ga_body() ?>
     <main id="app" class="flex-1 flex flex-col"></main>
     <script src="<?= e(asset_js('js/torre.js')) ?>"></script>
     <script src="<?= e(asset_js('js/bot_policy.js')) ?>"></script>
