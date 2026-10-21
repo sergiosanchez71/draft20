@@ -178,3 +178,52 @@ body.guiado #app { overflow-y: auto; }
     #toast { transition: none; }
     .acordeon > summary .chev { transition: none; }
 }
+
+/* Banner de consentimiento de GA4: fijo abajo, por encima del contenido y de
+   la barra de acciones del juego, pero por debajo de los modales (z-50) y del
+   toast (z-60) para no taparlos. Sin dependencias de Tailwind para que funcione
+   también si el CSS compilado se queda atrás. */
+.d20-consent {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    z-index: 40;
+    max-width: 36rem;
+    margin: 0 auto;
+    padding: 1rem;
+    background: #1e293b;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+.d20-consent[hidden] { display: none; }
+.d20-consent__titulo { margin: 0 0 0.25rem; font-weight: 700; color: #f1f5f9; }
+.d20-consent__texto { margin: 0 0 0.75rem; color: #cbd5e1; }
+.d20-consent__texto a { color: #fbbf24; text-decoration: underline; }
+.d20-consent__acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: flex-end; }
+.d20-consent__btn {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #475569;
+    background: transparent;
+    color: #e2e8f0;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+.d20-consent__btn:hover { background: #334155; }
+.d20-consent__btn--ok {
+    background: #fbbf24;
+    border-color: #fbbf24;
+    color: #0f172a;
+}
+.d20-consent__btn--ok:hover { background: #f59e0b; border-color: #f59e0b; }
+@media (max-width: 420px) {
+    .d20-consent__acciones { justify-content: stretch; }
+    .d20-consent__btn { flex: 1 1 0; }
+}

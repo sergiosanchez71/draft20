@@ -322,6 +322,9 @@ try {
     check(strpos($hcsp, 'pagead2.googlesyndication.com') === false && strpos($hcsp, 'fundingchoicesmessages.google.com') !== false, 'CSP: sin dominios de AdSense, con fundingchoices');
     check(strpos($hcsp, 'https://www.googletagmanager.com') !== false && strpos((string) $rSeoHome['raw'], 'googletagmanager.com/gtag/js?id=G-JR150JQ65Z') !== false, 'GA4: CSP lo permite y el head lleva gtag.js directo');
     check((bool) preg_match('/<script nonce="[A-Za-z0-9+\/=]+">window\.dataLayer=window\.dataLayer\|\|/', (string) $rSeoHome['raw']) && strpos((string) $rSeoHome['raw'], 'gtag("consent","default"') !== false, 'GA4: consent mode denegado por defecto con nonce');
+    check(strpos((string) $rSeoHome['raw'], 'id="d20-consent"') !== false, 'GA4: banner de consentimiento en la home');
+    check(strpos((string) $rSeoHome['raw'], 'd20_consent_v1') !== false, 'GA4: preferencia de consentimiento persistida');
+    check(strpos((string) $rSeoHome['raw'], 'gtag("consent","update"') !== false, 'GA4: consent update disponible');
     check(strpos((string) $rSeoHome['raw'], 'gtm.js?id=') === false && strpos((string) $rSeoHome['raw'], 'ns.html?id=') === false, 'GA4: sin restos del contenedor GTM');
     $rAds = http_req('GET', $base . '/ads.txt');
     check($rAds['code'] === 200 && strpos((string) $rAds['raw'], 'dormant') !== false, 'ads.txt placeholder sin red activa');
@@ -332,6 +335,7 @@ try {
     check(strpos($cabMalo, ' 302') !== false && strpos($cabMalo, 'Location: /') !== false, 'juego: código fuera de CHARSET (ABC12) redirige al inicio');
     check(strpos((string) $rJuegoAds['raw'], 'viewport-fit=cover') === false,
         'juego: sin viewport-fit=cover (la PWA queda dentro del área segura)');
+    check(strpos((string) $rJuegoAds['raw'], 'id="d20-consent"') !== false, 'juego: banner de consentimiento');
     $mVer = [];
     check((bool) preg_match("/const APP_VERSION = '([^']+)'/", (string) @file_get_contents($root . '/inc/layout.php'), $mVer),
         'APP_VERSION definida');

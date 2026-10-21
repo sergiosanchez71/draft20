@@ -27,7 +27,7 @@ pagina_head([
         <h1 class="text-3xl font-bold text-slate-100 mb-3"><?= e((string) ($SEO['privacidad_titulo'] ?? '')) ?></h1>
         <p class="text-sm text-slate-300 leading-relaxed mb-8"><?= e((string) ($SEO['privacidad_intro'] ?? '')) ?></p>
         <?php foreach ($secciones as $s): ?>
-        <section class="mb-6">
+        <section class="mb-6"<?= $s[0] === 'priv_metricas_titulo' ? ' id="cookies"' : '' ?>>
             <h2 class="text-lg font-bold text-amber-300 mb-2"><?= e((string) ($SEO[$s[0]] ?? '')) ?></h2>
             <?php
             $textoPriv = e((string) ($SEO[$s[1]] ?? ''));

@@ -263,6 +263,14 @@
             "dead_texto": "Si te toca sin dinero, pasa el ítem y el rival decide: quedárselo por 1 🪙 o regalártelo.",
             "fin_titulo": "Final",
             "fin_texto": "Gana quien sume más ⭐. Si hay empate, gana quien conserve más monedas. Y siempre puedes pedir la revancha."
+        },
+        "consent": {
+            "titulo": "Cookies y medición",
+            "texto": "Usamos Google Analytics 4 para medir visitas de forma agregada. Si aceptas, activamos las cookies de medición; si rechazas, no se instalan. Puedes cambiar tu elección cuando quieras.",
+            "aceptar": "Aceptar",
+            "rechazar": "Rechazar",
+            "mas_info": "Más información",
+            "abrir": "Cookies"
         }
     },
     "tematicas": {
@@ -448,11 +456,11 @@
         "priv_datos_titulo": "Qué datos usamos",
         "priv_datos_texto": "No hay cuentas ni perfiles. Las salas guardan solo el nombre que escribes (opcional) y el estado de la partida en el servidor, y se borran automáticamente al cabo de unas horas. Al terminar una partida de práctica se guarda un registro anónimo (nivel, modo, resultado y movimientos; sin nombres ni identificadores) para calibrar la dificultad del bot. Al terminar una partida, también contra la CPU, se guarda un registro anónimo (temática, modo, hora y resultado; sin nombres ni identificadores) para las estadísticas de modos jugados.",
         "priv_local_titulo": "Almacenamiento local",
-        "priv_local_texto": "Tu navegador guarda en localStorage datos del juego (sesión de la sala, récord de victorias, dificultad del bot y registro de tus partidas de práctica). No salen de tu dispositivo y puedes borrarlos limpiando los datos del sitio.",
+        "priv_local_texto": "Tu navegador guarda en localStorage datos del juego (sesión de la sala, récord de victorias, dificultad del bot y registro de tus partidas de práctica) y tu elección sobre cookies. No salen de tu dispositivo y puedes borrarlos limpiando los datos del sitio.",
         "priv_metricas_titulo": "Métricas propias",
-        "priv_metricas_texto": "Contamos visitas y partidas con contadores agregados y anónimos (sin cookies ni identificadores). Además usamos Google Analytics 4 (etiqueta gtag.js) para entender el uso del sitio: instala cookies propias (_ga) y puede tratar IPs (Google las trunca en la UE). En el Espacio Económico Europeo solo mide si aceptas las cookies en el mensaje de consentimiento; puedes desactivarlo con el complemento de inhabilitación tools.google.com/dlpage/gaoptout y consultar cómo usa Google los datos en policies.google.com/technologies/partner-sites.",
+        "priv_metricas_texto": "Contamos visitas y partidas con contadores agregados y anónimos (sin cookies ni identificadores). Además usamos Google Analytics 4 (etiqueta gtag.js) para entender el uso del sitio: si aceptas, instala cookies propias (_ga) y trata la IP para geolocalización aproximada (Google no la almacena). Si rechazas, no se instalan cookies; solo pueden enviarse señales anónimas agregadas para modelado. Puedes cambiar tu elección en «Cookies», desactivarlo con el complemento de inhabilitación tools.google.com/dlpage/gaoptout y consultar cómo usa Google los datos en policies.google.com/technologies/partner-sites.",
         "priv_terceros_titulo": "Cookies y terceros",
-        "priv_terceros_texto": "Actualmente las páginas no muestran publicidad ni usan cookies de terceros: solo funcionan nuestras métricas propias (contadores agregados, sin cookies) y herramientas como Search Console. Si en el futuro se incorpora publicidad, esta página se actualizará y aparecerá el mensaje de consentimiento correspondiente (obligatorio en el Espacio Económico Europeo), donde podrás aceptar, configurar o retirar tu consentimiento.",
+        "priv_terceros_texto": "Actualmente las páginas no muestran publicidad ni usan cookies publicitarias. Google Analytics 4 solo instala cookies si aceptas en el aviso; si rechazas, no las instala y solo pueden enviarse señales anónimas agregadas para modelado. Además funcionan nuestras métricas propias (contadores agregados, sin cookies) y herramientas como Search Console. Si en el futuro se incorpora publicidad, esta página se actualizará y el aviso de consentimiento permitirá aceptar o rechazar también esa finalidad.",
         "priv_contacto_titulo": "Contacto",
         "priv_contacto_texto": "Para cualquier duda sobre privacidad, escribe a contacto@draft20.es.",
         "p404_titulo": "Página no encontrada",

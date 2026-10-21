@@ -27,9 +27,9 @@ csp_headers();
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <?= ga_head() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= csp_meta() ?>
+    <?= ga_head() ?>
     <meta name="theme-color" content="#0f172a">
     <meta name="app-version" content="<?= e(APP_VERSION) ?>">
     <meta name="app-build" content="<?= e(app_build()) ?>">
@@ -51,6 +51,7 @@ csp_headers();
 </head>
 <body class="app-viewport bg-slate-900 text-slate-100 flex flex-col">
     <?= ga_body() ?>
+    <?php consent_banner(); ?>
     <main id="app" class="flex-1 flex flex-col"></main>
     <script src="<?= e(asset_js('js/torre.js')) ?>"></script>
     <script src="<?= e(asset_js('js/bot_policy.js')) ?>"></script>

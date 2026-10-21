@@ -11,7 +11,7 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.3.6';
+const APP_VERSION = '1.3.7';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 // Google Analytics 4 directo (gtag.js). Vacío = no se pinta nada.
 const GA4_ID = 'G-JR150JQ65Z';
@@ -240,7 +240,11 @@ function ga_head(): string
     return '<script nonce="' . $n . '">window.dataLayer=window.dataLayer||[];'
         . 'function gtag(){window.dataLayer.push(arguments);}'
         . 'gtag("consent","default",{"ad_storage":"denied","analytics_storage":"denied","ad_user_data":"denied","ad_personalization":"denied","wait_for_update":500});'
-        . 'gtag("js",new Date());gtag("config","' . $id . '");</script>' . "\n"
+        . 'gtag("js",new Date());'
+        // Si el visitante ya aceptó en una visita anterior, aplicar la preferencia
+        // antes del config para que el primer hit salga con consentimiento.
+        . 'try{if(localStorage.getItem("d20_consent_v1")==="granted"){gtag("consent","update",{"ad_storage":"denied","analytics_storage":"granted","ad_user_data":"denied","ad_personalization":"denied"});}}catch(e){}'
+        . 'gtag("config","' . $id . '");</script>' . "\n"
         . '<script async src="https://www.googletagmanager.com/gtag/js?id=' . $id . '" nonce="' . $n . '"></script>';
 }
 
@@ -248,6 +252,95 @@ function ga_head(): string
 function ga_body(): string
 {
     return '';
+}
+
+/**
+ * Banner de consentimiento de GA4. Si no hay ID configurado no se pinta.
+ * Guarda la elección en localStorage y actualiza Consent Mode al momento.
+ */
+function consent_banner(): void
+{
+    static $pintado = false;
+    if ($pintado || GA4_ID === '') {
+        return;
+    }
+    $pintado = true;
+
+    $lang = cargar_lang();
+    $c = is_array($lang['ui']['consent'] ?? null) ? $lang['ui']['consent'] : [];
+    $titulo = (string) ($c['titulo'] ?? 'Cookies y medición');
+    $texto = (string) ($c['texto'] ?? 'Usamos Google Analytics 4 solo si aceptas.');
+    $aceptar = (string) ($c['aceptar'] ?? 'Aceptar');
+    $rechazar = (string) ($c['rechazar'] ?? 'Rechazar');
+    $masInfo = (string) ($c['mas_info'] ?? 'Más información');
+    $n = e(csp_nonce());
+    ?>
+    <section id="d20-consent" class="d20-consent" role="dialog" aria-modal="false"
+             aria-labelledby="d20-consent-title" hidden>
+        <h2 id="d20-consent-title" class="d20-consent__titulo"><?= e($titulo) ?></h2>
+        <p class="d20-consent__texto"><?= e($texto) ?>
+            <a href="/privacidad#cookies"><?= e($masInfo) ?></a>.
+        </p>
+        <div class="d20-consent__acciones">
+            <button type="button" class="d20-consent__btn btn-tap" data-consent="denied"><?= e($rechazar) ?></button>
+            <button type="button" class="d20-consent__btn d20-consent__btn--ok btn-tap" data-consent="granted"><?= e($aceptar) ?></button>
+        </div>
+    </section>
+    <script nonce="<?= $n ?>">
+    (function () {
+        var KEY = 'd20_consent_v1';
+        var box = document.getElementById('d20-consent');
+        if (!box) return;
+
+        var saved = null;
+        try { saved = localStorage.getItem(KEY); } catch (e) {}
+        if (saved !== 'granted' && saved !== 'denied') box.hidden = false;
+
+        function clearGaCookies() {
+            var host = location.hostname.replace(/^www\./, '');
+            document.cookie.split(';').forEach(function (c) {
+                var name = c.split('=')[0].trim();
+                if (name.indexOf('_ga') !== 0) return;
+                document.cookie = name + '=; Max-Age=0; Path=/; SameSite=Lax';
+                document.cookie = name + '=; Max-Age=0; Path=/; Domain=.' + host + '; SameSite=Lax';
+            });
+        }
+
+        function update(value) {
+            if (typeof window.gtag !== 'function') return;
+            window.gtag('consent', 'update', {
+                analytics_storage: value === 'granted' ? 'granted' : 'denied',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied'
+            });
+            if (value !== 'granted') clearGaCookies();
+        }
+
+        function choose(value) {
+            try { localStorage.setItem(KEY, value); } catch (e) {}
+            update(value);
+            box.hidden = true;
+        }
+
+        box.addEventListener('click', function (ev) {
+            var el = ev.target;
+            var btn = el && el.closest ? el.closest('[data-consent]') : null;
+            if (btn) choose(btn.getAttribute('data-consent'));
+        });
+
+        document.addEventListener('click', function (ev) {
+            var el = ev.target;
+            var opener = el && el.closest ? el.closest('[data-consent-open]') : null;
+            if (!opener) return;
+            ev.preventDefault();
+            box.hidden = false;
+            var focusBtn = box.querySelector('[data-consent="granted"]');
+            if (focusBtn) focusBtn.focus();
+        });
+    })();
+    </script>
+    <?php
 }
 
 /** Bloque manual de anuncio para contenido.
@@ -418,9 +511,9 @@ function pagina_head(array $opts): void
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <?= ga_head() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <?= csp_meta() ?>
+    <?= ga_head() ?>
     <meta name="theme-color" content="#0f172a">
     <meta name="app-version" content="<?= e(APP_VERSION) ?>">
     <meta name="app-build" content="<?= e(app_build()) ?>">
@@ -463,6 +556,7 @@ function pagina_head(array $opts): void
 <body class="<?= e($bodyClass) ?>">
 <?= ga_body() ?>
 <?php
+    consent_banner();
     site_header();
 }
 
@@ -525,6 +619,8 @@ function pagina_foot(array $opts = []): void
 function site_footer(): void
 {
     $year = date('Y');
+    $consent = cargar_lang()['ui']['consent'] ?? [];
+    $textoCookies = is_array($consent) ? (string) ($consent['abrir'] ?? 'Cookies') : 'Cookies';
     ?>
     <footer class="mt-10 border-t border-slate-800 px-4 py-8 text-center text-sm text-slate-400">
         <nav class="flex flex-wrap justify-center gap-x-5 gap-y-2 mb-4" aria-label="Enlaces del sitio">
@@ -532,6 +628,9 @@ function site_footer(): void
 <?php foreach (nav_links() as $l): ?>
             <a class="hover:text-amber-400" href="<?= e($l['href']) ?>"><?= e($l['texto']) ?></a>
 <?php endforeach; ?>
+<?php if (GA4_ID !== ''): ?>
+            <button type="button" data-consent-open class="hover:text-amber-400"><?= e($textoCookies) ?></button>
+<?php endif; ?>
         </nav>
         <p class="mb-1"><?= e(SITE_NOMBRE) ?> · Subasta por turnos para 2 jugadores</p>
         <p><a class="hover:text-amber-400" href="mailto:<?= e(SITE_EMAIL) ?>"><?= e(SITE_EMAIL) ?></a> · © <?= $year ?></p>
