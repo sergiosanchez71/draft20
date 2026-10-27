@@ -109,6 +109,9 @@ check($aggAll['total'] === 5, 'dias=0 trae todo');
 $mesActual = date('Y-m');
 check(isset($aggAll['porMes'][$mesActual]) && $aggAll['porMes'][$mesActual]['total'] === 5, 'porMes agrupa el mes en curso');
 check(($aggAll['porMes'][$mesActual]['topTematica'] ?? '') === 'pizza', 'porMes top temática');
+check(($aggAll['porMes'][$mesActual]['topPartidas'] ?? []) === ['pizza' => 2, 'anime' => 1, 'futbol' => 1, 'tacos' => 1], 'porMes topPartidas con las partidas de cada temática');
+check(array_keys((array) ($aggAll['porMes'][$mesActual]['topPartidas'] ?? [])) === (array) ($aggAll['porMes'][$mesActual]['top'] ?? []), 'topPartidas conserva el orden de top');
+check(array_is_list((array) ($aggAll['porMes'][$mesActual]['top'] ?? [])), 'el top público sigue siendo solo una lista de temáticas');
 
 // 9) El top de cada mes usa su propio mes, no el global repetido.
 $mesPasado = date('Y-m', strtotime('first day of last month'));
@@ -116,6 +119,8 @@ file_put_contents($log, json_encode(['ts' => strtotime($mesPasado . '-15 12:00:0
 $aggMeses = ranking_humanas($log, 0);
 check(($aggMeses['porMes'][$mesPasado]['top'][0] ?? '') === 'futbol', 'top mensual del mes pasado es futbol');
 check(($aggMeses['porMes'][$mesActual]['top'][0] ?? '') === 'pizza', 'top mensual actual es pizza (no el global)');
+check(($aggMeses['porMes'][$mesPasado]['total'] ?? 0) === 1 && ($aggMeses['porMes'][$mesPasado]['topPartidas'] ?? []) === ['futbol' => 1], 'topPartidas del mes pasado solo cuenta sus partidas');
+check(($aggMeses['porMes'][$mesActual]['topPartidas']['pizza'] ?? 0) === 2, 'el conteo mensual actual no se contamina del mes pasado');
 
 // 10) Sala de Torre → no entra en el ranking (10 partidas sesgadas por subida).
 $sT = sala_base([$it(10)], [$it(1)], ['torre' => true]);

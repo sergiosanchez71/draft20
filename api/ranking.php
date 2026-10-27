@@ -8,13 +8,16 @@
  * servidor). Sin clave válida → 403. Sin cuerpo en POST: solo GET.
  *
  * --- Petición ---
- *   GET api/ranking.php?clave=SECRETO&dias=30
- *   dias=0 (o dias=todo) = todo el histórico sin filtro, con desglose porMeses.
+ *   GET api/ranking.php?clave=SECRETO
+ *   Sin dias = todo el histórico sin filtro, con desglose por meses.
+ *   dias=N (1-180) = solo los últimos N días; dias=0 o dias=todo = histórico.
  *
  * --- Respuesta 200 ---
- *   { "ok": true, "dias": 30, "total": 12, "porTematica": {...},
+ *   { "ok": true, "dias": 0, "total": 12, "porTematica": {...},
  *     "porModo": {...}, "porTipo": {...}, "porResultado": {...}, "porFranja": {...},
- *     "porMes": {"2026-09": {"total": 12, "topTematica": "pizza", "porTipo": {...}}} }
+ *     "porMes": {"2026-09": {"total": 12, "topTematica": "pizza",
+ *       "top": [...], "topPartidas": {"pizza": 5, ...}, "porTipo": {...}}} }
+ *   topPartidas = partidas de cada temática del top 10 mensual (uso interno).
  */
 declare(strict_types=1);
 
@@ -40,7 +43,7 @@ if ($secreto === '' || !hash_equals($secreto, $clave)) {
     responder(['ok' => false, 'error' => 'No autorizado.'], 403);
 }
 
-$diasRaw = isset($_GET['dias']) && is_string($_GET['dias']) ? $_GET['dias'] : '30';
+$diasRaw = isset($_GET['dias']) && is_string($_GET['dias']) ? $_GET['dias'] : '0';
 $dias = ($diasRaw === '0' || strtolower($diasRaw) === 'todo') ? 0 : max(1, min(180, (int) $diasRaw));
 $agg = ranking_humanas(__DIR__ . '/datos/partidas_humanas.jsonl', $dias);
 responder(['ok' => true, 'dias' => $dias] + $agg, 200);

@@ -13,7 +13,7 @@ if (!function_exists('ranking_humanas')) {
     /**
      * Agrega api/datos/partidas_humanas.jsonl.
      *
-     * @return array{total:int,porTematica:array<string,int>,porModo:array<string,int>,porTipo:array<string,int>,porResultado:array<string,int>,porFranja:array<string,int>,porMes:array<string,array{total:int,topTematica:string,top:array<int,string>,porTipo:array<string,int>}>}
+     * @return array{total:int,porTematica:array<string,int>,porModo:array<string,int>,porTipo:array<string,int>,porResultado:array<string,int>,porFranja:array<string,int>,porMes:array<string,array{total:int,topTematica:string,top:array<int,string>,topPartidas:array<string,int>,porTipo:array<string,int>}>}
      */
     function ranking_humanas(string $logPath, int $dias): array
     {
@@ -79,10 +79,18 @@ if (!function_exists('ranking_humanas')) {
         foreach ($out['porMes'] as $mes => $datos) {
             $ordenadasMes = $ordenar($datos['porTematica']);
             $top = $ordenadasMes[0] ?? null;
+            $top10 = array_slice($ordenadasMes, 0, 10);
+            // Conteos internos de las 10 temáticas que muestra el top del mes,
+            // en el mismo orden. La página pública no los imprime.
+            $topPartidas = [];
+            foreach ($top10 as $id) {
+                $topPartidas[$id] = (int) ($datos['porTematica'][$id] ?? 0);
+            }
             $out['porMes'][$mes] = [
                 'total' => $datos['total'],
                 'topTematica' => is_string($top) ? $top : '',
-                'top' => array_slice($ordenadasMes, 0, 10),
+                'top' => $top10,
+                'topPartidas' => $topPartidas,
                 'porTipo' => $datos['porTipo'],
             ];
         }

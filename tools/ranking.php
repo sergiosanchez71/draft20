@@ -7,7 +7,8 @@
  * Lee api/datos/partidas_humanas.jsonl (una línea por partida terminada:
  * ts, tematica, visibles, tipo, rondas, resultado, durSeg) e imprime
  * ranking por temática, modo, tipo, resultado y franja horaria, más
- * desglose por meses. Con días=0, todo el histórico sin filtro.
+ * desglose por meses con las partidas de cada temática del top 10.
+ * Sin argumento (o con días=0), todo el histórico sin filtro.
  * El mismo agregado sirve api/ranking.php (JSON con clave).
  */
 declare(strict_types=1);
@@ -21,7 +22,7 @@ if (PHP_SAPI !== 'cli') {
 $root = dirname(__DIR__);
 require_once $root . '/api/ranking_lib.php';
 
-$dias = isset($argv[1]) ? max(0, (int) $argv[1]) : 30;
+$dias = isset($argv[1]) ? max(0, (int) $argv[1]) : 0;
 $agg = ranking_humanas($root . '/api/datos/partidas_humanas.jsonl', $dias);
 $n = $agg['total'];
 
@@ -47,4 +48,11 @@ foreach ($agg['porMes'] as $mes => $datos) {
         $pares[] = $t . ' ' . $c;
     }
     echo '    ' . implode(' · ', $pares) . "\n";
+    $paresTop = [];
+    foreach (($datos['topPartidas'] ?? []) as $t => $c) {
+        $paresTop[] = $t . ' ' . $c;
+    }
+    if ($paresTop !== []) {
+        echo '    Top 10: ' . implode(' · ', $paresTop) . "\n";
+    }
 }
