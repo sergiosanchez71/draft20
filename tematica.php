@@ -107,7 +107,7 @@ pagina_head([
         if (is_file($logRankFicha) && filesize($logRankFicha) < 1048576) {
             require_once __DIR__ . '/api/ranking_lib.php';
             $aggFicha = ranking_humanas($logRankFicha, 0);
-            $topFicha = array_values((array) ($aggFicha['porMes'][$mesRankId]['top'] ?? []));
+            $topFicha = array_keys((array) ($aggFicha['porMes'][$mesRankId]['top'] ?? []));
             $posFicha = array_search($id, $topFicha, true);
             if ($posFicha !== false) $puestoMes = $posFicha + 1;
         }

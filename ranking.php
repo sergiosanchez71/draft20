@@ -77,7 +77,7 @@ pagina_head([
         <?php endif; ?>
 
         <?php foreach ($meses as $mes): ?>
-        <?php $top = array_slice($agg['porMes'][$mes]['top'] ?? [], 0, 10); ?>
+        <?php $top = array_slice(array_keys((array) ($agg['porMes'][$mes]['top'] ?? [])), 0, 10); ?>
         <section class="bg-slate-800 border border-slate-700 rounded-lg p-4 sm:p-6 mb-4">
             <h2 class="text-xl font-bold text-amber-300 mb-4"><?= e($nombreMes($mes)) ?></h2>
             <ol class="space-y-2">

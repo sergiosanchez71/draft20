@@ -49,7 +49,7 @@ foreach ($agg['porMes'] as $mes => $datos) {
     }
     echo '    ' . implode(' · ', $pares) . "\n";
     $paresTop = [];
-    foreach (($datos['topPartidas'] ?? []) as $t => $c) {
+    foreach (($datos['top'] ?? []) as $t => $c) {
         $paresTop[] = $t . ' ' . $c;
     }
     if ($paresTop !== []) {

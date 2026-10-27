@@ -16,8 +16,8 @@
  *   { "ok": true, "dias": 0, "total": 12, "porTematica": {...},
  *     "porModo": {...}, "porTipo": {...}, "porResultado": {...}, "porFranja": {...},
  *     "porMes": {"2026-09": {"total": 12, "topTematica": "pizza",
- *       "top": [...], "topPartidas": {"pizza": 5, ...}, "porTipo": {...}}} }
- *   topPartidas = partidas de cada temática del top 10 mensual (uso interno).
+ *       "top": {"pizza": 5, ...}, "porTipo": {...}}} }
+ *   top = mapa ordenado temática → partidas del top 10 mensual (uso interno).
  */
 declare(strict_types=1);
 

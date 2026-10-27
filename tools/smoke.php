@@ -524,7 +524,8 @@ try {
     check(($rRank200['json']['dias'] ?? null) === 0, 'ranking sin dias → todo el histórico (dias=0)');
     $mesSmoke = date('Y-m');
     $mesRank = $rRank200['json']['porMes'][$mesSmoke] ?? null;
-    check(is_array($mesRank) && is_array($mesRank['topPartidas'] ?? null) && $mesRank['topPartidas'] !== [], 'ranking porMes incluye topPartidas internos');
+    $topSmoke = is_array($mesRank['top'] ?? null) ? array_values($mesRank['top']) : [];
+    check($topSmoke !== [] && is_int($topSmoke[0]), 'ranking porMes incluye top con conteos internos');
     @unlink($root . '/api/datos/clave_ranking.txt');
 
     // 15) Página pública /ranking (top-10 sin cifras, sin anuncios).

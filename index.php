@@ -144,9 +144,10 @@ pagina_head([
                 if ($mesesRanking !== []) {
                     rsort($mesesRanking);
                     $ultimoMes = $mesesRanking[0];
-                    $topMes = $aggRanking['porMes'][$ultimoMes]['top'] ?? [];
-                    if (isset($topMes[0], mapa_tematicas()[$topMes[0]])) {
-                        $teaserRanking = ['mes' => $ultimoMes, 'id' => $topMes[0]];
+                    $topMes = (array) ($aggRanking['porMes'][$ultimoMes]['top'] ?? []);
+                    $primeroMes = array_key_first($topMes);
+                    if (is_string($primeroMes) && isset(mapa_tematicas()[$primeroMes])) {
+                        $teaserRanking = ['mes' => $ultimoMes, 'id' => $primeroMes];
                     }
                 }
             }
