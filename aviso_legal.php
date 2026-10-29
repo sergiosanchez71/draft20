@@ -6,75 +6,38 @@ declare(strict_types=1);
 
 require __DIR__ . '/inc/layout.php';
 
+$LANG = cargar_lang();
+$A = is_array($LANG['ui']['paginas']['aviso'] ?? null) ? $LANG['ui']['paginas']['aviso'] : [];
+$secciones = is_array($A['secciones'] ?? null) ? $A['secciones'] : [];
+$enlaces = [
+    'email' => '<a class="hover:text-amber-400" href="mailto:' . e(SITE_EMAIL) . '">' . e(SITE_EMAIL) . '</a>',
+    'privacidad' => '<a class="hover:text-amber-400" href="' . e(url_lang('/privacidad')) . '">' . e(t('ui.nav.privacidad')) . '</a>',
+    'fluent' => '<a class="hover:text-amber-400" href="https://github.com/microsoft/fluentui-emoji" rel="noopener nofollow">github.com/microsoft/fluentui-emoji</a>',
+];
+
 pagina_head([
-    'titulo' => 'Aviso legal — ' . SITE_NOMBRE,
-    'descripcion' => 'Aviso legal e información del titular del sitio Draft 20 (LSSI-CE).',
+    'titulo' => (string) ($A['meta_titulo'] ?? 'Aviso legal') . ' — ' . SITE_NOMBRE,
+    'descripcion' => (string) ($A['meta_desc'] ?? ''),
     'canonical' => '/aviso-legal',
 ]);
 ?>
     <main class="flex-1 w-full max-w-3xl mx-auto px-4 pt-8">
-        <h1 class="text-3xl font-bold text-slate-100 mb-3">Aviso legal</h1>
-        <p class="text-sm text-slate-300 leading-relaxed mb-6">
-            En cumplimiento del artículo 10 de la Ley 34/2002, de Servicios de la Sociedad de la Información
-            y de Comercio Electrónico (LSSI-CE), se informa de los siguientes datos.
-        </p>
+        <h1 class="text-3xl font-bold text-slate-100 mb-3"><?= e((string) ($A['h1'] ?? 'Aviso legal')) ?></h1>
+        <p class="text-sm text-slate-300 leading-relaxed mb-6"><?= e((string) ($A['intro'] ?? '')) ?></p>
 
+        <?php foreach ($secciones as $s): ?>
         <section class="mb-6">
-            <h2 class="text-lg font-bold text-amber-300 mb-2">Titular del sitio</h2>
-            <p class="text-sm text-slate-300 leading-relaxed">
-                <?= e(SITE_NOMBRE) ?> — proyecto independiente.
-                Contacto: <a class="hover:text-amber-400" href="mailto:<?= e(SITE_EMAIL) ?>"><?= e(SITE_EMAIL) ?></a>.
-            </p>
+            <h2 class="text-lg font-bold text-amber-300 mb-2"><?= e((string) ($s['h'] ?? '')) ?></h2>
+            <?php foreach ((array) ($s['p'] ?? []) as $p): ?>
+            <p class="text-sm text-slate-300 leading-relaxed mt-2"><?= texto_con_enlaces((string) $p, $enlaces) ?></p>
+            <?php endforeach; ?>
         </section>
+        <?php endforeach; ?>
 
-        <section class="mb-6">
-            <h2 class="text-lg font-bold text-amber-300 mb-2">Objeto</h2>
-            <p class="text-sm text-slate-300 leading-relaxed">
-                El sitio ofrece un juego gratuito de subasta por turnos para dos jugadores. No requiere registro
-                ni pagos y actualmente no muestra publicidad; si se incorpora en el futuro, se anunciará aquí y en la
-                <a class="hover:text-amber-400" href="/privacidad">política de privacidad</a>. No se recogen datos personales más
-                allá de lo descrito en dicha política.
-            </p>
-        </section>
-
-        <section class="mb-6">
-            <h2 class="text-lg font-bold text-amber-300 mb-2">Propiedad intelectual</h2>
-            <p class="text-sm text-slate-300 leading-relaxed">
-                El código, los textos y el diseño del sitio pertenecen a su titular. Los nombres de personajes,
-                obras, marcas y personajes públicos citados en el juego se usan con fines de entretenimiento y
-                referencia; el proyecto no está afiliado ni respaldado por sus titulares.
-            </p>
-            <p class="text-sm text-slate-300 leading-relaxed mt-2">
-                Los iconos del juego son <strong>Fluent Emoji</strong> de Microsoft
-                (<a class="hover:text-amber-400" href="https://github.com/microsoft/fluentui-emoji" rel="noopener nofollow">github.com/microsoft/fluentui-emoji</a>),
-                usados bajo licencia <strong>MIT</strong>. Las banderas son representaciones simplificadas de uso libre.
-            </p>
-        </section>
-
-        <section class="mb-6">
-            <h2 class="text-lg font-bold text-amber-300 mb-2">Responsabilidad</h2>
-            <p class="text-sm text-slate-300 leading-relaxed">
-                El titular no se responsabiliza del uso indebido del servicio ni de interrupciones o errores
-                derivados de causas técnicas, y puede modificar o retirar el servicio sin previo aviso.
-            </p>
-        </section>
-
-        <section class="mb-6">
-            <h2 class="text-lg font-bold text-amber-300 mb-2">Enlaces a terceros</h2>
-            <p class="text-sm text-slate-300 leading-relaxed">
-                Los enlaces a sitios de terceros se ofrecen a título informativo, sin que el titular controle
-                sus contenidos.
-            </p>
-        </section>
-
-        <section class="mb-6">
-            <h2 class="text-lg font-bold text-amber-300 mb-2">Legislación aplicable</h2>
-            <p class="text-sm text-slate-300 leading-relaxed">
-                Este aviso se rige por la legislación española.
-            </p>
-        </section>
-
-        <p class="text-xs text-slate-400 mt-8 mb-6">Última actualización: <?= e(date('m/Y')) ?></p>
+        <?php if (idioma_actual() === 'en'): ?>
+        <p class="text-xs text-slate-400 leading-relaxed mb-2"><?= e((string) ($A['disclaimer'] ?? 'In case of discrepancy, the Spanish version prevails.')) ?></p>
+        <?php endif; ?>
+        <p class="text-xs text-slate-400 mt-8 mb-6"><?= e(t('ui.comun.ultima_actualizacion')) ?>: <?= e(mes_anio(date('Y-m'))) ?></p>
     </main>
 <?php
 pagina_foot();

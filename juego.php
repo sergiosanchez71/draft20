@@ -16,7 +16,7 @@ if ($LANG === []) {
 
 $codigo = $_GET['codigo'] ?? null;
 if (!is_string($codigo) || !preg_match('/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/', $codigo)) {
-    header('Location: /');
+    header('Location: ' . url_lang('/'));
     exit;
 }
 
@@ -24,20 +24,21 @@ if (!is_string($codigo) || !preg_match('/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$
 $categorias = categorias();
 csp_headers();
 ?><!DOCTYPE html>
-<html lang="es">
+<html lang="<?= e(idioma_bcp47()) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= csp_meta() ?>
+    <?= deteccion_idioma_script() ?>
     <?= ga_head() ?>
     <meta name="theme-color" content="#0f172a">
     <meta name="app-version" content="<?= e(APP_VERSION) ?>">
     <meta name="app-build" content="<?= e(app_build()) ?>">
-    <title>Draft 20 — Partida</title>
+    <title><?= e(t('ui.juego.titulo_partida')) ?></title>
     <meta name="robots" content="noindex, follow">
     <link rel="icon" href="<?= e(asset('icons/favicon.ico')) ?>" sizes="any">
     <link rel="apple-touch-icon" href="<?= e(asset('icons/icon-180.png')) ?>">
-    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="manifest" href="<?= e(idioma_actual() === 'en' ? '/manifest.en.webmanifest' : '/manifest.webmanifest') ?>">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <?php if (ADS_ACTIVOS && ADSENSE_CLIENT !== '' && (ADSENSE_SLOT_JUEGO !== '' || ADSENSE_SLOT_FINAL !== '')): ?>
@@ -45,7 +46,7 @@ csp_headers();
     <script nonce="<?= e(csp_nonce()) ?>">window.__ADS = <?= json_encode(['client' => ADSENSE_CLIENT, 'banner' => ADSENSE_SLOT_JUEGO, 'final' => ADSENSE_SLOT_FINAL], JSON_UNESCAPED_SLASHES) ?>;</script>
 <?php endif; ?>
     <?= tailwind_tag() ?><link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
-    <script nonce="<?= e(csp_nonce()) ?>">window.LANG = <?= json_encode($LANG, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
+    <script nonce="<?= e(csp_nonce()) ?>">window.LANG = <?= json_encode($LANG, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;window.D20_LANG = <?= json_encode(idioma_actual()) ?>;</script>
     <script nonce="<?= e(csp_nonce()) ?>">window.__CATEGORIAS = <?= json_encode($categorias, JSON_UNESCAPED_UNICODE) ?>;</script>
     <script nonce="<?= e(csp_nonce()) ?>">window.__DESTACADOS = <?= json_encode(destacados(), JSON_UNESCAPED_UNICODE) ?>;</script>
 </head>

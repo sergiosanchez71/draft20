@@ -80,7 +80,7 @@ function lobby_inicial_html(?string $tematicaPre = null, ?string $tematicaBotPre
         . '<p class="text-[11px] text-slate-400 mt-2 text-center">' . e($cat('rapida_ayuda')) . '</p>'
         . '<div id="colaInfo" class="text-[11px] text-slate-400 mt-1 text-center min-h-[15px]"></div>'
         . '</section>'
-        . '<div class="text-center text-slate-400 text-xs my-2">— o —</div>'
+        . '<div class="text-center text-slate-400 text-xs my-2">' . e($cat('separador_o')) . '</div>'
         . '<section class="bg-slate-800 p-6 rounded-lg m-4 fade-in">'
         . '<label class="block text-sm text-slate-400 mb-2">' . e($cat('selector_tematica')) . '</label>'
         . $select('tematicaSelector', $tematicaPre)
@@ -89,15 +89,15 @@ function lobby_inicial_html(?string $tematicaPre = null, ?string $tematicaBotPre
         . $toggle('mb-4')
         . '<button id="btnCreate" class="w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg">' . e($cat('btn_crear')) . '</button>'
         . '</section>'
-        . '<div class="text-center text-slate-400 text-xs my-2">— o —</div>'
+        . '<div class="text-center text-slate-400 text-xs my-2">' . e($cat('separador_o')) . '</div>'
         . '<section class="bg-slate-800 p-6 rounded-lg m-4 fade-in">'
         . '<label class="block text-sm text-slate-400 mb-1">' . e($cat('label_unirse')) . '</label>'
         . '<input id="codeJoin" type="text" maxlength="5" minlength="5" placeholder="' . e($cat('placeholder_codigo')) . '" class="w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base uppercase tracking-widest text-center text-2xl font-mono placeholder:text-slate-300">'
         . '<label class="block text-sm text-slate-400 mb-1">' . e($cat('input_nombre_jugador')) . '</label>'
-        . $input('nameJoin', 'Jugador 2')
+        . $input('nameJoin', $cat('placeholder_rival'))
         . '<button id="btnJoin" class="w-full bg-emerald-500 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg">' . e($cat('btn_unirse')) . '</button>'
         . '</section>'
-        . '<div class="text-center text-slate-400 text-xs my-2">— o —</div>'
+        . '<div class="text-center text-slate-400 text-xs my-2">' . e($cat('separador_o')) . '</div>'
         . '<section class="bg-slate-800 p-6 rounded-lg m-4 fade-in">'
         . '<label class="block text-sm text-slate-400 mb-2">' . e($cat('selector_tematica_bot')) . '</label>'
         . $select('tematicaBotSelector', $tematicaBotPre)

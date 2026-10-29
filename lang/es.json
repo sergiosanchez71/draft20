@@ -3,7 +3,8 @@
         "app": {
             "titulo": "Draft 20",
             "subtitulo_lobby": "Subasta por turnos · 2 jugadores",
-            "sala_expirada": "La partida ya no está disponible"
+            "sala_expirada": "La partida ya no está disponible",
+            "idioma": "Idioma"
         },
         "lobby": {
             "btn_crear": "Crear sala privada",
@@ -17,6 +18,8 @@
             "btn_copiar": "Copiar enlace",
             "btn_whatsapp": "Enviar por WhatsApp",
             "toast_copiado": "¡Enlace copiado!",
+            "toast_copiar_error": "No se pudo copiar",
+            "separador_o": "— o —",
             "esperando_rival_join": "Esperando a que el otro jugador se una desde su móvil…",
             "espera_alternativa": "¿Prefieres otra cosa? Puedes salir y probar la Partida rápida.",
             "busqueda_alternativa": "¿Prefieres crear una sala privada o practicar? Puedes salir cuando quieras.",
@@ -66,7 +69,9 @@
             "progreso_historial": "Últimas partidas",
             "progreso_sin_historial": "Todavía no hay partidas registradas",
             "btn_guiada": "Práctica guiada",
-            "guiada_ayuda": "Contra el bot fácil y con los ⭐ visibles: te explicamos cada botón"
+            "guiada_ayuda": "Contra el bot fácil y con los ⭐ visibles: te explicamos cada botón",
+            "bot_nombres": "Botín|Doña Subasta|El Martillo|Chollo|La Puja|Remate|Subastín|Doña Puja",
+            "placeholder_rival": "Jugador 2"
         },
         "torre": {
             "titulo": "Torre de Batalla",
@@ -106,7 +111,8 @@
             "res_tablas": "Tablas en el Piso {piso}",
             "res_desempate": "Desempate por monedas restantes",
             "res_salir": "Salir al menú",
-            "logro_nuevo": "🏅 Logro de Torre:"
+            "logro_nuevo": "🏅 Logro de Torre:",
+            "compartir": "🏆 {nombre} ha conquistado la Torre de Draft 20 (10/10 a ciegas contra el bot extremo). Monedas gastadas: {gastado}. Revives usados: {rev}. Temáticas: {temas}/10. ¿Te atreves? https://draft20.es/"
         },
         "juego": {
             "tu_turno": "¡Tu turno!",
@@ -242,7 +248,18 @@
             "btn_salir_confirmar": "SALIR",
             "btn_cancelar": "CANCELAR",
             "confirm_salir_titulo": "¿Seguro que quieres salir?",
-            "confirm_salir_texto": "Tu rival será notificado y la partida terminará."
+            "confirm_salir_texto": "Tu rival será notificado y la partida terminará.",
+            "lbl_tu": "Tú",
+            "lbl_rival": "Rival",
+            "jugador_1": "Jugador 1",
+            "jugador_2": "Jugador 2",
+            "bot": "Bot",
+            "serie_no_ganada": "Serie",
+            "compartir_pie": "draft20.es · subasta por turnos para 2 jugadores",
+            "emote": "Emote {code}",
+            "emote_dice": "{nombre} dice {code}",
+            "compartir_torre": "🏆 {nombre} ha conquistado la Torre de Draft 20 (10/10 a ciegas contra el bot extremo). Monedas gastadas: {gastado}. Revives usados: {rev}. Temáticas: {temas}/10. ¿Te atreves? https://draft20.es/",
+            "titulo_partida": "Draft 20 — Partida"
         },
         "estados_sala": {
             "esperando": "Esperando jugador…",
@@ -271,6 +288,301 @@
             "rechazar": "Rechazar",
             "mas_info": "Más información",
             "abrir": "Cookies"
+        },
+        "comun": {
+            "idioma": "Idioma",
+            "espanol": "Español",
+            "english": "English",
+            "nav_principal": "Navegación principal",
+            "enlaces_pie": "Enlaces del sitio",
+            "migas": "Migas de pan",
+            "por_equipo": "Por el Equipo Draft 20",
+            "volver_inicio": "Volver al inicio",
+            "jugar_ahora": "Jugar ahora",
+            "ver_mas": "Ver más",
+            "sigue_leyendo": "Sigue leyendo",
+            "preguntas_frecuentes": "Preguntas frecuentes",
+            "actualizado": "Actualizado",
+            "ultima_actualizacion": "Última actualización",
+            "seleccionar_idioma": "Seleccionar idioma",
+            "meta_desc_generica": "Draft 20 — Subasta por turnos para 2 jugadores."
+        },
+        "nav": {
+            "inicio": "Inicio",
+            "como_jugar": "Cómo se juega",
+            "estrategia": "Estrategia",
+            "faq": "Preguntas frecuentes",
+            "guias": "Guías",
+            "glosario": "Glosario",
+            "ranking": "Ranking",
+            "subasta": "Juegos de subasta",
+            "acerca": "Acerca de",
+            "contacto": "Contacto",
+            "privacidad": "Privacidad",
+            "aviso": "Aviso legal",
+            "terminos": "Términos",
+            "cookies": "Cookies"
+        },
+        "footer": {
+            "subtitulo": "Subasta por turnos para 2 jugadores"
+        },
+        "index": {
+            "teaser_ranking": "Lo más jugado en {mes} {anio}",
+            "ver_ranking": "Ver ranking",
+            "ver_tematicas_categoria": "Ver temáticas de {categoria}"
+        },
+        "tematica": {
+            "puesto_mes": "Nº {n} en {mes} ·",
+            "ver_ranking": "Ver ranking",
+            "jugar_bot": "Jugar contra el bot",
+            "dificultad_bot": "Dificultad del bot",
+            "elige_lobby": "o elige temática en el lobby",
+            "como_jugarla": "Cómo jugarla: táctica de {tema}",
+            "ver_todas": "Ver todas las temáticas de {categoria}",
+            "tambien": "También te puede interesar",
+            "titulo": "{tema} — 20 ítems para jugar a Draft 20",
+            "meta_desc": "Los 20 ítems de {tema} en Draft 20. Subasta por turnos gratis para 2 jugadores, sin registro."
+        },
+        "categoria": {
+            "truco": "Truco de subasta en {categoria}",
+            "guias_relacionadas": "Guías relacionadas",
+            "guia_mejores": "Las 10 temáticas más divertidas de Draft 20",
+            "guia_ganar": "Cómo ganar en Draft 20: tácticas de subasta",
+            "fecha_actualizado": "Actualizado"
+        },
+        "como_jugar": {
+            "cta_estrategia_antes": "¿Quieres ganar más a menudo? Lee la ",
+            "cta_estrategia_enlace": "guía completa de estrategia",
+            "cta_estrategia_despues": ": banca, psicología de la puja y tácticas por temática."
+        },
+        "paginas": {
+            "glosario": {
+                "titulo": "Glosario de Draft 20: draft, subasta, puja y más",
+                "desc": "Todos los términos de Draft 20 explicados: draft, subasta, puja, ME BAJO, valor ⭐, cap de 4 ítems, deadlock, revancha y serie.",
+                "h1": "Glosario de Draft 20",
+                "intro_antes": "Los términos que aparecen en el juego y en las guías, explicados en una frase. Si acabas de llegar, empieza por ",
+                "intro_enlace": "cómo se juega",
+                "intro_despues": ".",
+                "ver_mas": "Ver más",
+                "jugar": "Jugar ahora",
+                "terminos": [
+                    {
+                        "id": "draft",
+                        "nombre": "Draft",
+                        "def": "Formato en el que se reparte un presupuesto fijo entre una lista de ítems y hay que construir la mejor selección posible. En Draft 20, cada jugador recibe 20 monedas.",
+                        "enlace": "/guia/draft-de-20-monedas"
+                    },
+                    {
+                        "id": "subasta",
+                        "nombre": "Subasta",
+                        "def": "En cada ronda sale un ítem y los dos jugadores pujan por turnos. Cuando alguien se baja, el último que pujó paga el precio y se lleva el ítem.",
+                        "enlace": "/como-jugar"
+                    },
+                    {
+                        "id": "puja",
+                        "nombre": "Puja",
+                        "def": "Oferta que sube el precio actual del ítem. En Draft 20 solo hay dos botones: PUJAR +1 y PUJAR +3.",
+                        "enlace": "/como-jugar"
+                    },
+                    {
+                        "id": "me-bajo",
+                        "nombre": "ME BAJO",
+                        "def": "Retirarse de la subasta. Si el rival es el último pujador, paga el precio y se queda el ítem; tú no gastas nada.",
+                        "enlace": "/guia/como-ganar-draft-20"
+                    },
+                    {
+                        "id": "ultimo-pujador",
+                        "nombre": "Último pujador",
+                        "def": "Jugador que marcó el precio actual. Si el rival se baja, él paga y se lleva el ítem; por eso conviene medir cuándo pujar.",
+                        "enlace": "/guia/como-ganar-draft-20"
+                    },
+                    {
+                        "id": "valor",
+                        "nombre": "Valor (⭐)",
+                        "def": "Calidad intrínseca de cada ítem, en una escala de 1 a 10. Es secreto hasta el final de la partida y decide al ganador.",
+                        "enlace": "/como-jugar"
+                    },
+                    {
+                        "id": "item",
+                        "nombre": "Ítem",
+                        "def": "Cada elemento que se subasta: un personaje, un objeto o un plato. Cada temática tiene 20 ítems distintos.",
+                        "enlace": "/#tematicas"
+                    },
+                    {
+                        "id": "tematica",
+                        "nombre": "Temática",
+                        "def": "La lista de 20 ítems sobre la que se juega la partida (fútbol, anime, comida, streamers…). Draft 20 tiene 69 temáticas.",
+                        "enlace": "/#tematicas"
+                    },
+                    {
+                        "id": "cap",
+                        "nombre": "Cap de 4 ítems",
+                        "def": "Máximo de ítems por jugador. Al llegar a 4, los ítems que salgan después pasan automáticamente al rival.",
+                        "enlace": "/guia/como-ganar-draft-20"
+                    },
+                    {
+                        "id": "deadlock",
+                        "nombre": "PASAR (sin monedas)",
+                        "def": "Si te toca un ítem fresco y no tienes dinero, pulsas PASAR: el rival decide si se lo queda por 1 🪙 o te lo regala.",
+                        "enlace": "/como-jugar"
+                    },
+                    {
+                        "id": "valores-visibles",
+                        "nombre": "Valores visibles",
+                        "def": "Modo opcional que muestra el ⭐ de cada ítem durante la partida. Lo fija quien crea la sala y afecta a los dos jugadores.",
+                        "enlace": "/como-jugar"
+                    },
+                    {
+                        "id": "revancha",
+                        "nombre": "Revancha",
+                        "def": "Al terminar, cualquiera puede proponer una revancha con temática nueva; el rival la acepta o la rechaza desde la pantalla final.",
+                        "enlace": "/como-jugar"
+                    },
+                    {
+                        "id": "serie",
+                        "nombre": "Serie al mejor de 3",
+                        "def": "Marcador de revanchas contra el mismo rival: quien gana dos partidas se lleva la serie.",
+                        "enlace": "/guia/como-ganar-draft-20"
+                    },
+                    {
+                        "id": "bot",
+                        "nombre": "Bot de práctica",
+                        "def": "Rival controlado por la máquina con cuatro niveles: Fácil, Normal, Difícil y Extremo. Sirve para practicar sin rival humano.",
+                        "enlace": "/como-jugar"
+                    }
+                ]
+            },
+            "ranking": {
+                "titulo": "Ranking de temáticas más jugadas de Draft 20",
+                "desc": "El top 10 de las temáticas más jugadas de Draft 20 cada mes, con medallas de oro, plata y bronce. Datos anónimos de partidas terminadas.",
+                "h1": "Ranking de temáticas",
+                "intro1": "Lo más jugado cada mes, ordenado por partidas terminadas.",
+                "intro2": "Cada partida terminada cuenta un punto para su temática dentro del mes en curso. El registro es anónimo: no guardamos nombres, identificadores ni códigos de sala, solo temática, modo y hora para poder agrupar por meses.",
+                "intro3": "Aquí no verás cifras, solo el orden con medallas. Si tu temática no aparece, juega una partida y entrará sola.",
+                "vacio": "Todavía no hay partidas registradas. ¡Sé la primera persona en entrar al ranking!",
+                "jugar": "Jugar ahora",
+                "faq_titulo": "Preguntas sobre el ranking",
+                "breadcrumb": "Ranking",
+                "faq": [
+                    {
+                        "q": "¿Cómo se calcula el ranking?",
+                        "a": "Cada partida terminada suma un punto a su temática en el mes en curso. El orden de cada mes es el número de partidas terminadas, y los empates se desempatan por orden alfabético para que el ranking sea estable."
+                    },
+                    {
+                        "q": "¿El ranking muestra nombres o datos personales?",
+                        "a": "No: solo nombres de temáticas ordenados, sin cifras, sin nombres de jugadores ni identificadores. El registro es completamente anónimo."
+                    },
+                    {
+                        "q": "¿Por qué no aparece mi temática favorita?",
+                        "a": "Solo aparecen las temáticas con partidas terminadas ese mes. Juega una partida y entrará en el ranking automáticamente."
+                    }
+                ]
+            },
+            "juegos_subasta": {
+                "breadcrumb": "Juegos de subasta",
+                "faq_titulo": "Preguntas frecuentes",
+                "cta": "Jugar a Draft 20 gratis"
+            },
+            "terminos": {
+                "titulo": "Términos de uso",
+                "meta_titulo": "Términos de uso",
+                "meta_desc": "Condiciones de uso de Draft 20: servicio gratuito sin registro, conducta esperada y disponibilidad del juego.",
+                "h1": "Términos de uso",
+                "intro": "Al jugar a Draft 20 aceptas estas condiciones. Son cortas y están en lenguaje normal.",
+                "secciones": [
+                    {
+                        "h": "El servicio",
+                        "p": [
+                            "Draft 20 es un juego gratuito de subasta por turnos para dos jugadores, accesible desde el navegador sin crear cuentas ni instalar nada. No hay pagos, suscripciones ni monedas de verdad: las 20 monedas son el presupuesto de cada partida y no tienen ningún valor fuera del juego."
+                        ]
+                    },
+                    {
+                        "h": "Uso correcto",
+                        "p": [
+                            "Puedes crear salas, invitar a quien quieras y jugar todas las partidas que te apetezcan. No está permitido automatizar el juego con bots externos, interferir con el servicio ni usarlo para fines distintos de jugar. Los nombres ofensivos pueden ser expulsados de las salas."
+                        ]
+                    },
+                    {
+                        "h": "Disponibilidad",
+                        "p": [
+                            "El servicio se ofrece tal cual, sin garantías de disponibilidad permanente. Puede interrumpirse por mantenimiento o causas técnicas, y puede modificarse o retirarse sin previo aviso. Las partidas en curso dependen de la conexión de ambos jugadores."
+                        ]
+                    },
+                    {
+                        "h": "Contenido del juego",
+                        "p": [
+                            "Los nombres de personajes, obras y marcas citados en las temáticas se usan con fines de entretenimiento y referencia; el proyecto no está afiliado ni respaldado por sus titulares."
+                        ]
+                    }
+                ],
+                "enlaces": "Para datos personales consulta la [[privacidad]] y para los datos del titular el [[aviso]].",
+                "privacidad": "política de privacidad",
+                "aviso": "aviso legal"
+            },
+            "aviso": {
+                "titulo": "Aviso legal",
+                "meta_titulo": "Aviso legal",
+                "meta_desc": "Aviso legal e información del titular del sitio Draft 20 (LSSI-CE).",
+                "h1": "Aviso legal",
+                "intro": "En cumplimiento del artículo 10 de la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se informa de los siguientes datos.",
+                "secciones": [
+                    {
+                        "h": "Titular del sitio",
+                        "p": [
+                            "Draft 20 — proyecto independiente. Contacto: [[email]]."
+                        ]
+                    },
+                    {
+                        "h": "Objeto",
+                        "p": [
+                            "El sitio ofrece un juego gratuito de subasta por turnos para dos jugadores. No requiere registro ni pagos y actualmente no muestra publicidad; si se incorpora en el futuro, se anunciará aquí y en la [[privacidad]]. No se recogen datos personales más allá de lo descrito en dicha política."
+                        ]
+                    },
+                    {
+                        "h": "Propiedad intelectual",
+                        "p": [
+                            "El código, los textos y el diseño del sitio pertenecen a su titular. Los nombres de personajes, obras, marcas y personajes públicos citados en el juego se usan con fines de entretenimiento y referencia; el proyecto no está afiliado ni respaldado por sus titulares.",
+                            "Los iconos del juego son **Fluent Emoji** de Microsoft ([[fluent]]), usados bajo licencia **MIT**. Las banderas son representaciones simplificadas de uso libre."
+                        ]
+                    },
+                    {
+                        "h": "Responsabilidad",
+                        "p": [
+                            "El titular no se responsabiliza del uso indebido del servicio ni de interrupciones o errores derivados de causas técnicas, y puede modificar o retirar el servicio sin previo aviso."
+                        ]
+                    },
+                    {
+                        "h": "Enlaces a terceros",
+                        "p": [
+                            "Los enlaces a sitios de terceros se ofrecen a título informativo, sin que el titular controle sus contenidos."
+                        ]
+                    },
+                    {
+                        "h": "Legislación aplicable",
+                        "p": [
+                            "Este aviso se rige por la legislación española."
+                        ]
+                    }
+                ],
+                "disclaimer": "En caso de discrepancia, prevalece la versión en español."
+            },
+            "privacidad": {
+                "meta_titulo": "Privacidad",
+                "meta_desc": "Política de privacidad de Draft 20: datos mínimos y control de tus preferencias."
+            }
+        },
+        "contenido": {
+            "guias_titulo": "Guías de Draft 20",
+            "guias_sub": "Reglas, estrategia y comparativas para sacarle todo el partido al draft de 20 monedas.",
+            "migas_guias": "Guías",
+            "guia_actualizado": "Actualizado",
+            "tematica_faq_titulo": "Preguntas frecuentes",
+            "categoria_tematicas_titulo": "Temáticas de esta categoría",
+            "categoria_otras_titulo": "Otras categorías",
+            "guia_enlaces_titulo": "Sigue leyendo",
+            "ver_tematica": "Ver temática",
+            "leer_guia": "Leer guía",
+            "guias_ver_todas": "Ver todas las guías"
         }
     },
     "tematicas": {

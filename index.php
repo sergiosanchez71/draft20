@@ -8,6 +8,10 @@
  */
 declare(strict_types=1);
 
+// En `php -S` no hay .htaccess: despacha las URLs limpias a su página.
+require __DIR__ . '/inc/rutas_dev.php';
+rutas_dev_despachar();
+
 require __DIR__ . '/inc/layout.php';
 require_once __DIR__ . '/inc/lobby_inicial.php';
 require_once __DIR__ . '/contenido_seo.php';
@@ -49,11 +53,11 @@ $jsonLd = [
         '@context' => 'https://schema.org',
         '@type' => 'WebApplication',
         'name' => SITE_NOMBRE,
-        'url' => SITE_URL . '/',
+        'url' => SITE_URL . url_lang('/'),
         'description' => $descripcion,
         'applicationCategory' => 'GameApplication',
         'operatingSystem' => 'Web',
-        'inLanguage' => 'es',
+        'inLanguage' => idioma_bcp47(),
         'offers' => ['@type' => 'Offer', 'price' => '0', 'priceCurrency' => 'EUR'],
     ],
 ];
@@ -89,7 +93,7 @@ pagina_head([
             <h1 class="text-4xl font-bold text-amber-400"><?= e(SITE_NOMBRE) ?></h1>
             <p class="text-slate-400 text-sm mt-2"><?= e((string) ($LANG['ui']['app']['subtitulo_lobby'] ?? '')) ?></p>
             <p class="text-slate-300 text-sm mt-4 max-w-xl mx-auto leading-relaxed"><?= e((string) ($SEO['hero_texto'] ?? '')) ?></p>
-            <a href="#app" class="inline-block mt-5 bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
+            <a href="<?= e(url_lang('/#app')) ?>" class="inline-block mt-5 bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
         </header>
 
         <main class="flex-1 flex flex-col">
@@ -107,7 +111,7 @@ pagina_head([
                             <li><?= e($num((string) ($SEO[$clave] ?? ''))) ?></li>
                             <?php endforeach; ?>
                         </ol>
-                        <a href="/como-jugar" class="inline-block mt-4 text-amber-400 hover:text-amber-300 text-sm font-semibold"><?= e((string) ($SEO['como_mas'] ?? '')) ?> →</a>
+                        <a href="<?= e(url_lang('/como-jugar')) ?>" class="inline-block mt-4 text-amber-400 hover:text-amber-300 text-sm font-semibold"><?= e((string) ($SEO['como_mas'] ?? '')) ?> →</a>
                     </div>
                 </details>
             </section>
@@ -123,11 +127,11 @@ pagina_head([
                 }
                 $tematicaDia = $todasTematicas[((int) date('Ymd')) % count($todasTematicas)];
                 ?>
-                <a href="/tematica/<?= e($tematicaDia['id']) ?>" class="block bg-slate-800 border border-amber-400/60 hover:border-amber-400 rounded-lg p-4">
+                <a href="<?= e(url_lang('/tematica/' . $tematicaDia['id'])) ?>" class="block bg-slate-800 border border-amber-400/60 hover:border-amber-400 rounded-lg p-4">
                     <div class="text-xs uppercase tracking-wide text-amber-400 font-bold mb-1"><?= e((string) ($SEO['tematica_dia'] ?? '')) ?></div>
                     <div class="text-lg font-bold text-slate-100"><?= e($tematicaDia['emoji'] . ' ' . nombre_tematica($tematicaDia['id'])) ?></div>
                     <p class="text-sm text-slate-400 mt-1"><?= e((string) ($SEO['tematica_dia_sub'] ?? '')) ?></p>
-                    <time class="block text-[11px] text-slate-400 mt-2" datetime="<?= e(date('Y-m-d')) ?>"><?= e(date('d/m/Y')) ?></time>
+                    <time class="block text-[11px] text-slate-400 mt-2" datetime="<?= e(date('Y-m-d')) ?>"><?= e(fecha_localizada(date('Y-m-d'))) ?></time>
                 </a>
             </section>
 
@@ -151,15 +155,13 @@ pagina_head([
                     }
                 }
             }
-            $MESES_ES = ['01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo', '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio', '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre', '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'];
             ?>
             <?php if ($teaserRanking !== null): ?>
-            <?php [$yT, $mT] = explode('-', $teaserRanking['mes']) + [null, null]; ?>
             <section class="max-w-3xl mx-auto w-full px-4 mt-10">
-                <a href="/ranking" class="block bg-slate-800 border border-slate-700 hover:border-amber-400 rounded-lg p-4">
-                    <div class="text-xs uppercase tracking-wide text-amber-400 font-bold mb-1">Lo más jugado en <?= e(($MESES_ES[$mT ?? ''] ?? $teaserRanking['mes'])) ?> <?= e($yT ?? '') ?></div>
+                <a href="<?= e(url_lang('/ranking')) ?>" class="block bg-slate-800 border border-slate-700 hover:border-amber-400 rounded-lg p-4">
+                    <div class="text-xs uppercase tracking-wide text-amber-400 font-bold mb-1"><?= e(t('ui.index.teaser_ranking', ['mes' => nombre_mes(explode('-', $teaserRanking['mes'])[1] ?? ''), 'anio' => explode('-', $teaserRanking['mes'])[0] ?? ''])) ?></div>
                     <div class="text-lg font-bold text-slate-100">🥇 <?= emoji_icono((string) mapa_tematicas()[$teaserRanking['id']]['emoji'], 20, '') ?> <?= e(nombre_tematica($teaserRanking['id'])) ?></div>
-                    <div class="text-sm font-semibold text-amber-400 mt-1">Ver ranking →</div>
+                    <div class="text-sm font-semibold text-amber-400 mt-1"><?= e(t('ui.index.ver_ranking')) ?> →</div>
                 </a>
             </section>
             <?php endif; ?>
@@ -179,12 +181,12 @@ pagina_head([
                     <ul class="flex flex-wrap gap-2 px-4 pb-2">
                         <?php foreach ($cat['tematicas'] as $tm): ?>
                         <li>
-                            <a href="/tematica/<?= e($tm['id']) ?>" class="inline-block bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($tm['emoji'] . ' ' . nombre_tematica($tm['id'])) ?></a>
+                            <a href="<?= e(url_lang('/tematica/' . $tm['id'])) ?>" class="inline-block bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($tm['emoji'] . ' ' . nombre_tematica($tm['id'])) ?></a>
                         </li>
                         <?php endforeach; ?>
                     </ul>
                     <div class="px-4 pb-4">
-                        <a href="/categoria/<?= e($cat['id']) ?>" class="inline-block text-xs font-semibold text-slate-400 hover:text-amber-400"><?= e('Ver temáticas de ' . nombre_categoria($cat['id'])) ?> →</a>
+                        <a href="<?= e(url_lang('/categoria/' . $cat['id'])) ?>" class="inline-block text-xs font-semibold text-slate-400 hover:text-amber-400"><?= e(t('ui.index.ver_tematicas_categoria', ['categoria' => nombre_categoria($cat['id'])])) ?> →</a>
                     </div>
                 </details>
                 <?php endforeach; ?>
@@ -196,12 +198,12 @@ pagina_head([
                 <ul class="space-y-3 mb-4">
                     <?php foreach (array_slice(guias_ordenadas(), 0, 6, true) as $gSlug => $g): ?>
                     <li class="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                        <a class="font-bold text-amber-300 hover:text-amber-200" href="/guia/<?= e($gSlug) ?>"><?= e((string) $g['titulo']) ?></a>
+                        <a class="font-bold text-amber-300 hover:text-amber-200" href="<?= e(url_lang('/guia/' . $gSlug)) ?>"><?= e((string) $g['titulo']) ?></a>
                         <p class="text-sm text-slate-300 leading-relaxed mt-1"><?= e(recortar((string) ($g['desc'] ?? ''), 120)) ?></p>
                     </li>
                     <?php endforeach; ?>
                 </ul>
-                <a href="/guias" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold"><?= e(seo_ui('guias_ver_todas')) ?> →</a>
+                <a href="<?= e(url_lang('/guias')) ?>" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold"><?= e(seo_ui('guias_ver_todas')) ?> →</a>
             </section>
 
             <?php if ($faq !== []): ?>
@@ -222,7 +224,7 @@ pagina_head([
             </section>
 
             <section class="text-center mt-10 px-4">
-                <a href="#app" class="inline-block bg-emerald-500 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['cta_final'] ?? '')) ?></a>
+                <a href="<?= e(url_lang('/#app')) ?>" class="inline-block bg-emerald-500 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['cta_final'] ?? '')) ?></a>
             </section>
         </main>
     </div>
@@ -237,6 +239,7 @@ $langCliente = [
 ];
 
 $inlineFirst = 'window.LANG = ' . json_encode($langCliente, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . ';'
+    . 'window.D20_LANG = ' . json_encode(idioma_actual()) . ';'
     . 'window.__CATEGORIAS = ' . json_encode($categorias, JSON_UNESCAPED_UNICODE) . ';'
     . 'window.__DESTACADOS = ' . json_encode(destacados(), JSON_UNESCAPED_UNICODE) . ';'
     . ($tematicaPre !== null ? 'window.__tematicaPre = ' . json_encode($tematicaPre) . ';' : '')

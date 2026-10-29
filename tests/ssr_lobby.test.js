@@ -19,7 +19,14 @@ const ROOT = path.join(__dirname, '..');
 const PORT = 9800 + (process.pid % 150);
 const BASE = 'http://127.0.0.1:' + PORT;
 
-const RUTAS = ['/index.php', '/index.php?tematica=hamburguesa', '/index.php?tematica_bot=pizza'];
+const RUTAS = [
+    '/index.php',
+    '/index.php?tematica=hamburguesa',
+    '/index.php?tematica_bot=pizza',
+    '/index.php?lang=en',
+    '/index.php?tematica=hamburguesa&lang=en',
+    '/index.php?tematica_bot=pizza&lang=en',
+];
 const IDS = [
     'nameRapida', 'nameCreate', 'codeJoin', 'nameJoin', 'btnRapida', 'btnCreate',
     'btnJoin', 'btnPractice', 'btnGuiada', 'tematicaSelector', 'tematicaBotSelector',
@@ -85,6 +92,19 @@ function valorSeleccionado(doc, id) {
         process.exit(1);
     }
 
+    // ?lang=es guarda cookie y limpia la URL; ?lang=en se sirve sin redirección.
+    try {
+        const es = await fetch(BASE + '/index.php?lang=es', { redirect: 'manual' });
+        assert.strictEqual(es.status, 302, '?lang=es debe redirigir a la URL limpia');
+        assert.strictEqual(es.headers.get('location'), '/index.php', '?lang=es: Location inesperado');
+        assert.ok((es.headers.get('set-cookie') || '').indexOf('d20_lang=es') !== -1,
+            '?lang=es debe guardar la cookie d20_lang');
+    } catch (e) {
+        console.log('FAIL idioma ?lang=es → ' + e.message);
+        matarServidor(proc);
+        process.exit(1);
+    }
+
     const core = fs.readFileSync(path.join(ROOT, 'js', 'app.core.js'), 'utf8');
     let ok = 0, fail = 0;
     const problemas = [];
@@ -103,6 +123,20 @@ function valorSeleccionado(doc, id) {
                 });
                 assert.ok(firma(app).hijos.length > 0, ruta + ': #app se sirve vacío (SSR ausente)');
 
+                const idioma = ruta.indexOf('lang=en') !== -1 ? 'en' : 'es';
+                assert.strictEqual(doc.documentElement.getAttribute('lang'), idioma,
+                    ruta + ': <html lang> no coincide con el idioma de la URL');
+                const selector = doc.querySelector('.d20-lang');
+                assert.ok(selector, ruta + ': falta el selector de idioma');
+                const etiquetas = Array.from(selector.querySelectorAll('a')).map(function (a) {
+                    return a.textContent.trim();
+                });
+                assert.deepStrictEqual(etiquetas, ['Español', 'English'],
+                    ruta + ': el selector debe mostrar Español / English');
+                const activo = selector.querySelector('a[aria-current="true"]');
+                assert.strictEqual(activo && activo.getAttribute('lang'), idioma,
+                    ruta + ': el idioma activo del selector no es el de la página');
+
                 const esBot = ruta.indexOf('tematica_bot=') !== -1;
                 const esperadoCrear = !esBot && ruta.indexOf('tematica=') !== -1 ? 'hamburguesa' : '__random__';
                 assert.strictEqual(valorSeleccionado(doc, 'tematicaSelector'), esperadoCrear,
@@ -120,6 +154,18 @@ function valorSeleccionado(doc, id) {
 
                 assert.deepStrictEqual(firma(app), antes,
                     ruta + ': el DOM hidratado difiere del servido (reaparecería CLS)');
+
+                if (idioma === 'en') {
+                    const enlaces = Array.from(app.querySelectorAll('a[href]')).map(function (a) {
+                        return a.getAttribute('href');
+                    }).filter(function (h) {
+                        return h && !/^(https?:|mailto:|#)/.test(h);
+                    });
+                    enlaces.forEach(function (h) {
+                        assert.ok(h.indexOf('lang=en') !== -1,
+                            ruta + ': enlace interno sin ?lang=en → ' + h);
+                    });
+                }
                 ok++;
                 console.log('OK   SSR ' + ruta);
             } catch (e) {

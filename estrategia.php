@@ -14,7 +14,7 @@ require_once __DIR__ . '/contenido_seo.php';
 $LANG = cargar_lang();
 $SEO  = is_array($LANG['seo'] ?? null) ? $LANG['seo'] : [];
 
-$guia = require __DIR__ . '/contenido_estrategia.php';
+$guia = contenido_pagina('estrategia');
 
 $titulo = (string) $guia['titulo'];
 $descripcion = (string) ($guia['desc'] ?? '');
@@ -26,12 +26,12 @@ $jsonLd = [
         '@type' => 'Article',
         'headline' => $titulo,
         'description' => $descripcion,
-        'inLanguage' => 'es',
+        'inLanguage' => idioma_bcp47(),
         'datePublished' => (string) ($guia['fecha'] ?? ''),
         'dateModified' => (string) ($guia['fecha'] ?? ''),
-        'image' => $ogEstrategia,
-        'url' => SITE_URL . '/como-jugar-y-estrategia',
-        'mainEntityOfPage' => SITE_URL . '/como-jugar-y-estrategia',
+        'image' => og_imagen_idioma($ogEstrategia),
+        'url' => SITE_URL . url_lang('/como-jugar-y-estrategia'),
+        'mainEntityOfPage' => SITE_URL . url_lang('/como-jugar-y-estrategia'),
         'author' => ['@id' => SITE_URL . '/#organizacion'],
         'publisher' => ['@id' => SITE_URL . '/#organizacion'],
     ],
@@ -39,7 +39,7 @@ $jsonLd = [
         '@context' => 'https://schema.org',
         '@type' => 'BreadcrumbList',
         'itemListElement' => [
-            ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . '/'],
+            ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . url_lang('/')],
             ['@type' => 'ListItem', 'position' => 2, 'name' => (string) ($guia['h1'] ?? $titulo)],
         ],
     ],
@@ -54,14 +54,14 @@ pagina_head([
 ]);
 ?>
     <main class="flex-1 w-full max-w-3xl mx-auto px-4 pt-8">
-        <nav class="text-xs text-slate-400 mb-4" aria-label="Migas de pan">
-            <a class="hover:text-amber-400" href="/"><?= e((string) ($SEO['migas_inicio'] ?? 'Inicio')) ?></a>
+        <nav class="text-xs text-slate-400 mb-4" aria-label="<?= e(t('ui.comun.migas')) ?>">
+            <a class="hover:text-amber-400" href="<?= e(url_lang('/')) ?>"><?= e((string) ($SEO['migas_inicio'] ?? 'Inicio')) ?></a>
             <span class="mx-1">/</span>
             <span class="text-slate-300"><?= e((string) ($guia['h1'] ?? $titulo)) ?></span>
         </nav>
 
         <h1 class="text-3xl font-bold text-slate-100 mb-2"><?= e((string) ($guia['h1'] ?? $titulo)) ?></h1>
-        <p class="text-xs text-slate-400 mb-8"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(fecha_es((string) ($guia['fecha'] ?? ''))) ?> · Por el Equipo Draft 20</p>
+        <p class="text-xs text-slate-400 mb-8"><?= e(t('ui.comun.actualizado')) ?>: <?= e(fecha_localizada((string) ($guia['fecha'] ?? ''))) ?> · <?= e(t('ui.comun.por_equipo')) ?></p>
 
         <?php foreach ((array) ($guia['intro'] ?? []) as $p): ?>
         <p class="text-sm text-slate-300 leading-relaxed mb-3"><?= e((string) $p) ?></p>
@@ -92,13 +92,13 @@ pagina_head([
         <ul class="space-y-2 mb-8">
             <?php foreach ($guia['enlaces'] as $l): ?>
             <li>
-                <a class="text-sm text-slate-200 hover:text-amber-400" href="<?= e((string) $l['href']) ?>"><?= e((string) $l['texto']) ?> →</a>
+                <a class="text-sm text-slate-200 hover:text-amber-400" href="<?= e(url_lang((string) $l['href'])) ?>"><?= e((string) $l['texto']) ?> →</a>
             </li>
             <?php endforeach; ?>
         </ul>
         <?php endif; ?>
 
-        <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
+        <a href="<?= e(url_lang('/#app')) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
     </main>
 <?php
 pagina_foot();

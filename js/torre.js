@@ -215,11 +215,30 @@
         return ids;
     }
 
+    /** Texto del diccionario cargado (si existe) con placeholders resueltos. */
+    function textoIdioma(clave, params, fallback) {
+        var txt = fallback;
+        try {
+            if (typeof window !== 'undefined' && window.LANG && window.LANG.ui && window.LANG.ui.torre
+                && typeof window.LANG.ui.torre[clave] === 'string') {
+                txt = window.LANG.ui.torre[clave];
+            }
+        } catch (e) { /* sin diccionario: español */ }
+        return String(txt).replace(/\{(\w+)\}/g, function (m, k) {
+            return (params && params[k] !== undefined) ? String(params[k]) : m;
+        });
+    }
+
     function textoCompartir(run, nombre) {
         var quien = (nombre && String(nombre).trim()) || 'Alguien';
-        return '🏆 ' + quien + ' ha conquistado la Torre de Draft 20 (10/10 a ciegas contra el bot extremo). '
-            + 'Monedas gastadas: ' + run.gastado + '. Revives usados: ' + revivesUsados(run) + '. '
-            + 'Temáticas: ' + run.tematicasJugadas.length + '/10. ¿Te atreves? https://draft20.es/';
+        return textoIdioma('compartir', {
+            nombre: quien,
+            gastado: run.gastado,
+            rev: revivesUsados(run),
+            temas: run.tematicasJugadas.length,
+        }, '🏆 {nombre} ha conquistado la Torre de Draft 20 (10/10 a ciegas contra el bot extremo). '
+            + 'Monedas gastadas: {gastado}. Revives usados: {rev}. '
+            + 'Temáticas: {temas}/10. ¿Te atreves? https://draft20.es/');
     }
 
     /**

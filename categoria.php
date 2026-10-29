@@ -48,7 +48,7 @@ foreach ($cat['tematicas'] as $tm) {
         '@type' => 'ListItem',
         'position' => $pos++,
         'name' => nombre_tematica($tm['id']),
-        'url' => SITE_URL . '/tematica/' . $tm['id'],
+        'url' => SITE_URL . url_lang('/tematica/' . $tm['id']),
     ];
 }
 
@@ -57,8 +57,8 @@ $jsonLd = [
         '@context' => 'https://schema.org',
         '@type' => 'BreadcrumbList',
         'itemListElement' => [
-            ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . '/'],
-            ['@type' => 'ListItem', 'position' => 2, 'name' => (string) ($SEO['migas_tematicas'] ?? 'Temáticas'), 'item' => SITE_URL . '/#tematicas'],
+            ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . url_lang('/')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => (string) ($SEO['migas_tematicas'] ?? 'Temáticas'), 'item' => SITE_URL . url_lang('/#tematicas')],
             ['@type' => 'ListItem', 'position' => 3, 'name' => $nombreCat],
         ],
     ],
@@ -66,7 +66,7 @@ $jsonLd = [
         '@context' => 'https://schema.org',
         '@type' => 'CollectionPage',
         'name' => $titulo,
-        'inLanguage' => 'es',
+        'inLanguage' => idioma_bcp47(),
         'mainEntity' => [
             '@type' => 'ItemList',
             'numberOfItems' => count($itemList),
@@ -84,10 +84,10 @@ pagina_head([
 ]);
 ?>
     <main class="flex-1 w-full max-w-3xl mx-auto px-4 pt-8">
-        <nav class="text-xs text-slate-400 mb-4" aria-label="Migas de pan">
-            <a class="hover:text-amber-400" href="/"><?= e((string) ($SEO['migas_inicio'] ?? 'Inicio')) ?></a>
+        <nav class="text-xs text-slate-400 mb-4" aria-label="<?= e(t('ui.comun.migas')) ?>">
+            <a class="hover:text-amber-400" href="<?= e(url_lang('/')) ?>"><?= e((string) ($SEO['migas_inicio'] ?? 'Inicio')) ?></a>
             <span class="mx-1">/</span>
-            <a class="hover:text-amber-400" href="/#tematicas"><?= e((string) ($SEO['migas_tematicas'] ?? 'Temáticas')) ?></a>
+            <a class="hover:text-amber-400" href="<?= e(url_lang('/#tematicas')) ?>"><?= e((string) ($SEO['migas_tematicas'] ?? 'Temáticas')) ?></a>
             <span class="mx-1">/</span>
             <span class="text-slate-300"><?= e($nombreCat) ?></span>
         </nav>
@@ -97,10 +97,10 @@ pagina_head([
         <p class="text-sm text-slate-300 leading-relaxed mb-4"><?= e((string) $parrafo) ?></p>
         <?php endforeach; ?>
         <?php if ($mtimeCat > 0): ?>
-        <p class="text-xs text-slate-400 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', $mtimeCat)) ?></p>
+        <p class="text-xs text-slate-400 mb-6"><?= e(t('ui.comun.actualizado')) ?>: <?= e(mes_anio(date('Y-m', $mtimeCat))) ?></p>
         <?php endif; ?>
 
-        <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
+        <a href="<?= e(url_lang('/#app')) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
 
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(seo_ui('categoria_tematicas_titulo')) ?></h2>
         <ul class="space-y-3 mb-10">
@@ -108,18 +108,18 @@ pagina_head([
                 $tCont = tematica_contenido($tm['id']);
                 ?>
             <li class="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                <a class="font-bold text-amber-300 hover:text-amber-200 inline-flex items-center gap-2" href="/tematica/<?= e($tm['id']) ?>"><?= emoji_icono((string) $tm['emoji'], 24, '') ?> <?= e(nombre_tematica($tm['id'])) ?></a>
+                <a class="font-bold text-amber-300 hover:text-amber-200 inline-flex items-center gap-2" href="<?= e(url_lang('/tematica/' . $tm['id'])) ?>"><?= emoji_icono((string) $tm['emoji'], 24, '') ?> <?= e(nombre_tematica($tm['id'])) ?></a>
                 <?php if ($tCont !== null): ?>
                 <p class="text-sm text-slate-300 leading-relaxed mt-2"><?= e(recortar((string) $tCont['descripcion'], 170)) ?></p>
                 <?php endif; ?>
-                <a class="inline-block mt-2 text-xs font-semibold text-slate-400 hover:text-amber-400" href="/tematica/<?= e($tm['id']) ?>"><?= e(seo_ui('ver_tematica')) ?> →</a>
+                <a class="inline-block mt-2 text-xs font-semibold text-slate-400 hover:text-amber-400" href="<?= e(url_lang('/tematica/' . $tm['id'])) ?>"><?= e(seo_ui('ver_tematica')) ?> →</a>
             </li>
             <?php endforeach; ?>
         </ul>
 
         <?php $trucoCat = (string) ($cont['truco'] ?? ''); ?>
         <?php if ($trucoCat !== ''): ?>
-        <h2 class="text-xl font-bold text-slate-100 mb-3">Truco de subasta en <?= e($nombreCat) ?></h2>
+        <h2 class="text-xl font-bold text-slate-100 mb-3"><?= e(t('ui.categoria.truco', ['categoria' => $nombreCat])) ?></h2>
         <p class="text-sm text-slate-300 leading-relaxed mb-10"><?= e($trucoCat) ?></p>
         <?php endif; ?>
 
@@ -129,18 +129,22 @@ pagina_head([
         <ul class="flex flex-wrap gap-2 mb-6">
             <?php foreach ($categorias as $otra): if ($otra['id'] === $cat['id']) continue; ?>
             <li>
-                <a href="/categoria/<?= e($otra['id']) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($otra['emoji'] . ' ' . nombre_categoria($otra['id'])) ?></a>
+                <a href="<?= e(url_lang('/categoria/' . $otra['id'])) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($otra['emoji'] . ' ' . nombre_categoria($otra['id'])) ?></a>
             </li>
             <?php endforeach; ?>
         </ul>
 
-        <h2 class="text-xl font-bold text-slate-100 mb-4">Guías relacionadas</h2>
+        <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(t('ui.categoria.guias_relacionadas')) ?></h2>
+        <?php
+        $gMejoresCat = guia_contenido('mejores-tematicas');
+        $gGanarCat = guia_contenido('como-ganar-draft-20');
+        ?>
         <ul class="space-y-2 mb-6">
-            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="/guia/mejores-tematicas">Las 10 temáticas más divertidas de Draft 20 →</a></li>
-            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="/guia/como-ganar-draft-20">Cómo ganar en Draft 20: tácticas de subasta →</a></li>
+            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="<?= e(url_lang('/guia/mejores-tematicas')) ?>"><?= e((string) ($gMejoresCat['titulo'] ?? t('ui.categoria.guia_mejores'))) ?> →</a></li>
+            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="<?= e(url_lang('/guia/como-ganar-draft-20')) ?>"><?= e((string) ($gGanarCat['titulo'] ?? t('ui.categoria.guia_ganar'))) ?> →</a></li>
         </ul>
 
-        <a href="/guias" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold mb-6"><?= e(seo_ui('guias_ver_todas')) ?> →</a>
+        <a href="<?= e(url_lang('/guias')) ?>" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold mb-6"><?= e(seo_ui('guias_ver_todas')) ?> →</a>
     </main>
 <?php
 pagina_foot();

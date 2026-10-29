@@ -13,7 +13,8 @@
     if (!D) return;
 
     const state = D.state;
-    const t = D.t, tItem = D.tItem, tTematica = D.tTematica;
+    const t = D.t, tItem = D.tItem, tTematica = D.tTematica, tApi = D.tApi;
+    const url = D.url;
     const tematicaEmoji = D.tematicaEmoji;
     const api = D.api, toast = D.toast, vibrate = D.vibrate;
     const copyLink = D.copyLink, shareWhatsApp = D.shareWhatsApp;
@@ -153,12 +154,12 @@
     // =================== JUEGO ===================
     async function juegoInit(codigo) {
         if (!codigo || !/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/.test(codigo)) {
-            window.location.href = 'index.php';
+            window.location.href = url('index.php');
             return;
         }
         const session = loadSession(codigo);
         if (!session || !session.jugadorId) {
-            window.location.href = 'index.php?sala=' + encodeURIComponent(codigo);
+            window.location.href = url('index.php?sala=' + encodeURIComponent(codigo));
             return;
         }
         state.codigo = codigo;
@@ -181,7 +182,7 @@
                 // Sala ya resuelta y vuelta atrás/recarga: al lobby (el run
                 // ya avanzó; reentrar reprocesaría el piso).
                 if (window.Torre.pisoHecho(codigo)) {
-                    window.location.href = 'index.php';
+                    window.location.href = url('index.php');
                     return;
                 }
                 const meta = window.Torre.cargar();
@@ -243,6 +244,45 @@
         });
     }
 
+    /** URL de la partida en el idioma indicado (conserva código y query). */
+    function urlIdioma(lang) {
+        try {
+            const u = new URL(window.location.href);
+            if (lang === 'es') u.searchParams.delete('lang');
+            else u.searchParams.set('lang', lang);
+            return u.pathname + u.search + u.hash;
+        } catch (e) {
+            return window.location.pathname + (lang === 'es' ? '' : '?lang=' + lang);
+        }
+    }
+
+    /** Selector Español / English de la cabecera de partida (juego.php no usa site_header). */
+    function selectorIdiomaJuego() {
+        const actual = window.D20_LANG === 'en' ? 'en' : 'es';
+        const nav = el('nav', {
+            class: 'd20-lang d20-lang--game',
+            'aria-label': t('ui.comun.seleccionar_idioma'),
+        });
+        [['es', t('ui.comun.espanol')], ['en', t('ui.comun.english')]].forEach(function (par) {
+            const activo = par[0] === actual;
+            nav.appendChild(el('a', {
+                class: 'd20-lang__link' + (activo ? ' is-active' : ''),
+                href: urlIdioma(par[0]),
+                hreflang: par[0],
+                lang: par[0],
+                'aria-current': activo ? 'true' : null,
+                onclick: function (ev) {
+                    ev.preventDefault();
+                    try {
+                        document.cookie = 'd20_lang=' + par[0] + ';path=/;max-age=31536000;samesite=lax';
+                    } catch (e) { /* sin cookies */ }
+                    window.location.href = urlIdioma(par[0]);
+                },
+            }, par[1]));
+        });
+        return nav;
+    }
+
     function renderGameShell() {
         const app = $('#app');
         clear(app);
@@ -252,21 +292,24 @@
         const header = el('header', { class: 'flex items-center justify-between px-3 py-1.5 bg-slate-800 border-b border-slate-700 safe-pt' }, [
             el('button', {
                 id: 'btnLeave',
-                class: 'text-slate-400 text-xs btn-tap',
+                class: 'text-slate-400 text-xs btn-tap flex-shrink-0',
                 onclick: onLeave,
                 'aria-label': t('ui.juego.salir_lobby'),
             }, '← ' + t('ui.juego.salir_lobby')),
-            el('div', { class: 'text-center flex-1 px-2' }, [
+            el('div', { class: 'text-center flex-1 px-2 min-w-0' }, [
                 el('h1', { class: 'text-sm font-bold text-amber-400 leading-tight' }, t('ui.app.titulo')),
                 el('div', { id: 'headerTematica', class: 'text-[10px] text-slate-400 leading-tight truncate' }, ''),
                 el('div', { id: 'headerSerie', class: 'hidden text-[10px] font-bold text-amber-300/90 leading-tight' }, ''),
             ]),
-            el('button', {
-                class: 'w-14 text-right text-slate-400 text-sm font-bold btn-tap',
-                'aria-label': t('ui.lobby.btn_reglas'),
-                title: t('ui.lobby.btn_reglas'),
-                onclick: showRulesModal,
-            }, '?'),
+            el('div', { class: 'flex items-center gap-1 flex-shrink-0' }, [
+                selectorIdiomaJuego(),
+                el('button', {
+                    class: 'w-7 text-right text-slate-400 text-sm font-bold btn-tap',
+                    'aria-label': t('ui.lobby.btn_reglas'),
+                    title: t('ui.lobby.btn_reglas'),
+                    onclick: showRulesModal,
+                }, '?'),
+            ]),
         ]);
 
         // Banner de desconexión (polling caído)
@@ -290,7 +333,7 @@
         ['👍', '😂', '🔥', '😭', '🤝', '😱'].forEach(function (code) {
             emoteBar.appendChild(el('button', {
                 class: 'text-base leading-none px-1.5 py-0.5 rounded btn-tap opacity-80 hover:opacity-100',
-                'aria-label': 'Emote ' + code,
+                'aria-label': t('ui.juego.emote', { code: code }),
                 onclick: function () { onEmote(code); },
             }, code));
         });
@@ -331,7 +374,7 @@
                 stopPollingGame();
                 clearSession(state.codigo);
                 toast(t('ui.app.sala_expirada'));
-                window.location.href = 'index.php';
+                window.location.href = url('index.php');
                 return;
             }
             // Solo cuenta como "sin conexión" un fallo de red real (status 0);
@@ -362,7 +405,7 @@
         state.rivalAusente = (r.rival_ausente === undefined || r.rival_ausente === null) ? null : r.rival_ausente;
         // El rival vuelve: estuvo ausente (banner ≥6 s) y ya no lo está.
         if (rivalAusentePrev !== null && rivalAusentePrev >= 6 && (state.rivalAusente === null || state.rivalAusente < 6)) {
-            toast(t('ui.juego.rival_ha_vuelto', { nombre: state.rivalNombre || 'Rival' }));
+            toast(t('ui.juego.rival_ha_vuelto', { nombre: state.rivalNombre || t('ui.juego.lbl_rival') }));
         }
         identifySlots();
 
@@ -414,7 +457,7 @@
         if (nowItems.length > prevCount) {
             const nuevo = nowItems[nowItems.length - 1];
             toast(t('ui.juego.perdio_item', {
-                rival: state.rivalNombre || 'Rival',
+                rival: state.rivalNombre || t('ui.juego.lbl_rival'),
                 item: tItem(nuevo.id),
                 precio: (nuevo.precio || 0) + '🪙',
             }));
@@ -436,7 +479,7 @@
         sala.emotes.forEach(function (e) {
             const ts = e.ts || 0;
             if (ts > (state.ultimoEmoteTs || 0) && e.por !== state.jugadorSlot) {
-                mostrarEmote(e.code, state.rivalNombre || 'Rival');
+                mostrarEmote(e.code, state.rivalNombre || t('ui.juego.lbl_rival'));
             }
             if (ts > maxTs) maxTs = ts;
         });
@@ -446,7 +489,7 @@
     function mostrarEmote(code, nombre) {
         const b = el('div', {
             class: 'fixed left-1/2 top-16 -translate-x-1/2 z-40 flex items-center gap-2 bg-slate-800 border border-amber-400 rounded-full pl-3 pr-4 py-1.5 pop-emote',
-            'aria-label': nombre + ' dice ' + code,
+            'aria-label': t('ui.juego.emote_dice', { nombre: nombre, code: code }),
         }, [
             el('span', { class: 'text-2xl leading-none' }, code),
             el('span', { class: 'text-xs font-bold text-amber-300 max-w-[9rem] truncate' }, nombre),
@@ -460,7 +503,7 @@
         const ahora = Date.now();
         if (ahora - (state.ultimoEmoteEnviado || 0) < 700) return;
         state.ultimoEmoteEnviado = ahora;
-        mostrarEmote(code, 'Tú');
+        mostrarEmote(code, t('ui.juego.lbl_tu'));
         const r = await api('POST', 'api/accion.php', {
             codigo: state.codigo,
             jugador_id: state.jugadorId,
@@ -756,7 +799,7 @@
                 body: JSON.stringify({ codigo: state.codigo, jugador_id: state.jugadorId, accion: 'abandonar' }),
             }).catch(function () { /* best-effort */ });
         } catch (e) { /* ignore */ }
-        window.location.href = 'juego.php?codigo=' + encodeURIComponent(esp.codigo);
+        window.location.href = url('juego.php?codigo=' + encodeURIComponent(esp.codigo));
     }
 
     function identifySlots() {
@@ -774,7 +817,8 @@
             }
         }
         if (state.jugadorSlot !== null) {
-            state.rivalNombre = s.jugadores[1 - state.jugadorSlot]?.nombre || ('Jugador ' + (state.jugadorSlot + 2 === 2 ? 2 : 1));
+            state.rivalNombre = s.jugadores[1 - state.jugadorSlot]?.nombre
+                || (state.jugadorSlot === 0 ? t('ui.juego.jugador_2') : t('ui.juego.jugador_1'));
         }
     }
 
@@ -974,7 +1018,7 @@
         // Aviso blando: el rival lleva sin responder unos segundos.
         if (state.rivalAusente !== null && state.rivalAusente >= 6 && s.estado === 'jugando') {
             card.appendChild(el('div', { class: 'w-full flex-shrink-0 bg-amber-500 text-slate-900 text-xs font-bold text-center py-2 px-3 rounded mt-2' },
-                t('ui.juego.msg_rival_ausente', { nombre: state.rivalNombre || 'Rival', seg: state.rivalAusente })));
+                t('ui.juego.msg_rival_ausente', { nombre: state.rivalNombre || t('ui.juego.lbl_rival'), seg: state.rivalAusente })));
         }
         if (s.ronda >= totalRondas) {
             card.appendChild(el('div', { class: 'w-full flex-shrink-0 text-[11px] font-bold text-amber-300 mt-1' }, '🔥 ' + t('ui.juego.ultima_ronda')));
@@ -1020,7 +1064,7 @@
         visibles.forEach(function (p, idx) {
             const esUltima = idx === visibles.length - 1;
             const soyYo = p.por === state.jugadorSlot;
-            const nombre = soyYo ? 'Tú' : (state.rivalNombre || 'Rival');
+            const nombre = soyYo ? t('ui.juego.lbl_tu') : (state.rivalNombre || t('ui.juego.lbl_rival'));
             rail.appendChild(el('div', {
                 class: 'rounded px-1.5 py-1 text-right text-[10px] leading-tight bg-slate-800/95 border ' +
                     (esUltima
@@ -1092,7 +1136,7 @@
         const rivalRow = el('div', { class: 'pt-1.5 border-t border-slate-700' }, [
             el('div', { class: 'text-[11px] text-slate-400 mb-1 flex items-center gap-1' }, [
                 el('span', { class: 'inline-block w-1.5 h-1.5 rounded-full bg-rose-500' }),
-                (t('ui.juego.lbl_rival_inv') + ' · ' + (s.jugadores[1 - state.jugadorSlot]?.nombre || 'Rival') + ' · ' + (rivalItems.length) + '/4'),
+                (t('ui.juego.lbl_rival_inv') + ' · ' + (s.jugadores[1 - state.jugadorSlot]?.nombre || t('ui.juego.lbl_rival')) + ' · ' + (rivalItems.length) + '/4'),
             ]),
             el('div', { class: 'flex gap-1 overflow-x-auto no-scrollbar pb-1 min-h-[36px]' },
                 rivalItems.length === 0
@@ -1142,7 +1186,7 @@
         if (s.item_actual.turno_de === state.jugadorSlot) {
             return (s.item_actual.precio_actual || 0) === 0 ? t('ui.juego.guia_paso1') : t('ui.juego.guia_paso2');
         }
-        return t('ui.juego.guia_rival', { rival: state.rivalNombre || 'Rival' });
+        return t('ui.juego.guia_rival', { rival: state.rivalNombre || t('ui.juego.lbl_rival') });
     }
 
     function renderActionBarBase() {
@@ -1324,7 +1368,7 @@
 
         ctx.fillStyle = '#e2e8f0';
         ctx.font = 'bold 46px Arial, sans-serif';
-        ctx.fillText((me.nombre || 'Tú') + '  ·  ' + (rival.nombre || 'Rival'), 540, 660);
+        ctx.fillText((me.nombre || t('ui.juego.lbl_tu')) + '  ·  ' + (rival.nombre || t('ui.juego.lbl_rival')), 540, 660);
 
         const emojis = []
             .concat((me.items_ganados || []).map(function (i) { return i.emoji; }))
@@ -1353,7 +1397,7 @@
 
         ctx.fillStyle = '#94a3b8';
         ctx.font = '38px Arial, sans-serif';
-        ctx.fillText('draft20.es · subasta por turnos para 2 jugadores', 540, 980);
+        ctx.fillText(t('ui.juego.compartir_pie'), 540, 980);
 
         canvas.toBlob(function (blob) {
             if (!blob) { toast(t('ui.juego.toast_resultado_error')); return; }
@@ -1523,7 +1567,7 @@
             el('div', { class: 'text-xl font-mono font-bold text-amber-300' }, serie.mio + ' - ' + (serie.rivalPuntos || 0)),
             serie.ganada
                 ? el('div', { class: 'text-sm font-bold text-emerald-400 mt-1' },
-                    (serie.ganada === 'mio' ? t('ui.juego.serie_ganada') : t('ui.juego.serie_ganada').replace('¡Serie', 'Serie')))
+                    (serie.ganada === 'mio' ? t('ui.juego.serie_ganada') : t('ui.juego.serie_no_ganada')))
                 : null,
         ].filter(Boolean)));
 
@@ -1629,7 +1673,7 @@
             const clave = porDesempate ? 'ui.juego.fin_ganador_desempate' : 'ui.juego.fin_ganador_score';
             resultBlock = el('div', { class: 'bg-emerald-500 text-slate-900 p-4 rounded-lg mb-4 text-center fade-in' }, [
                 el('div', { class: 'text-3xl mb-1' }, '🏅'),
-                el('p', { class: 'text-base font-bold' }, t(clave, { nombre: me?.nombre || 'Tú', puntos: myScore })),
+                el('p', { class: 'text-base font-bold' }, t(clave, { nombre: me?.nombre || t('ui.juego.lbl_tu'), puntos: myScore })),
             ]);
             vibrate([100, 50, 100, 50, 100]);
             sfx('fin');
@@ -1637,7 +1681,7 @@
             const clave = porDesempate ? 'ui.juego.fin_ganador_desempate' : 'ui.juego.fin_ganador_score';
             resultBlock = el('div', { class: 'bg-rose-600 text-white p-4 rounded-lg mb-4 text-center fade-in' }, [
                 el('div', { class: 'text-3xl mb-1' }, '🏅'),
-                el('p', { class: 'text-base font-bold' }, t(clave, { nombre: rival?.nombre || 'Rival', puntos: rivalScore })),
+                el('p', { class: 'text-base font-bold' }, t(clave, { nombre: rival?.nombre || t('ui.juego.lbl_rival'), puntos: rivalScore })),
             ]);
             sfx('fin');
         } else {
@@ -1654,7 +1698,7 @@
         if (revFresca && rev.por !== state.jugadorSlot) {
             const tema = rev.tematica ? (tematicaEmoji(rev.tematica) + ' ' + tTematica(rev.tematica)) : '';
             revanchaBanner = el('div', { class: 'bg-slate-700 border border-amber-400 rounded-lg p-3 mb-4 text-center fade-in' }, [
-                el('p', { class: 'text-sm text-slate-100 mb-3' }, t('ui.juego.msg_revancha_propuesta', { nombre: rival?.nombre || 'Rival', tema: tema })),
+                el('p', { class: 'text-sm text-slate-100 mb-3' }, t('ui.juego.msg_revancha_propuesta', { nombre: rival?.nombre || t('ui.juego.lbl_rival'), tema: tema })),
                 el('div', { class: 'flex gap-2' }, [
                     el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 font-bold py-3 rounded-lg btn-tap', onclick: aceptarRevancha }, t('ui.juego.btn_revancha_unirse')),
                     el('button', { class: 'flex-1 bg-slate-600 text-slate-100 py-3 rounded-lg btn-tap', onclick: rechazarRevancha }, t('ui.juego.btn_revancha_rechazar')),
@@ -1677,8 +1721,8 @@
 
         // Lista de items por jugador
         const lists = el('div', { class: 'space-y-4 px-1' }, [
-            renderItemList(t('ui.juego.lbl_tu_inv') + ' · ' + (me?.nombre || 'Tú'), 'text-amber-400', myItems, myScore, mySpent),
-            renderItemList(t('ui.juego.lbl_rival_inv') + ' · ' + (rival?.nombre || 'Rival'), 'text-rose-400', rivalItems, rivalScore, rivalSpent),
+            renderItemList(t('ui.juego.lbl_tu_inv') + ' · ' + (me?.nombre || t('ui.juego.lbl_tu')), 'text-amber-400', myItems, myScore, mySpent),
+            renderItemList(t('ui.juego.lbl_rival_inv') + ' · ' + (rival?.nombre || t('ui.juego.lbl_rival')), 'text-rose-400', rivalItems, rivalScore, rivalSpent),
         ]);
 
         const exitBtn = el('div', { class: 'mt-6 mb-2 space-y-2' }, [
@@ -1699,7 +1743,7 @@
         if (state.guiado && state.bot) {
             bottom.appendChild(el('div', { class: 'bg-slate-800 border border-amber-400/50 rounded-lg p-3 mb-4 text-sm text-amber-200 text-center' }, [
                 el('div', {}, '🎓 ' + t('ui.juego.guia_fin')),
-                el('a', { class: 'inline-block mt-2 text-xs text-amber-400 underline', href: 'como-jugar' }, t('ui.juego.guia_mas')),
+                el('a', { class: 'inline-block mt-2 text-xs text-amber-400 underline', href: url('como-jugar') }, t('ui.juego.guia_mas')),
             ]));
         }
         renderSerieYLogros(resultado, myItems, rivalItems, mySpent).forEach(function (b) { bottom.appendChild(b); });
@@ -1858,7 +1902,7 @@
         if (codigo === 'timeout') return t('ui.juego.error_timeout');
         if (codigo === 'network') return t('ui.juego.sin_conexion');
         if (!_status || _status >= 500) return t('ui.juego.error_servidor');
-        return codigo || 'Error';
+        return tApi(codigo, _status) || t('ui.juego.error_servidor');
     }
 
     async function sendAction(accion, incremento, extras) {
@@ -1944,7 +1988,7 @@
             keepalive: true,
             body: JSON.stringify({ codigo: state.codigo, jugador_id: state.jugadorId, accion: 'abandonar' }),
         }).catch(function () { /* ignore */ });
-        window.location.href = 'index.php';
+        window.location.href = url('index.php');
     }
 
     function onLeave() {
@@ -1958,7 +2002,7 @@
         limpiarEsperaPendiente();
         clearSession(state.codigo);
         stopPollingGame();
-        window.location.href = 'index.php';
+        window.location.href = url('index.php');
     }
 
     // =================== TORRE DE BATALLA ===================
@@ -2066,13 +2110,13 @@
     /** Reintenta el piso perdido con su misma temática y sala nueva. */
     async function torreReintentar() {
         const run = window.Torre.cargar();
-        if (!run || !run.enProgreso || !run.temaPiso) { window.location.href = 'index.php'; return; }
-        await iniciarPartidaBot(run.temaPiso, window.Torre.DIFICULTAD, state.jugadorNombre || 'Tú', false, { torre: true });
+        if (!run || !run.enProgreso || !run.temaPiso) { window.location.href = url('index.php'); return; }
+        await iniciarPartidaBot(run.temaPiso, window.Torre.DIFICULTAD, state.jugadorNombre || t('ui.juego.lbl_tu'), false, { torre: true });
     }
 
     function torreIrLobby() {
         try { if (typeof stopPollingGame === 'function') stopPollingGame(); } catch (e) { /* ignore */ }
-        window.location.href = 'index.php';
+        window.location.href = url('index.php');
     }
 
     let torreTemaNext = null;
@@ -2189,11 +2233,11 @@
     /** Juega el piso con la temática ya asignada en la transición. */
     async function torreJugarSiguienteReal(tema) {
         const run = window.Torre.cargar();
-        if (!run || !run.enProgreso) { window.location.href = 'index.php'; return; }
+        if (!run || !run.enProgreso) { window.location.href = url('index.php'); return; }
         run.temaPiso = tema;
         window.Torre.guardar(run);
         evento('torre:piso_' + run.pisoActual);
-        await iniciarPartidaBot(tema, window.Torre.DIFICULTAD, state.jugadorNombre || 'Tú', false, { torre: true });
+        await iniciarPartidaBot(tema, window.Torre.DIFICULTAD, state.jugadorNombre || t('ui.juego.lbl_tu'), false, { torre: true });
     }
 
     /** Derrota: desglose + titular de batalla perdida + revive (si hay) o fin; todo inline. */
@@ -2291,10 +2335,12 @@
     }
 
     function torreTextoVictoria(stats) {
-        return '🏆 ' + (state.jugadorNombre || 'Alguien')
-            + ' ha conquistado la Torre de Draft 20 (10/10 a ciegas contra el bot extremo). '
-            + 'Monedas gastadas: ' + stats.gastado + '. Revives usados: ' + stats.rev
-            + '. Temáticas: ' + stats.temas + '/10. ¿Te atreves? https://draft20.es/';
+        return t('ui.torre.compartir', {
+            nombre: state.jugadorNombre || t('ui.juego.alguien'),
+            gastado: stats.gastado,
+            rev: stats.rev,
+            temas: stats.temas,
+        });
     }
 
     async function torreCompartir(stats) {
@@ -2321,7 +2367,7 @@
     /** Fin de la subida tras derrota: solo acciones (el titular ya está visible). */
     function torrePantallaFin(piso) {
         const box = torreAcciones();
-        if (!box) { window.location.href = 'index.php'; return; }
+        if (!box) { window.location.href = url('index.php'); return; }
         box.appendChild(el('button', {
             class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap mt-2',
             onclick: async function () {
@@ -2348,7 +2394,7 @@
 
     function torreAlTerminarPiso(resultado, d) {
         const run = window.Torre.cargar();
-        if (!run || !run.enProgreso) { window.location.href = 'index.php'; return; }
+        if (!run || !run.enProgreso) { window.location.href = url('index.php'); return; }
         registrarHistorial(resultado === 'tablas' ? 'draw' : resultado);
         const r = window.Torre.resumenPiso(d.miItems, d.rivalItems, d.miDinero, d.rivalDinero);
         const res = (r.resultado === 'win') ? 'win' : (r.resultado === 'loss' ? 'loss' : 'tablas');

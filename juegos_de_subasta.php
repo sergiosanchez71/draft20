@@ -8,15 +8,18 @@ declare(strict_types=1);
 
 require __DIR__ . '/inc/layout.php';
 
-$hub = require __DIR__ . '/contenido_hub_subasta.php';
+require_once __DIR__ . '/contenido_seo.php';
+$hub = contenido_pagina('hub_subasta');
+$LANG = cargar_lang();
+$HS = is_array($LANG['ui']['paginas']['juegos_subasta'] ?? null) ? $LANG['ui']['paginas']['juegos_subasta'] : [];
 
 $jsonLd = [
     [
         '@context' => 'https://schema.org',
         '@type' => 'BreadcrumbList',
         'itemListElement' => [
-            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Inicio', 'item' => SITE_URL . '/'],
-            ['@type' => 'ListItem', 'position' => 2, 'name' => 'Juegos de subasta'],
+            ['@type' => 'ListItem', 'position' => 1, 'name' => t('ui.nav.inicio'), 'item' => SITE_URL . url_lang('/')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => (string) ($HS['breadcrumb'] ?? 'Juegos de subasta')],
         ],
     ],
     [
@@ -24,8 +27,8 @@ $jsonLd = [
         '@type' => 'CollectionPage',
         'name' => (string) $hub['titulo'],
         'description' => (string) $hub['desc'],
-        'inLanguage' => 'es',
-        'isPartOf' => ['@type' => 'WebSite', 'name' => SITE_NOMBRE, 'url' => SITE_URL . '/'],
+        'inLanguage' => idioma_bcp47(),
+        'isPartOf' => ['@type' => 'WebSite', 'name' => SITE_NOMBRE, 'url' => SITE_URL . url_lang('/')],
     ],
 ];
 $faqLd = json_ld_faq((array) ($hub['faq'] ?? []));
@@ -42,10 +45,10 @@ pagina_head([
 ]);
 ?>
     <main class="flex-1 w-full max-w-3xl mx-auto px-4 pt-8">
-        <nav class="text-xs text-slate-400 mb-4" aria-label="Migas de pan">
-            <a class="hover:text-amber-400" href="/">Inicio</a>
+        <nav class="text-xs text-slate-400 mb-4" aria-label="<?= e(t('ui.comun.migas')) ?>">
+            <a class="hover:text-amber-400" href="<?= e(url_lang('/')) ?>"><?= e(t('ui.nav.inicio')) ?></a>
             <span class="mx-1">/</span>
-            <span class="text-slate-300">Juegos de subasta</span>
+            <span class="text-slate-300"><?= e((string) ($HS['breadcrumb'] ?? 'Juegos de subasta')) ?></span>
         </nav>
 
         <h1 class="text-3xl font-bold text-slate-100 mb-3"><?= e((string) $hub['h1']) ?></h1>
@@ -62,11 +65,11 @@ pagina_head([
 
         <?= ads_slot() ?>
 
-        <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8">Jugar a Draft 20 gratis</a>
+        <a href="<?= e(url_lang('/#app')) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-8"><?= e((string) ($HS['cta'] ?? 'Jugar a Draft 20 gratis')) ?></a>
 
         <?php if (!empty($hub['faq'])): ?>
         <section class="mb-8">
-            <h2 class="text-lg font-bold text-amber-300 mb-3">Preguntas frecuentes</h2>
+            <h2 class="text-lg font-bold text-amber-300 mb-3"><?= e((string) ($HS['faq_titulo'] ?? 'Preguntas frecuentes')) ?></h2>
             <dl class="space-y-3">
                 <?php foreach ((array) $hub['faq'] as $f): ?>
                 <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
@@ -80,10 +83,10 @@ pagina_head([
 
         <?php if (!empty($hub['enlaces'])): ?>
         <section class="mb-10">
-            <h2 class="text-lg font-bold text-amber-300 mb-3">Sigue leyendo</h2>
+            <h2 class="text-lg font-bold text-amber-300 mb-3"><?= e(t('ui.comun.sigue_leyendo')) ?></h2>
             <ul class="flex flex-wrap gap-2">
                 <?php foreach ((array) $hub['enlaces'] as $l): ?>
-                <li><a class="inline-block bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-full px-3 py-1.5 text-sm text-slate-200" href="<?= e((string) $l['href']) ?>"><?= e((string) $l['texto']) ?></a></li>
+                <li><a class="inline-block bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-full px-3 py-1.5 text-sm text-slate-200" href="<?= e(url_lang((string) $l['href'])) ?>"><?= e((string) $l['texto']) ?></a></li>
                 <?php endforeach; ?>
             </ul>
         </section>

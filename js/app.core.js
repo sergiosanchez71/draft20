@@ -56,6 +56,40 @@
     function tItem(id) { return (window.LANG.items && window.LANG.items[id]) || id; }
     function tTematica(id) { return (window.LANG.tematicas && window.LANG.tematicas[id]) || id; }
     function catLabel(id) { return (window.LANG.tematicas_categorias && window.LANG.tematicas_categorias[id]) || id; }
+    /** Traduce un mensaje de error devuelto por la API (viene en español).
+     *  Si no hay traducción y la interfaz está en inglés, usa un mensaje
+     *  genérico para no filtrar español. */
+    function tApi(msg, status) {
+        const mapa = window.LANG && window.LANG.ui && window.LANG.ui.api_errors;
+        if (msg && mapa && typeof mapa[msg] === 'string') return mapa[msg];
+        // Mensajes dinámicos de la API: "Temática no encontrada: <id>".
+        // Se busca la clave con dos puntos y se rellena {detalle}.
+        if (msg && mapa) {
+            const sep = msg.indexOf(': ');
+            if (sep > 0) {
+                const clave = msg.slice(0, sep + 1);
+                if (typeof mapa[clave] === 'string') {
+                    return mapa[clave].replace('{detalle}', msg.slice(sep + 2));
+                }
+            }
+        }
+        if (window.D20_LANG !== 'en') return msg;
+        if (status && status < 500) {
+            return (mapa && mapa.solicitud_invalida) || t('ui.juego.error_servidor');
+        }
+        return (mapa && mapa.generico) || t('ui.juego.error_servidor');
+    }
+    /** Añade ?lang=en a una URL interna cuando la interfaz está en inglés. */
+    function url(path) {
+        if (!path || window.D20_LANG !== 'en') return path;
+        let base = String(path);
+        let hash = '';
+        const ih = base.indexOf('#');
+        if (ih >= 0) { hash = base.slice(ih); base = base.slice(0, ih); }
+        if (/[?&]lang=/.test(base)) return base + hash;
+        const sep = base.indexOf('?') >= 0 ? '&' : '?';
+        return base + sep + 'lang=en' + hash;
+    }
     function categoriasData() { return Array.isArray(window.__CATEGORIAS) ? window.__CATEGORIAS : []; }
     function destacadosData() {
         if (Array.isArray(window.__DESTACADOS) && window.__DESTACADOS.length) return window.__DESTACADOS;
@@ -160,7 +194,7 @@
         return path.replace(/\/[^/]*$/, '/');
     }
     function buildLink(codigo) {
-        return window.location.origin + getBasePath() + '?sala=' + encodeURIComponent(codigo);
+        return url(window.location.origin + getBasePath() + '?sala=' + encodeURIComponent(codigo));
     }
 
     /** Recuerda el nombre para la creación de sala en 1 clic desde las fichas. */
@@ -255,7 +289,7 @@
 
     /** Suma el resultado a la serie contra el rival actual (se reinicia a los 30 min). */
     function actualizarSerie(resultado) {
-        const rival = state.rivalNombre || 'Rival';
+        const rival = state.rivalNombre || t('ui.juego.lbl_rival');
         let serie = null;
         try { serie = JSON.parse(localStorage.getItem('draft20_serie') || 'null'); } catch (e) { /* ignore */ }
         const ahora = Date.now();
@@ -275,7 +309,7 @@
         const entrada = {
             ts: Date.now(),
             tema: s.tematica || '',
-            rival: state.rivalNombre || (state.bot ? 'Bot' : 'Rival'),
+            rival: state.rivalNombre || (state.bot ? t('ui.juego.bot') : t('ui.juego.lbl_rival')),
             r: resultado,
             bot: !!state.bot,
         };
@@ -433,7 +467,7 @@
         } else {
             filas.push(el('div', { class: 'space-y-1' }, historial.slice(0, 5).map(function (h) {
                 const icono = h.r === 'win' ? '✅' : (h.r === 'loss' ? '❌' : '🤝');
-                const quien = h.bot ? 'Bot' : (h.rival || 'Rival');
+                const quien = h.bot ? t('ui.juego.bot') : (h.rival || t('ui.juego.lbl_rival'));
                 let fecha = '';
                 try { fecha = new Date(h.ts || 0).toLocaleDateString(); } catch (e) { /* ignore */ }
                 return el('div', { class: 'flex items-center justify-between text-xs text-slate-300 bg-slate-700/40 rounded px-2 py-1' }, [
@@ -535,8 +569,8 @@
             ta.select();
             try {
                 const r = document.execCommand('copy');
-                r ? ok() : toast('No se pudo copiar');
-            } catch (e) { toast('No se pudo copiar'); }
+                r ? ok() : toast(t('ui.lobby.toast_copiar_error'));
+            } catch (e) { toast(t('ui.lobby.toast_copiar_error')); }
             ta.remove();
         };
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -651,7 +685,7 @@
             const session = loadSession(linkSala);
             if (session && session.jugadorId) {
                 // Ya jugó/creó esta sala, ir al juego
-                window.location.href = 'juego.php?codigo=' + encodeURIComponent(linkSala);
+                window.location.href = url('juego.php?codigo=' + encodeURIComponent(linkSala));
                 return;
             }
             renderJoinView(linkSala, '');
@@ -783,7 +817,7 @@
                 el('span', { class: 'text-2xl font-mono font-bold tracking-widest' }, partida.codigo),
                 el('a', {
                     class: 'bg-slate-900 text-amber-300 font-bold py-2 px-4 rounded-lg btn-tap',
-                    href: 'juego.php?codigo=' + encodeURIComponent(partida.codigo),
+                    href: url('juego.php?codigo=' + encodeURIComponent(partida.codigo)),
                 }, partida.revancha ? t('ui.lobby.revancha_ver') : t('ui.lobby.continuar')),
             ]),
         ]);
@@ -907,7 +941,7 @@
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.label_unirse')),
             el('input', { id: 'codeJoin', type: 'text', maxlength: '5', minlength: '5', placeholder: t('ui.lobby.placeholder_codigo'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base uppercase tracking-widest text-center text-2xl font-mono placeholder:text-slate-300' }),
             el('label', { class: 'block text-sm text-slate-400 mb-1' }, t('ui.lobby.input_nombre_jugador')),
-            el('input', { id: 'nameJoin', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: 'Jugador 2', class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base placeholder:text-slate-300' }),
+            el('input', { id: 'nameJoin', type: 'text', maxlength: '20', value: nombrePrevio, placeholder: t('ui.lobby.placeholder_rival'), class: 'w-full bg-slate-700 text-slate-100 rounded-lg p-3 mb-4 text-base placeholder:text-slate-300' }),
             el('button', { id: 'btnJoin', class: 'w-full bg-emerald-500 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg' }, t('ui.lobby.btn_unirse')),
         ]);
 
@@ -954,16 +988,16 @@
 
         app.appendChild(errorBox);
         app.appendChild(rapidaForm);
-        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
+        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, t('ui.lobby.separador_o')));
         app.appendChild(createForm);
-        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
+        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, t('ui.lobby.separador_o')));
         app.appendChild(joinForm);
-        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
+        app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, t('ui.lobby.separador_o')));
         app.appendChild(practiceCard);
         // Torre oculta de momento (Torre.VISIBLE === false): ni tarjeta ni
         // listeners; la lógica sigue intacta para reactivarla.
         if (window.Torre && window.Torre.VISIBLE) {
-            app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, '— o —'));
+            app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, t('ui.lobby.separador_o')));
             app.appendChild(torreCard);
             const btnTorre0 = $('#btnTorre');
             if (btnTorre0) btnTorre0.addEventListener('click', onTorreEmpezar);
@@ -1091,10 +1125,11 @@
     }
 
     /** Error de red/timeout con mensaje humano (la sala no se pierde). */
-    function errorRedHumano(codigo) {
+    function errorRedHumano(codigo, status) {
         if (codigo === 'timeout') return t('ui.juego.error_timeout');
         if (codigo === 'network') return t('ui.juego.sin_conexion');
-        return codigo || 'Error';
+        if (status >= 500) return t('ui.juego.error_servidor');
+        return tApi(codigo, status) || t('ui.juego.error_servidor');
     }
 
     function showLobbyError(msg) {
@@ -1116,10 +1151,10 @@
             mostrar_valores: !!state.mostrarValores,
         });
         btn.disabled = false; btn.classList.remove('opacity-50');
-        if (!r.ok) { showLobbyError(errorRedHumano(r.error)); vibrate([100, 50, 100]); return; }
+        if (!r.ok) { showLobbyError(errorRedHumano(r.error, r._status)); vibrate([100, 50, 100]); return; }
         state.codigo = r.codigo;
         state.jugadorId = r.jugador_id;
-        state.jugadorNombre = (nombre || '').trim() || ('Jugador 1');
+        state.jugadorNombre = (nombre || '').trim() || t('ui.juego.jugador_1');
         guardarNombre(state.jugadorNombre);
         state.tematicaCreada = tematica;
         saveSession();
@@ -1133,14 +1168,17 @@
      * Usada por "Practicar vs 🤖" y por la revancha contra bot (misma dificultad).
      */
     // Nombres del bot: aleatorios por partida; el 🤖 delante lo identifica siempre.
-    const BOT_NOMBRES = ['Botín', 'Doña Subasta', 'El Martillo', 'Chollo', 'La Puja', 'Remate', 'Subastín', 'Doña Puja'];
+    const BOT_NOMBRES = (function () {
+        const lista = t('ui.lobby.bot_nombres').split('|').map(function (s) { return s.trim(); }).filter(Boolean);
+        return lista.length ? lista : ['Bot'];
+    })();
 
     function nombreBot() {
         return '🤖 ' + BOT_NOMBRES[Math.floor(Math.random() * BOT_NOMBRES.length)];
     }
 
     async function iniciarPartidaBot(tematica, dificultad, nombre, mostrarValores, opts) {
-        const nombreFinal = (nombre && nombre.trim()) || state.jugadorNombre || 'Tú';
+        const nombreFinal = (nombre && nombre.trim()) || state.jugadorNombre || t('ui.juego.lbl_tu');
         const mv = (mostrarValores === undefined) ? !!state.mostrarValores : !!mostrarValores;
         const esTorre = !!(opts && opts.torre);
         // Guarda: si llega la constante de aleatoria sin resolver, se sortea aquí.
@@ -1153,9 +1191,9 @@
             mostrar_valores: mv,
             torre: esTorre,
         });
-        if (!r.ok) { toast(errorRedHumano(r.error)); return false; }
+        if (!r.ok) { toast(errorRedHumano(r.error, r._status)); return false; }
         const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: nombreBot(), bot: true, creador_id: r.jugador_id });
-        if (!r2.ok) { toast(r2.error || 'Error'); return false; }
+        if (!r2.ok) { toast(errorRedHumano(r2.error, r2._status)); return false; }
         try {
             localStorage.setItem('draft20_bot_' + r.codigo, JSON.stringify({
                 jugadorId: r2.jugador_id,
@@ -1178,13 +1216,13 @@
         guardarNombre(nombreFinal);
         saveSession();
         evento('game:bot');
-        window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
+        window.location.href = url('juego.php?codigo=' + encodeURIComponent(r.codigo));
         return true;
     }
 
     async function onPractice() {
         const tematica = resolverTematica(ctxBot);
-        const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || 'Tú';
+        const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || t('ui.juego.lbl_tu');
         const dificultad = state.botDificultad || 'normal';
         const btn = $('#btnPractice');
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
@@ -1194,7 +1232,7 @@
 
     /** Práctica guiada: bot fácil, ⭐ visibles y explicaciones paso a paso. */
     async function onGuiada() {
-        const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || 'Tú';
+        const nombre = ($('#nameCreate') && $('#nameCreate').value.trim()) || t('ui.juego.lbl_tu');
         const btn = $('#btnGuiada');
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
         try { localStorage.setItem('draft20_guiada', '1'); } catch (e) { /* ignore */ }
@@ -1220,7 +1258,7 @@
             if (n.trim()) return n.trim();
         } catch (e) { /* ignore */ }
         const nc = $('#nameCreate');
-        return (nc && nc.value.trim()) || 'Tú';
+        return (nc && nc.value.trim()) || t('ui.juego.lbl_tu');
     }
 
     /** Juega un piso de la Torre: tema (sin repetir), extremo y secreto. */
@@ -1250,7 +1288,7 @@
             const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(run.codigoSala) + '&t=' + Date.now());
             const est = r && r.sala && r.sala.estado;
             if (r && r.ok && (est === 'jugando' || est === 'esperando')) {
-                window.location.href = 'juego.php?codigo=' + encodeURIComponent(run.codigoSala);
+                window.location.href = url('juego.php?codigo=' + encodeURIComponent(run.codigoSala));
                 return;
             }
         }
@@ -1309,14 +1347,14 @@
         btn.disabled = true; btn.classList.add('opacity-50');
         const r = await api('POST', 'api/unirse_sala.php', { codigo: codigo, nombre: nombre });
         btn.disabled = false; btn.classList.remove('opacity-50');
-        if (!r.ok) { showLobbyError(errorRedHumano(r.error)); vibrate([100, 50, 100]); return; }
+        if (!r.ok) { showLobbyError(errorRedHumano(r.error, r._status)); vibrate([100, 50, 100]); return; }
         state.codigo = codigo;
         state.jugadorId = r.jugador_id;
-        state.jugadorNombre = (nombre || '').trim() || ('Jugador 2');
+        state.jugadorNombre = (nombre || '').trim() || t('ui.juego.jugador_2');
         guardarNombre(state.jugadorNombre);
         saveSession();
         // J2 entra directamente al juego
-        window.location.href = 'juego.php?codigo=' + encodeURIComponent(codigo);
+        window.location.href = url('juego.php?codigo=' + encodeURIComponent(codigo));
     }
 
     function renderCreatorView() {
@@ -1373,7 +1411,7 @@
         state.sala = r.sala;
         if (r.sala.estado === 'jugando' || r.sala.estado === 'finalizada') {
             stopPollingLobby();
-            window.location.href = 'juego.php?codigo=' + encodeURIComponent(state.codigo);
+            window.location.href = url('juego.php?codigo=' + encodeURIComponent(state.codigo));
         }
     }
 
@@ -1386,17 +1424,17 @@
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
         const r = await api('POST', 'api/partida_rapida.php', { nombre: nombre, mostrar_valores: !!state.mostrarValores });
         if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
-        if (!r.ok) { showLobbyError(errorRedHumano(r.error)); vibrate([100, 50, 100]); return; }
+        if (!r.ok) { showLobbyError(errorRedHumano(r.error, r._status)); vibrate([100, 50, 100]); return; }
 
         state.codigo = r.codigo;
         state.jugadorId = r.jugador_id;
-        state.jugadorNombre = nombre || (r.rol === 'creador' ? 'Jugador 1' : 'Jugador 2');
+        state.jugadorNombre = nombre || (r.rol === 'creador' ? t('ui.juego.jugador_1') : t('ui.juego.jugador_2'));
         state.tematicaCreada = null;
         saveSession();
         evento('game:rapida');
 
         if (r.rol === 'rival') {
-            window.location.href = 'juego.php?codigo=' + encodeURIComponent(r.codigo);
+            window.location.href = url('juego.php?codigo=' + encodeURIComponent(r.codigo));
             return;
         }
         renderBuscandoView();
@@ -1501,7 +1539,7 @@
     async function jugarBotDesdeBusqueda() {
         if (!state.codigo) return;
         const tematica = (state.sala && state.sala.tematica) ? state.sala.tematica : TEMATICA_RANDOM;
-        const nombre = state.jugadorNombre || 'Tú';
+        const nombre = state.jugadorNombre || t('ui.juego.lbl_tu');
         const btn = $('#btnBotReserva');
         if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
         // La sala de la búsqueda NO se cancela ni se borra: si alguien entra
@@ -1569,7 +1607,7 @@
     // API compartida con app.game.js (vista de juego).
     window.DraftApp = {
         state: state,
-        t: t, tItem: tItem, tTematica: tTematica,
+        t: t, tItem: tItem, tTematica: tTematica, tApi: tApi, url: url,
         tematicaEmoji: tematicaEmoji,
         api: api, toast: toast, vibrate: vibrate,
         copyLink: copyLink, shareWhatsApp: shareWhatsApp,

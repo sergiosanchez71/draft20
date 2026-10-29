@@ -8,17 +8,24 @@ declare(strict_types=1);
 return [
     // ===================== DEPORTE =====================
     'futbol' => [
-        'descripcion' => 'Messi, Cristiano, Lamine Yamal y Maradona en la misma subasta, con Lord Bendtner y Gravesen como castigo. Es la temática reina para los que discuten de fútbol a diario: cada ítem tiene su contexto, su época y su leyenda, y la partida se convierte en un debate encubierto.',
+        'descripcion' => 'Messi, Cristiano, Lamine Yamal, Maradona, Pelé, Zidane, Iniesta, Xavi, Ronaldinho, Rodri, Pedri, Casillas y Nico Williams en la misma subasta, con Harry Maguire, Antony, Karius, Lord Bendtner, el Hazard del Madrid, Gravesen y Dembélé como castigo. Es la temática reina para los que discuten de fútbol a diario: cada ítem tiene su contexto, su época y su leyenda, y la partida se convierte en un debate encubierto sobre quién fue mejor. Con el balón de oro en juego en cada ronda, es imposible no defender a tu ídolo hasta la última moneda.',
         'preguntas' => [
             ['q' => '¿Aparece Lamine Yamal en la temática de fútbol?', 'a' => 'Sí, es uno de los ítems más recientes y más pujados, junto a Messi y Cristiano.'],
+            ['q' => '¿Messi o Cristiano?', 'a' => 'El debate que divide partidas: Messi sale más caro casi siempre, pero Cristiano rinde mejor por moneda en muchas.'],
+            ['q' => '¿Quién es Lord Bendtner?', 'a' => 'El delantero danés convertido en meme por su autoconfianza: en la subasta es castigo con título nobiliario.'],
+            ['q' => '¿Los defensas valen algo?', 'a' => 'Maldini no está aquí, pero Casillas e Iniesta sí: los que solo miran delanteros los dejan baratos.'],
         ],
         'tactica' => 'El fútbol premia al que conoce épocas: las leyendas (Messi, Cristiano, Maradona) deciden partidas, pero todo el mundo las quiere y salen caras. La jugada rentable es dejar que el rival se desangre por su ídolo mientras tú cierras equipo con internacionales sólidos a mitad de precio. Y ojo con los castigos con nombre divertido: pujar por Bendtner de farol solo funciona una vez por rival.',
     ],
     'nba' => [
-        'descripcion' => 'Michael Jordan, LeBron James, Kobe Bryant y Stephen Curry dominan una subasta que también incluye a Anthony Bennett y Adam Morrison, dos elecciones de draft que salieron regular. La temática favorita de los que madrugan a ver partidos y de los que solo conocen los documentales.',
+        'descripcion' => 'Michael Jordan, LeBron James, Kobe Bryant, Stephen Curry, Magic Johnson, Larry Bird, Shaquille O\'Neal, Tim Duncan, Giannis, Jokic, Durant y Kareem dominan una subasta que también incluye a Allen Iverson y a los busts legendarios: Kwame Brown, Anthony Bennett, Darko Milicic, Adam Morrison, Olowokandi y Jan Vesely. La temática favorita de los que madrugan a ver partidos y de los que solo conocen los documentales, con Brian Scalabrine como héroe de culto. Cada anillo cuenta y cada draft fallido duele: pujar aquí es hacer de general manager con monedas.',
         'preguntas' => [
             ['q' => '¿Quién es el ítem más valioso de la NBA?', 'a' => 'Michael Jordan suele ser el más disputado, con LeBron y Kobe justo detrás.'],
+            ['q' => '¿Jordan o LeBron?', 'a' => 'Jordan sale más caro por mito, pero LeBron rinde mejor por moneda en la mayoría de partidas.'],
+            ['q' => '¿Quién fue Anthony Bennett?', 'a' => 'El número 1 del draft de 2013 que no cuajó: en la subasta es el castigo con más pedigrí.'],
+            ['q' => '¿Los europeos valen?', 'a' => 'Giannis, Jokic y Nowitzki-adjacentes rinden muy bien: los de solo-NBA-clásica los dejan baratos.'],
         ],
+        'tactica' => 'La NBA es gestión salarial: deja que el rival pague el impuesto GOAT por Jordan o LeBron y construye tu quinteto con Curry, Duncan, Giannis y Jokic, que deciden igual por menos. Los busts (Bennett, Kwame, Darko) son infladores perfectos: el fracaso en el draft puja solo. Y ataca a Scalabrine e Iverson: ítems de culto que salen baratos y cierran equipos con carácter.',
     ],
     'tenis' => [
         'descripcion' => 'Rafa Nadal, Federer, Djokovic y Serena Williams en la misma subasta: el Big Three y la mejor jugadora de la historia. Los ítems malos incluyen a Bernard Tomic y a Karsten Braasch, recordado por perder contra las hermanas Williams fumando entre puntos.',

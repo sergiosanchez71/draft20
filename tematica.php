@@ -30,9 +30,9 @@ $preguntas = is_array($cont['preguntas'] ?? null) ? $cont['preguntas'] : [];
 // Meta description: descripción editorial única (sin revelar valores).
 $descripcion = $cont !== null
     ? recortar((string) $cont['descripcion'], 155)
-    : 'Los 20 ítems de ' . $nombre . ' en Draft 20. Subasta por turnos gratis para 2 jugadores, sin registro.';
+    : str_replace('{tema}', $nombre, t('ui.tematica.meta_desc'));
 
-$titulo = $nombre . ' — 20 ítems para jugar a Draft 20';
+$titulo = str_replace('{tema}', $nombre, t('ui.tematica.titulo'));
 
 $itemList = [];
 foreach ($items as $i => $it) {
@@ -48,8 +48,8 @@ $jsonLd = [
         '@context' => 'https://schema.org',
         '@type' => 'BreadcrumbList',
         'itemListElement' => [
-            ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . '/'],
-            ['@type' => 'ListItem', 'position' => 2, 'name' => $categoria, 'item' => SITE_URL . '/categoria/' . $tm['categoria_id']],
+            ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . url_lang('/')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => $categoria, 'item' => SITE_URL . url_lang('/categoria/' . $tm['categoria_id'])],
             ['@type' => 'ListItem', 'position' => 3, 'name' => $nombre],
         ],
     ],
@@ -77,10 +77,10 @@ pagina_head([
 ]);
 ?>
     <main class="flex-1 w-full max-w-3xl mx-auto px-4 pt-8">
-        <nav class="text-xs text-slate-400 mb-4" aria-label="Migas de pan">
-            <a class="hover:text-amber-400" href="/"><?= e((string) ($SEO['migas_inicio'] ?? 'Inicio')) ?></a>
+        <nav class="text-xs text-slate-400 mb-4" aria-label="<?= e(t('ui.comun.migas')) ?>">
+            <a class="hover:text-amber-400" href="<?= e(url_lang('/')) ?>"><?= e((string) ($SEO['migas_inicio'] ?? 'Inicio')) ?></a>
             <span class="mx-1">/</span>
-            <a class="hover:text-amber-400" href="/categoria/<?= e($tm['categoria_id']) ?>"><?= e($categoria) ?></a>
+            <a class="hover:text-amber-400" href="<?= e(url_lang('/categoria/' . $tm['categoria_id'])) ?>"><?= e($categoria) ?></a>
             <span class="mx-1">/</span>
             <span class="text-slate-300"><?= e($nombre) ?></span>
         </nav>
@@ -89,14 +89,14 @@ pagina_head([
             <?= emoji_icono((string) $tm['emoji'], 40, '') ?>
             <span><?= e($nombre) ?></span>
         </h1>
-        <p class="text-slate-400 text-sm mb-1"><a class="hover:text-amber-400 inline-flex items-center gap-1.5" href="/categoria/<?= e($tm['categoria_id']) ?>"><?= emoji_icono((string) $tm['categoria_emoji'], 20, '') ?> <?= e($categoria) ?></a></p>
+        <p class="text-slate-400 text-sm mb-1"><a class="hover:text-amber-400 inline-flex items-center gap-1.5" href="<?= e(url_lang('/categoria/' . $tm['categoria_id'])) ?>"><?= emoji_icono((string) $tm['categoria_emoji'], 20, '') ?> <?= e($categoria) ?></a></p>
         <?php if ($cont !== null): ?>
         <p class="text-slate-300 text-sm leading-relaxed mt-4 mb-6"><?= e((string) $cont['descripcion']) ?></p>
         <?php else: ?>
         <p class="text-slate-300 text-sm leading-relaxed mt-4 mb-6"><?= e(str_replace('{t}', $nombre, (string) ($SEO['tematica_intro'] ?? ''))) ?></p>
         <?php endif; ?>
         <?php $jsonTema = __DIR__ . '/tematicas/' . $id . '.json'; if (is_file($jsonTema)): ?>
-        <p class="text-xs text-slate-400 mb-6"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(date('m/Y', (int) filemtime($jsonTema))) ?></p>
+        <p class="text-xs text-slate-400 mb-6"><?= e(t('ui.comun.actualizado')) ?>: <?= e(mes_anio(date('Y-m', (int) filemtime($jsonTema)))) ?></p>
         <?php endif; ?>
         <?php
         // Puesto en el ranking del mes en curso (datos reales anonimizados).
@@ -111,25 +111,24 @@ pagina_head([
             $posFicha = array_search($id, $topFicha, true);
             if ($posFicha !== false) $puestoMes = $posFicha + 1;
         }
-        $MESES_FICHA = ['01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo', '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio', '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre', '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'];
         ?>
         <?php if ($puestoMes !== null): ?>
-        <p class="text-sm text-slate-200 mb-6">🏅 Nº <?= (int) $puestoMes ?> en <?= e(($MESES_FICHA[substr($mesRankId, 5, 2)] ?? $mesRankId)) ?> · <a class="text-amber-400 hover:text-amber-300 font-semibold" href="/ranking">Ver ranking →</a></p>
+        <p class="text-sm text-slate-200 mb-6">🏅 <?= e(t('ui.tematica.puesto_mes', ['n' => $puestoMes, 'mes' => nombre_mes(substr($mesRankId, 5, 2))])) ?> <a class="text-amber-400 hover:text-amber-300 font-semibold" href="<?= e(url_lang('/ranking')) ?>"><?= e(t('ui.tematica.ver_ranking')) ?> →</a></p>
         <?php endif; ?>
 
         <div class="flex flex-wrap gap-2 mb-2">
             <button id="btnJugarTema" type="button" data-tematica="<?= e($id) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap disabled:opacity-60"><?= e((string) ($SEO['tematica_cta'] ?? 'Jugar')) ?></button>
-            <button id="btnBotTema" type="button" data-tematica="<?= e($id) ?>" class="inline-block bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-3 px-6 rounded-lg btn-tap disabled:opacity-60">🤖 Jugar contra el bot</button>
+            <button id="btnBotTema" type="button" data-tematica="<?= e($id) ?>" class="inline-block bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-3 px-6 rounded-lg btn-tap disabled:opacity-60">🤖 <?= e(t('ui.tematica.jugar_bot')) ?></button>
         </div>
         <div class="flex flex-wrap items-center gap-2 mb-2">
-            <span class="text-xs text-slate-400">Dificultad del bot:</span>
+            <span class="text-xs text-slate-400"><?= e(t('ui.tematica.dificultad_bot')) ?>:</span>
             <div id="difBotTema" class="flex flex-wrap gap-2">
                 <?php foreach (['facil', 'normal', 'dificil', 'extremo'] as $dif): ?>
                 <button type="button" data-dif="<?= e($dif) ?>" class="px-3 py-1.5 rounded-full text-xs border btn-tap bg-slate-700 text-slate-200 border-slate-600"><?= e((string) ($LANG['ui']['lobby']['bot_' . $dif] ?? $dif)) ?></button>
                 <?php endforeach; ?>
             </div>
         </div>
-        <p class="text-xs text-slate-400 mb-8"><a class="hover:text-amber-400" href="/?tematica=<?= e($id) ?>#app"><?= e('o elige temática en el lobby') ?></a></p>
+        <p class="text-xs text-slate-400 mb-8"><a class="hover:text-amber-400" href="<?= e(url_lang('/?tematica=' . rawurlencode($id) . '#app')) ?>"><?= e(t('ui.tematica.elige_lobby')) ?></a></p>
 
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(str_replace('{t}', $nombre, (string) ($SEO['tematica_items_titulo'] ?? 'Ítems de {t}'))) ?></h2>
         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-10">
@@ -143,7 +142,7 @@ pagina_head([
 
         <?php $tacticaTema = is_array($cont) ? (string) ($cont['tactica'] ?? '') : ''; ?>
         <?php if ($tacticaTema !== ''): ?>
-        <h2 class="text-xl font-bold text-slate-100 mb-3">Cómo jugarla: táctica de <?= e($nombre) ?></h2>
+        <h2 class="text-xl font-bold text-slate-100 mb-3"><?= e(t('ui.tematica.como_jugarla', ['tema' => $nombre])) ?></h2>
         <p class="text-sm text-slate-300 leading-relaxed mb-10"><?= e($tacticaTema) ?></p>
         <?php endif; ?>
 
@@ -179,16 +178,16 @@ pagina_head([
                     }
                     ?>
             <li>
-                <a href="/tematica/<?= e($otra['id']) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($otra['emoji'] . ' ' . nombre_tematica($otra['id'])) ?></a>
+                <a href="<?= e(url_lang('/tematica/' . $otra['id'])) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($otra['emoji'] . ' ' . nombre_tematica($otra['id'])) ?></a>
             </li>
                     <?php
                 }
             }
             ?>
         </ul>
-        <a href="/categoria/<?= e($tm['categoria_id']) ?>" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold mb-8"><?= e('Ver todas las temáticas de ' . $categoria) ?> →</a>
+        <a href="<?= e(url_lang('/categoria/' . $tm['categoria_id'])) ?>" class="inline-block text-amber-400 hover:text-amber-300 text-sm font-semibold mb-8"><?= e(t('ui.tematica.ver_todas', ['categoria' => $categoria])) ?> →</a>
 
-        <h2 class="text-xl font-bold text-slate-100 mb-4">También te puede interesar</h2>
+        <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(t('ui.tematica.tambien')) ?></h2>
         <ul class="flex flex-wrap gap-2 mb-8">
             <?php
             $otras = 0;
@@ -201,7 +200,7 @@ pagina_head([
                     continue;
                 }
                 ?>
-            <li><a href="/tematica/<?= e($otra['id']) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($otra['emoji'] . ' ' . nombre_tematica($otra['id'])) ?></a></li>
+            <li><a href="<?= e(url_lang('/tematica/' . $otra['id'])) ?>" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-sm text-slate-200"><?= e($otra['emoji'] . ' ' . nombre_tematica($otra['id'])) ?></a></li>
                 <?php
                 if (++$otras >= 3) {
                     break;
@@ -211,16 +210,26 @@ pagina_head([
         </ul>
 
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(seo_ui('guia_enlaces_titulo')) ?></h2>
+        <?php
+        $gGanar = guia_contenido('como-ganar-draft-20');
+        $gMejores = guia_contenido('mejores-tematicas');
+        ?>
         <ul class="space-y-2 mb-6">
-            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="/guia/como-ganar-draft-20">Cómo ganar en Draft 20: tácticas de subasta →</a></li>
-            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="/guia/mejores-tematicas">Las 10 temáticas más divertidas de Draft 20 →</a></li>
+            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="<?= e(url_lang('/guia/como-ganar-draft-20')) ?>"><?= e((string) ($gGanar['titulo'] ?? 'Cómo ganar en Draft 20: tácticas de subasta')) ?> →</a></li>
+            <li><a class="text-sm text-slate-200 hover:text-amber-400" href="<?= e(url_lang('/guia/mejores-tematicas')) ?>"><?= e((string) ($gMejores['titulo'] ?? 'Las 10 temáticas más divertidas de Draft 20')) ?> →</a></li>
         </ul>
     </main>
 <?php
 // Crear la sala desde la propia ficha (1 clic): guarda sesión y va al juego.
+$jJugador1 = t('ui.juego.jugador_1');
+$juegoBase = url_lang('/juego.php');
 $jsJugar = '(function () {'
     . ' var b = document.getElementById("btnJugarTema"); if (!b) return;'
     . ' var tema = b.getAttribute("data-tematica");'
+    . ' var jugador1 = ' . json_encode($jJugador1, JSON_UNESCAPED_UNICODE) . ';'
+    . ' var lobbyUrl = ' . json_encode(url_lang('/?tematica=' . rawurlencode($id) . '#app'), JSON_UNESCAPED_UNICODE) . ';'
+    . ' var juegoBase = ' . json_encode($juegoBase, JSON_UNESCAPED_UNICODE) . ';'
+    . ' var juegoUrl = function (codigo) { return juegoBase + (juegoBase.indexOf("?") === -1 ? "?" : "&") + "codigo=" + encodeURIComponent(codigo); };'
     . ' b.addEventListener("click", function () {'
     . '  b.disabled = true;'
     . '  var nombre = ""; var mv = false; try { nombre = localStorage.getItem("draft20_nombre") || ""; mv = localStorage.getItem("draft20_mostrar_valores") === "1"; } catch (e) {}'
@@ -229,11 +238,11 @@ $jsJugar = '(function () {'
     . '   body: JSON.stringify({ tematica: tema, nombre: nombre, mostrar_valores: mv }) })'
     . '  .then(function (r) { return r.json(); })'
     . '  .then(function (r) {'
-    . '   if (!r || !r.ok) { window.location.href = "/?tematica=" + encodeURIComponent(tema) + "#app"; return; }'
-    . '   try { localStorage.setItem("draft20_" + r.codigo, JSON.stringify({ jugadorId: r.jugador_id, jugadorNombre: nombre || "Jugador 1", ts: Date.now() })); } catch (e) {}'
-    . '   window.location.href = "/juego.php?codigo=" + encodeURIComponent(r.codigo);'
+    . '   if (!r || !r.ok) { window.location.href = lobbyUrl; return; }'
+    . '   try { localStorage.setItem("draft20_" + r.codigo, JSON.stringify({ jugadorId: r.jugador_id, jugadorNombre: nombre || jugador1, ts: Date.now() })); } catch (e) {}'
+    . '   window.location.href = juegoUrl(r.codigo);'
     . '  })'
-    . '  .catch(function () { window.location.href = "/?tematica=" + encodeURIComponent(tema) + "#app"; });'
+    . '  .catch(function () { window.location.href = lobbyUrl; });'
     . ' });'
     . '})();';
 
@@ -242,10 +251,15 @@ $jsJugar = '(function () {'
 // Réplica de iniciarPartidaBot() (js/app.core.js): la dificultad vive en
 // localStorage y el juego la lee de ahí. Si algo falla, cae al lobby con
 // la temática ya preseleccionada en el selector del bot.
+$botNombres = array_values(array_filter(array_map('trim', explode('|', t('ui.lobby.bot_nombres'))), static fn(string $s): bool => $s !== ''));
 $jsBot = '(function () {'
     . ' var b = document.getElementById("btnBotTema"); if (!b) return;'
     . ' var tema = b.getAttribute("data-tematica");'
-    . ' var NOMBRES = ["Botín", "Doña Subasta", "El Martillo", "Chollo", "La Puja", "Remate", "Subastín", "Doña Puja"];'
+    . ' var NOMBRES = ' . json_encode($botNombres, JSON_UNESCAPED_UNICODE) . ';'
+    . ' var jugador1 = ' . json_encode($jJugador1, JSON_UNESCAPED_UNICODE) . ';'
+    . ' var lobbyBotUrl = ' . json_encode(url_lang('/?tematica_bot=' . rawurlencode($id)), JSON_UNESCAPED_UNICODE) . ';'
+    . ' var juegoBase = ' . json_encode($juegoBase, JSON_UNESCAPED_UNICODE) . ';'
+    . ' var juegoUrl = function (codigo) { return juegoBase + (juegoBase.indexOf("?") === -1 ? "?" : "&") + "codigo=" + encodeURIComponent(codigo); };'
     . ' var difSel = "normal";'
     . ' try { var g = localStorage.getItem("draft20_bot_dificultad"); if (g === "facil" || g === "normal" || g === "dificil" || g === "extremo") difSel = g; } catch (e) {}'
     . ' function pintar() {'
@@ -266,7 +280,7 @@ $jsBot = '(function () {'
     . ' b.addEventListener("click", function () {'
     . '  b.disabled = true;'
     . '  var nombre = ""; var mv = false; try { nombre = localStorage.getItem("draft20_nombre") || ""; mv = localStorage.getItem("draft20_mostrar_valores") === "1"; } catch (e) {}'
-    . '  var fallback = function () { b.disabled = false; window.location.href = "/?tematica_bot=" + encodeURIComponent(tema); };'
+    . '  var fallback = function () { b.disabled = false; window.location.href = lobbyBotUrl; };'
     . '  fetch("/api/crear_sala.php", { method: "POST", headers: { "Content-Type": "application/json" },'
     . '   credentials: "same-origin",'
     . '   body: JSON.stringify({ tematica: tema, nombre: nombre, mostrar_valores: mv }) })'
@@ -281,8 +295,8 @@ $jsBot = '(function () {'
     . '   .then(function (r2) {'
     . '    if (!r2 || !r2.ok) { fallback(); return; }'
     . '    try { localStorage.setItem("draft20_bot_" + r.codigo, JSON.stringify({ jugadorId: r2.jugador_id, dificultad: difSel })); } catch (e) {}'
-    . '    try { localStorage.setItem("draft20_" + r.codigo, JSON.stringify({ jugadorId: r.jugador_id, jugadorNombre: nombre || "Jugador 1", ts: Date.now() })); } catch (e) {}'
-    . '    window.location.href = "/juego.php?codigo=" + encodeURIComponent(r.codigo);'
+    . '    try { localStorage.setItem("draft20_" + r.codigo, JSON.stringify({ jugadorId: r.jugador_id, jugadorNombre: nombre || jugador1, ts: Date.now() })); } catch (e) {}'
+    . '    window.location.href = juegoUrl(r.codigo);'
     . '   })'
     . '   .catch(fallback);'
     . '  })'

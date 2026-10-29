@@ -52,7 +52,7 @@ pagina_head([
             <p class="text-sm text-slate-300 leading-relaxed"><?= $textoPriv ?></p>
         </section>
         <?php endforeach; ?>
-        <p class="text-xs text-slate-400 mt-8 mb-6">Última actualización: <?= e(date('m/Y')) ?></p>
+        <p class="text-xs text-slate-400 mt-8 mb-6"><?= e(t('ui.comun.ultima_actualizacion')) ?>: <?= e(mes_anio(date('Y-m'))) ?></p>
     </main>
 <?php
 pagina_foot();

@@ -82,13 +82,22 @@ foreach (mapa_tematicas() as $id => $tm) {
 header('Content-Type: application/xml; charset=UTF-8');
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<?php foreach ($urls as $u): ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<?php foreach ($urls as $u):
+    $base = url_sin_lang($u['loc']);
+    $es = url_lang($base, 'es');
+    $en = url_lang($base, 'en');
+    ?>
+<?php foreach ([$es, $en] as $loc): ?>
     <url>
-        <loc><?= e($u['loc']) ?></loc>
+        <loc><?= e($loc) ?></loc>
         <lastmod><?= e($u['lastmod']) ?></lastmod>
         <changefreq><?= e($u['changefreq']) ?></changefreq>
         <priority><?= e($u['priority']) ?></priority>
+        <xhtml:link rel="alternate" hreflang="es" href="<?= e($es) ?>"/>
+        <xhtml:link rel="alternate" hreflang="en" href="<?= e($en) ?>"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="<?= e($es) ?>"/>
     </url>
+<?php endforeach; ?>
 <?php endforeach; ?>
 </urlset>

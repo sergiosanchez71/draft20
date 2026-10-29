@@ -227,3 +227,33 @@ body.guiado #app { overflow-y: auto; }
     .d20-consent__acciones { justify-content: stretch; }
     .d20-consent__btn { flex: 1 1 0; }
 }
+
+/* Selector de idioma (SSR): dos enlaces con el idioma activo marcado. */
+.d20-lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.15rem;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 9999px;
+    line-height: 1;
+    vertical-align: middle;
+}
+.d20-lang__link {
+    display: inline-block;
+    padding: 0.3rem 0.55rem;
+    border-radius: 9999px;
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.d20-lang__link:hover { color: #fbbf24; }
+.d20-lang__link.is-active {
+    background: #fbbf24;
+    color: #0f172a;
+}
+.d20-lang--header { margin-left: 0.15rem; }
+.d20-lang--game { border-color: rgba(148, 163, 184, 0.25); padding: 0.1rem; }
+.d20-lang--game .d20-lang__link { padding: 0.22rem 0.38rem; font-size: 0.65rem; }

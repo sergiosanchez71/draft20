@@ -7,30 +7,53 @@
  */
 declare(strict_types=1);
 
+require_once __DIR__ . '/inc/i18n.php';
+
+/** Contenido de una página suelta (faq, estrategia, hub) en el idioma actual. */
+function contenido_pagina(string $clave): array
+{
+    $mapa = ['hub_subasta' => 'hub'];
+    $k = $mapa[$clave] ?? $clave;
+    if (idioma_actual() === 'en') {
+        $en = contenido_en();
+        if (is_array($en[$k] ?? null)) {
+            return $en[$k];
+        }
+    }
+    return require __DIR__ . '/contenido_' . $clave . '.php';
+}
+
+/** Contenido editorial inglés (lang/contenido_en.json), si existe. */
+function contenido_en(): array
+{
+    static $data = null;
+    if ($data === null) {
+        $file = __DIR__ . '/lang/contenido_en.json';
+        $raw = is_file($file) ? json_decode((string) file_get_contents($file), true) : null;
+        $data = is_array($raw) ? $raw : [];
+    }
+    return $data;
+}
+
 function contenido_seo(): array
 {
     static $data = null;
     if ($data === null) {
-        $tematicas = (require __DIR__ . '/contenido_tematicas_1.php') + (require __DIR__ . '/contenido_tematicas_2.php');
-        $guias = (require __DIR__ . '/contenido_guias_1.php')
-            + (require __DIR__ . '/contenido_guias_2.php')
-            + (require __DIR__ . '/contenido_guias_3.php')
-            + (require __DIR__ . '/contenido_guias_4.php');
+        $en = idioma_actual() === 'en' ? contenido_en() : [];
+        if ($en !== []) {
+            $tematicas = is_array($en['tematicas'] ?? null) ? $en['tematicas'] : [];
+            $guias = is_array($en['guias'] ?? null) ? $en['guias'] : [];
+            $categorias = is_array($en['categorias'] ?? null) ? $en['categorias'] : [];
+        } else {
+            $tematicas = (require __DIR__ . '/contenido_tematicas_1.php') + (require __DIR__ . '/contenido_tematicas_2.php');
+            $guias = (require __DIR__ . '/contenido_guias_1.php')
+                + (require __DIR__ . '/contenido_guias_2.php')
+                + (require __DIR__ . '/contenido_guias_3.php')
+                + (require __DIR__ . '/contenido_guias_4.php');
+            $categorias = require __DIR__ . '/contenido_categorias.php';
+        }
         $data = [
-            'ui' => [
-                'guias_titulo' => 'Guías de Draft 20',
-                'guias_sub' => 'Reglas, estrategia y comparativas para sacarle todo el partido al draft de 20 monedas.',
-                'migas_guias' => 'Guías',
-                'guia_actualizado' => 'Actualizado',
-                'tematica_faq_titulo' => 'Preguntas frecuentes',
-                'categoria_tematicas_titulo' => 'Temáticas de esta categoría',
-                'categoria_otras_titulo' => 'Otras categorías',
-                'guia_enlaces_titulo' => 'Sigue leyendo',
-                'ver_tematica' => 'Ver temática',
-                'leer_guia' => 'Leer guía',
-                'guias_ver_todas' => 'Ver todas las guías',
-            ],
-            'categorias' => require __DIR__ . '/contenido_categorias.php',
+            'categorias' => $categorias,
             'tematicas' => $tematicas,
             'guias' => $guias,
             // Orden de presentación de las guías (el resto se añade al final).
@@ -56,7 +79,8 @@ function contenido_seo(): array
 
 function seo_ui(string $clave): string
 {
-    return (string) (contenido_seo()['ui'][$clave] ?? $clave);
+    $texto = t('ui.contenido.' . $clave);
+    return $texto !== 'ui.contenido.' . $clave ? $texto : $clave;
 }
 
 /** @return array{descripcion:string,preguntas:array<int,array{q:string,a:string}>}|null */
@@ -101,8 +125,7 @@ function guias_ordenadas(): array
 
 function fecha_es(string $iso): string
 {
-    $ts = strtotime($iso);
-    return $ts !== false ? date('d/m/Y', $ts) : $iso;
+    return fecha_localizada($iso);
 }
 
 /** Recorta texto respetando palabras (para tarjetas y descripciones). */

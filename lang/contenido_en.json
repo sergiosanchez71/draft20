@@ -1,0 +1,2591 @@
+{
+    "categorias": {
+        "comida": {
+            "titulo": "Food and drink themes to play Draft 20",
+            "intro": [
+                "Food is the most played category in Draft 20, and it's no coincidence: everyone has a strong opinion about a burger, an omelette, or a tray of sushi. Here the challenge is not about who knows more, but about who bids best for what they want.",
+                "Themes range from the usual bar to pizza, including tacos, the air fryer, Sunday BBQ, Viral Desserts or craft beer. Great for playing before dinner or discussing what goes into a perfect burger."
+            ],
+            "truco": "In food it is played at two speeds: the artisan dishes and ingredients are really fought over and the crappy ones serve to inflate. Don't spend your bankroll on what everyone recognizes as good; save it for the item that completes your team and let the rival pay more for their whim."
+        },
+        "cultura": {
+            "titulo": "Film, series and music themes for Draft 20",
+            "intro": [
+                "Few discussions are as fun as those about popular culture: overrated movies, killer series, embarrassing albums and cursed musicals. This category turns those talks into an 8-round auction.",
+                "Themes with modern classics and also with glorious disasters, because part of the beauty of Draft 20 is that you have to bid on an item that you would not want even as a gift."
+            ],
+            "truco": "Culture punishes the fan: if the rival loves a saga, he will pay a lot for his icons and you must let him, going up one at a time before dropping out. Your coins go to the transversal classics that everyone respects but no one idolizes: they are cheaper and score equally well."
+        },
+        "viral": {
+            "titulo": "Viral themes: characters and sagas for Draft 20",
+            "intro": [
+                "The most shared category on WhatsApp: sagas and characters that everyone instantly recognizes. It doesn't matter if you've seen all the movies or none: if you know who Darth Vader or Pikachu is, you can start bidding.",
+                "Themes that mix nostalgia, internet culture and fandoms (from K-pop to La Velada), with legendary items and the occasional character that no one wants to touch."
+            ],
+            "truco": "Since everyone recognizes each character, the prices inflate themselves: patience wins here. Let the rival take their favorite by paying more in the first rounds and close yourself with beloved secondaries at half the price. Other people's nostalgia is your best ally to inflate."
+        },
+        "deporte": {
+            "titulo": "Sports and motor themes to play Draft 20",
+            "intro": [
+                "From soccer to Formula 1: the category for those who discuss lineups and compare eras. Each theme has its untouchable legends and its signings that went wrong, and that's the sauce of the auction.",
+                "Themes with team sports, individual sports, paddle tennis, World Cup, eSports and motor sports. Perfect for playing with an opponent who knows all the records... or who pretends to know them."
+            ],
+            "truco": "In sports, legends are very expensive because no one wants to be the one who let their idol escape. The account that wins is that of the second step: international and less high-profile champions who score almost the same in half. And if your opponent pretends to know, hit him with an obscure name: his face will tell you if he's bluffing."
+        },
+        "ocio": {
+            "titulo": "Leisure and gaming themes for Draft 20",
+            "intro": [
+                "Video games, consoles, collecting and iconic mobile phones: the most generational category and, probably, the one that brings up the most anecdotes during the game.",
+                "Themes to play with someone your age and win (or lose) due to details that only you remember, from GTA VI to Tamagotchi."
+            ],
+            "truco": "Leisure is generational memory: those who lived through the era pay more for their icons. If you share an age, the duel is fair and the bank wins; if there is a difference, exploit your decade (you know every reference) and inflate his (he will pay for nostalgia what is not worth in stars)."
+        },
+        "fantasia": {
+            "titulo": "Fantasy and adventure themes for Draft 20",
+            "intro": [
+                "Zombies, pirates, Vikings, samurai and cowboys: adventure themes with items ranging from legendary treasure to completely useless objects. Here Ragnar Lodbrok coexists with a leaky longship.",
+                "It is the perfect category for those who play role-playing games, watch historical series or simply enjoy imagining an adventure with what they are wearing."
+            ],
+            "truco": "In fantasy, no one knows for sure what each rarity is worth, so you play the rival, not the list: spend little, inflate a lot and save your coins for the end. Items with a legendary name are always outbid; let them go and stay with the humble ones who close a team for a coin."
+        },
+        "ciencia": {
+            "titulo": "Science and technology themes for Draft 20",
+            "intro": [
+                "Themes for the curious: space missions and movie robots. Few items by theme, but with some of the most iconic in the game.",
+                "It works very well against rivals who like to explain why Hubble is better than James Webb while bidding."
+            ],
+            "truco": "With such short lists, each item weighs twice as much: there are no filler rounds to hide behind. If your rival pontificates about an item, it's usually because he wants it: raise it ruthlessly and drop out in time. And never end up without coins at the end, which is where the real icons come out."
+        },
+        "naturaleza": {
+            "titulo": "Nature and animal themes for Draft 20",
+            "intro": [
+                "From the savanna to the farm: themes with pets, dinosaurs and camping. It is the category with the most disparate items, from the wild lion to the pet cockroach.",
+                "Ideal for playing with the family or for those who are always planning the next getaway."
+            ],
+            "truco": "Nature mixes the adorable with the absurd, and people excel at grace (the lion, the dino) while disdaining the useful. Take advantage of the monkey bias: let the rival spend on pets and keep the discreet ones who score silently."
+        },
+        "crimen": {
+            "titulo": "Crime and Mystery Themes for Draft 20",
+            "intro": [
+                "Impossible heists and legendary detectives: themes for those who enjoy detective stories. Here you bid the same for a brilliant hacker as for a digging spoon.",
+                "A nod to robbery movies and classic detectives, with items that invite you to invent the story of the game while it is auctioned."
+            ],
+            "truco": "Crime invites bluffing: since everything is mystery and intrigue, your aggressive bids seem like information. Pretend to know what each suspect is worth, inflate what your rival sees and remember that here he who talks a lot usually has little: silence also bids."
+        }
+    },
+    "tematicas": {
+        "hamburguesa": {
+            "descripcion": "The original theme of Draft 20 and the one that best explains the game: here you bid for Wagyu beef, black truffle and brioche bread while someone tries to sneak in an industrial orange cheese or a meat that releases fat. It plays like a burger discussion taken to the limit, where spending too early on the crispy bacon can leave you with nothing for the main course. In between appear caramelized onion, Hass avocado and fried egg, ingredients that separate a memorable burger from a sad single pickle. Ideal as a first game: everyone understands each item instantly and the auction is decided by pure strategy.",
+            "preguntas": [
+                {
+                    "q": "Does Wagyu and truffle appear in the burger theme?",
+                    "a": "Yes, both are among the most coveted items and usually decide the game if someone bids wisely."
+                },
+                {
+                    "q": "What is the worst burger item?",
+                    "a": "Industrial orange cheese and fatty meat: they serve to inflate bids, but no one wants them on their team."
+                },
+                {
+                    "q": "Is it a good theme to learn to play?",
+                    "a": "The best: each ingredient is recognized instantly, so you can focus on learning to bid, stand, and read your opponent."
+                },
+                {
+                    "q": "How many ingredients are there per game?",
+                    "a": "Eight of the twenty, drawn by levels: there is always good meat and some punishment, but you never know in what order."
+                }
+            ],
+            "tactica": "In the hamburger, the starting order rules: if the Wagyu or the truffle appear early, many bleed to death and the rest of the game is played with pocket change. The profitable move is to let your rival pay for the hazing of the first big item while you close with reasonably priced brioche, aged cheddar, and bacon. Use industrial cheese and raw bread to inflate: raise them one at a time when your rival hesitates and lower yourself before keeping them. And remember the rule of thirds: reaching round 5 with less than 7 coins here is giving away the truffle."
+        },
+        "tapas": {
+            "descripcion": "From acorn-fed Iberian ham to Galician-style octopus, this theme recreates the perfect bar of a Spanish bar: juicy tortilla, homemade croquettes, garlic prawns and cured Manchego cheese compete with well-poured draft beer and summer red wine. It also includes the bar classics that no one wants: the last olive on the plate, the rubber squid, the dry tortilla and that canned ham that puts the house to shame. It is the most Spanish theme in the catalog and one of the most balanced, because the good items are distributed among many rounds and there is almost always a possible comeback. Ideal for playing with hunger, even if it is a tactical error.",
+            "preguntas": [
+                {
+                    "q": "What good items appear in Tapas and Bar?",
+                    "a": "The Iberian ham, the juicy omelette, the homemade croquettes and the Galician-style octopus are the most disputed."
+                },
+                {
+                    "q": "What are the worst items on the bar?",
+                    "a": "The last olive, rubber squid and canned ham: perfect for inflating other people's bids, horrible for your team."
+                },
+                {
+                    "q": "Are there drinks in the theme?",
+                    "a": "Yes: well-drafted cane and tinto de Verano are also auctioned, and they usually come out cheaper than they are worth."
+                },
+                {
+                    "q": "Why is it good for coming back?",
+                    "a": "Because the value is distributed: rarely do two gems come out in a row, so saving for last almost always pays off."
+                }
+            ],
+            "tactica": "Tapas reward patience: the Iberian ham tempts in any round, but paying a premium price leaves you out of the octopus and croquettes. Play both sides with drinks, which usually go unnoticed and close the team at a good price. When a bar punishment comes out (olive, rubber squid), inflate without fear one by one: the rival, with simulated hunger, almost always bites. And always save 5 or 6 coins for the last two rounds, where the omelette or octopus usually fall."
+        },
+        "pizza": {
+            "descripcion": "The theme of real pizza: melted cheese and natural tomato always on the table, with spicy pepperoni, serrano ham, fresh mushrooms, 48-hour sourdough, a Neapolitan wood oven and a stuffed edge that changes everything, compared to the frozen dough, the grated cheese that does not melt and the ketchup on top. The contrast between the artisan and the tacky is what makes this auction so fun, and the controversial pineapple guarantees discussion in every game. It is the most played theme in the catalog along with soccer: even those who never play know it, the games last five minutes and there is always a rematch with a different flavor.",
+            "preguntas": [
+                {
+                    "q": "Do cheese and tomato always come out?",
+                    "a": "Yes, they are the non-negotiable basis of the theme: they appear in all games, and the rest of the ingredients are drawn around."
+                },
+                {
+                    "q": "Does pineapple really come out on pizza?",
+                    "a": "Yes, with all the controversy included: it is a medium item that divides each couple and usually decides bids more out of pride than strategy."
+                },
+                {
+                    "q": "Which artisan ingredient is most worth it?",
+                    "a": "The wood oven, the sourdough and the stuffed edge are usually the most fought over, because they transform any pizza."
+                },
+                {
+                    "q": "What are the worst ingredients?",
+                    "a": "Frozen dough, bagged cheese that doesn't melt, and sachet ketchup: ideal for inflation, fatal for your team."
+                }
+            ],
+            "tactica": "Pizza is played at two speeds: the artisanal ingredients (pepperoni, ham, stuffed edge) really fight and the cheap ones serve to inflate. Since cheese and tomatoes always come out, don't spend more on them than necessary: save the coins for the ingredient that completes your team. If your rival is craving the pepperoni, take it up one at a time and drop out before he eats it all."
+        },
+        "barbacoa": {
+            "descripcion": "The Sunday BBQ turned into an auction: ribeye aged 45 days, brisket smoked twelve hours, oak embers, homemade chimichurri, BBQ ribs and a cast iron grill in front of a moist charcoal, some pre-cooked sausages or a charred meat. It is the most \"after-dinner\" theme of all, perfect to play while making real food, with cold beer as a wild card item that always encourages bidding. In between, Moorish skewers, Creole chorizo and roasted corn complete a grill where almost everything is desired and almost everything can be paid dearly on impulse.",
+            "preguntas": [
+                {
+                    "q": "What makes Sunday Asado special?",
+                    "a": "Good items reward those who know how to wait: the steak and the brisket usually come out together and force you to divide the budget."
+                },
+                {
+                    "q": "What is the best cut on the grill?",
+                    "a": "The ribeye matured for 45 days, closely followed by the twelve-hour brisket: these are the two items that decide games."
+                },
+                {
+                    "q": "What does beer look like at a barbecue?",
+                    "a": "Cold beer is a medium item that usually comes out cheap and closes teams: never ignore it in the last rounds."
+                },
+                {
+                    "q": "What are the punishments of the grill?",
+                    "a": "Wet charcoal, charred meat and precooked sausages: the trio that ruins any after-dinner meal."
+                }
+            ],
+            "tactica": "The barbecue punishes the impulsive: the steak tempts as soon as it comes out, but if you pay a crazy price for it you'll be left watching your rival take brisket and ribs. Let the opponent get excited about the first big cut and attack the second, which usually comes out cheaper out of pure fear. Oak embers and chimichurri are tricky items: they are worth more than they seem and almost no one fights for them. And it inflates with the wet coal without mercy, that with hunger everything seems edible."
+        },
+        "sushi": {
+            "descripcion": "Bar-level sushi: otoro, hamachi nigiri, fresh shaved wasabi, premium sake, koshihikari rice and even the itamae master himself enter the auction. On the other side of the bar wait the fake crab surimi, the tube wasabi, the generic soy sauce, the plastic supermarket tray and the reused chopsticks. The favorite theme of those who boast of their palate, and also of those who only want to see the one who boasts fall: the contrast between ikura's gunkan and yesterday's leftovers is the cruelest in the catalog. With pickled ginger and matcha tea in between, each round tastes like an expensive restaurant.",
+            "preguntas": [
+                {
+                    "q": "Does itamae master appear as an item?",
+                    "a": "Yes, the itamae is one of the most valuable items: it is bid on as if it were a signing."
+                },
+                {
+                    "q": "What's the best bite at the bar?",
+                    "a": "The otoro, followed by the hamachi nigiri and the ikura gunkan: the trio that decides almost all the games."
+                },
+                {
+                    "q": "What bad items does sushi have?",
+                    "a": "Fake surimi, tube wasabi, stale rice and reused chopsticks: punishments with a lot of personality."
+                },
+                {
+                    "q": "Do you need to understand sushi to play?",
+                    "a": "No: it is enough to know that fresh is valid and plastic is not. The rest is provided by the auction."
+                }
+            ],
+            "tactica": "Sushi is played with the rival's palate in mind: if he boasts of knowledge, let him pay for the otoro at Michelin star prices while you close with hamachi, sake and braised salmon. The itamae is the perfect bait for a war of egos: raise it three at a time until you feel the tremor and plant the ME BASS at the right moment. And don't despise koshihikari rice or tamagoyaki, average items that almost no one fights for and that round out winning teams."
+        },
+        "postres": {
+            "descripcion": "Tiramisu, chocolate coulant, Basque cheesecake, cheesecake and Nutella cookies compete for the position of best ending to the meal, with churros with chocolate, walnut brownie and colorful macarons completing the display case. In between, a sachet flan, a frozen cake, sprayed cream and a melted cake that no one wants to even look at. It is one of the fastest themes to play and one that allows for the most comebacks, because the good items are distributed throughout all the rounds and sugar clouds judgment. The favorite to play after dinner with coffee in hand.",
+            "preguntas": [
+                {
+                    "q": "What is the most desired dessert of the theme?",
+                    "a": "The coulant and tiramisu tend to raise the most bids, with the Basque cheesecake close behind."
+                },
+                {
+                    "q": "What bad desserts can ruin me?",
+                    "a": "The sachet flan, the frozen cake and the melted cake: if you eat them because they are inflated too much, it hurts."
+                },
+                {
+                    "q": "Why are there so many comebacks here?",
+                    "a": "Because the good stuff comes out spread over the eight rounds: whoever saves for last almost always finds their dessert."
+                },
+                {
+                    "q": "Do churros with chocolate score well?",
+                    "a": "Better than it seems: it is a medium-high item that almost no one seriously fights for and comes at a good price."
+                }
+            ],
+            "tactica": "The desserts are a sugar marathon: don't spend your budget on the coulant in round 2 because the tiramisu hasn't come out yet. The winning tactic is to snack on mediums (macarons, brownies, cinnamon rolls) while the rival eats the first jewel, and finish off with the Basque cake at the end. The envelope flan is your best inflation weapon: everyone despises it out loud and almost everyone bites if you raise it with a serious face. Be careful with the cap of 4: with so much candy distributed it is easy to close early and give away the last rounds."
+        },
+        "cerveza": {
+            "descripcion": "Cloudy IPA, Bavarian wheat, berry lambic, creamy oak barrel-aged stout versus the watery lager, the shandy, the warm beer, the cork flavor and the dirty glass. The craft theme of the catalog: fresh pint from the tap, toasted with honey, amber malt and wood-smoked for those who understand, and a dented can for the rest. Quick game, quick laughs and instant rematch, ideal for playing beforehand or between real rounds. The favorite of those who order by looking at the tap board.",
+            "preguntas": [
+                {
+                    "q": "Is the whole theme craft beer?",
+                    "a": "Almost: the selection draws on recognizable craft styles, and bad items are just what ruins a good beer."
+                },
+                {
+                    "q": "What is the jewel of the menu?",
+                    "a": "The one aged in oak barrels, with the cloudy IPA and the Bavarian wheat on its heels."
+                },
+                {
+                    "q": "What is the worst thing that can happen to you?",
+                    "a": "Hot beer in a dirty glass with a cork flavor: the triptych of beer horror."
+                },
+                {
+                    "q": "Is it good for a quick pre-game?",
+                    "a": "It's perfect: five minutes per game and instant rematch, just as long as a round lasts."
+                }
+            ],
+            "tactica": "Beer is drunk fast and bid on even faster: games fly by because almost no one hesitates when an IPA is on the table. Use your rival's speed: inflate the oak barrel with +3 raises that look like beer enthusiasm, then pull out cold. The draft pint and the honey toast are safe mid-price values that almost no one contests. And if the dented can or the flat one comes up, don't touch them even to inflate: some rivals will drink them out of pride and leave you holding the punishment."
+        },
+        "tacos": {
+            "descripcion": "Tacos al pastor, birria with consommé, cochinita pibil, carnitas and homemade guacamole against the broken tortilla, the jarred sauce, the wilted lettuce and the cold taco. The Mexican theme of the catalog: here cheese and tomato do not rule, the corn tortilla rules, and the broken tortilla is the definitive punishment. In between, fish taco, shrimp taco, chicharrón, chopped onion, fresh cilantro and brava red sauce complete a taqueria where the spicy food is paid separately and you suffer for free. With horchata to put out the fire, it is the tastiest theme to play with a craving.",
+            "preguntas": [
+                {
+                    "q": "Do the tortilla and al pastor always come out?",
+                    "a": "Yes, they are the non-negotiable basis of the theme, just like cheese and tomato on pizza."
+                },
+                {
+                    "q": "Which taco is king?",
+                    "a": "Al pastor rules, with birria consommé and cochinita pibil completing the podium."
+                },
+                {
+                    "q": "What is the worst thing about the taqueria?",
+                    "a": "The broken tortilla and the greasy cold taco: if you drop them, the game gets very complicated."
+                },
+                {
+                    "q": "Does brava red sauce really sting?",
+                    "a": "At the auction it stings in coins: it's a mid-tier item that usually goes for more than it's worth out of pure pride."
+                }
+            ],
+            "tactica": "Tacos are played with hunger and a cool head at the same time: al pastor tempts from the first round, but birria and cochinita decide more games for fewer coins. Since the corn tortilla always comes out, don't overpay for it: it's a base, not a jewel. Jarred sauce and the broken tortilla are your inflation weapons, because no real Mexican lets them pass without bidding out of pride. And watch out for the cold greasy taco: it seems harmless and it's the item that has ruined the most games with one extra +1."
+        },
+        "freidora_aire": {
+            "descripcion": "Crispy potatoes, juicy wings, creamy croquettes, homemade churros and golden nuggets versus burnt everything, soft potatoes, rubbery nuggets and raw croquettes. The viral appliance theme: everything that goes well in the fryer (roasted vegetables, rare salmon, reheated pizza, dumplings, crispy bacon, omelette) and everything that goes wrong, including the mid-program blackout and the cold basket. It is the most domestic theme in the catalog and one of the most fun to play with the family, because everyone has a kitchen disaster story.",
+            "preguntas": [
+                {
+                    "q": "Do churros really come out in an air fryer?",
+                    "a": "Yes, and they are among the most bided on items: crispy on the outside and made in minutes."
+                },
+                {
+                    "q": "What's the best thing that comes out of the fryer?",
+                    "a": "Crispy potatoes and juicy wings lead, with churros and creamy croquettes trailing behind."
+                },
+                {
+                    "q": "What happens if the power goes out halfway through?",
+                    "a": "It's a punishment item: if you take it, it's like dining in the dark. Use it to inflate, never to keep it on."
+                },
+                {
+                    "q": "Is it suitable for playing with children?",
+                    "a": "A lot: the items are understood without explanation and the disasters make people laugh at any age."
+                }
+            ],
+            "tactica": "The fryer rewards those who cook calmly: the potatoes and wings are expensive if you fight them early, but the churros and croquettes usually fall halfway through the game at a reasonable price. The trick is to let the opponent keep the first fried star and attack the second with the bank intact. Everything is burnt and rubber nuggets are perfect bait for bluffs: no one wants them, so a serious bid is really scary. And keep an eye on the cold basket: it looks like a joke and is the dumbest coin theft in the catalog."
+        },
+        "peliculas": {
+            "descripcion": "Masterpieces against legendary disasters: The Godfather, Pulp Fiction, Interstellar, Back to the Future, Titanic, Matrix, Jurassic Park, Rocky, Terminator 2 and Gladiator compete in the same auction with Morbius, Emoji: The Movie, Dragonball Evolution, Cats, Sharknado and The Room. It is a theme for movie buffs, but also for those who enjoy bidding on a bad movie only so that their rival doesn't have it. In between, City of God, Godzilla and Ben-Hur separate those who have seen movies from those who have only seen premieres. Each bid brings a debate about what is a masterpiece and what is a crime against celluloid.",
+            "preguntas": [
+                {
+                    "q": "What bad movies come out in the theme?",
+                    "a": "Morbius, Emoji: The Movie and Dragonball Evolution are the items that no one wants, although sometimes it is convenient to bid on them to spend little."
+                },
+                {
+                    "q": "What is the most valuable movie?",
+                    "a": "The Godfather usually leads, with Pulp Fiction and Interstellar competing against him every game."
+                },
+                {
+                    "q": "Is The Room good or bad here?",
+                    "a": "Bad of the legends: it is so disastrous that there are those who bid on it for the love of crappy cinema."
+                },
+                {
+                    "q": "Do you have to be a movie buff to play?",
+                    "a": "No: it is enough to recognize titles. Those who have not seen City of God leave it cheap and there is the business."
+                }
+            ],
+            "tactica": "Cinema rewards those who feign ignorance: if the rival is a cinephile, let him bleed over The Godfather while you close with Back to the Future, Rocky and Gladiator at half price. Bad movies are gold for inflation: no one admits to wanting Morbius, but almost everyone bids \"to do harm\" and eats it. And attack the covered ones (City of God, Ben-Hur): gems that the solo-Blockbusters miss and that win games silently."
+        },
+        "series": {
+            "descripcion": "Breaking Bad, The Sopranos, The Wire and Chernobyl are the heavyweights; Game of Thrones, Stranger Things, Dark and Peaky Blinders complete the noble zone, with Physics or Chemistry, Rebel Way, Riverdale, Emily in Paris, The Idol, Velma and 13 Reasons Why as the price to pay for such a good theme. Those who have seen a lot believe they have an advantage, until they have to decide whether to bid on Netflix's Cowboy Bebop or Inhumans. In between, The Office, Friends, Rick and Morty and La Casa de Papel are safe values that almost no one fights enough. The theme that generates the most couch discussions per minute.",
+            "preguntas": [
+                {
+                    "q": "What is the most valuable series in the theme?",
+                    "a": "Breaking Bad is usually the most disputed, although The Sopranos and The Wire raise similar bids."
+                },
+                {
+                    "q": "What bad series come out?",
+                    "a": "Velma, The Idol, Inhumans and 13 Reasons Why: the punishment poker that no one wants on their team."
+                },
+                {
+                    "q": "Is Game of Thrones worth much here?",
+                    "a": "A lot, but with a catch: almost everyone overvalues it out of nostalgia and it comes out more expensive than it pays."
+                },
+                {
+                    "q": "Do sitcoms rate well?",
+                    "a": "The Office and Friends are medium-high items that tend to be cheap because no one takes them seriously. Mistake."
+                }
+            ],
+            "tactica": "The series are played with the control of hype: Breaking Bad and Chernobyl are always very expensive, so let the rival pay for the novelty and stick with The Wire and The Sopranos, which decide the same thing for less. Bad series are your inflators: pretend to defend Emily in Paris with passion and watch how your rival pays to take away a punishment. And do not despise There is no one who lives here: the patriotic factor makes it perform above its price in almost all games."
+        },
+        "anime": {
+            "descripcion": "Death Note, Fullmetal Alchemist Brotherhood, Attack on Titan, Naruto, Demon Slayer, Jujutsu Kaisen, Evangelion and Cowboy Bebop lead a theme that also pays tribute to One Punch Man, Berserk '97, Sailor Moon and Vinland Saga. On the dark side await Ex-Arm, School Days, Boku no Pico, Mars of Destruction, Hand Shakers and Pupa, with 2016's Berserk serving as a reminder that even good things can go wrong. It is the most recommended theme to play with someone who \"does not watch anime\": the bad items are more fun for them than for the fans, and My Hero Academia and My Hero Academia aside, everything is decided by bidding without complexes.",
+            "preguntas": [
+                {
+                    "q": "Do you need to know anime to play well?",
+                    "a": "No: bidding works just as well with name recognition alone, and bad items are part of the fun."
+                },
+                {
+                    "q": "What is the most valuable anime?",
+                    "a": "Fullmetal Alchemist Brotherhood and Death Note usually lead, with Attack on Titan close behind."
+                },
+                {
+                    "q": "What's the worst that can happen?",
+                    "a": "Ex-Arm, Pupa and Boku no Pico: the anime trinity that no one defends even as a joke."
+                },
+                {
+                    "q": "How is it different from Modern Anime?",
+                    "a": "This brings together historical figures from all eras; Modern Anime is only the 2024-2026 batch."
+                }
+            ],
+            "tactica": "Classic anime is fandom war: each player overrates their childhood series, so let the rival pay the nostalgia tax for Naruto or Evangelion while you close with Vinland Saga, Cowboy Bebop and Jujutsu Kaisen. The infamous punishments (Ex-Arm, Pupa) are brutal inflators because no otaku admits even looking at them. And be careful with Sailor Moon and My Hero Academia: items that \"experts\" despise and that win games at a bargain price."
+        },
+        "comics": {
+            "descripcion": "Watchmen, Maus, Akira, Sandman, Persepolis, Hellboy and Invincible form a luxury podium, with Tintin, Asterix, Mortadelo and Filemón and the Ninja Turtles in the area loved by everyone. The contrast is provided by All-Star Batman & Robin, Ultimatum, Marville, Youngblood and Batman: Odyssey, comics that the community remembers for no good reasons. The perfect theme for those who show off their bookshelves and those who have only seen the movies: Garfield and The Boys serve as a bridge between both worlds. Each bid is a discussion about what is sequential art and what is a dead letter.",
+            "preguntas": [
+                {
+                    "q": "Is it a theme only for comics experts?",
+                    "a": "No, although experts enjoy it more: the items are known enough to bid without having read the comics."
+                },
+                {
+                    "q": "What is the most valuable comic?",
+                    "a": "Watchmen usually leads, with Maus and Akira completing an almost immovable podium."
+                },
+                {
+                    "q": "What is the worst thing about the drawer?",
+                    "a": "All-Star Batman & Robin and Ultimatum: famous for being bad, perfect for inflating bids."
+                },
+                {
+                    "q": "Do Europeans score well?",
+                    "a": "Tintin, Asterix and Persepolis perform above their price: Americanists let them pass and it is a mistake."
+                }
+            ],
+            "tactica": "The comic plays two libraries: let the rival fight over Watchmen and Sandman while you take Persepolis, Hellboy and Invincible, who decide the same in half. Legendary disasters (All-Star Batman, Ultimatum) are ideal bluff bait: feign ironic collecting and cash in on the joke. And don't forget Mortadelo and Filemón: the patriotic factor makes them always perform above expectations in Spanish games."
+        },
+        "libros": {
+            "descripcion": "From Don Quixote to 1984, passing through One Hundred Years of Solitude, The Lord of the Rings, Crime and Punishment, Pride and Prejudice, Frankenstein, Dracula, The Hobbit and Moby Dick: it is the most \"respectable\" theme in the catalog... until Twilight, Fifty Shades, After, Boulevard and a Wattpad novel appear. The auction ends up being a public confession of embarrassing readings, with The Da Vinci Code and World War Z as a gray area where no one can agree. Between La Celestina, The Metamorphosis and The Shadow of the Wind, each round is a tricky general knowledge exam.",
+            "preguntas": [
+                {
+                    "q": "Which book usually generates the most bids?",
+                    "a": "Don Quixote and One Hundred Years of Solitude are vying for first place, with 1984 very close."
+                },
+                {
+                    "q": "What is the worst book on the list?",
+                    "a": "The Wattpad novel and Boulevard are fighting for the lantern, with After and Twilight lurking."
+                },
+                {
+                    "q": "Are modern bestsellers worth anything?",
+                    "a": "The Da Vinci Code and The Shadow of the Wind are misleading media: they are worth more than purists admit."
+                },
+                {
+                    "q": "Do I need to have read them all?",
+                    "a": "No: it is enough to know which ones are untouchable. No one has read Moby Dick in its entirety and everyone knows it."
+                }
+            ],
+            "tactica": "Books reward the cultured faker: let your rival pay for Don Quixote at manuscript price while you close with 1984, Frankenstein and Dracula, which perform equally well for less. Twilight and After are luxury inflators: no one defends them in public, but almost everyone bids \"to spite\" and keeps them. And go after La Celestina and The Metamorphosis, classics that best-seller-only readers ignore and leave cheap."
+        },
+        "musica": {
+            "descripcion": "Queen, The Beatles, AC/DC, the Stones, Nirvana, Pink Floyd, Metallica, Eminem and Bob Marley in the same auction, with Quevedo, Aitana, Lola Índigo and Sabina as national representation. The punishment is given by Lulu from Metallica and Lou Reed, Chikilicuatre from Eurovision, Las Ketchup, Lou Bega, Crazy Frog, LMFAO and Justin Bieber from the Baby era. It's a conversation starter: each bid brings a discussion about albums, concerts and eras, and the PSY of Gangnam Style always appears when he is least expected. The most intergenerational after pop_stars: grandparents and grandchildren bid without understanding each other and with the same coins.",
+            "preguntas": [
+                {
+                    "q": "Does Spanish music appear in the theme?",
+                    "a": "Yes, there are patriotic and Eurovision nods among the items, including some classic musical highlights."
+                },
+                {
+                    "q": "What is the most valuable group?",
+                    "a": "Queen and The Beatles usually lead, with AC/DC and the Stones in the same echelon."
+                },
+                {
+                    "q": "What's the worst that can happen?",
+                    "a": "El Chikilicuatre and Crazy Frog fight for the honor, with Las Ketchup always on the lookout."
+                },
+                {
+                    "q": "Do the current ones compete with the classics?",
+                    "a": "Quevedo and Aitana perform well among young people, but almost never at the price of a Beatle."
+                }
+            ],
+            "tactica": "Music is played by generations: if your rival is a classic player, let Queen pay at the original vinyl price and stick with Eminem, Bob Marley and Sabina, who close teams for less. Chikilicuatre and Crazy Frog are your inflators: other people's shame bids alone. And don't despise PSY or Lou Bega, meme items that come cheap and perform better than they sound. As always, whoever gets excited about the first big one loses the entire auction."
+        },
+        "karaoke": {
+            "descripcion": "Bohemian Rhapsody, Despacito, YMCA, My Way, Bailando, Total Eclipse of the Heart, Sweet Caroline, Macarena, Wannabe and Superstition are the items that everyone wants to have to sing at the end. In front, La Mayonesa, El Baile del Gorila, Chihuahua, Holiday Rap and Happy Birthday as historical punishment, with Barbie Girl, La Bamba, Aserejé and Sopa de Cacol as a total party zone. Playing this theme while someone sings each item that comes out is a different experience: the auction becomes a concert and whoever goes out of tune pays the price twice. The favorite for group nights.",
+            "preguntas": [
+                {
+                    "q": "What is the most searched item in Karaoke?",
+                    "a": "Bohemian Rhapsody, almost always: it is the one that raises the most bids and the one that is sung the most at the end of the game."
+                },
+                {
+                    "q": "What is the worst karaoke song?",
+                    "a": "El Baile del Gorila and La Mayonesa compete for the title, with Chihuahua completing the horror podium."
+                },
+                {
+                    "q": "Is the Macarena worth a lot?",
+                    "a": "More than anyone admits: it is a medium-high value that comes cheap out of shame and performs quietly."
+                },
+                {
+                    "q": "Do you have to really sing?",
+                    "a": "It is not mandatory, but singing each auctioned item is the house rule that turns the game into legend."
+                }
+            ],
+            "tactica": "Karaoke is sung and bid from the heart: let your rival ruin themselves with Bohemian Rhapsody while you close with My Way, Sweet Caroline and Wannabe, anthems that come out at half the price. El Baile del Gorila and La Mayonesa are perfect inflators because no one wants them but everyone sings the chorus. And go after Superstition and Total Eclipse: great songs that reggaeton-only players ignore and leave cheap."
+        },
+        "anime_moderno": {
+            "descripcion": "Gojo, Frieren, Itadori, Denji, Sukuna, Fern, Stark, Sung Jinwoo, Momo Ayase and Okarun lead the 2024-2026 batch of anime: Jujutsu Kaisen, Frieren, Chainsaw Man, Solo Leveling and Dan Da Dan in the same auction, with Reze, Pochita, Rimuru, Igris and Ai Hoshino completing the recent elite. The punishment is delivered by Kazuya Kinoshita, Mami Nanami, Ruka Sarashina and the reincarnated vending machine, with Anya Forger and Power as adorable wild cards. The theme for those who keep up with the seasons and discuss the latest episode every Monday. Nostalgia doesn't matter here: only what's on air.",
+            "preguntas": [
+                {
+                    "q": "How is it different from classic Anime?",
+                    "a": "Anime brings together the historical ones; Modern Anime is just the recent batch, with series that are still airing."
+                },
+                {
+                    "q": "Who is the most sought-after character?",
+                    "a": "Gojo usually leads, with Frieren and Sukuna challenging him every game."
+                },
+                {
+                    "q": "What is the worst thing about baking?",
+                    "a": "Kazuya Kinoshita and the vending machine: punishments that even fans recognize as such."
+                },
+                {
+                    "q": "Is Anya Forger worth a lot?",
+                    "a": "More than it seems: it is an average value that comes cheap and brightens up any team."
+                }
+            ],
+            "tactica": "Modern anime is speed: the series are broadcast and the values are set by the weekly hype, so the rival overpays for what they saw yesterday. Let Gojo pay at cover price while you close with Frieren, Stark and Fern, who perform equally well for less. Kazuya and the vending girl are textbook inflators: no one defends them. And go after Igris and Rimuru, items that shonen-only fans are unaware of and leave at a bargain price."
+        },
+        "villanos": {
+            "descripcion": "Hannibal Lecter, Sauron, Pennywise, Freddy Krueger, Anton Chigurh, Maleficent, Hans Landa, Norman Bates, Chucky and Jason Voorhees: four different ways to be scary in the same auction, from elegant horror to pure slasher. The counterpoint is provided by Lord Farquaad, Amy Dunne and Regina George, everyday villains who are scarier than many monsters, and a second line of Marvel that no one remembers (Galactus cloud, Steppenwolf, Doomsday, Dark Phoenix, Malekith, Enchantress, Venom from Spider-Man 3). The theme is completed with second-rate villains who create the most fun contrast in the catalog: real terror against the filler bad guy.",
+            "preguntas": [
+                {
+                    "q": "Who is the most valuable villain?",
+                    "a": "Hannibal Lecter and Sauron are usually the most coveted, far ahead of filler villains."
+                },
+                {
+                    "q": "What are Regina George or Lord Farquaad doing here?",
+                    "a": "They are everyday villains of great meme value: they perform more than their appearance suggests."
+                },
+                {
+                    "q": "Who is the worst villain on the list?",
+                    "a": "Malekith and Enchantress dispute the title: not even Marvel fans defend them."
+                },
+                {
+                    "q": "Is it scary to play it at night?",
+                    "a": "Only if you get Pennywise three times in a row. Otherwise, it is the most fun theme for Halloween."
+                }
+            ],
+            "tactica": "The villains reward the one who distinguishes filler terror: let the rival pay Hannibal and Sauron while you close with Chigurh, Hans Landa and Norman Bates, who decide the same for less. The second row of Marvel (Steppenwolf, Malekith, Enchantress) is your inflation field: they sound like a threat and they are punishment. And don't look down on Regina George and Farquaad: the meme factor makes them outperform their price in almost every game."
+        },
+        "simpsons": {
+            "descripcion": "Homer, Bart, Lisa, Marge, Ned Flanders, Krusty, Burns, Moe, Wiggum, Apu, Milhouse, Nelson, Grandpa, Maggie, Ralph, Skinner, Dr. Nick, Duffman and Barney lead an auction that also includes Gil Gunderson as the ultimate job punishment. It is a consensus theme: almost everyone recognizes each item, so the game is decided by strategy and not by knowledge. With the twins Sherri and Terri where appropriate and the entire Springfield bidding, it is one of the best entry doors to the game: the rules are learned in the first round and the bidding comes by itself. D'oh.",
+            "preguntas": [
+                {
+                    "q": "Is it a good theme for the first game?",
+                    "a": "It's one of the best: the items are instantly recognizable and the rules are learned by playing the first round."
+                },
+                {
+                    "q": "Who is the most valuable in Springfield?",
+                    "a": "Homer usually leads, with Bart and Lisa rounding out a very stable podium."
+                },
+                {
+                    "q": "Who is the worst neighbor?",
+                    "a": "Gil Gunderson: the failed salesman par excellence, official punishment of the theme."
+                },
+                {
+                    "q": "Do mythical secondary characters appear?",
+                    "a": "Yes: Ralph, Dr. Nick, Duffman and Barney are medium items that bring a lot of life to the auction."
+                }
+            ],
+            "tactica": "The Simpsons make everyone equal: since no one has a knowledge advantage, pure bankroll management wins. Don't pay the protagonist's price for Homer in round 1: Bart, Lisa and Marge perform almost the same and come out cheaper when the rival has already spent. Gil is your inflator: everyone has been Gil at some point and almost everyone bites. And go after the beloved supporting characters (Ralph, Duffman, Dr. Nick): collective affection makes them perform above their price."
+        },
+        "disney": {
+            "descripcion": "Mickey Mouse, Simba, Elsa, Genie, Woody, Stitch, Buzz Lightyear, Moana, Rapunzel, Dumbo, Mulan and Pinocchio compete with Scar, Ursula, Pete, Jafar, Cruella de Vil and Captain Hook. The favorite theme to play with the family: children recognize the protagonists and adults discuss whether Elsa is worth more than Simba, while Peter Pan flies over the auction. Watch out for Sid from Toy Story (here as Gus and company): the item that no one wants but everyone knows. With the magic of childhood in every round, it is impossible to play without smiling, even losing.",
+            "preguntas": [
+                {
+                    "q": "Can it be played with children?",
+                    "a": "Yes, it is one of the most familiar themes in the catalog: all the items are recognizable characters and the rules are simple."
+                },
+                {
+                    "q": "Who is the most valuable in the kingdom?",
+                    "a": "Mickey and Simba usually lead, with Elsa and Genie close behind in the bidding."
+                },
+                {
+                    "q": "Are villains worth anything?",
+                    "a": "Scar and Ursula are medium-high values: children fear them and adults fight them."
+                },
+                {
+                    "q": "What is the factory's punishment?",
+                    "a": "Gus and the forgotten supporting characters: items that only serve to inflate with a face of innocence."
+                }
+            ],
+            "tactica": "Disney is pure childhood excitement: your opponent overpays for their childhood character, so identify which one it is before round 3 and squeeze it out of them. Let him ruin himself with Elsa or Simba while you close with the Genie, Woody and Stitch, who perform the same for less. The villains (Scar, Ursula, Jafar) are excellent bait for competitive parents. And if you play with children, let them win the first one: they are hooked forever and the rematch is yours."
+        },
+        "marvel_dc": {
+            "descripcion": "Spider-Man, Batman, Iron Man, Wolverine, Thanos, Superman, Hulk, Captain America, Thor and Joker in the same auction, with Black Widow, Doctor Strange and Harley Quinn completing the elite. The punishment is given by Howard the Duck, Matter-Eater Lad, Arm-Fall-Off-Boy, Polka-Dot Man, Egghead, Kite Man and Condiment King: heroes and villains so ridiculous that they are legendary for it. It is the dream theme to discuss superheroes, and also the one that quickly makes it clear which of the two watches more cape films. Each bid is a playground versus coins.",
+            "preguntas": [
+                {
+                    "q": "What weird villains or heroes come out?",
+                    "a": "Howard the Duck and Matter-Eater Lad are the funniest bad items, perfect for ruining someone's strategy."
+                },
+                {
+                    "q": "Who is the most powerful in the auction?",
+                    "a": "Spider-Man and Batman usually lead, with Iron Man and the Joker rounding out the poker."
+                },
+                {
+                    "q": "What is Matter-Eater Lad?",
+                    "a": "A DC hero whose power is to eat any matter: at the auction he is punishment with pedigree."
+                },
+                {
+                    "q": "Mix Marvel and DC?",
+                    "a": "Yes, by the way: the fun is confronting universes that never intersect in cinema."
+                }
+            ],
+            "tactica": "Superheroes are egos with capes: let your rival pay the fan tax for Batman or Spider-Man while you close with Thor, Hulk and the Joker, who perform the same for less. The ridiculous ones (Polka-Dot Man, Condiment King, Arm-Fall-Off-Boy) are gold pumpers: no one wants them but everyone laughs while bidding. And go after Black Widow and Doctor Strange: secondary characters that movie-only fans undervalue and sell at a bargain price."
+        },
+        "dragon_ball": {
+            "descripcion": "Goku, Vegeta, Frieza, Gohan, Cell, Majin Buu, Piccolo, Trunks, Bulma and Android 18 are the star items, with Mr. Satan, Krillin, Ten Shin Han, Yamcha and Yajirobe in the zone of beloved but limited warriors. The punishment is given by Chiaotzu, Bacterian, Garlic Jr., Emperor Pilaf and Ox-King. The theme is an exercise in nostalgia: each bid brings up a childhood memory, a discussion about sagas and transformations, and the eternal question of whether Yamcha even deserves to be there. With power levels everywhere, it's impossible not to shout out the first Kamehameha of the auction.",
+            "preguntas": [
+                {
+                    "q": "Is Frieza in the auction?",
+                    "a": "Yes, and it is usually one of the most disputed: he is the most recognizable villain in the series and attracts many bids."
+                },
+                {
+                    "q": "Who is the strongest?",
+                    "a": "Goku and Vegeta lead, with Gohan and Cell rounding out the podium for each match."
+                },
+                {
+                    "q": "Why is Yamcha a meme?",
+                    "a": "For always losing in a humiliating way: in the auction it is a medium-low item with a lot of affection."
+                },
+                {
+                    "q": "Mr. Satan worth anything?",
+                    "a": "More than it seems: he is the official world champion and it is cheaper than his fame."
+                }
+            ],
+            "tactica": "Dragon Ball is nostalgia with a monkey's tail: the rival pays more for their favorite saga, so let it be ruined with Goku or Vegeta and close with Piccolo, Trunks and Android 18. Chiaotzu and Bacterian are perfect inflators because no one defends them even out of affection. And go after Bulma and Mr. Satan: non-fighters that purists despise and who win games for a laugh."
+        },
+        "one_piece": {
+            "descripcion": "Luffy, Zoro, Shanks, Nami, Nico Robin, Sanji, Ace, Law, Usopp, Brook, Chopper, Franky and Jinbe against Spandam, Gecko Moria, Wapol, Foxy and Charloss. The theme for those who have been following the series for years and for those who only know the protagonist with a straw hat: the bad items are funny to both equally, because they are mean and ridiculous villains in equal parts. With Buggy the Clown as the chaotic wild and Big Mom and Kaido as fearsome emperors, each round is a miniature saga. The treasure is not One Piece: it is not keeping Spandam.",
+            "preguntas": [
+                {
+                    "q": "Are there any One Piece spoilers?",
+                    "a": "No: the items are recognizable characters and the game does not reveal anything about the plot."
+                },
+                {
+                    "q": "Who is the most valuable?",
+                    "a": "Luffy and Shanks usually lead, with Zoro and Law close behind in the bidding."
+                },
+                {
+                    "q": "Who is Spandam?",
+                    "a": "The most hated bureaucrat villain in the series: at the auction he is official punishment."
+                },
+                {
+                    "q": "Is Chopper worth a lot?",
+                    "a": "More than what its appearance suggests: it is an average value that is cheap and always delivers."
+                }
+            ],
+            "tactica": "One Piece rewards the entire crew: let the rival pay Luffy at the price of a pirate king and set up your gang with Zoro, Sanji, Robin and Brook for fewer coins. Spandam and Wapol are ideal inflators because even non-fans hate them by hearsay. And go after Usopp, Chopper and Franky: the low band that anime-only players undervalue and that closes out championship teams."
+        },
+        "harry_potter": {
+            "descripcion": "Harry, Dumbledore, Hermione, Snape, Voldemort, Hagrid, Ron, Sirius, McGonagall and Dobby counterpointed by Moaning Myrtle, Argus Filch, Neville, Aragog, Crabbe and Dudley. The most requested theme in the catalog among readers and film fans, with Draco, Ginny, Luna and Lockhart in the gray zone where the games are won. It is the one that generates the most debates about which character is really worth auctioning: is Ron's loyalty or Draco's cunning worth more? With Gilderoy Lockhart as a reminder that fame earns no points, every game is a crash course in Hogwarts.",
+            "preguntas": [
+                {
+                    "q": "What is the most valuable item in Harry Potter?",
+                    "a": "Dumbledore and Harry tend to be the highest bidders, with Snape almost always sneaking in on important decisions."
+                },
+                {
+                    "q": "Snape or Sirius?",
+                    "a": "The eternal debate: Snape is usually more expensive, but Sirius performs better per coin in many games."
+                },
+                {
+                    "q": "Is Dobby a good item?",
+                    "a": "Great and cheap: the elf that everyone loves and almost no one fights seriously."
+                },
+                {
+                    "q": "What is the worst thing about Hogwarts?",
+                    "a": "Filch, Crabbe and Dudley: the trio of punishments that not even magic can save."
+                }
+            ],
+            "tactica": "Hogwarts is played by houses: identify if your rival is from heroes or from Slytherin and exploit it with their side. Let them pay Harry or Dumbledore while you close with Hermione, McGonagall and Dobby, who perform equally well for less. Filch and Dudley are perfect inflators because no one defends them. And go after Luna and Neville: beloved secondary players who come out cheap and decide games in silence."
+        },
+        "star_wars": {
+            "descripcion": "Darth Vader, Yoda, Luke, Leia, Han Solo, the Mandalorian, Obi-Wan, Chewbacca, R2-D2 and Grogu against Greedo, Watto, Jabba, Nute Gunray and the child Emperor Anakin. It works just as well with fans of the original trilogy as with those who grew up with the prequels or The Clone Wars: Ahsoka, BB-8, Lando and even Jar Jar Binks have their moment, and the bad items from the saga are so well known that bidding on them also has its charm. With Boba Fett as a luxury bounty hunter, each round is a battle between the light side, the dark side and the one who just wants to annoy the opponent.",
+            "preguntas": [
+                {
+                    "q": "Is Jar Jar Binks out?",
+                    "a": "The theme includes controversial items from the saga, although the most punished of all is usually Greedo."
+                },
+                {
+                    "q": "Vader or Yoda?",
+                    "a": "Vader tends to be more expensive for pure dark charisma, but Yoda performs better for money spent."
+                },
+                {
+                    "q": "Is Grogu worth much?",
+                    "a": "A lot and with a trick: his tenderness inflates bids beyond reason. Use it to inflate, not to pay for it."
+                },
+                {
+                    "q": "What is the worst thing about the galaxy?",
+                    "a": "Greedo, Watto and the child Anakin: punishments that not even the Force can save."
+                }
+            ],
+            "tactica": "The galaxy is divided into trilogies: let the rival pay for his childhood (Vader for the classics, Mandalorian for the new ones) and close with Obi-Wan, Leia and Chewbacca, eternal secondary players who perform for less. Greedo and Watto are textbook inflators: nobody wants them. And attack R2-D2, Lando and Ahsoka: characters that the movie-only ones overlook and who win games."
+        },
+        "pokemon": {
+            "descripcion": "Pikachu, Charizard, Mewtwo, Gengar, Dragonite, Snorlax, Gyarados, Eevee, Greninja, Lucario and Arceus are the favorites, with Blastoise, Venusaur, Magikarp and Mr. Mime in the zone of debatable classics. The punishment is given by Bidoof, Smeargle, Stunfisk, Meowth and Psyduck: items that no one wants but everyone knows. It's a mental list thing: everyone has a favorite Pokémon and everyone thinks theirs is the most valuable, so the auction turns into a clash of childhoods. With 151 reasons to argue, it's impossible to play without saying \"I chose...\" at least once.",
+            "preguntas": [
+                {
+                    "q": "Why is Bidoof among the worst items?",
+                    "a": "Because it has become a meme: it is a harmless Pokémon that the community uses to joke, and at the auction it fulfills the same role."
+                },
+                {
+                    "q": "Charizard or Pikachu?",
+                    "a": "Charizard is almost always more expensive, but Pikachu performs better per coin in most games."
+                },
+                {
+                    "q": "Is Magikarp worth anything?",
+                    "a": "Just as an expensive meme: its funny thing is that it evolves, but in the auction there are no evolutions. Use it to inflate."
+                },
+                {
+                    "q": "Is Mewtwo the best?",
+                    "a": "One of the best, yes, along with Arceus: they are the ones who decide games when they come out."
+                }
+            ],
+            "tactica": "Pokémon is pure childhood: let the opponent pay their favorite starter (almost always Charizard) and assemble your team with Gengar, Dragonite, Gyarados and Lucario. Bidoof, Stunfisk and Smeargle are legendary pumpers - the meme bids alone. And attack Eevee, Snorlax and Mr. Mime: items that competitive people despise and that close champion teams at a candy price."
+        },
+        "pop_stars": {
+            "descripcion": "Taylor Swift, Michael Jackson, Bad Bunny, Madonna, Beyoncé, Freddie Mercury, Rihanna, Drake, Bruno Mars and Shakira compete with Rosalía, Ariana Grande, Billie Eilish, Dua Lipa and Ed Sheeran in the current stars zone. The punishment comes from Rebecca Black, Vanilla Ice, Jedward, Milli Vanilli and Nickelback: items that hurt just to name. The most intergenerational theme in the catalog: the older ones bid on the classics and the younger ones on the current stars, so the game depends a lot on who plays. Each bid is a playlist war with coins.",
+            "preguntas": [
+                {
+                    "q": "Who is the most disputed item?",
+                    "a": "Taylor Swift and Michael Jackson usually lead the bids, with Bad Bunny close behind."
+                },
+                {
+                    "q": "Freddie Mercury or Beyoncé?",
+                    "a": "Freddie is more expensive per legend, but Beyoncé performs better per coin in most games."
+                },
+                {
+                    "q": "What is the worst thing about the scenario?",
+                    "a": "Rebecca Black and Jedward: punishments that not even nostalgia can save."
+                },
+                {
+                    "q": "Does Rosalía score well?",
+                    "a": "Very good among the Spanish public: the patriotic factor makes it perform above its price."
+                }
+            ],
+            "tactica": "Pop is demographics: if your rival is older, let them pay Michael Jackson and Madonna while you close with Bad Bunny, Rosalía and Billie Eilish. If your rival is young, reverse the move with Freddie and Beyoncé, who are left cheap by young people. Rebecca Black and Nickelback are universal inflators: no one defends them. And go after Bruno Mars and Ed Sheeran, safe values that almost no one fights seriously."
+        },
+        "streamers": {
+            "descripcion": "Ibai Llanos, MrBeast, El Rubius, AuronPlay, TheGrefg, Kai Cenat, IlloJuan, IShowSpeed, xQc, Vegetta777, Willyrex and Ninja in an auction with Mangel, Shadoune, Elmilloor and Escardi as punishment. It's the natural theme for those who watch streams daily, and a pleasant surprise for those who don't, because the bad items are just as entertaining. With Lola Lolita, Spreen, YoSoyPlex and Dalas completing the line-up, each round is a coin game: is Ibai's prime worth more or Vegetta's perseverance? The answer is paid in the auction.",
+            "preguntas": [
+                {
+                    "q": "Does Ibai appear in the streamer theme?",
+                    "a": "Yes, it is one of the most bid-on items, along with MrBeast and El Rubius."
+                },
+                {
+                    "q": "MrBeast or Ibai?",
+                    "a": "MrBeast is more expensive on a global scale, but Ibai performs better per currency in Spanish games."
+                },
+                {
+                    "q": "Who are Mangel and Shadoune?",
+                    "a": "Creators remembered for controversies more than for content: in the auction they are official punishment."
+                },
+                {
+                    "q": "Are the old Twitch ones worth it?",
+                    "a": "Willyrex and Vegetta are safe values that young people leave cheap: a historical mistake."
+                }
+            ],
+            "tactica": "Streamers are communities: each player overrates their streamer, so spot yours and take advantage of it. Let him pay Ibai or Rubius while you close with Auron, Grefg, and IlloJuan. Mangel and Shadoune are perfect inflators: the salseo pushes itself. And attack Vegetta, Willyrex and Ninja: veterans that the new ones despise and who win games at the old subscriber price."
+        },
+        "la_velada": {
+            "descripcion": "Ibai, IlloJuan, TheGrefg, Plex, RoRo, Rivers, Marta Díaz, Coscu, Rubius, Viruzz, Momo, Jagger, Perxitaa, Alana and Nissaxter get into the ring at La Cartuja with AuronPlay, Luzu, Ari Gameplays, Gaspi and Amouranth in the background, while the KO in the first round and the towel await the clueless. The theme of the annual Hispanic streaming event: it is refreshed with each edition, with new combatants, new main event and new performances. It is the most \"live\" theme in the catalog: it is best played by commenting on it out loud, with the imaginary chat shouting each bid.",
+            "preguntas": [
+                {
+                    "q": "Does the theme change every year?",
+                    "a": "It is refreshed with each edition of La Velada: new fighters, new main event and new performances."
+                },
+                {
+                    "q": "Who is the main event?",
+                    "a": "It varies by edition, but the headliners (Ibai, Rivers, IlloJuan) tend to be the highest bidders."
+                },
+                {
+                    "q": "Should you have seen La Velada?",
+                    "a": "No: the names are recognized the same, and the KO in the first round is funny without context."
+                },
+                {
+                    "q": "Do participants repeat?",
+                    "a": "Some do, and their value changes with each edition depending on their combat: the theme lives with the event."
+                }
+            ],
+            "tactica": "La Velada is a spectacle: the rival pays more for their favorite streamer, so let them get excited about the main event and close with Viruzz, Momo and Jagger, real fighters who come out cheap. The KO in the first round is your inflator: nobody wants it but everyone talks about it. And go after Coscu, Luzu and Perxitaa: veterans of the event that the new ones do not value and who deliver in silence."
+        },
+        "kpop": {
+            "descripcion": "BTS, BLACKPINK, Jungkook, Jimin, Stray Kids, j-hope, Twice, aespa, NewJeans, IVE, LE SSERAFIM, SEVENTEEN, TXT, ENHYPEN, ITZY and IU newcomers, facing the false entrance, the out-of-tune playback, the nugu group of the year, the expelled trainee and the failed sub-unit. The theme of the most organized fandoms on the planet: here you bid with your heart and pay with your wallet, with KATSEYE as the western bridge. Every lightstick counts and every bias is defended to the last coin. The favorite to play with ARMYs: warns that the rematch will also be today.",
+            "preguntas": [
+                {
+                    "q": "Do you have to know K-pop to play it?",
+                    "a": "No: BTS and lightsticks are recognized by everyone, and the bad items are funny even without context."
+                },
+                {
+                    "q": "BTS or BLACKPINK?",
+                    "a": "BTS usually costs more per fandom, but BLACKPINK performs better per coin in many games."
+                },
+                {
+                    "q": "What is a nugu group?",
+                    "a": "An unknown group without success: at the auction it is punishment with a Korean name."
+                },
+                {
+                    "q": "Are solos worth more than groups?",
+                    "a": "Jungkook, Jimin, j-hope and IU perform very well: the solos are trading higher in this auction."
+                }
+            ],
+            "tactica": "K-pop is pure fandom: detect your opponent's bias in the first round and exploit it mercilessly. Let them pay BTS while you close with Stray Kids, SEVENTEEN and aespa, who perform the same for less. Fake entry and playback are perfect inflators: every fan fears them. And go after IU, TXT and ITZY: items that BTS-only fans are unaware of and leave at merchandising prices."
+        },
+        "pokemon_legendarios": {
+            "descripcion": "Mewtwo, Rayquaza, Lugia, Ho-Oh, Dialga, Mew, Kyogre, Palkia, Giratina, Reshiram and Zekrom with Articuno, Zapdos, Moltres, Celebi, Jirachi, Victini and Shaymin completing the pantheon, against Keldeo the forgotten and Phione the almost legendary. The theme of true singularities: there are no imitations here, only legendaries ordered from most to least loved. Each bid is a schoolyard debate raised to coins: is the favorite of your generation worth more or the one with the best statistics? With two legendary birds per generation and only one winner per game, nostalgia is on the rise.",
+            "preguntas": [
+                {
+                    "q": "Why is Phione worth so little?",
+                    "a": "Because it is the eternal debate: it is not even clear that he is legendary, and in the auction he pays for that doubt."
+                },
+                {
+                    "q": "Mewtwo or Rayquaza?",
+                    "a": "Mewtwo is more expensive because it is the original, but Rayquaza performs better per coin in most games."
+                },
+                {
+                    "q": "Is Keldeo really legendary?",
+                    "a": "Technically yes, but no one remembers it: that's why it's the perfect punishment for the theme."
+                },
+                {
+                    "q": "Are Kanto birds worth it?",
+                    "a": "Articuno, Zapdos and Moltres are average values that come cheap due to diffuse nostalgia."
+                }
+            ],
+            "tactica": "The legendaries are generations: let the rival pay for their childhood (Mewtwo for those from Kanto, Rayquaza for those from Hoenn) and close with Lugia, Ho-Oh, Dialga and Giratina. Keldeo and Phione are luxury inflators: the debate over their status bids itself. And go after Celebi, Jirachi and Victini: small mythicals that almost no one fights and that decide games in silence."
+        },
+        "sandwich": {
+            "descripcion": "Mixed, club, serranito, pepito, croque-monsieur and BLT against the chopped, the cheap mortadella, the sardines and the English cucumber sandwich. The theme of the real sandwich: vegetable, tuna, york and cheese, turkey, submarine, calamari sandwich, ciabatta and bagel in the noble area, and butter and tramezzino where it hurts. No vending machine nonsense: just sandwiches ordered from worst to best, with the well-made sandwich as the undisputed king. It is the quickest theme to explain in the catalog and a death trap for those who despise average items.",
+            "preguntas": [
+                {
+                    "q": "What is the best sandwich?",
+                    "a": "The well-done mixed one is usually the most contested, with the club and the mountain range very close."
+                },
+                {
+                    "q": "What is the serranito?",
+                    "a": "The Andalusian sandwich with loin, ham and pepper: a good item that many rivals are unaware of and leave cheap."
+                },
+                {
+                    "q": "What is the worst sandwich?",
+                    "a": "The cucumber English and the butter vie for the red lantern, with the sardines lurking."
+                },
+                {
+                    "q": "Are the middle items worth it here?",
+                    "a": "More than in any theme: the BLT, the vegetable and the tuna close winning teams at a bargain price."
+                }
+            ],
+            "tactica": "The sandwich deceives because of its simplicity: since all the items seem similar, rivals bid without criteria and the one who does have it wins. Study the menu before starting: mixed, club and serranito are the elite; BLT, vegetable and pepito, the cheap vein. Chopped and cheap bologna are your official inflators: eat them with fake hunger. And never complete the fourth item early: with so much medium level, closing a team early is giving away the good rounds."
+        },
+        "helado": {
+            "descripcion": "Stracciatella, pistachio, mango, vanilla, chocolate, lemon, nougat, cream, strawberry, mint and coffee against the melted, the coneless, the strange flavor, the sand, the ice and the stick. The most summery theme in the catalog: coconut, banana and watermelon for the classics, with coffee ice cream and coconut ice cream as tapas that almost no one fights against. It is best played in heat, like ice cream, and is the favorite for terrace games with children around. Few items, quick decisions and comebacks to the sun: the meltdown stalks those who trust.",
+            "preguntas": [
+                {
+                    "q": "What is the most popular flavor?",
+                    "a": "The stracciatella usually leads, with the pistachio and mango right behind."
+                },
+                {
+                    "q": "Is nougat a good item?",
+                    "a": "Better than it looks: it is a seasonal medium-high value that usually comes cheap out of mental season."
+                },
+                {
+                    "q": "What is the worst thing that can happen to you?",
+                    "a": "The stick alone, the ice and the sand: the podium of freezing desolation."
+                },
+                {
+                    "q": "Is it suitable for playing with children?",
+                    "a": "Perfect: familiar flavors, five-minute games and punishments that make you laugh instead of fear."
+                }
+            ],
+            "tactica": "The ice cream melts and so do the games: everything happens so quickly that the rival bids on impulse. Be the adult at the ice cream shop: pass up the stracciatella if it gets expensive and close with pistachio, mango and vanilla, which almost always come at a fair price. Melt and weird flavor are ideal puffers because no one wants them but everyone pretends they could bite. And save your coins for last: the nougat and the cream usually fall late and decide more games than it seems."
+        },
+        "podcasts": {
+            "descripcion": "Nadie Sabe Nada, La Ruina, ROCA Project, The Wild Project, Criminopatía, El Partidazo, El Larguero, La Fórmula del Éxito, Tengo un Plan, Loop Infinito, La Escóbula and Dossier Negro against the eternal talk show, the 40-minute ad, the guest who never shows, the lost episode and the mid-show ad. The theme of what plays on every phone: here you bid on shows, not songs, with La Cotorrisa, SPICY4TUNA and Tómate un Vino in the after-dinner zone. It is the most \"on the go\" theme in the catalog: each item is a different companion for the commute, and arguing about which one deserves your ears is half the game.",
+            "preguntas": [
+                {
+                    "q": "What is the most bid-on podcast?",
+                    "a": "Nadie Sabe Nada usually leads, with La Ruina very close in the decisions."
+                },
+                {
+                    "q": "Are there sports podcasts?",
+                    "a": "Yes: El Partidazo and El Larguero represent classic sports radio reinvented."
+                },
+                {
+                    "q": "What's the worst that can happen?",
+                    "a": "The eternal talk show and the 40-minute ad: punishments every listener painfully recognizes."
+                },
+                {
+                    "q": "Are true crime ones worth a lot?",
+                    "a": "Criminopatía and Dossier Negro are medium-high values that almost no one fights hard enough for."
+                }
+            ],
+            "tactica": "Podcasts are played on habit: each player overvalues what they listen to every day, so let the rival pay a premium for their favorite show while you close with Criminopatía, La Escóbula and Tengo un Plan. The eternal talk show and the 40-minute ad are universal inflators: every listener hates them and almost everyone bites. And go after ROCA Project and Loop Infinito, shows that comedy-only listeners don't know and leave cheap."
+        },
+        "matcha": {
+            "descripcion": "Uji, latte, harvest, bowl, foam, iced, oatmeal, cup, kit, snack, wagashi, ice cream, autumn and bubbles against the substitute, the open bottle, the lumps, the water, the fork and the bitter face. The theme of the green boom: Japanese ceremony with Uji tea and wagashi versus powders of dubious origin and jars that have been open for months. It is the most Zen theme in the catalog and also the most treacherous, because almost no one knows what they are really bidding on: ignorance equalizes the two players and turns each round into an act of faith with a bamboo whisk.",
+            "preguntas": [
+                {
+                    "q": "Why is there a shortage of matcha?",
+                    "a": "Because demand has skyrocketed and the plantations cannot cope: at auction, what is scarce is worth gold."
+                },
+                {
+                    "q": "What is Uji?",
+                    "a": "The Japanese region of the highest quality tea: its matcha is the most coveted item in the theme."
+                },
+                {
+                    "q": "What are wagashi?",
+                    "a": "The traditional sweets that accompany the tea ceremony: an average item that almost no one fights for and comes out cheap."
+                },
+                {
+                    "q": "Do I need to understand tea to play it?",
+                    "a": "No, and that's the fun of it: since no one knows much, the person who bids the best wins, not the person who knows the most."
+                }
+            ],
+            "tactica": "Matcha is green fog: no one knows the items, so pure psychology wins the game. The Uji and the latte are the beacons: if the rival names them with certainty, pretend to know more and force him to pay for the lesson. Lumps, substitutes and open bottles are perfect inflators because they sound bad even to those who don't understand. And attack the forgotten means (wagashi, cup, kit): the entire ceremony is bought cheap while others fight over the green powder."
+        },
+        "raperos": {
+            "descripcion": "Canserbero, Kase.O, Nach and Residente against Foyone and ToteKing, with Mala Rodríguez, SFDK, Natos and Waor, Violadores del Verso, Orishas, Vico C, Tego Calderón, Ana Tijoux, Control Machete, Akapellah, Lil Supa, Alcolirykoz, La Etnnia and El Chojin in the middle. The theme of studio MCs: lyrics rule here, not improvisation, and every bid sparks a debate about who has the best album. Important notice: battle rappers (Aczino, Trueno, Chuty) have their own theme in Freestylers; only studio rappers are included here. The favorite theme to play with someone while rap plays in the background.",
+            "preguntas": [
+                {
+                    "q": "Do battle rappers like Aczino or Trueno appear?",
+                    "a": "No: battle rappers have their own theme in Freestylers; only studio rappers are included here."
+                },
+                {
+                    "q": "Who is the most valuable?",
+                    "a": "Canserbero usually leads unanimously, with Kase.O and Nach completing the podium."
+                },
+                {
+                    "q": "Is there Latin American rap?",
+                    "a": "A lot: Residente, Orishas, Vico C, Tego, Ana Tijoux and Control Machete represent the other side of the pond."
+                },
+                {
+                    "q": "What is the worst thing about the microphone?",
+                    "a": "Foyone and ToteKing: punishments that not even the most hardcore rappers defend in public."
+                }
+            ],
+            "tactica": "Studio rap is played by discographies: let the rival pay Canserbero at a legendary price while you close with Nach, Residente and Mala Rodríguez, who perform the same for less. Foyone and ToteKing are perfect inflators: no one wants them but everyone has an opinion. And go after Ana Tijoux, Orishas and Control Machete: many don't know Latin rap and it comes at a bargain price in Spanish games."
+        },
+        "freestylers": {
+            "descripcion": "Chuty, Gazir, Aczino, Wos, Skone, Blon, Walls, Mecha, Larrix, El Menor, Nitro, Letra, Teorema, Marithea and Sara Socas with Arkano as master of ceremonies, against Tirpa, Force, Sweet Pain and Bnet. The theme of freestyle battles: pure improvised wit, with nothing written, where a minute can be worth a career. Every bid is a round: whoever hesitates loses, and whoever overpays for their favorite battler is left without a reply for the rest of the battle. With Red Bull and the FMS in the background, it is the loudest theme in the catalog.",
+            "preguntas": [
+                {
+                    "q": "Who is the GOAT of freestyle?",
+                    "a": "The eternal debate is Chuty against Aczino, and this auction is not going to resolve it."
+                },
+                {
+                    "q": "How is it different from Rappers?",
+                    "a": "Here only improvisation battlers compete; studio MCs have their own theme in Rappers."
+                },
+                {
+                    "q": "Do women compete here?",
+                    "a": "Yes: Marithea and Sara Socas are solid values that many underestimate due to lack of knowledge."
+                },
+                {
+                    "q": "Is Bnet as bad as they say?",
+                    "a": "In the auction, yes: it is the best-known punishment in the theme, perfect for inflating the price."
+                }
+            ],
+            "tactica": "Freestyle is about the reply: let the rival pay for their battler (almost always Chuty or Gazir) and build your team with Skone, Blon, Mecha and Larrix, who improvise just as well for less. Tirpa, Force and Bnet are golden inflators: other people's wit bids on its own. And go after Marithea, Sara Socas and Teorema: battlers that Spain-only fans don't know and who come out at a first-round price."
+        },
+        "futbol": {
+            "descripcion": "Messi, Cristiano, Lamine Yamal, Maradona, Pelé, Zidane, Iniesta, Xavi, Ronaldinho, Rodri, Pedri, Casillas and Nico Williams in the same auction, with Harry Maguire, Antony, Karius, Lord Bendtner, Madrid's Hazard, Gravesen and Dembélé as punishment. It is the queen theme for those who discuss soccer on a daily basis: each item has its context, its era and its legend, and the game becomes a covert debate about who was better. With the Ballon d'Or at stake in every round, it's impossible not to defend your idol to the last coin.",
+            "preguntas": [
+                {
+                    "q": "Does Lamine Yamal appear in the soccer theme?",
+                    "a": "Yes, it is one of the most recent and most sought-after items, along with Messi and Cristiano."
+                },
+                {
+                    "q": "Messi or Cristiano?",
+                    "a": "The debate that divides games: Messi is almost always more expensive, but Cristiano performs better per coin in many cases."
+                },
+                {
+                    "q": "Who is Lord Bendtner?",
+                    "a": "The Danish striker turned into a meme for his self-confidence: at the auction he is punished with a noble title."
+                },
+                {
+                    "q": "Are defenders worth anything?",
+                    "a": "Maldini is not here, but Casillas and Iniesta are: those who only look at forwards leave them cheap."
+                }
+            ],
+            "tactica": "Soccer rewards those who know times: legends (Messi, Cristiano, Maradona) decide games, but everyone wants them and they come out expensive. The profitable move is to let the rival bleed for his idol while you close the team with solid internationals at half the price. And be careful with punishments with funny names: bidding for Bendtner by bluffing only works once per rival."
+        },
+        "nba": {
+            "descripcion": "Michael Jordan, LeBron James, Kobe Bryant, Stephen Curry, Magic Johnson, Larry Bird, Shaquille O'Neal, Tim Duncan, Giannis, Jokic, Durant and Kareem dominate an auction that also includes Allen Iverson and the legendary busts: Kwame Brown, Anthony Bennett, Darko Milicic, Adam Morrison, Olowokandi and Jan Vesely. The favorite theme of those who get up early to watch games and those who only know the documentaries, with Brian Scalabrine as a cult hero. Every ring counts and every failed draft hurts: bidding here is playing general manager with coins.",
+            "preguntas": [
+                {
+                    "q": "Who is the most valuable item in the NBA?",
+                    "a": "Michael Jordan is usually the most contested, with LeBron and Kobe right behind."
+                },
+                {
+                    "q": "Jordan or LeBron?",
+                    "a": "Jordan is more expensive per myth, but LeBron performs better per coin in most games."
+                },
+                {
+                    "q": "Who was Anthony Bennett?",
+                    "a": "The number 1 of the 2013 draft that did not work: in the auction it is the punishment with the most pedigree."
+                },
+                {
+                    "q": "Are Europeans worth it?",
+                    "a": "Giannis, Jokic and Nowitzki-adjacentes perform very well: the solo-NBA-classic ones leave them cheap."
+                }
+            ],
+            "tactica": "The NBA is salary management: let the rival pay the GOAT tax for Jordan or LeBron and build your quintet with Curry, Duncan, Giannis and Jokic, who decide the same for less. The busts (Bennett, Kwame, Darko) are perfect inflators: draft failures bid themselves. And go after Scalabrine and Iverson: cult items that come cheap and close teams with character."
+        },
+        "tenis": {
+            "descripcion": "Rafa Nadal, Federer, Djokovic and Serena Williams in the same auction: the Big Three and the best player in history. Bad items include Bernard Tomic and Karsten Braasch, remembered for losing to the Williams sisters smoking between points.",
+            "preguntas": [
+                {
+                    "q": "Is it the most equal theme in the catalog?",
+                    "a": "Yes, it distributes its values in a very balanced way, so the games are decided by strategy rather than luck."
+                }
+            ]
+        },
+        "boxeo": {
+            "descripcion": "Muhammad Ali, Mike Tyson, Mayweather and Pacquiao head the auction, with Charlie Zelenoff as the bad guy. It is a theme of stories: each name brings a fight, an era and a controversy, and that is noticeable in the bids.",
+            "preguntas": [
+                {
+                    "q": "Who is Charlie Zelenoff?",
+                    "a": "A boxer known for his challenges recorded on the internet more than for his victories; in the auction it is one of the worst items."
+                }
+            ]
+        },
+        "esports": {
+            "descripcion": "Faker, s1mple, ZywOo and G2 Esports with the contrast of TSM and Renegades. The theme for those who follow League of Legends and Counter-Strike, and a window to the competitive world for those who have only heard of Faker.",
+            "preguntas": [
+                {
+                    "q": "Who is Faker?",
+                    "a": "The most recognized player in League of Legends and the most bid on item in the eSports theme."
+                }
+            ]
+        },
+        "coches": {
+            "descripcion": "Ferrari F40, Porsche 911, Supra turbo and McLaren F1 in front of a Seat Panda and a Yugo, with a pit stop: Bugatti Chiron, Aston Martin DB5, neon lights and gold wheels. The theme of those who hang posters of cars since they were children, with items that are the history of the motor and others that are the history of shame.",
+            "preguntas": [
+                {
+                    "q": "Why is there a Seat Panda?",
+                    "a": "As a tribute to the quintessential Spanish car: it is a bad item with a lot of love, and it always brings a smile to your face."
+                }
+            ]
+        },
+        "mundial_2026": {
+            "descripcion": "Spain champions, Argentina, England and France with Morocco and Belgium on the prowl, against Haiti, Uzbekistan and the Czech Republic. The theme of the 20 teams of the 2026 World Cup: Spain and Argentina always emerge as finalists, and the rest is history of the summer of 2026.",
+            "preguntas": [
+                {
+                    "q": "Do Spain and Argentina always go out?",
+                    "a": "Yes, they are the finalists and the non-negotiable basis of the theme, just like cheese and tomato on pizza."
+                }
+            ],
+            "tactica": "With Spain and Argentina fixed in all games, the World Cup is played in the second tier: England, France, Morocco and Belgium decide who wins. Don't go blind with your favorite selection if it comes out expensive; the real semi-finalists are better bought when the rival has already spent on their flag. And remember that only 8 of the 20 come out in each game: each duel tastes different and there is always plan B."
+        },
+        "padel": {
+            "descripcion": "Coello, Tapia, Triay, Brea and Galán with Salazar, Josemaría and the lethal viper, against the ball off the glass and the broken racket. The theme of the sport played in every neighborhood: here you bid for the number ones and the fence makes you suffer.",
+            "preguntas": [
+                {
+                    "q": "Who are the number ones in padel?",
+                    "a": "Coello and Tapia in men's, Triay and Brea in women's: they dominate the Premier Padel circuit and the auction."
+                }
+            ]
+        },
+        "f1": {
+            "descripcion": "Ayrton Senna, Michael Schumacher, Fernando Alonso and Lewis Hamilton on a legendary grid, with Luca Badoer and Yuji Ide as a reminder that not all F1 drivers were fast. The favorite theme of those who watch the races at dawn.",
+            "preguntas": [
+                {
+                    "q": "Who is the most valuable driver of the theme?",
+                    "a": "Senna and Schumacher tend to be the highest bidders, with Alonso and Hamilton in the same group."
+                }
+            ]
+        },
+        "videojuegos": {
+            "descripcion": "Elden Ring, GTA V, Zelda: Breath of the Wild and Red Dead Redemption 2 versus Big Rigs and Sonic 2006. The theme to discuss masterpieces and disasters, and to discover which of the two players remembers the releases most fondly.",
+            "preguntas": [
+                {
+                    "q": "Are there any famous bad games coming out?",
+                    "a": "Yes: Big Rigs and Sonic 2006 are legends of the disaster and in the auction they function as punishment."
+                }
+            ]
+        },
+        "juegos_mesa": {
+            "descripcion": "Catan, Gloomhaven, Carcassonne and chess against Monopoly and Parcheesi. It is the most ironic theme in the catalog: the games that everyone has at home are precisely the ones that score the worst, while the niche ones fight for a fair bid.",
+            "preguntas": [
+                {
+                    "q": "Why is Monopoly a bad item?",
+                    "a": "Because it is the game that we have all played and almost no one wants to repeat: at the auction it is the perfect punishment."
+                }
+            ]
+        },
+        "consolas": {
+            "descripcion": "PlayStation 2, Game Boy, Super Nintendo and Switch in the same auction, with Ouya and Nokia N-Gage as historical failures. The theme that awakens living room memories: each console brings back an entire generation of memories.",
+            "preguntas": [
+                {
+                    "q": "What is the most valuable console?",
+                    "a": "The PS2 usually leads the bids, with the Game Boy and Super Nintendo close behind."
+                }
+            ]
+        },
+        "moviles": {
+            "descripcion": "Nokia 3310, iPhone 4, Motorola RAZR and BlackBerry versus Amazon Fire Phone and YotaPhone. It is the most nostalgic theme for those who lived through the shift from brick phones to smartphones, and a history lesson for younger players.",
+            "preguntas": [
+                {
+                    "q": "Why is the Nokia 3310 so popular?",
+                    "a": "Because of its reputation for being indestructible and for being the first phone of an entire generation; it is the most bid-on item in the theme."
+                }
+            ]
+        },
+        "juguetes": {
+            "descripcion": "LEGO, Tamagotchi, Funko limited edition and action figure against the Pet Rock and the squishy with slime. The theme of collecting: here you do not bid on what is worth the most, but on what reminds you most of the Three Wise Men in your house.",
+            "preguntas": [
+                {
+                    "q": "What is the most valuable toy?",
+                    "a": "LEGO is usually the most contested, ahead of the Tamagotchi and the limited edition Funko."
+                }
+            ]
+        },
+        "gta_vi": {
+            "descripcion": "Leonida, Jason, the perfect heist and a convertible against the WASTED, the traffic jam on the bridge and the municipal tow truck. The theme of the biggest launch in video game history, two months before it comes out: pure hype in the form of an auction.",
+            "preguntas": [
+                {
+                    "q": "Do you need to have played GTA to enjoy it?",
+                    "a": "No: Vice City, the robberies and WASTED are recognizable to anyone, and the bad items are funny without context."
+                }
+            ]
+        },
+        "zombies": {
+            "descripcion": "Samurai katana, chainsaw and underground bunker in front of a garbage container and the T virus. It is the only theme where the items are not people but survival equipment, and that completely changes the auction strategy.",
+            "preguntas": [
+                {
+                    "q": "What is the T virus?",
+                    "a": "The one that started it all: at the auction it is the origin of the apocalypse and a big ticket item."
+                }
+            ]
+        },
+        "piratas": {
+            "descripcion": "Blackbeard, Jack Sparrow, Francis Drake and Henry Morgan with the contrast of the woundless patch and the plastic parrot. The quintessential adventure theme, with items ranging from historical privateer to carnival costume.",
+            "preguntas": [
+                {
+                    "q": "Does Jack Sparrow appear?",
+                    "a": "Yes, and it is usually one of the most bid-on items, along with Blackbeard."
+                }
+            ]
+        },
+        "vikingos": {
+            "descripcion": "Ragnar Lodbrok, Thor, Odin and Loki against a leaky longship and a short oar. The theme mixes history and mythology: the Norse gods attract bidding almost as much as the heroes of the series, and the bad items are as laughable as the good ones are scary. Works great with someone who only knows Vikings from the movies.",
+            "preguntas": [
+                {
+                    "q": "Are there gods or just historical Vikings?",
+                    "a": "There is everything: Ragnar and Odin coexist in the same auction, which makes it more fun."
+                }
+            ]
+        },
+        "romanos": {
+            "descripcion": "Julius Caesar, Spartacus, Augustus and Marcus Aurelius with the expired garum and counterfeit currency as punishments. It is the theme of those who watched too many historical series, and also of those who only know Caesar.",
+            "preguntas": [
+                {
+                    "q": "What is garum?",
+                    "a": "A fermented fish sauce very popular in Rome; in the game it appears expired as a bad item."
+                }
+            ]
+        },
+        "egipto": {
+            "descripcion": "Tutankhamun, Cleopatra, Ramses II and Nefertiti dominate an auction with the sand tray and wet papyrus as counterpoint. The most archaeological theme in the catalog and one of the most beautiful in terms of visual theme.",
+            "preguntas": [
+                {
+                    "q": "Why does a sand tray come out?",
+                    "a": "Because today the Egyptian deserts are full of remains of tourists; in the auction it is a bad item with a joke."
+                }
+            ]
+        },
+        "samurais": {
+            "descripcion": "Miyamoto Musashi, Oda Nobunaga, Tokugawa Ieyasu and Hattori Hanzo against a dented katana and rusty armor. A theme of honor and strategy, where bad items are just the opposite of a good samurai.",
+            "preguntas": [
+                {
+                    "q": "Who was Miyamoto Musashi?",
+                    "a": "The most famous samurai and duelist in Japanese history, author of the Book of Five Rings; it is the most valuable item of the theme."
+                }
+            ]
+        },
+        "vaqueros": {
+            "descripcion": "Wyatt Earp, Billy the Kid, Doc Holliday and Jesse James at an Old West auction, with broken boots and a broken lasso as punishment. The theme of duels at sundown, perfect for those who grew up on westerns.",
+            "preguntas": [
+                {
+                    "q": "Who is Doc Holliday?",
+                    "a": "The dentist and gunslinger who accompanied Wyatt Earp in the O.K. Corral duel; it is one of the most bid-on items."
+                }
+            ]
+        },
+        "espacio": {
+            "descripcion": "Apollo 11, the Hubble telescope, Voyager 1 and the Curiosity rover compete with a leaky suit and a floating screw. The most fascinating theme in the catalog, and the one that works best with someone who enjoys explaining space missions.",
+            "preguntas": [
+                {
+                    "q": "What is the most valuable item in space?",
+                    "a": "Apollo 11 is usually the most contested, with Hubble and Voyager close behind."
+                }
+            ]
+        },
+        "robots": {
+            "descripcion": "R2-D2, WALL-E, Terminator and Optimus Prime in the same auction, with the toy robot and the scrap arm being bad items. A theme that mixes cinema and reality, perfect for science fiction fans.",
+            "preguntas": [
+                {
+                    "q": "Is it a movie theme or a real technology theme?",
+                    "a": "Mix: The main items are very recognizable fictional robots, with some nods to real robotics."
+                }
+            ]
+        },
+        "animales": {
+            "descripcion": "Wild lion, golden eagle and dolphin compete with the Labrador puppy, the orange kitten and even an axolotl, while the pet cockroach and the buzzing mosquito wait their turn. It is the most tender theme in the catalog, and also the funniest when the bad items show up.",
+            "preguntas": [
+                {
+                    "q": "Is it suitable to play with children?",
+                    "a": "Yes, although the pet cockroach is always a bit creepy: it's part of the fun."
+                }
+            ]
+        },
+        "dinosaurios": {
+            "descripcion": "T-Rex alpha, complete fossil, Triceratops and perfect DNA in front of the approaching meteorite and the electric fence without light. The Jurassic Park theme brought to the game, with items that sound like an adventure movie.",
+            "preguntas": [
+                {
+                    "q": "Is the meteorite really a bad item?",
+                    "a": "Yes, and very feared: it is the reminder that it was fatal for the dinosaurs."
+                }
+            ]
+        },
+        "granja": {
+            "descripcion": "John Deere tractor, dairy cow, laying hen and forest cabin with aphid infestation and manure. The most rural theme in the catalog: perfect to play with a family who spends their summers in the town.",
+            "preguntas": [
+                {
+                    "q": "Is the John Deere tractor as good as they say?",
+                    "a": "Yes, it is the most sought-after item in the theme: without a tractor there is no functioning farm."
+                }
+            ]
+        },
+        "atraco": {
+            "descripcion": "Brain of the operation, hacker, professional driver and weapons expert in front of the digging spoon and forgotten gloves. The theme of perfect robberies: here the important thing is not the loot, but not staying with the weak link in the gang, and there are items that condemn the entire operation.",
+            "preguntas": [
+                {
+                    "q": "What is the worst item of the robbery?",
+                    "a": "The digging spoon: in a robbery gang it is absolutely useless, and at the auction it is the most remembered punishment."
+                }
+            ]
+        },
+        "detective": {
+            "descripcion": "Sherlock Holmes, Hercule Poirot, Columbo and Adrian Monk investigate an auction with a broken magnifying glass and a mute witness. The theme for those who watch police series and have already guessed everything before the end.",
+            "preguntas": [
+                {
+                    "q": "Who is Adrian Monk?",
+                    "a": "The obsessive-compulsive detective of the Monk series; it is one of the most beloved items in the theme."
+                }
+            ]
+        },
+        "acampada": {
+            "descripcion": "Tent, campfire, lake and smores against the flooded tent, mosquitoes and mud. The theme of sleeping away from home: everything that is good about camping and everything that goes wrong.",
+            "preguntas": [
+                {
+                    "q": "What can't be missing when camping?",
+                    "a": "The tent and the bonfire: without them there is no worthwhile camping, neither in the game nor outside."
+                }
+            ]
+        },
+        "futbol_historicos": {
+            "descripcion": "Di Stéfano, Cruyff, Beckenbauer and Garrincha against Cubillas, the little-known Peruvian who closes the list. The theme of the retired: Messi and Cristiano do not come into play here, as they already have their own theme in Soccer.",
+            "preguntas": [
+                {
+                    "q": "Why aren't Messi or Cristiano there?",
+                    "a": "Because they are still active in recent memory and have their place in Soccer; here only retired legends."
+                }
+            ]
+        },
+        "true_crime": {
+            "descripcion": "Alcàsser, Zodiac, Black Dahlia and Jack the Ripper against the psychic, the tabloid and the bar rumor. The theme of the real cases: only history and legend, no recent victims.",
+            "preguntas": [
+                {
+                    "q": "Are they all real cases?",
+                    "a": "Yes, historical or legendary; the theme expressly avoids recent or sensitive cases."
+                }
+            ]
+        }
+    },
+    "guias": {
+        "draft-de-20-monedas": {
+            "titulo": "What is the 20 coin draft: the TikTok trend that is played with two mobile phones",
+            "desc": "The 20-coin draft came from TikTok: fixed budget, item list, and turn-based bidding. This is the trend and this is how you play for free in Draft 20.",
+            "h1": "What is the 20 coin draft (the TikTok trend)",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "The format that went viral",
+                    "p": [
+                        "The 20 coin draft is a format that became popular on TikTok and Reels with videos like \"You have $20\": a list of characters, objects or dishes appears, each with a price, and you have to assemble the best possible team without going over the budget. The trick is not in knowing more than anyone else, but in choosing well with the right money.",
+                        "Over time the format evolved from “choose from a list” to “bid on each item”, and that's where it gets really fun: it's no longer enough to have a budget, you have to fight for each item against another person."
+                    ]
+                },
+                {
+                    "h": "How to play Draft 20",
+                    "p": [
+                        "Draft 20 turns that trend into a two-player duel: 8 rounds, 20 coins each and a theme per game (soccer, anime, food, streamers...). In each round an item goes up for auction and players bid in turns with BID +1 or BID +3. When someone drops out, the last bidder pays the price and takes the item.",
+                        "The value of each item is secret until the end: during the game you only see its emoji and its name, so the winner is the one who best interprets what the opponent wants and not the one who knows the list by heart. When finished, whoever has collected the most ⭐ wins; if there is a tie, it is decided by remaining coins.",
+                        "There are two details that change the game: each player can take a maximum of 4 items (the following are passed to the rival) and, if you run out of coins, you give up the item and the rival decides whether to keep it for 1 🪙 or give it to you."
+                    ]
+                },
+                {
+                    "h": "Why It Hooks",
+                    "p": [
+                        "A game lasts about five minutes, you don't have to register, you don't have to download anything and you play from your mobile browser. Each player uses their own phone: one creates the room, shares a 5-character code via WhatsApp and the rival enters from wherever they are.",
+                        "That makes it the ideal game for video calls, to kill some dead time or for daily play with the same person. And if you don't have a rival on hand, you can always practice against the bot in four difficulty levels."
+                    ]
+                },
+                {
+                    "h": "Homemade variants and rules",
+                    "p": [
+                        "The official version is 8 rounds and 20 coins, but the format supports variants without breaking. The most common is to change the budget: with 10 coins the game becomes an exercise in austerity in which every bid hurts, and with 30 coins the good items skyrocket in price and you have to know when to quit.",
+                        "Another variant is the surprise theme: no one knows what the list is about until the first item comes out. In Draft 20 it is enough to choose \"All (random)\" when creating the room, although the strict way would be not to look at the name of the theme in the header during the first bid.",
+                        "You can also play best of three: three games in a row with different themes and whoever wins two wins the series. It is the fairest way to measure who plays better, because a single theme can greatly favor a player."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "Do I need to download an app to play the 20 coin draft?",
+                    "a": "No. Draft 20 is played in the mobile browser: you create a room, share the code and that's it. There is no registration or installation."
+                },
+                {
+                    "q": "How many players are needed?",
+                    "a": "Two, each with their own cell phone. There is also a practice mode against the machine with four levels."
+                },
+                {
+                    "q": "Is it free?",
+                    "a": "Yes, it is free, without user accounts and without advertising."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/como-jugar",
+                    "texto": "How to play step by step"
+                },
+                {
+                    "href": "/tematica/futbol",
+                    "texto": "Soccer Theme"
+                },
+                {
+                    "href": "/tematica/tapas",
+                    "texto": "Tapas and Bar Theme"
+                },
+                {
+                    "href": "/guia/mejores-tematicas",
+                    "texto": "The 10 funniest themes"
+                }
+            ]
+        },
+        "como-ganar-draft-20": {
+            "titulo": "How to Win at Draft 20: 7 Bidding Tactics (and 3 Typical Mistakes)",
+            "desc": "Seven tactics to win in Draft 20: when to drop out, how to read your opponent and why not spend the 20 coins in the first round.",
+            "h1": "How to Win at Draft 20: Auction Tactics",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "Before you start: understand the game",
+                    "p": [
+                        "In Draft 20, whoever adds the most ⭐ wins, not whoever spends the most coins. The value of each item is secret during the game and is only revealed at the end, so your budget serves two purposes: getting good items and denying good items to your opponent. Almost all tactics are born from that tension.",
+                        "Each game has 8 rounds and a maximum of 4 items per player. If you reach the cap, the items that come out later go directly to the rival, so the cap is also managed."
+                    ]
+                },
+                {
+                    "h": "Tactic 1: Don't spend everything in the first round",
+                    "p": [
+                        "The item you love may come out in round 1 and a similar one in round 5 for half the price. If you bid to the end in the first auction, you are left with less than 15 coins for seven rounds. Rule of thumb: in the first two rounds, set a ceiling (for example, don't go over 6) and stick to it."
+                    ]
+                },
+                {
+                    "h": "Tactic 2: Learn to Drop Out (I'M OUT)",
+                    "p": [
+                        "The most profitable button in the game is I'M OUT when your rival is the last to bid: they pay the price and take the item, but you avoid paying more and force them to spend. Dropping out is not losing: it is making your rival finance the auction."
+                    ]
+                },
+                {
+                    "h": "Tactic 3: Read the Opponent's Pattern",
+                    "p": [
+                        "In a few rounds you can see the personality of each player: the one who bids +3 in the first bid is usually in a hurry, the one who bids +1 is always watching their coins. If you detect that someone never drops out, let another item that you don't need climb high."
+                    ]
+                },
+                {
+                    "h": "Tactic 4: Save for the Last Round",
+                    "p": [
+                        "In the last rounds there is usually less competition because your rivals are already near the cap or short on coins. Arriving at round 7 with 10-12 coins is a brutal advantage: you can take two items in a row at a bargain price."
+                    ]
+                },
+                {
+                    "h": "Tactic 5: Medium Items Win Championships",
+                    "p": [
+                        "Winning is not about collecting everything shiny: it is about adding more than your rival. A player with four well-chosen average items usually beats one with two star items and two bad ones, because the average matters. Don't dismiss a solid item if it's cheap."
+                    ]
+                },
+                {
+                    "h": "Tactic 6: Manage the 4-Item Cap",
+                    "p": [
+                        "If you reach 4 items, everything that comes out after goes to the rival. Use it to your advantage: when you have three items, bid on the next one and leave the leftovers so your rival can't choose. And if your rival already has 3 items, the next one that comes out already has an owner."
+                    ]
+                },
+                {
+                    "h": "Tactic 7: Change the Theme in the Rematch",
+                    "p": [
+                        "If you lose a game, a rematch with the same theme benefits the one who already knows the list. Changing the theme (or leaving “All (random)”) balances the next one. It is the cheapest way to keep the competition even."
+                    ]
+                },
+                {
+                    "h": "Three typical mistakes",
+                    "p": [
+                        "1) Always bid +3 out of impatience: spending money too quickly. 2) Drop out whenever the price goes up: the rival gets all the good items at a low price. 3) Forget the cap: when the rival already has 4 items, continuing to bid high is giving them coins for nothing."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "Can you win without ever bidding?",
+                    "a": "No, but you can win by bidding little: if you lower yourself judiciously and let your rival spend, there comes a time when he can no longer bid and you take the last items."
+                },
+                {
+                    "q": "How is a tie decided?",
+                    "a": "If you both end up with the same ⭐, whoever keeps the most coins wins. If there is also a tie, it is a draw."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/como-jugar",
+                    "texto": "Complete rules"
+                },
+                {
+                    "href": "/tematica/futbol",
+                    "texto": "Soccer Theme"
+                },
+                {
+                    "href": "/tematica/tapas",
+                    "texto": "Tapas and Bar Theme"
+                },
+                {
+                    "href": "/guia/mejores-tematicas",
+                    "texto": "Top themes to practice"
+                }
+            ]
+        },
+        "juegos-de-subasta-online": {
+            "titulo": "Online auction games: how to choose the best one to play with friends",
+            "desc": "Comparison of free online auction games: what to look for, which ones work best for two players and how to start playing without installing anything.",
+            "h1": "Online auction games to play with friends",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "What makes a good auction game",
+                    "p": [
+                        "An auction game works when decisions are irreversible and information is imperfect: if you know exactly what everything is worth and can rectify it, the tension disappears. The best ones add two things: short games (so you can play several in a row) and a human rival.",
+                        "Online there are three families: auctions within board games (Tarot, Bids, Modern Art), auction simulators for one player (those for storage rooms and pawn shops) and auction duels for two people like Draft 20."
+                    ]
+                },
+                {
+                    "h": "Draft 20 (web, 2 players, free)",
+                    "p": [
+                        "It is a turn-based auction duel for two players: 8 rounds, 20 coins and one theme per game among 69 available. Each player uses their own mobile phone and enters with a 5-character code, without registration or download.",
+                        "What makes it different is the secret value: you don't see the ⭐ of each item until the end, so the auction is about reading the rival, not calculating. If you want to try it, you can create a room or practice against the bot."
+                    ]
+                },
+                {
+                    "h": "Board Game Arena (web, 3-5 players)",
+                    "p": [
+                        "If you like \"table\" auctions, in Board Game Arena there are classics such as French Tarot or Bids, with complete rules and rivals from all over the world. The downside: they are longer games (20-24 minutes) and you need to know the rules before starting."
+                    ]
+                },
+                {
+                    "h": "Auction Simulators (Mobile, Single Player)",
+                    "p": [
+                        "Storage room and pawn shop games, like Bid Wars, are fun for free time, but they play against the machine: there is no real bidding or reading of the rival. They are good if you are looking for progression, not competition."
+                    ]
+                },
+                {
+                    "h": "How to choose in 30 seconds",
+                    "p": [
+                        "Do you want to play with another person from your own phone and in less than 10 minutes? You need a web duel like Draft 20. Looking for a deep board game with more players? Board Game Arena. Do you play alone and want to progress? An auction simulator."
+                    ]
+                },
+                {
+                    "h": "How to set up an auction night",
+                    "p": [
+                        "If you want to turn the auctions into an evening plan, the most practical thing is to alternate games: start with a couple of Draft 20 games (five minutes each, with a change of theme in between) and end with a longer auction board game if the group can handle it.",
+                        "The key is in the variety of themes: a general culture theme for those who know everything, another about food for those who don't, and a random one to break the tie. Thus, no one always wins by knowing more, and the competitive spirit continues throughout the night."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "What is the best auction game for two people?",
+                    "a": "If you're looking for quick, mobile games, Draft 20 is designed exactly for two players with hidden information. For long sessions, the Board Game Arena classics."
+                },
+                {
+                    "q": "Are there free auction games?",
+                    "a": "Yes: Draft 20 is free and ad-free, and Board Game Arena has a free plan with a full catalog."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/",
+                    "texto": "Play Draft 20"
+                },
+                {
+                    "href": "/como-jugar",
+                    "texto": "How to play"
+                },
+                {
+                    "href": "/tematica/futbol",
+                    "texto": "Soccer Theme"
+                },
+                {
+                    "href": "/tematica/anime",
+                    "texto": "Anime Theme"
+                },
+                {
+                    "href": "/tematica/streamers",
+                    "texto": "Streamer Theme"
+                },
+                {
+                    "href": "/guia/draft-20-vs-you-have-20",
+                    "texto": "Draft 20 vs You Have $20"
+                },
+                {
+                    "href": "/guia/juegos-por-whatsapp",
+                    "texto": "Games for WhatsApp"
+                }
+            ]
+        },
+        "juegos-por-whatsapp": {
+            "titulo": "Games to play with a friend on WhatsApp (without installing anything)",
+            "desc": "Five games to play with a friend on WhatsApp without installing anything: how the game is organized, what you need and how long each one lasts.",
+            "h1": "Games to play with a friend on WhatsApp",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "What does a game need to work on WhatsApp",
+                    "p": [
+                        "Playing on WhatsApp is not playing “within” WhatsApp: it is using the chat to organize and share the game link. That's why games that meet three conditions work best: they are entered with a link or a short code, they are played in turns (no one has to be looking at the screen at the same time) and they don't require you to install an app.",
+                        "Short duration is another advantage: if a game does not exceed 10 minutes, it is much easier to repeat without getting bored."
+                    ]
+                },
+                {
+                    "h": "1. Draft 20 (auction duel, 2 players, 5 minutes)",
+                    "p": [
+                        "You create the room and WhatsApp gives you a 5-character code to share; the other enters from his mobile with that code. The two bid in turns until completing 8 rounds and whoever collects the most ⭐ wins. When finished, the game itself offers a button to propose a rematch and a new code is generated.",
+                        "It is the fastest on the list and the only one designed exclusively for two players, without groups or shared screens."
+                    ]
+                },
+                {
+                    "h": "2. Tutti Frutti / Stop online (2-12 players)",
+                    "p": [
+                        "The web version of the pen and paper classic. Everyone writes at the same time in categories (\"name, thing, city...\") and the timer scores alone. Ideal for WhatsApp groups, although you need everyone to be connected at the same time."
+                    ]
+                },
+                {
+                    "h": "3. Gartic Phone (groups, 15-30 minutes)",
+                    "p": [
+                        "The drawing version of broken telephone: each player writes a sentence, the next one draws it, the next one describes the drawing and at the end the chain is revealed. With 6 or more people it is a laughter machine; with only two it falls flat."
+                    ]
+                },
+                {
+                    "h": "4. Codenames online (4-10 players)",
+                    "p": [
+                        "Two teams try to guess words with single-word clues. You need at least four people and some patience with the rules, but it's the best word game for groups that already know each other."
+                    ]
+                },
+                {
+                    "h": "5. Truth or Dare (3+ players)",
+                    "p": [
+                        "The classic icebreaker: you can play directly in the chat, writing the questions and challenges, without any website in between. It works better in groups and in moments of boredom than in serious games."
+                    ]
+                },
+                {
+                    "h": "How to set up a game in 3 steps",
+                    "p": [
+                        "1) Open the game and create a room from your phone. 2) Share the code or link via WhatsApp (many games, including Draft 20, have a button to send it directly). 3) When the other enters, the game starts automatically."
+                    ]
+                },
+                {
+                    "h": "Typical errors when organizing games on WhatsApp",
+                    "p": [
+                        "The first is not to agree on the time: in turn-based games it is necessary for both to be available, so it is advisable to notify before creating the room. The second is to send the code without context when the other person is at work; the link works the same, but no one enters blindly.",
+                        "The third is to play with a bad connection: if the opponent takes more than 45 seconds without responding, the game is considered abandoned. On an unstable mobile network it is better to wait until you have coverage before starting."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "Can you play Draft 20 from a WhatsApp group?",
+                    "a": "Draft 20 is for two players: the link or code is shared through the group chat, but the game is played between two people."
+                },
+                {
+                    "q": "Do we need to be connected at the same time?",
+                    "a": "Yes, in turn-based games like Draft 20 the game advances when both respond. If someone is absent, the game notifies you after 6 seconds and the room closes after 45 seconds without activity."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/",
+                    "texto": "Create a Draft Room 20"
+                },
+                {
+                    "href": "/como-jugar",
+                    "texto": "How to play"
+                },
+                {
+                    "href": "/tematica/musica",
+                    "texto": "Music Theme"
+                },
+                {
+                    "href": "/tematica/tapas",
+                    "texto": "Tapas and Bar Theme"
+                },
+                {
+                    "href": "/tematica/futbol",
+                    "texto": "Soccer Theme"
+                },
+                {
+                    "href": "/guia/draft-de-20-monedas",
+                    "texto": "What is the 20 coin draft"
+                },
+                {
+                    "href": "/guia/juegos-de-subasta-online",
+                    "texto": "Online auction games"
+                }
+            ]
+        },
+        "draft-20-vs-you-have-20": {
+            "titulo": "Draft 20 vs You Have $20: differences and which one to choose",
+            "desc": "We compare Draft 20 and You Have $20 (trend app): platform, price, number of players, themes and languages, so you can choose according to your case.",
+            "h1": "Draft 20 vs You Have $20",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "Two ways to play the same trend",
+                    "p": [
+                        "The “you have $20” format went viral on TikTok with lists of characters and a fixed budget. Very different proposals have come from there: You Have $20 took it to an iPhone app designed to play several games around a single phone, and Draft 20 turned it into an online duel between two players, each with their own mobile phone.",
+                        "It's not that one is better: they solve different situations. This comparison is informative and neither is affiliated with the other."
+                    ]
+                },
+                {
+                    "h": "Quick comparison",
+                    "p": [
+                        "Platform: You Have $20 is an iOS app (App Store); Draft 20 is played in the browser, on Android, iPhone or PC.",
+                        "Price: in You Have $20 the games with random category are free and the extra options (choose category or create them with AI) come with PRO subscription; Draft 20 is free, with all themes available and without advertising.",
+                        "Players: in You Have $20, two people bid on the same phone and the rest act as judges; in Draft 20 exactly two players play, each on their device, with a room code.",
+                        "Content: You Have $20 offers about 40 categories in 25 languages; Draft 20 has 69 themes with 20 items each, with a very Spanish accent (tapas, soccer, streamers).",
+                        "Registration: neither of us ask for it."
+                    ]
+                },
+                {
+                    "h": "Which one to choose according to your case",
+                    "p": [
+                        "If you are on an iPhone and four people want to play at the same time with a single cell phone on the table, an app like You Have $20 fits better.",
+                        "If there are two of you and you are not in the same place (or yes, but you want each one with your own screen), Draft 20 is more direct: room with code, five-minute games, one-touch rematch and zero installation.",
+                        "If your group is on Android or mixes devices, the browser wins by a landslide: Draft 20 works on any phone without downloading anything."
+                    ]
+                },
+                {
+                    "h": "What they share",
+                    "p": [
+                        "Both respect the essence of the trend: fixed budget, items with hidden values until the end and a decision that is regretted or celebrated for days. And in both, the subsequent discussion (\"I had a better collection\") is part of the game."
+                    ]
+                },
+                {
+                    "h": "What we would like to see in both",
+                    "p": [
+                        "Both projects still have a way to go: the native apps need to be played on their own device without complications, and the browser games need to reach more languages and have a larger community for tournaments.",
+                        "The important thing is that the 20-coin draft trend is no longer just a TikTok video: it can now be played for real, with clear rules and immediate rematches, in either format."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "Are Draft 20 and You Have $20 the same thing?",
+                    "a": "No. They share the format of the 20-coin draft trend, but they are independent projects: one is an iOS app for group play, and the other is a two-player online browser game."
+                },
+                {
+                    "q": "Does Draft 20 work on Android?",
+                    "a": "Yes, and also on iPhone and PC: you play from the browser, without installing any app."
+                },
+                {
+                    "q": "Is there a free version of You Have $20?",
+                    "a": "Yes, games with surprise category are free; the options to choose or create categories are part of your PRO subscription."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/",
+                    "texto": "Try Draft 20 for free"
+                },
+                {
+                    "href": "/guia/draft-de-20-monedas",
+                    "texto": "What is the 20 coin draft"
+                },
+                {
+                    "href": "/tematica/tapas",
+                    "texto": "Tapas and Bar Theme"
+                },
+                {
+                    "href": "/tematica/musica",
+                    "texto": "Music Theme"
+                }
+            ]
+        },
+        "mejores-tematicas": {
+            "titulo": "The 10 funniest themes in Draft 20 (and why)",
+            "desc": "Ranking of the 10 funniest themes in Draft 20: from Pizza to Soccer, with the reason why they work so well in the auction.",
+            "h1": "The 10 funniest themes in Draft 20",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "How we chose the ranking",
+                    "p": [
+                        "Three criteria: that the items are instantly recognizable, that the theme distributes values in a balanced way (equal games) and that it has at least a couple of bad items that make you laugh. With that, this is the top 10.",
+                        "It's a subjective ranking: if you play with someone who lives hooked on something, their favorite theme will always perform better than any list."
+                    ]
+                },
+                {
+                    "h": "1. World Cup 2026",
+                    "p": [
+                        "Spain champion, Yamal, Torres and Mbappé with the trophy and the ball always on the table, against the own goal and the eternal VAR. The theme of summer 2026: euphoria straight off the TV."
+                    ]
+                },
+                {
+                    "h": "2. GTA VI",
+                    "p": [
+                        "Vice City, Lucia, the perfect heist and a convertible against the WASTED and the municipal tow truck. The theme of the most anticipated launch in history, two months before the game comes out."
+                    ]
+                },
+                {
+                    "h": "3. Pizza",
+                    "p": [
+                        "The favorite to start: cheese and tomato always on the table, with pepperoni, ham and mushrooms against the frozen dough and the sachet ketchup. Everyone recognizes each ingredient and the games are very even."
+                    ]
+                },
+                {
+                    "h": "4. La Velada",
+                    "p": [
+                        "Ibai, IlloJuan, TheGrefg and Plex with La Cartuja in the background, against the KO in the first round and the towel. The Hispanic streaming event turned into an auction."
+                    ]
+                },
+                {
+                    "h": "5. K-pop",
+                    "p": [
+                        "BTS, Jungkook, Jimin and KATSEYE with the official lightstick, against abusive resale and a lightstick with dead batteries. Here you bid with the heart of the fandom."
+                    ]
+                },
+                {
+                    "h": "6. Soccer",
+                    "p": [
+                        "Messi, Cristiano, Lamine Yamal and Maradona in the same auction, with Lord Bendtner and Gravesen as punishment. It is the theme with the most context: each item carries an era, a club and a controversy, and that is noticeable at the table."
+                    ]
+                },
+                {
+                    "h": "7. Hamburger",
+                    "p": [
+                        "The original theme and the best tutorial in the game: Wagyu beef, truffle and brioche bread against an industrial orange cheese. If this is your first game, start here."
+                    ]
+                },
+                {
+                    "h": "8. Modern Anime",
+                    "p": [
+                        "Gojo, Frieren, Denji and Sung Jinwoo: the 2024-2026 batch with the filler chapter and the Twitter spoiler as punishment. For those who keep up with the seasons."
+                    ]
+                },
+                {
+                    "h": "9. Pokémon",
+                    "p": [
+                        "Pikachu, Charizard, Mewtwo and Gengar with Bidoof and Stunfisk as punishment. The most cross-generational theme of all: everyone has a favorite Pokémon and everyone believes theirs should be worth more."
+                    ]
+                },
+                {
+                    "h": "10. Star Wars",
+                    "p": [
+                        "Lightsabers and the Force against the bargain-bin dark side. You put on the soundtrack while you bid, and the prequel vs. original debate comes free."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "What is the best theme to start with?",
+                    "a": "Pizza, Hamburger or The Simpsons: the items are instantly recognized and the games are very close."
+                },
+                {
+                    "q": "Can you play with the random theme?",
+                    "a": "Yes: The “All (random)” option draws one of the 69 themes when creating the game, which is the fairest way to play rematches."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/tematica/mundial_2026",
+                    "texto": "World Theme 2026"
+                },
+                {
+                    "href": "/tematica/gta_vi",
+                    "texto": "GTA VI Theme"
+                },
+                {
+                    "href": "/tematica/pizza",
+                    "texto": "Pizza Theme"
+                },
+                {
+                    "href": "/categoria/viral",
+                    "texto": "All viral themes"
+                },
+                {
+                    "href": "/guia/como-ganar-draft-20",
+                    "texto": "How to win at Draft 20"
+                }
+            ]
+        },
+        "juegos-navidad-familia": {
+            "titulo": "Games to play at Christmas with the family (without installing anything)",
+            "desc": "Draft 20 ideas and themes to play at Christmas with the family: lottery, chimes and sweets on the table, from your mobile and without downloads.",
+            "h1": "Games to play at Christmas with the family",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "Why Draft 20 works for Christmas meals",
+                    "p": [
+                        "At a family meal there are two classic problems: not everyone knows how to play the same thing and no one wants to explain rules for half an hour. Draft 20 is resolved in two sentences: each player has 20 coins, one item is auctioned per round and the winner is whoever has the most valuable collection. With that, even the grandfather who has never played understands the first round.",
+                        "In addition, you can play from your mobile browser: you don't have to install anything, you don't have to create accounts and the games last about five minutes, perfect between courses or while waiting for the Christmas lottery."
+                    ]
+                },
+                {
+                    "h": "The star theme: Viral Desserts",
+                    "p": [
+                        "At Christmas, the table rules: tiramisu, chocolate coulant, Basque cheesecake and churros compete with a flan and a melted cake. It's the best way to start, because everyone recognizes each sweet and the laughter comes by itself.",
+                        "You can play it in the Viral Desserts theme (linked below). If the group is large, the most practical thing is to have two play per game and have the rest act as a jury, or rotate the winner."
+                    ]
+                },
+                {
+                    "h": "Other themes that succeed in the family",
+                    "p": [
+                        "The Simpsons or Pokémon are infallible: they work just as well with younger cousins as with uncles who never play.",
+                        "If the table skews older, TV Series or Music unlock memories and conversation. And for sibling rivalry, Soccer or Pizza don't fail."
+                    ]
+                },
+                {
+                    "h": "How to set up the game in 3 steps",
+                    "p": [
+                        "1) You create the room from your mobile and choose the theme (or leave \"All\"). 2) Share the 5-character code via WhatsApp with the rival of the duel. 3) When the other enters, the auction starts automatically. When finished, the rematch button generates a new room with a different theme.",
+                        "Christmas trick: play with a random theme (the \"All\" option) and no one knows which list is playing until the first item appears. On Christmas Eve it works especially well."
+                    ]
+                },
+                {
+                    "h": "What to do if there are many of you at the table",
+                    "p": [
+                        "With six or more people, it is best to set up a quick knockout group: two play, the winner stays and the next challenger takes the cell phone. In half an hour everyone gets a turn in the auction and the conversation is filled with \"I would have done better.\"",
+                        "Another option is the jury mode: the two players discuss their choices out loud and the rest vote on who has the best team at the end, as in the original trend videos. With grandparents and little cousins it works especially well."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "Can you play with children at Christmas?",
+                    "a": "Yes. The Disney, The Simpsons and Viral Desserts themes are the most recommended: the items are instantly recognized and the rules are simple."
+                },
+                {
+                    "q": "Do I need to download an app?",
+                    "a": "No: it is played in the mobile browser with a room code, without registration or installation."
+                },
+                {
+                    "q": "How many can play at the same time?",
+                    "a": "The games are for two players; if there are more of you, you can take turns and let the rest act as a jury, which is part of the fun."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/tematica/postres",
+                    "texto": "Viral Desserts Theme"
+                },
+                {
+                    "href": "/tematica/musica",
+                    "texto": "Music Theme"
+                },
+                {
+                    "href": "/tematica/simpsons",
+                    "texto": "The Simpsons Theme"
+                },
+                {
+                    "href": "/guia/juegos-por-whatsapp",
+                    "texto": "Games to play on WhatsApp"
+                }
+            ]
+        },
+        "juegos-verano": {
+            "titulo": "Games for summer: themes to play in the sun",
+            "desc": "Summer themes to play Draft 20 on the beach, pool or camping: tapas, beer, barbecue and more, without installing anything.",
+            "h1": "Summer games with Draft 20",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "The Perfect Game for Summer Downtime",
+                    "p": [
+                        "In summer there is plenty of time and no plan: the nap, the wait at the beach bar, the return from the campsite. Draft 20 fits because a game lasts five minutes and is played on two mobile phones, each with its own screen, even if you have not met before.",
+                        "You don't have to install anything or register and, if the beach's Wi-Fi fails, the game continues from your mobile phone with data."
+                    ]
+                },
+                {
+                    "h": "The most summery themes",
+                    "p": [
+                        "For the beach bar plan, nothing like Tapas and Bar with a cold Craft Beer: Iberian ham, tortilla and Galician-style octopus against the last olive on the plate. And if there are embers involved, the Sunday BBQ extends the meal with steak against wet charcoal.",
+                        "If the plan is to play right after returning from a trip, random (\"All\") is the best option: no one can prepare a strategy and every duel feels different."
+                    ]
+                },
+                {
+                    "h": "Challenges to play in a group",
+                    "p": [
+                        "The best way to play in a group is a quick league: two play and the winner stays for the next duel. In half an hour four or five people pass through the auction and the excitement builds on its own.",
+                        "Another option is a theme per game, with random activated: this way no one can prepare a strategy and all the duels are different."
+                    ]
+                },
+                {
+                    "h": "A trick for the heat",
+                    "p": [
+                        "The value of each item is secret until the end, so in summer the auction is about reading the rival and not knowing the list. If you play with \"Visible Values\" activated, you will be able to see the ⭐ of each item and decide more calmly, although the game loses some of its mystery.",
+                        "For games in the sun, quick mode works best: short themes (Tapas, Pizza, Craft Beer), few coins and instant rematch. And if someone runs out of battery, the game runs just as well on a tablet or laptop in the shade."
+                    ]
+                },
+                {
+                    "h": "What to bring (and what not to) to play on the beach",
+                    "p": [
+                        "You don't need anything more than a cell phone per player and some coverage. It is better not to play with your phone in direct sunlight (it gets hot and the screen looks bad) and avoid the edge of salt water. With two towels, an umbrella and ten minutes you have a complete game.",
+                        "If you are going to play several in a row, take turns: those who wait act as judges and are in charge of keeping things going, which is half the fun of the draft."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "Can you play offline on the beach?",
+                    "a": "You need a connection to synchronize the turns between the two phones, although mobile data is enough: the game is very lightweight."
+                },
+                {
+                    "q": "What is the most fun theme for summer?",
+                    "a": "Tapas, Craft Beer and Sunday BBQ are usually the favorites, especially if the group is from the beach, beach bar or barbecue."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/tematica/tapas",
+                    "texto": "Tapas and Bar Theme"
+                },
+                {
+                    "href": "/tematica/barbacoa",
+                    "texto": "Sunday BBQ Theme"
+                },
+                {
+                    "href": "/tematica/cerveza",
+                    "texto": "Craft Beer Theme"
+                },
+                {
+                    "href": "/guia/juegos-por-whatsapp",
+                    "texto": "How to set up the game on WhatsApp"
+                }
+            ]
+        },
+        "juegos-san-valentin": {
+            "titulo": "Games for Valentine's Day as a couple (without leaving home)",
+            "desc": "Plan for Valentine's Day: auction duels with pizza, desserts and music themes. Five minutes per game, from your mobile and without installations.",
+            "h1": "Games for Valentine's Day as a couple",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "A five-minute plan (repeatable)",
+                    "p": [
+                        "Dining out is fine, but sometimes you feel like staying home. Draft 20 is an auction duel for two people that plays in five minutes and is repeated with a new theme each time: the perfect excuse to have a bite to eat without setting up anything complicated."
+                    ]
+                },
+                {
+                    "h": "The Most Valentine's-Friendly Themes",
+                    "p": [
+                        "The official theme of the night is Viral Desserts: tiramisu, coulant, Basque cheesecake and churros with punishments as fun as the instant flan. Whoever builds the best dessert table wins, and the competition for who gets the coulant is guaranteed.",
+                        "To round off the evening, Pizza (cheese, tomato, pepperoni) and Music (Queen, Beatles, AC/DC) are the best companions: Italian dinner and auction on the same night."
+                    ]
+                },
+                {
+                    "h": "Three ways to play as a couple",
+                    "p": [
+                        "The first is the classic: a game of Viral Desserts and a rematch with the same theme to break the tie. The second is blind: choose \"All (random)\" and play without knowing which list is playing until the first item appears. And the third is a best-of-three league: each person chooses a theme and the third is random, so no one has an advantage.",
+                        "If you want to up the ante, put something symbolic on the line each game (who chooses the series, who prepares Sunday breakfast). In five minutes per duel, you will usually chain three or four rematches without realizing it.",
+                        "If you like the visible values mode, activate it: you will see the ⭐ of each item during the game and the auction becomes more strategic (and more fiercely contested).",
+                        "And to make sure the series does not end in a draw, make the third game a random theme: no one can prepare a strategy and the result is truly decided. The series score is saved on your phone, so you can resume the series any other day."
+                    ]
+                },
+                {
+                    "h": "Ideas to end the night",
+                    "p": [
+                        "If the series gets interesting, you can add a homemade rule: whoever loses the game prepares the dessert or chooses the movie. It also works to bet something symbolic before each round (who clears the table, who walks the dog) so that each item weighs a little more.",
+                        "And if you have any energy left, the rematch with a random theme is the best ending: no one gets to pick their preferred theme and the series is truly decided. The series score is saved on your phone, so you can continue it another day."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "Can Draft 20 be played remotely?",
+                    "a": "Yes: everyone plays from their mobile phone with a room code, so it works the same in the same house or from miles away."
+                },
+                {
+                    "q": "What is the most romantic theme in the catalog?",
+                    "a": "Viral Desserts, without a doubt; if you want something lighter, Pizza and Music work very well as an accompaniment."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/tematica/pizza",
+                    "texto": "Pizza Theme"
+                },
+                {
+                    "href": "/tematica/postres",
+                    "texto": "Viral Desserts Theme"
+                },
+                {
+                    "href": "/tematica/musica",
+                    "texto": "Music Theme"
+                },
+                {
+                    "href": "/guia/como-ganar-draft-20",
+                    "texto": "Tactics to win the rematch"
+                }
+            ]
+        },
+        "juegos-por-videollamada": {
+            "titulo": "Games to play via video call with a friend (Discord, Zoom or FaceTime)",
+            "desc": "Which games really work on a video call, what to look for and why Draft 20 fits: without installing anything, with link or code and 5-minute games.",
+            "h1": "Games to play over video call with a friend",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "What really works in a video call",
+                    "p": [
+                        "Playing via video call has an unwritten rule: if the game forces you to look at another screen for more than a few seconds, the conversation dies, and so does the game. That's why games with clear turns work best, rules that are explained in a sentence, and short games that can be commented on while playing.",
+                        "The second factor is technical friction. Asking someone to sign up, install an app, or create an account kills the game before it begins. The ideal is a game that you enter with a link, without downloads, and that works the same from your mobile or computer.",
+                        "And the third is the competitive spark. A video-call game only works if there are decisions, tension and something to tell at the end. Bluffing or bidding turns do this much better than pure luck games."
+                    ]
+                },
+                {
+                    "h": "Why auction games are such a good fit",
+                    "p": [
+                        "The auction adds just what a call is missing: shared decision moments. In each round there is a very brief pause in which one bids, the other hesitates and in the video call the \"really?\" is heard. That two-second tension is all the entertainment.",
+                        "Furthermore, the auction explains itself: there are items, each one is worth something secret, and whoever puts together the best collection wins. You can explain it in twenty seconds and you can start playing with the other person without them having read a single rule."
+                    ]
+                },
+                {
+                    "h": "How to play Draft 20 via video call",
+                    "p": [
+                        "Open Draft 20 on your mobile and share the room link through the call chat (WhatsApp, Discord, Telegram or the Zoom chat itself). Your friend enters with his name and you are already playing: 8 rounds, 20 coins each and a surprise theme.",
+                        "Since it is not necessary to talk about the game to play it, the call is filled with other things: commenting on the items, laughing at the ones that no one wants and showing off the final collection. When you finish you can press QUICK REMATCH and continue with another theme without sharing anything again.",
+                        "If you prefer to play without a call, the code works the same; and if you want to practice before, there is a practice mode against the bot with adjustable difficulty."
+                    ]
+                },
+                {
+                    "h": "Errors that ruin a video call game",
+                    "p": [
+                        "The first is to choose a game with long turns: if each player thinks for thirty seconds, the call becomes two people looking at the cell phone in silence. Draft 20 turns are resolved in seconds and that keeps the conversation alive.",
+                        "The second is not agreeing when to finish. A short game is enjoyable; five in a row without pause end in fatigue. The usual thing is to play two or three, comment on the last one and decide whether there's a rematch.",
+                        "The third is to play with someone who is doing something else: in an auction, half the fun is reacting to what the other person is doing. If the opponent responds after two minutes, the tension disappears."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "Do I need to install something to play via video call?",
+                    "a": "No. Draft 20 is played in the browser: share a link or code and that's it. The video call goes through your usual application (Discord, Zoom, FaceTime, Meet)."
+                },
+                {
+                    "q": "Can you play from your mobile with mobile data?",
+                    "a": "Yes, the game is lightweight and only sends small requests every second. With a normal mobile connection it is enough."
+                },
+                {
+                    "q": "How long does a game last?",
+                    "a": "Between 4 and 8 minutes. There are 8 rounds and each round is a few seconds of bidding, so allow time for several games in one call."
+                },
+                {
+                    "q": "Does it work for more than two players?",
+                    "a": "No: Draft 20 is a two-player duel. If there are more of you, it is played in pairs and each couple shares the screen or takes turns."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/guia/juegos-por-whatsapp",
+                    "texto": "Games to play on WhatsApp"
+                },
+                {
+                    "href": "/guia/juegos-de-subasta-online",
+                    "texto": "Online auction games"
+                },
+                {
+                    "href": "/tematica/peliculas",
+                    "texto": "Movies Theme"
+                },
+                {
+                    "href": "/tematica/series",
+                    "texto": "TV Series Theme"
+                },
+                {
+                    "href": "/tematica/anime",
+                    "texto": "Anime Theme"
+                },
+                {
+                    "href": "/como-jugar",
+                    "texto": "How to play Draft 20"
+                },
+                {
+                    "href": "/glosario",
+                    "texto": "Glossary: bid, I'M OUT, cap…"
+                }
+            ]
+        },
+        "juegos-online-gratis-sin-registro": {
+            "titulo": "Free online games without downloading or registration for 2 players",
+            "desc": "How to recognize free online games that really require no registration, no downloads, no invasive ads, and options to play with a friend instantly.",
+            "h1": "Free online games without downloading or registration",
+            "fecha": "2026-09-17",
+            "secciones": [
+                {
+                    "h": "“No registration” means sharing a link",
+                    "p": [
+                        "Most websites that say “no registration” ask for an email on the second click, or force you to install an application. A truly registration-free game gives you a room and a link (or a short code): whoever opens it can jump straight in with a name, and that's it.",
+                        "That detail changes the entire experience. There is no waiting, no password to remember and no profile to fill out: play now and, if you like it, come back another day."
+                    ]
+                },
+                {
+                    "h": "What to look at before choosing a free game",
+                    "p": [
+                        "First, friction: how many clicks are there between landing on the site and your first move? If there are more than two, bad. Second, the ads: banners that jump or block the buttons make it impossible to play on mobile. Third, privacy: a serious game does not need your personal data to let you play a game.",
+                        "And finally, clarity: rules that are explained in one sentence and short games. If you need a ten-minute tutorial before your first game, that's a game for another time."
+                    ]
+                },
+                {
+                    "h": "Draft 20: free, in the browser and without accounts",
+                    "p": [
+                        "Draft 20 is a two-player bidding duel that works exactly like this: you enter, choose a theme (or let it be random), share the link and play 8 rounds of bidding. There is no account or download required, and there are currently no ads.",
+                        "No data is required to play either: the session lives in your browser and local progress (record, achievements and series) is saved on your own device. It is free in the browser and, if you prefer, it can be installed as an application from your mobile phone with one button, without going through a store.",
+                        "And if no one is available to play at that time, there is a quick game against another person or practice against the bot with four difficulties."
+                    ]
+                },
+                {
+                    "h": "How to Spot a \"Free\" Game with a Catch",
+                    "p": [
+                        "Real free games are sustained without asking you anything before playing. The warning signs are clear: a registration form before the first game, a limit of attempts that is unlocked by paying, or virtual coins that are purchased to continue playing.",
+                        "It's also a good idea to look at the ads: a banner on the side is acceptable, but those that cover buttons or open new tabs turn the game into an aiming exercise. And if the game promises real prizes for playing, be suspicious: the product is most likely you."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "Does Draft 20 ask for email or account?",
+                    "a": "No. Just a name to display in the game, which can be whatever you want. There is no registration or password."
+                },
+                {
+                    "q": "Do I have to download something?",
+                    "a": "It is not mandatory: it is played in the browser. If you want, you can install it as a web app from your mobile phone (Share → Add to home screen on iPhone, or the install button on Android)."
+                },
+                {
+                    "q": "Do you have ads or microtransactions?",
+                    "a": "Currently there are no ads, no purchases, and no microtransactions: the 20 coins and 8 rounds are the same for everyone."
+                },
+                {
+                    "q": "Do I need to create a room or can I play now?",
+                    "a": "You can press Quick play and the system will match you with the first player looking for a game; or create a room and share the code."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/guia/juegos-de-subasta-online",
+                    "texto": "Online auction games"
+                },
+                {
+                    "href": "/guias",
+                    "texto": "All Draft 20 Guides"
+                },
+                {
+                    "href": "/tematica/hamburguesa",
+                    "texto": "See a theme page"
+                },
+                {
+                    "href": "/tematica/futbol",
+                    "texto": "Soccer Theme"
+                },
+                {
+                    "href": "/tematica/pizza",
+                    "texto": "Pizza Theme"
+                },
+                {
+                    "href": "/tematica/animales",
+                    "texto": "Pets & Wildlife Theme"
+                },
+                {
+                    "href": "/",
+                    "texto": "Play now (free)"
+                }
+            ]
+        },
+        "juegos-para-dos-personas": {
+            "titulo": "Games for 2 people without material (at home, in a bar or by video call)",
+            "desc": "Game ideas for two people without anything: no board, no cards, no downloading apps. Draft 20 and more plans for home, bar or video call.",
+            "h1": "Games for 2 people without material",
+            "fecha": "2026-09-27",
+            "secciones": [
+                {
+                    "h": "The problem of playing two with nothing at hand",
+                    "p": [
+                        "When there are only two of you and there are no board games, cards or consoles nearby, the options are quickly reduced: either you use your cell phone or you improvise. The good news is that with one cell phone per person you already have a plan, because the best games for two do not need material, just the desire to play games.",
+                        "The key is that the game works with what you already have and that it is explained in a minute. If you have to read rules for ten minutes, the plan dies before it starts."
+                    ]
+                },
+                {
+                    "h": "Draft 20: the 20 coin auction",
+                    "p": [
+                        "Draft 20 is designed just for this: two players, two mobile phones and five minutes. Each one has 20 coins, one item comes out per round and you bid in turns; whoever collects the most valuable collection wins. Without registration, without downloads and with 69 themes to never repeat.",
+                        "To begin with, Pizza and Soccer are infallible because everyone knows the items. If you already like to play, Board Games turns the game into a geek duel: Colonists against Viruses in the same auction."
+                    ]
+                },
+                {
+                    "h": "Classics that never fail without material",
+                    "p": [
+                        "The 20 questions game works with any topic: one thinks something and the other has 20 yes/no to guess it. With couples or friends who know each other a lot, it's surprisingly fun and requires nothing.",
+                        "The best of 7 rock, paper, scissors with tests for the loser (choose the next topic, invite to the round) also saves any wait. And if you are in a bar, playing to guess the next song they will play is a classic that never gets old."
+                    ]
+                },
+                {
+                    "h": "If you are each at home: video call",
+                    "p": [
+                        "At a distance, the video call plus a turn-based game is the winning combination: everyone looks at their screen and speaks through the hands-free device. Draft 20 works like this without adaptation, because the turns are already in order and it is not necessary to see the screens.",
+                        "Set it up like this: one creates the room, shares the 5-letter code on WhatsApp and the other enters. The first game will serve to learn; from the second the real kick begins."
+                    ]
+                },
+                {
+                    "h": "How not to always repeat the same thing",
+                    "p": [
+                        "The trick so that the plan for two does not run out is to rotate: one game with a known theme (Pizza), another with a random one (\"All\") and another with something that neither of them controls, such as Music or Soccer for those who are not soccer fans. Random is the one that makes the most laughs, because no one can prepare a strategy.",
+                        "And when one wins two in a row, a rematch with another theme is mandatory: it is the unwritten rule that keeps any duel alive."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "What games can you play together without buying anything?",
+                    "a": "In-browser Draft 20, 20 Questions, Rock-Paper-Scissors with Quizzes, and Song Guessing Games – none of which require materials or downloads."
+                },
+                {
+                    "q": "Can you play two each from your home?",
+                    "a": "Yes: with a video call and a turn-based game like Draft 20, which is played on two mobile phones with a room code shared by WhatsApp."
+                },
+                {
+                    "q": "How long does a Draft 20 game last?",
+                    "a": "About five minutes: 8 rounds of turn-based bidding with 20 coins per player. Perfect for chaining rematches."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/tematica/pizza",
+                    "texto": "Pizza Theme"
+                },
+                {
+                    "href": "/tematica/juegos_mesa",
+                    "texto": "Board Games Theme"
+                },
+                {
+                    "href": "/tematica/futbol",
+                    "texto": "Soccer Theme"
+                },
+                {
+                    "href": "/guia/juegos-por-videollamada",
+                    "texto": "Games to play by video call"
+                },
+                {
+                    "href": "/guia/mejores-tematicas",
+                    "texto": "The funniest themes"
+                },
+                {
+                    "href": "/guia/juegos-rapidos-cinco-minutos",
+                    "texto": "5 minute quick games"
+                }
+            ]
+        },
+        "juegos-rapidos-cinco-minutos": {
+            "titulo": "Quick 5-minute games for 2 players (without installing anything)",
+            "desc": "Short games of about 5 minutes for two players: for waiting, breaks and dead spaces. Draft 20 and more ideas without downloads or registration.",
+            "h1": "Quick 5 minute games for 2 players",
+            "fecha": "2026-09-27",
+            "secciones": [
+                {
+                    "h": "What are 5 minute games for?",
+                    "p": [
+                        "There are gaps in the day that don't allow for a board game but seem eternal: the wait for the bus, the coffee break, the doctor's waiting room, the announcements before the movie. A five-minute game turns those moments into healthy play instead of infinite scrolling.",
+                        "The ideal format is always the same: one-minute rules, five-minute game and immediate rematch if someone is left wanting."
+                    ]
+                },
+                {
+                    "h": "Draft 20: 8 rounds and 20 coins",
+                    "p": [
+                        "A game of Draft 20 lasts about five minutes: 8 turn-based auction rounds, 20 coins per player and one theme per game. It is played in the mobile browser, without registration, so the time from \"shall we play?\" Even the first bid is seconds.",
+                        "For quick games, the best themes are the ones that are easy to recognize: Burger, Tapas or Pizza. Everyone knows what an omelet or a mushroom is, and the decisions come by themselves."
+                    ]
+                },
+                {
+                    "h": "More short games for two without material",
+                    "p": [
+                        "The \"I spy\" with categories (only car brands, only foods) lasts surprisingly well for five minutes between two. Another option is the turn-based alphabet game with a category: A for olive, B for cod... whoever gets stuck loses.",
+                        "And the classic of counting to 20 by taking turns saying one or two numbers (whoever says 20 wins) seems silly until you try not to lose twice in a row."
+                    ]
+                },
+                {
+                    "h": "Tricks so that the game does not drag on",
+                    "p": [
+                        "In Draft 20, if you want it to be a real five minutes, play with a known theme and without stopping to calculate each bid: the first games are decided by instinct and are just as fun. The tactic comes alone from the third.",
+                        "Choose who starts alternating (the one who lost the previous one starts the next one) and have a rematch in one tap: the rhythm of game-after-game is what hooks you, not a single perfect game."
+                    ]
+                },
+                {
+                    "h": "When to chain and when to stop",
+                    "p": [
+                        "Three games in a row are the sweet spot: about fifteen minutes that fly by and leave the score (2-1) for the next time. More than five in a row and the competition turns into stubbornness.",
+                        "Always leave a rematch pending for another day: \"I'll beat you in Music tomorrow\" is the best way for a quick game to become a tradition."
+                    ]
+                }
+            ],
+            "faq": [
+                {
+                    "q": "What game lasts about 5 minutes for 2 players?",
+                    "a": "Draft 20: 8 auction rounds with 20 coins per player, without registration or downloads, playable on two mobile phones."
+                },
+                {
+                    "q": "Do I need to install something to play?",
+                    "a": "No: it is played in the browser with a 5-letter room code that is shared via WhatsApp."
+                },
+                {
+                    "q": "Can you play a single quick game?",
+                    "a": "Yes, although the normal thing is to chain two or three: each one lasts about five minutes and the rematch is set up in seconds."
+                }
+            ],
+            "enlaces": [
+                {
+                    "href": "/tematica/hamburguesa",
+                    "texto": "Hamburger Theme"
+                },
+                {
+                    "href": "/tematica/tapas",
+                    "texto": "Tapas and Bar Theme"
+                },
+                {
+                    "href": "/guia/draft-de-20-monedas",
+                    "texto": "How the 20 coin draft works"
+                },
+                {
+                    "href": "/guia/como-ganar-draft-20",
+                    "texto": "Tactics to win"
+                },
+                {
+                    "href": "/guia/juegos-para-dos-personas",
+                    "texto": "Games for 2 people without material"
+                }
+            ]
+        }
+    },
+    "estrategia": {
+        "titulo": "How to play Draft 20 and win: rules and complete strategy",
+        "desc": "Complete guide to Draft 20: concept, rules of the 8 rounds, management of the 20 coins, bidding psychology (bluffing, inflating prices, forcing cost overruns) and strategies by theme.",
+        "h1": "How to play Draft 20 and win: complete strategy",
+        "fecha": "2026-09-28",
+        "intro": [
+            "Draft 20 is an auction duel for two players: 8 rounds, 20 coins per player and one theme per game. Each round an item goes up for auction, you bid in turns and whoever takes it adds it to their team of 4. The winner is whoever adds the most stars at the end. The rules are learned in two minutes; winning consistently requires managing your coins, reading the opponent and knowing the theme.",
+            "This guide is the complete manual: first the step-by-step rules and then the strategy that separates those who improvise from those who win series. If you just want the rules, they are summarized on the how to play page."
+        ],
+        "bloques": [
+            {
+                "h2": "Draft 20 concept"
+            },
+            {
+                "p": [
+                    "The idea comes from the viral videos of the \"20 dollar draft\": a fixed budget to be distributed among a list of items, where the fun is in choosing well and not in being able to pay more than anyone else. Draft 20 turns that dynamic into a duel with real rules: the budget is 20 coins, the list is 20 items of a theme and the distribution is decided by bidding, not voting.",
+                    "Each game pits two players against each other with the same conditions: the same 20 coins, the same 8 drawn items from the theme and the same information. There is no chance after the initial draw or hidden advantages: if you lose, it is because your rival bid better than you. And with a rematch just a tap away, there is always a second chance with another theme."
+                ]
+            },
+            {
+                "h2": "Step-by-step rules of the 8 rounds"
+            },
+            {
+                "p": [
+                    "A game has exactly 8 rounds and each round auctions off a different item. Each player's final collection has a maximum of 4 items: when someone reaches 4, the items that come out later are automatically passed to the opponent. That way, the 8 rounds always split 4-4."
+                ]
+            },
+            {
+                "ul": [
+                    "Round 1 to 8: an item from the theme comes out with its initial price at 0.",
+                    "The player whose turn it is starts: he can BID +1, BID +3 or fold with I'M OUT.",
+                    "The turns alternate until one of the two drops out: the last player to bid pays the final price and takes the item.",
+                    "If it is your turn to bid and you do not have coins, press PASS and the rival decides: keep the item for 1 coin or give it to you.",
+                    "The star value of each item (from 1 to 10) is secret until the end, unless you play with visible values.",
+                    "Upon completing the 8 rounds, whoever adds the most stars wins; if there is a tie, whoever keeps the most coins wins."
+                ]
+            },
+            {
+                "p": [
+                    "The starting order matters: whoever starts the round places the first bid and sets the tone, but whoever drops out last decides who pays. That's why the game is not about winning bids, but about paying a fair price for the items you want and a high price for those your rival wants."
+                ]
+            },
+            {
+                "h2": "Mathematical bankroll management: 20 coins"
+            },
+            {
+                "p": [
+                    "You have 20 coins for 4 items: the fair average is 5 coins per item. Every extra coin you pay for one item is money taken away from the other three, and everything you save on a mediocre item you can invest in the star of the list. Bankroll management isn't about gut feelings, but about two simple rules."
+                ]
+            },
+            {
+                "h3": "The rule of third"
+            },
+            {
+                "p": [
+                    "Reserve about 6-7 coins (one third) for the second half of the game. The big items usually come out when you have already spent, and reaching rounds 6-8 without coins turns you into a spectator: the rival takes the best at whatever price they want. If mid-game you have spent more than 13-14 coins, you are paying too much."
+                ]
+            },
+            {
+                "h3": "When to spend and when to save"
+            },
+            {
+                "p": [
+                    "Spend heavily only on game-changing items: those that are clearly worth 8 or more stars in their theme. In the rest, your objective is not to get them cheap, but to force your rival to pay dearly for them (see psychology). And never stay at zero on purpose: without coins you lose the bidding turn and the rival decides for you with the PASS rule."
+                ]
+            },
+            {
+                "ul": [
+                    "Average budget per item: 5 coins; more than 7 on a normal item means overpaying.",
+                    "By mid-game (round 4) you should have at least 6-7 coins.",
+                    "The tie is broken by remaining coins: each coin saved is worth double."
+                ]
+            },
+            {
+                "h2": "Bidding psychology: bluffing, inflating and forcing"
+            },
+            {
+                "p": [
+                    "Since the values are secret, the auction is an information game: each bid says something about what you think the item is worth, and so does every fold. Whoever lies best and reads best, wins. These are the three weapons."
+                ]
+            },
+            {
+                "h3": "The bluff: bidding what you don't want"
+            },
+            {
+                "p": [
+                    "Bidding hard for a mediocre item makes your rival believe that it is a gem, and sometimes they end up paying more for fear of leaving it to you cheap. Bluffing works best at the beginning of the game, when everyone's tastes are not yet known, and in moderation: if you are discovered, your opponent will stop believing you when you really bid."
+                ]
+            },
+            {
+                "h3": "Inflating prices: the rise that doesn't hurt"
+            },
+            {
+                "p": [
+                    "When your opponent clearly wants an item, every +1 or +3 you add before dropping is money they won't have later. The technique is to go up one at a time until you notice them hesitate, and drop out just before the price commits you. An item they would have paid 4 for and end up taking at 7 is 3 coins less for the rest of the game."
+                ]
+            },
+            {
+                "h3": "Force extra costs on the rival"
+            },
+            {
+                "p": [
+                    "The advanced version of inflating: identify the item that the opponent absolutely needs (for example, the last gap on their team) and squeeze it to the limit. If they need that item to complete 4, they'll pay almost anything and come out of that round with no coins for whatever comes next. Of course: calculate well, because if they drop out before you, you pay the extra cost."
+                ]
+            },
+            {
+                "h2": "Strategies by theme"
+            },
+            {
+                "p": [
+                    "Not all themes play the same, because not all lists are built the same. In the themes you master (Pizza, Soccer), trust your judgment: you know which items are elite and which are filler. In those that you do not dominate, manage your coins and read your opponent: spend little, inflate a lot and save for the end."
+                ]
+            },
+            {
+                "ul": [
+                    "Known themes (Pizza, Soccer): identify your 2-3 elite items before you start and go for them; the rest is currency to inflate.",
+                    "Culture themes (Board games, Music): if the rival knows more than you, do not compete in knowledge; compete on bankroll management and let him pay dearly for his wisdom.",
+                    "Random theme (\"All\"): no one can prepare anything, so whoever improvises best wins: cheap bluffs, coins for the end and zero attachment to any item.",
+                    "With the cap of 4 in mind: if you already have 3 items and there is little left, each coin is worth more, because the opponent knows that you need to close the team.",
+                    "Without coins (PASS): if the rival gives you the item, sometimes it is because it is worth little; if you keep it for 1, it was better than it seemed. Write down that information."
+                ]
+            },
+            {
+                "p": [
+                    "And the last strategy isn't for a single game, but for the whole series: always play the rematch with another theme. Changing lists resets the opponent's reads and rewards the most well-rounded player, not the most specialized one."
+                ]
+            }
+        ],
+        "enlaces": [
+            {
+                "href": "/como-jugar",
+                "texto": "Summary rules: how to play"
+            },
+            {
+                "href": "/guia/como-ganar-draft-20",
+                "texto": "Tactics to win the rematch"
+            },
+            {
+                "href": "/guia/mejores-tematicas",
+                "texto": "The funniest themes"
+            },
+            {
+                "href": "/tematica/pizza",
+                "texto": "Practice with the Pizza theme"
+            }
+        ]
+    },
+    "faq": {
+        "titulo": "Draft 20 FAQ",
+        "desc": "We resolve doubts about Draft 20: private rooms and invitations, how it is scored, what happens if you disconnect, available themes and how to play on mobile.",
+        "h1": "Draft 20 FAQ",
+        "fecha": "2026-09-28",
+        "intro": [
+            "Here are the answers to what we get asked the most: how to set up a game with a friend, how the winner is decided, what happens if the connection drops mid-round and what devices you can play on."
+        ],
+        "faq": [
+            {
+                "q": "How do I create a private room to play with a friend?",
+                "a": "From the main page, write your name, choose the theme (or leave \"All\" to be drawn) and press create room. You will get a 5-letter code that you can share on WhatsApp or with the direct invitation link: your rival opens it, enters with his name and the game starts automatically, without registration."
+            },
+            {
+                "q": "How is the score calculated and who wins?",
+                "a": "Each item has a secret value from 1 to 10 stars that is only revealed at the end. Whoever adds the most stars with their 4 items wins. If there is a star tie, whoever has saved the most coins wins, so every coin you save counts double."
+            },
+            {
+                "q": "What happens if I log out mid-round?",
+                "a": "You can log in again with the same room code from the same browser and you will recover your site, because the session is saved on your device. If you abandon permanently, the game does not count towards the statistics and your opponent can continue practicing or ask for a rematch at another time."
+            },
+            {
+                "q": "How many themes are there and which are the best to start with?",
+                "a": "There are 69 themes of 20 items each, with a selection of Featured that rotates with trends. To start we recommend Pizza and Soccer, because everyone recognizes the items; when you control the game, the \"All\" option determines the theme in each game and none of them are repeated."
+            },
+            {
+                "q": "Can it be played on mobile? Do I need to install something?",
+                "a": "Yes, and you don't have to install anything: it is played in the mobile browser, with large buttons designed for touch screens. If you want, you can add it to the home screen as another app; it will work in full screen and with its own icon."
+            },
+            {
+                "q": "Can I play alone against the machine?",
+                "a": "Yes, with the practice mode: you choose the theme and difficulty (Easy, Normal, Hard or Extreme) and the bot takes the second seat with the same rules as you. You also have guided practice, which explains each step while you play on easy. And from the tab for each theme you can directly enter a game against the bot in one click."
+            },
+            {
+                "q": "How does the rematch work?",
+                "a": "At the end of the game, either of the two can propose a rematch with a new theme from the final screen. The opponent accepts or rejects it right there, and whoever starts the first round alternates so that no one has an advantage. The chained rematches form a best-of-3 series."
+            },
+            {
+                "q": "Do I need to register or pay anything?",
+                "a": "No: it's free and without accounts. You enter with a temporary name, play and that's it. There are no payments, no subscriptions, no real coins: the 20 coins are just the budget for each game."
+            },
+            {
+                "q": "What are visible values (⭐)?",
+                "a": "It is an optional mode that shows the stars of each item during the game, instead of keeping them secret until the end. It is chosen by whoever creates the room and affects both players. It is ideal for learning, although the game loses part of the mystery and bluffing."
+            },
+            {
+                "q": "How long does a game last?",
+                "a": "About five minutes: 8 rounds of turn-based bidding with quick decisions. It is perfect for chaining two or three in a row during a break, and the rematch is set up in seconds with another theme."
+            },
+            {
+                "q": "Can more than two people play?",
+                "a": "The games are 1 on 1 duels, but with more people the normal thing is to set up a league: two play, the winner stays and the next challenger enters. The rest can act as a jury and vote for the best team at the end, as in the original trend videos."
+            },
+            {
+                "q": "Are my games and statistics saved?",
+                "a": "Your results are saved in your own browser (wins, streaks and achievements), without accounts or servers with your data. Only anonymous statistics of finished games (theme and mode) are recorded for the monthly ranking of the most played, without names or identifiers."
+            }
+        ],
+        "enlaces": [
+            {
+                "href": "/como-jugar",
+                "texto": "Summary rules: how to play"
+            },
+            {
+                "href": "/como-jugar-y-estrategia",
+                "texto": "Complete strategy to win"
+            },
+            {
+                "href": "/guias",
+                "texto": "All guides"
+            }
+        ]
+    },
+    "hub": {
+        "titulo": "Auction games: what they are and the best to play online",
+        "desc": "What is an auction game, why it is so engaging and how to choose one online for two players: mechanics, variants and Draft 20 explained.",
+        "h1": "Auction games: what they are and why they are engaging",
+        "fecha": "2026-09-17",
+        "intro": "An auction game turns a simple decision (“how much do I pay for this?”) into an entire system: there are items, there is a price that goes up, and there is someone on the other side who wants the same thing as you. Here's what makes a good auction game, what variants exist, and where to play one online for free with someone else.",
+        "secciones": [
+            {
+                "h": "What is an auction game",
+                "p": [
+                    "In an auction game, players compete to take objects (items, cards, characters, plates of food) by bidding on them. Normally each player starts with the same budget, and the game consists of deciding how much it is worth paying for each thing that comes out: if you pay more, you run out of money for the good stuff; if you pay less, someone else takes it.",
+                    "The funny thing is that the value of what you buy is not always public. In some games you see a score; in others, like Draft 20, the value of each item is secret until the end, so the person who best interprets what the opponent wants wins, not the person who knows the list by heart."
+                ]
+            },
+            {
+                "h": "Variants: sealed envelope, open bid and round-robin auction",
+                "p": [
+                    "The sealed-bid auction is the classic one: each player writes his bid at the same time and the highest one wins the lot. She is quick, but has little conversation: there is no tension during the bidding, only when opening the envelopes.",
+                    "Open bidding (auction house style) is more lively: the price rises and anyone can outbid until everyone else withdraws. It generates much more tension, although it usually requires an agile rhythm so as not to drag on forever.",
+                    "The turn-based auction mixes the best of both: the price rises one at a time, each player decides at the time whether to go up or down, and whoever leaves lets the other pay. It's the mechanic of Draft 20, and it's the one that produces the funniest moments: that \"I'll leave it to you\" when your opponent thinks you've understood something you haven't."
+                ]
+            },
+            {
+                "h": "What makes a good auction game",
+                "p": [
+                    "First, limited budget: if you can buy everything, there is no game. The limit is what forces you to choose. Second, imperfect information: if everyone knows the exact value of each item, the game is reduced to accounts; with hidden or partially hidden values, reading the opponent comes into play.",
+                    "Third, short games with easy rematches. The auction leaves a clear flavor (\"I was wrong in round 2\") and that immediately calls for another game. And fourth, that you can play with someone without explaining half an hour of rules: the less preparation, the more people will sit at the table."
+                ]
+            },
+            {
+                "h": "Draft 20: turn-based auction, online and free",
+                "p": [
+                    "Draft 20 takes this mechanic to a two-player duel in the browser: 20 coins each, 8 rounds and one theme per game (soccer, food, anime, streamers and 68 more). In each round an item goes up for auction and is bid in turns with BID +1 or BID +3; whoever drops out lets the last bidder pay the price and keep the item.",
+                    "There are two rules that give it character: each player can hoard a maximum of 4 items (from then on, the items go to the rival) and, if you run out of coins in a new round, you give up the item and the rival decides whether to keep it for 1 coin or give it to you. In the end, whoever adds the most ⭐ wins and, in the event of a tie, whoever keeps the most coins.",
+                    "There is no account or download: create a room, share the code or link and play (currently ad-free). There is also quick play (automatic pairing) and practice against the bot in four difficulties."
+                ]
+            },
+            {
+                "h": "How to get started in two minutes",
+                "p": [
+                    "Choose a theme from the catalog—or let it be random—and share the link with the other person. If you want to arrive with your homework done, start by understanding three concepts: what a bid is, what I'M OUT means and how the 4-item cap works. With that you already play your first game and, above all, you understand why the second is better than the first."
+                ]
+            }
+        ],
+        "faq": [
+            {
+                "q": "What is the difference between an auction and a draft?",
+                "a": "In a draft you choose in turns from a common list and what one takes cannot be taken by another; in an auction you bid with a budget and you can pay more or less for the same thing. Draft 20 combines both: 8 items, 20 coins and turn-based bidding."
+            },
+            {
+                "q": "What is the best auction game for two players?",
+                "a": "It depends on what you're looking for: if you want 5-minute games, without registration and from your mobile, Draft 20 is designed exactly for that. If you are looking for auctions with more components, there are classic board games of the genre, but they require material and presence."
+            },
+            {
+                "q": "Can you play online auctions for free?",
+                "a": "Yes. Draft 20 is free, played in the browser and does not require an account. The 20 coins and 8 rounds are the same for everyone."
+            },
+            {
+                "q": "Is the auction about skill or luck?",
+                "a": "In Draft 20 it is about skill: the items that come out are random, but the value is fixed and what you decide (when to bid, when to drop out, what collection to build) determines the result."
+            }
+        ],
+        "enlaces": [
+            {
+                "href": "/guia/juegos-de-subasta-online",
+                "texto": "Online auction games to play today"
+            },
+            {
+                "href": "/guia/como-ganar-draft-20",
+                "texto": "Tactics to win your auctions"
+            },
+            {
+                "href": "/glosario",
+                "texto": "Glossary: bid, I'M OUT, cap, deadlock"
+            },
+            {
+                "href": "/categoria/comida",
+                "texto": "Food and drink themes"
+            },
+            {
+                "href": "/como-jugar",
+                "texto": "How to play Draft 20"
+            }
+        ]
+    }
+}

@@ -1,11 +1,11 @@
-/* Draft 20 - Service Worker (v5)
- * - Navegación: network-first con fallback a la home cacheada.
+/* Draft 20 - Service Worker (v6)
+ * - Navegación: network-first con fallback a la home cacheada (ES y EN).
  * - Assets: stale-while-revalidate (los assets van versionados con ?v=filemtime,
  *   así que la caché antigua se sustituye sola al cambiar el archivo).
  * - API: siempre red.
  */
-const CACHE = 'draft20-v5';
-const SHELL = ['/'];
+const CACHE = 'draft20-v6';
+const SHELL = ['/', '/?lang=en'];
 
 self.addEventListener('install', function (e) {
     e.waitUntil(
@@ -42,13 +42,17 @@ self.addEventListener('fetch', function (e) {
                     // la respuesta de otra ruta (p. ej. una ficha o guía).
                     const p = url.pathname;
                     if (res && res.ok && (p === '/' || p === '/index.php')) {
+                        const clave = url.searchParams.get('lang') === 'en' ? '/?lang=en' : '/';
                         const copy = res.clone();
-                        caches.open(CACHE).then(function (c) { c.put('/', copy); }).catch(function () {});
+                        caches.open(CACHE).then(function (c) { c.put(clave, copy); }).catch(function () {});
                     }
                     return res;
                 })
                 .catch(function () {
-                    return caches.match('/', { ignoreSearch: true });
+                    const clave = url.searchParams.get('lang') === 'en' ? '/?lang=en' : '/';
+                    return caches.match(clave).then(function (res) {
+                        return res || caches.match('/');
+                    });
                 })
         );
         return;

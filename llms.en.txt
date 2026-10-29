@@ -1,0 +1,18 @@
+# Draft 20
+
+> Draft 20 is a turn-based auction game for two players: 8 rounds, 20 coins and one theme per game. Free, no sign-up and playable in your mobile browser.
+
+## Main pages
+
+- [Home](https://draft20.es/?lang=en): create a private room, join with a code or quick play.
+- [How to play](https://draft20.es/como-jugar?lang=en): step-by-step rules.
+- [Strategy](https://draft20.es/como-jugar-y-estrategia?lang=en): budget, bidding psychology and tactics by theme.
+- [FAQ](https://draft20.es/preguntas-frecuentes?lang=en): rooms, scoring, disconnections and mobile.
+- [Auction games](https://draft20.es/juegos-de-subasta?lang=en): what they are and how to choose one.
+- [Guides](https://draft20.es/guias?lang=en): strategy, comparisons and games for two people.
+- [Glossary](https://draft20.es/glosario?lang=en): bid, I'M OUT, cap, deadlock and more.
+- [Themes](https://draft20.es/?lang=en#tematicas): 69 lists of 20 items by category.
+
+## Contact
+
+- [contacto@draft20.es](mailto:contacto@draft20.es)

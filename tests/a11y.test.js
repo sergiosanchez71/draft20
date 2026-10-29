@@ -32,6 +32,12 @@ const PAGINAS = [
     '/guia/juegos-por-videollamada',
     '/privacidad',
     '/ranking',
+    '/index.php?lang=en',
+    '/como-jugar?lang=en',
+    '/glosario?lang=en',
+    '/tematica/futbol?lang=en',
+    '/categoria/comida?lang=en',
+    '/guia/draft-de-20-monedas?lang=en',
 ];
 
 const esperar = (ms) => new Promise(function (r) { setTimeout(r, ms); });

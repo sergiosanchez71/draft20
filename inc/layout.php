@@ -7,11 +7,13 @@
  */
 declare(strict_types=1);
 
+require_once __DIR__ . '/i18n.php';
+
 const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.3.8';
+const APP_VERSION = '1.4.0';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 // Google Analytics 4 directo (gtag.js). Vacío = no se pinta nada.
 const GA4_ID = 'G-JR150JQ65Z';
@@ -35,16 +37,6 @@ const AD_HUECOS = [
 function e(?string $s): string
 {
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
-}
-
-function cargar_lang(): array
-{
-    static $lang = null;
-    if ($lang === null) {
-        $raw = json_decode((string) file_get_contents(__DIR__ . '/../lang/es.json'), true);
-        $lang = is_array($raw) ? $raw : [];
-    }
-    return $lang;
 }
 
 /** @return array<int, array{id:string, emoji:string, tematicas:array<int, array{id:string, emoji:string}>}> */
@@ -279,7 +271,7 @@ function consent_banner(): void
              aria-labelledby="d20-consent-title" hidden>
         <h2 id="d20-consent-title" class="d20-consent__titulo"><?= e($titulo) ?></h2>
         <p class="d20-consent__texto"><?= e($texto) ?>
-            <a href="/privacidad#cookies"><?= e($masInfo) ?></a>.
+            <a href="<?= e(url_lang('/privacidad#cookies')) ?>"><?= e($masInfo) ?></a>.
         </p>
         <div class="d20-consent__acciones">
             <button type="button" class="d20-consent__btn btn-tap" data-consent="denied"><?= e($rechazar) ?></button>
@@ -428,18 +420,18 @@ function css_tags(bool $inline = true): string
 function nav_links(): array
 {
     return [
-            ['href' => '/como-jugar', 'texto' => 'Cómo se juega'],
-            ['href' => '/como-jugar-y-estrategia', 'texto' => 'Estrategia'],
-            ['href' => '/preguntas-frecuentes', 'texto' => 'Preguntas frecuentes'],
-            ['href' => '/guias', 'texto' => 'Guías'],
-            ['href' => '/glosario', 'texto' => 'Glosario'],
-        ['href' => '/ranking', 'texto' => 'Ranking'],
-            ['href' => '/juegos-de-subasta', 'texto' => 'Juegos de subasta'],
-        ['href' => '/acerca', 'texto' => 'Acerca de'],
-        ['href' => '/contacto', 'texto' => 'Contacto'],
-        ['href' => '/privacidad', 'texto' => 'Privacidad'],
-        ['href' => '/aviso-legal', 'texto' => 'Aviso legal'],
-        ['href' => '/terminos', 'texto' => 'Términos'],
+        ['href' => '/como-jugar', 'texto' => t('ui.nav.como_jugar')],
+        ['href' => '/como-jugar-y-estrategia', 'texto' => t('ui.nav.estrategia')],
+        ['href' => '/preguntas-frecuentes', 'texto' => t('ui.nav.faq')],
+        ['href' => '/guias', 'texto' => t('ui.nav.guias')],
+        ['href' => '/glosario', 'texto' => t('ui.nav.glosario')],
+        ['href' => '/ranking', 'texto' => t('ui.nav.ranking')],
+        ['href' => '/juegos-de-subasta', 'texto' => t('ui.nav.subasta')],
+        ['href' => '/acerca', 'texto' => t('ui.nav.acerca')],
+        ['href' => '/contacto', 'texto' => t('ui.nav.contacto')],
+        ['href' => '/privacidad', 'texto' => t('ui.nav.privacidad')],
+        ['href' => '/aviso-legal', 'texto' => t('ui.nav.aviso')],
+        ['href' => '/terminos', 'texto' => t('ui.nav.terminos')],
     ];
 }
 
@@ -471,7 +463,7 @@ function site_json_ld(): array
             '@type' => 'Organization',
             '@id' => SITE_URL . '/#organizacion',
             'name' => SITE_NOMBRE,
-            'url' => SITE_URL . '/',
+            'url' => SITE_URL . url_lang('/'),
             'email' => SITE_EMAIL,
             'logo' => [
                 '@type' => 'ImageObject',
@@ -485,8 +477,8 @@ function site_json_ld(): array
             '@type' => 'WebSite',
             '@id' => SITE_URL . '/#web',
             'name' => SITE_NOMBRE,
-            'url' => SITE_URL . '/',
-            'inLanguage' => 'es',
+            'url' => SITE_URL . url_lang('/'),
+            'inLanguage' => idioma_bcp47(),
             'publisher' => ['@id' => SITE_URL . '/#organizacion'],
         ],
     ];
@@ -501,17 +493,22 @@ function pagina_head(array $opts): void
 {
     $titulo = $opts['titulo'] ?? SITE_NOMBRE;
     $descripcion = $opts['descripcion'] ?? '';
-    $canonical = SITE_URL . ($opts['canonical'] ?? '/');
+    $ruta = (string) ($opts['canonical'] ?? '/');
+    $canonical = canonical_absoluto($ruta);
     $robots = $opts['robots'] ?? 'index, follow';
-    $ogImage = $opts['og_image'] ?? SITE_URL . '/og-image.png';
+    $ogImage = $opts['og_image'] ?? (idioma_actual() === 'en' && is_file(__DIR__ . '/../og/en/og-image.png')
+        ? SITE_URL . '/og/en/og-image.png'
+        : SITE_URL . '/og-image.png');
+    $ogImage = og_imagen_idioma((string) $ogImage);
     $bodyClass = $opts['body_class'] ?? 'bg-slate-900 text-slate-100 min-h-screen flex flex-col';
     $jsonLd = array_merge(site_json_ld(), $opts['json_ld'] ?? []);
     csp_headers();
     ?><!DOCTYPE html>
-<html lang="es">
+<html lang="<?= e(idioma_bcp47()) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <?= deteccion_idioma_script() ?>
     <?= csp_meta() ?>
     <?= ga_head() ?>
     <meta name="theme-color" content="#0f172a">
@@ -520,10 +517,12 @@ function pagina_head(array $opts): void
     <title><?= e($titulo) ?></title>
     <meta name="description" content="<?= e($descripcion) ?>">
     <link rel="canonical" href="<?= e($canonical) ?>">
+    <?= hreflang_tags($ruta) ?>
     <meta name="robots" content="<?= e($robots) ?>">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="<?= e(SITE_NOMBRE) ?>">
-    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale" content="<?= e(og_locale()) ?>">
+    <meta property="og:locale:alternate" content="<?= e(og_locale_alternativo()) ?>">
     <meta property="og:title" content="<?= e($titulo) ?>">
     <meta property="og:description" content="<?= e($descripcion) ?>">
     <meta property="og:url" content="<?= e($canonical) ?>">
@@ -537,8 +536,8 @@ function pagina_head(array $opts): void
     <link rel="icon" type="image/png" sizes="96x96" href="<?= e(asset('icons/icon-96.png')) ?>">
     <link rel="icon" type="image/png" sizes="192x192" href="<?= e(asset('icons/icon-192.png')) ?>">
     <link rel="apple-touch-icon" href="<?= e(asset('icons/icon-180.png')) ?>">
-    <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="alternate" type="application/rss+xml" title="Draft 20 — Guías" href="/feed.xml">
+    <link rel="manifest" href="<?= e(idioma_actual() === 'en' ? '/manifest.en.webmanifest' : '/manifest.webmanifest') ?>">
+    <link rel="alternate" type="application/rss+xml" title="<?= e(idioma_actual() === 'en' ? 'Draft 20 — Guides' : 'Draft 20 — Guías') ?>" href="<?= e(url_lang('/feed.xml')) ?>">
 <?php foreach (($opts['prefetch'] ?? []) as $pf): ?>
     <link rel="prefetch" href="<?= e($pf) ?>">
 <?php endforeach; ?>
@@ -567,17 +566,18 @@ function pagina_head(array $opts): void
 function site_header(): void
 {
     $enlaces = [
-        ['href' => '/como-jugar', 'texto' => 'Cómo se juega'],
-        ['href' => '/como-jugar-y-estrategia', 'texto' => 'Estrategia'],
-        ['href' => '/preguntas-frecuentes', 'texto' => 'Preguntas frecuentes'],
-        ['href' => '/guias', 'texto' => 'Guías'],
-        ['href' => '/ranking', 'texto' => 'Ranking'],
+        ['href' => '/como-jugar', 'texto' => t('ui.nav.como_jugar')],
+        ['href' => '/como-jugar-y-estrategia', 'texto' => t('ui.nav.estrategia')],
+        ['href' => '/preguntas-frecuentes', 'texto' => t('ui.nav.faq')],
+        ['href' => '/guias', 'texto' => t('ui.nav.guias')],
+        ['href' => '/ranking', 'texto' => t('ui.nav.ranking')],
     ];
     ?>
-    <nav class="w-full bg-slate-900/95 border-b border-slate-800 px-4 py-2 flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm" aria-label="Navegación principal">
+    <nav class="w-full bg-slate-900/95 border-b border-slate-800 px-4 py-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm" aria-label="<?= e(t('ui.comun.nav_principal')) ?>">
         <?php foreach ($enlaces as $l): ?>
-        <a class="text-slate-300 hover:text-amber-400 font-semibold" href="<?= e($l['href']) ?>"><?= e($l['texto']) ?></a>
+        <a class="text-slate-300 hover:text-amber-400 font-semibold" href="<?= e(url_lang($l['href'])) ?>"><?= e($l['texto']) ?></a>
         <?php endforeach; ?>
+        <?= selector_idioma('d20-lang--header') ?>
     </nav>
 <?php
 }
@@ -619,21 +619,21 @@ function pagina_foot(array $opts = []): void
 function site_footer(): void
 {
     $year = date('Y');
-    $consent = cargar_lang()['ui']['consent'] ?? [];
-    $textoCookies = is_array($consent) ? (string) ($consent['abrir'] ?? 'Cookies') : 'Cookies';
+    $textoCookies = t('ui.consent.abrir');
     ?>
     <footer class="mt-10 border-t border-slate-800 px-4 py-8 text-center text-sm text-slate-400">
-        <nav class="flex flex-wrap justify-center gap-x-5 gap-y-2 mb-4" aria-label="Enlaces del sitio">
-            <a class="hover:text-amber-400" href="/">Inicio</a>
+        <nav class="flex flex-wrap justify-center gap-x-5 gap-y-2 mb-4" aria-label="<?= e(t('ui.comun.enlaces_pie')) ?>">
+            <a class="hover:text-amber-400" href="<?= e(url_lang('/')) ?>"><?= e(t('ui.nav.inicio')) ?></a>
 <?php foreach (nav_links() as $l): ?>
-            <a class="hover:text-amber-400" href="<?= e($l['href']) ?>"><?= e($l['texto']) ?></a>
+            <a class="hover:text-amber-400" href="<?= e(url_lang($l['href'])) ?>"><?= e($l['texto']) ?></a>
 <?php endforeach; ?>
 <?php if (GA4_ID !== ''): ?>
             <button type="button" data-consent-open class="hover:text-amber-400"><?= e($textoCookies) ?></button>
 <?php endif; ?>
         </nav>
-        <p class="mb-1"><?= e(SITE_NOMBRE) ?> · Subasta por turnos para 2 jugadores</p>
+        <p class="mb-1"><?= e(SITE_NOMBRE) ?> · <?= e(t('ui.footer.subtitulo')) ?></p>
         <p><a class="hover:text-amber-400" href="mailto:<?= e(SITE_EMAIL) ?>"><?= e(SITE_EMAIL) ?></a> · © <?= $year ?></p>
+        <div class="mt-4 flex justify-center"><?= selector_idioma('d20-lang--footer') ?></div>
     </footer>
 <?php
 }
@@ -654,7 +654,7 @@ function pagina_404(): void
         <div class="text-6xl mb-4">🎲</div>
         <h1 class="text-3xl font-bold text-amber-400 mb-3"><?= e((string) ($SEO['p404_titulo'] ?? 'Página no encontrada')) ?></h1>
         <p class="text-slate-300 text-sm max-w-md leading-relaxed mb-6"><?= e((string) ($SEO['p404_texto'] ?? '')) ?></p>
-        <a href="/" class="bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap">Volver al inicio</a>
+        <a href="<?= e(url_lang('/')) ?>" class="bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e(t('ui.comun.volver_inicio')) ?></a>
     </main>
 <?php
     pagina_foot();

@@ -13,6 +13,10 @@
 - [Glosario](https://draft20.es/glosario): puja, ME BAJO, cap, deadlock y más.
 - [Temáticas](https://draft20.es/#tematicas): 69 listas de 20 ítems por categoría.
 
+## English
+
+- [English summary](https://draft20.es/llms.en.txt)
+
 ## Contacto
 
 - [contacto@draft20.es](mailto:contacto@draft20.es)

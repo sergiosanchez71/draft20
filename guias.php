@@ -20,7 +20,7 @@ foreach ($guias as $slug => $g) {
         '@type' => 'ListItem',
         'position' => $pos++,
         'name' => (string) $g['titulo'],
-        'url' => SITE_URL . '/guia/' . $slug,
+        'url' => SITE_URL . url_lang('/guia/' . $slug),
     ];
 }
 
@@ -33,14 +33,14 @@ pagina_head([
         '@context' => 'https://schema.org',
         '@type' => 'BreadcrumbList',
         'itemListElement' => [
-            ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . '/'],
+            ['@type' => 'ListItem', 'position' => 1, 'name' => (string) ($SEO['migas_inicio'] ?? 'Inicio'), 'item' => SITE_URL . url_lang('/')],
             ['@type' => 'ListItem', 'position' => 2, 'name' => seo_ui('migas_guias')],
         ],
     ], [
         '@context' => 'https://schema.org',
         '@type' => 'CollectionPage',
         'name' => seo_ui('guias_titulo'),
-        'inLanguage' => 'es',
+        'inLanguage' => idioma_bcp47(),
         'mainEntity' => [
             '@type' => 'ItemList',
             'numberOfItems' => count($itemList),
@@ -56,16 +56,16 @@ pagina_head([
         <ul class="space-y-3 mb-8">
             <?php foreach ($guias as $slug => $g): ?>
             <li class="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                <a class="font-bold text-amber-300 hover:text-amber-200" href="/guia/<?= e($slug) ?>"><?= e((string) $g['titulo']) ?></a>
+                <a class="font-bold text-amber-300 hover:text-amber-200" href="<?= e(url_lang('/guia/' . $slug)) ?>"><?= e((string) $g['titulo']) ?></a>
                 <p class="text-sm text-slate-300 leading-relaxed mt-2"><?= e((string) ($g['desc'] ?? '')) ?></p>
-                <p class="text-xs text-slate-400 mt-2"><?= e(seo_ui('guia_actualizado')) ?>: <?= e(fecha_es((string) ($g['fecha'] ?? ''))) ?></p>
+                <p class="text-xs text-slate-400 mt-2"><?= e(t('ui.comun.actualizado')) ?>: <?= e(fecha_localizada((string) ($g['fecha'] ?? ''))) ?></p>
             </li>
             <?php endforeach; ?>
         </ul>
 
         <?= ads_slot() ?>
 
-        <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
+        <a href="<?= e(url_lang('/#app')) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
     </main>
 <?php
 pagina_foot();

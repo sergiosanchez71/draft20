@@ -20,24 +20,28 @@ foreach ($guias as $g) {
         $ultima = date(DATE_RSS, $ts);
     }
 }
+$es = idioma_actual() === 'es';
+$urlGuias = url_lang(SITE_URL . '/guias');
+$urlFeed = url_lang(SITE_URL . '/feed.xml');
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
-    <title>Draft 20 — Guías</title>
-    <link><?= e(SITE_URL . '/guias') ?></link>
-    <description>Reglas, estrategia y comparativas del juego de subasta Draft 20.</description>
-    <language>es</language>
+    <title><?= $es ? 'Draft 20 — Guías' : 'Draft 20 — Guides' ?></title>
+    <link><?= e($urlGuias) ?></link>
+    <description><?= $es ? 'Reglas, estrategia y comparativas del juego de subasta Draft 20.' : 'Rules, strategy and comparisons for the Draft 20 auction game.' ?></description>
+    <language><?= e(idioma_actual()) ?></language>
     <lastBuildDate><?= e($ultima) ?></lastBuildDate>
-    <atom:link href="<?= e(SITE_URL . '/feed.xml') ?>" rel="self" type="application/rss+xml"/>
+    <atom:link href="<?= e($urlFeed) ?>" rel="self" type="application/rss+xml"/>
 <?php foreach ($guias as $slug => $g):
     $ts = strtotime((string) ($g['fecha'] ?? ''));
+    $urlGuia = url_lang(SITE_URL . '/guia/' . $slug);
     ?>
     <item>
         <title><?= e((string) ($g['titulo'] ?? $slug)) ?></title>
-        <link><?= e(SITE_URL . '/guia/' . $slug) ?></link>
-        <guid isPermaLink="true"><?= e(SITE_URL . '/guia/' . $slug) ?></guid>
+        <link><?= e($urlGuia) ?></link>
+        <guid isPermaLink="true"><?= e($urlGuia) ?></guid>
         <description><?= e((string) ($g['desc'] ?? '')) ?></description>
         <?php if ($ts !== false): ?>
         <pubDate><?= e(date(DATE_RSS, $ts)) ?></pubDate>

@@ -39,16 +39,16 @@ pagina_head([
     'titulo' => $titulo,
     'descripcion' => (string) ($SEO['como_jugar_desc'] ?? ''),
     'canonical' => '/como-jugar',
-    'og_image' => SITE_URL . '/og/seccion/como-jugar.png',
+    'og_image' => og_imagen_idioma(SITE_URL . '/og/seccion/como-jugar.png'),
     'json_ld' => [[
         '@context' => 'https://schema.org',
         '@type' => 'Article',
         'headline' => $titulo,
         'description' => (string) ($SEO['como_jugar_desc'] ?? ''),
-        'inLanguage' => 'es',
-        'image' => SITE_URL . '/og/seccion/como-jugar.png',
-        'url' => SITE_URL . '/como-jugar',
-        'mainEntityOfPage' => SITE_URL . '/como-jugar',
+        'inLanguage' => idioma_bcp47(),
+        'image' => og_imagen_idioma(SITE_URL . '/og/seccion/como-jugar.png'),
+        'url' => SITE_URL . url_lang('/como-jugar'),
+        'mainEntityOfPage' => SITE_URL . url_lang('/como-jugar'),
         'author' => ['@id' => SITE_URL . '/#organizacion'],
         'publisher' => ['@id' => SITE_URL . '/#organizacion'],
     ], [
@@ -56,7 +56,7 @@ pagina_head([
         '@type' => 'HowTo',
         'name' => $titulo,
         'description' => (string) ($SEO['como_jugar_desc'] ?? ''),
-        'inLanguage' => 'es',
+        'inLanguage' => idioma_bcp47(),
         'totalTime' => 'PT2M',
         'step' => $pasosHowTo,
     ]],
@@ -86,9 +86,9 @@ pagina_head([
         </section>
         <?php endif; ?>
 
-        <p class="text-sm text-slate-300 leading-relaxed mb-6">¿Quieres ganar más a menudo? Lee la <a class="text-amber-400 hover:text-amber-300 font-semibold" href="/como-jugar-y-estrategia">guía completa de estrategia</a>: banca, psicología de la puja y tácticas por temática.</p>
+        <p class="text-sm text-slate-300 leading-relaxed mb-6"><?= e(t('ui.como_jugar.cta_estrategia_antes')) ?><a class="text-amber-400 hover:text-amber-300 font-semibold" href="<?= e(url_lang('/como-jugar-y-estrategia')) ?>"><?= e(t('ui.como_jugar.cta_estrategia_enlace')) ?></a><?= e(t('ui.como_jugar.cta_estrategia_despues')) ?></p>
 
-        <a href="/#app" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
+        <a href="<?= e(url_lang('/#app')) ?>" class="inline-block bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap mb-6"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
     </main>
 <?php
 pagina_foot();

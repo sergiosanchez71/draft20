@@ -69,7 +69,7 @@ ErrorDocument 404 /404.php
     </FilesMatch>
 
     # sw.js y manifest siempre revalidados (van sin versión en el registro).
-    <FilesMatch "^(sw\.js|manifest\.webmanifest)$">
+    <FilesMatch "^(sw\.js|manifest(\.en)?\.webmanifest)$">
         Header set Cache-Control "no-cache, must-revalidate"
         Header set Pragma "no-cache"
     </FilesMatch>
@@ -91,12 +91,12 @@ ErrorDocument 404 /404.php
 # quedan fuera a propósito.
 <IfModule mod_setenvif.c>
     <IfModule mod_headers.c>
-        SetEnvIf Request_URI "^/$" es_landing
-        SetEnvIf Request_URI "^/index\.php$" es_landing
+        SetEnvIf Request_URI "^/(\?lang=en)?$" es_landing
+        SetEnvIf Request_URI "^/index\.php(\?lang=en)?$" es_landing
         Header set Cache-Control "public, max-age=0, s-maxage=600" env=es_landing
 
-        SetEnvIf Request_URI "^/(tematica|guia|guias|categoria|como-jugar|como-jugar-y-estrategia|preguntas-frecuentes|terminos|acerca|contacto|privacidad|aviso-legal|glosario|juegos-de-subasta|ranking)/?([a-z0-9_-]+)?/?$" es_contenido
-        SetEnvIf Request_URI "^/feed\.xml$" es_contenido
+        SetEnvIf Request_URI "^/(tematica|guia|guias|categoria|como-jugar|como-jugar-y-estrategia|preguntas-frecuentes|terminos|acerca|contacto|privacidad|aviso-legal|glosario|juegos-de-subasta|ranking)/?([a-z0-9_-]+)?/?(\?lang=en)?$" es_contenido
+        SetEnvIf Request_URI "^/feed\.xml(\?lang=en)?$" es_contenido
         Header set Cache-Control "public, max-age=0, s-maxage=600" env=es_contenido
     </IfModule>
 </IfModule>
