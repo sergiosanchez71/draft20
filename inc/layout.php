@@ -13,7 +13,7 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.4.0';
+const APP_VERSION = '1.4.1';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 // Google Analytics 4 directo (gtag.js). Vacío = no se pinta nada.
 const GA4_ID = 'G-JR150JQ65Z';

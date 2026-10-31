@@ -347,6 +347,8 @@ try {
     $rHomeSsr = http_req('GET', $base . '/index.php');
     check(substr_count((string) $rHomeSsr['raw'], 'aria-pressed="true"') >= 3,
         'lobby SSR: los 3 toggles de ⭐ salen activados por defecto');
+    check((bool) preg_match('/<div class="w-full max-w-3xl mx-auto">\s*<div id="app"/', (string) $rHomeSsr['raw']),
+        'lobby: #app limitado a max-w-3xl en escritorio');
     $mBuild = [];
     check((bool) preg_match('/<meta name="app-build" content="(\d+|dev)">/', (string) $rJuegoAds['raw'], $mBuild),
         'juego: meta de build para diagnóstico');
@@ -360,6 +362,8 @@ try {
     check($buildEsperado !== '0' && ($mBuild[1] ?? '') === $buildEsperado,
         'juego: el build coincide con el bundle más reciente');
     check($rJuegoAds['code'] === 200, 'juego: shell servido (200)');
+    check((bool) preg_match('/<div class="w-full max-w-5xl mx-auto flex-1 flex flex-col min-h-0">\s*<main id="app"/', (string) $rJuegoAds['raw']),
+        'juego: #app limitado a max-w-5xl en escritorio');
     check(strpos((string) $rJuegoAds['raw'], 'pagead2.googlesyndication.com') === false, 'juego: sin loader (red inactiva)');
     check(strpos((string) $rJuegoAds['raw'], 'window.__ADS') === false, 'juego: sin __ADS (huecos dormant en JS)');
     foreach (['/tematica.php?id=futbol', '/guia.php?slug=draft-de-20-monedas', '/guia.php?slug=juegos-para-dos-personas', '/guia.php?slug=juegos-rapidos-cinco-minutos', '/juegos_de_subasta.php', '/como_jugar.php', '/estrategia.php', '/preguntas-frecuentes.php', '/categoria.php?id=comida', '/guias.php', '/glosario.php'] as $rutaCont) {

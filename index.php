@@ -97,7 +97,9 @@ pagina_head([
         </header>
 
         <main class="flex-1 flex flex-col">
-            <div id="app" class="flex flex-col"><?= lobby_inicial_html($tematicaPre, $tematicaBotPre) ?></div>
+            <div class="w-full max-w-3xl mx-auto">
+                <div id="app" class="flex flex-col"><?= lobby_inicial_html($tematicaPre, $tematicaBotPre) ?></div>
+            </div>
 
             <section class="max-w-3xl mx-auto w-full px-4 mt-10">
                 <details class="acordeon bg-slate-800 border border-slate-700 rounded-lg">
