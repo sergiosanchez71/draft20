@@ -588,7 +588,7 @@ function site_header(): void
  */
 function pagina_foot(array $opts = []): void
 {
-    site_footer();
+    site_footer((string) ($opts['footer_ancho'] ?? ''));
     if (!empty($opts['inline_first'])) {
         echo '    <script nonce="' . e(csp_nonce()) . '">' . $opts['inline_first'] . '</script>' . "\n";
     }
@@ -616,12 +616,13 @@ function pagina_foot(array $opts = []): void
 <?php
 }
 
-function site_footer(): void
+function site_footer(string $ancho = ''): void
 {
     $year = date('Y');
     $textoCookies = t('ui.consent.abrir');
+    $claseAncho = $ancho !== '' ? ' ' . $ancho : '';
     ?>
-    <footer class="mt-10 border-t border-slate-800 px-4 py-8 text-center text-sm text-slate-400">
+    <footer class="mt-10 border-t border-slate-800 px-4 py-8 text-center text-sm text-slate-400<?= e($claseAncho) ?>">
         <nav class="flex flex-wrap justify-center gap-x-5 gap-y-2 mb-4" aria-label="<?= e(t('ui.comun.enlaces_pie')) ?>">
             <a class="hover:text-amber-400" href="<?= e(url_lang('/')) ?>"><?= e(t('ui.nav.inicio')) ?></a>
 <?php foreach (nav_links() as $l): ?>

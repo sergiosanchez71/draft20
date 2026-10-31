@@ -97,11 +97,11 @@ pagina_head([
         </header>
 
         <main class="flex-1 flex flex-col">
-            <div class="w-full max-w-3xl mx-auto">
+            <div class="w-full max-w-5xl mx-auto">
                 <div id="app" class="flex flex-col"><?= lobby_inicial_html($tematicaPre, $tematicaBotPre) ?></div>
             </div>
 
-            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+            <section class="max-w-5xl mx-auto w-full px-4 mt-10">
                 <details class="acordeon bg-slate-800 border border-slate-700 rounded-lg">
                     <summary class="flex items-center justify-between gap-2 px-4 py-3 cursor-pointer font-bold text-xl text-slate-100">
                         <span><?= e((string) ($SEO['como_titulo'] ?? '')) ?></span>
@@ -118,7 +118,7 @@ pagina_head([
                 </details>
             </section>
 
-            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+            <section class="max-w-5xl mx-auto w-full px-4 mt-10">
                 <?php
                 // Temática del día: rotación determinista por fecha (frescura + enlace interno).
                 $todasTematicas = [];
@@ -159,7 +159,7 @@ pagina_head([
             }
             ?>
             <?php if ($teaserRanking !== null): ?>
-            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+            <section class="max-w-5xl mx-auto w-full px-4 mt-10">
                 <a href="<?= e(url_lang('/ranking')) ?>" class="block bg-slate-800 border border-slate-700 hover:border-amber-400 rounded-lg p-4">
                     <div class="text-xs uppercase tracking-wide text-amber-400 font-bold mb-1"><?= e(t('ui.index.teaser_ranking', ['mes' => nombre_mes(explode('-', $teaserRanking['mes'])[1] ?? ''), 'anio' => explode('-', $teaserRanking['mes'])[0] ?? ''])) ?></div>
                     <div class="text-lg font-bold text-slate-100">🥇 <?= emoji_icono((string) mapa_tematicas()[$teaserRanking['id']]['emoji'], 20, '') ?> <?= e(nombre_tematica($teaserRanking['id'])) ?></div>
@@ -194,7 +194,7 @@ pagina_head([
                 <?php endforeach; ?>
             </section>
 
-            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+            <section class="max-w-5xl mx-auto w-full px-4 mt-10">
                 <h2 class="text-2xl font-bold text-slate-100 mb-2"><?= e(seo_ui('guias_titulo')) ?></h2>
                 <p class="text-slate-400 text-sm mb-6"><?= e(seo_ui('guias_sub')) ?></p>
                 <ul class="space-y-3 mb-4">
@@ -209,7 +209,7 @@ pagina_head([
             </section>
 
             <?php if ($faq !== []): ?>
-            <section class="max-w-3xl mx-auto w-full px-4 mt-10">
+            <section class="max-w-5xl mx-auto w-full px-4 mt-10">
                 <h2 class="text-2xl font-bold text-slate-100 mb-4"><?= e((string) ($SEO['faq_titulo'] ?? '')) ?></h2>
                 <?php foreach ($faq as $f): ?>
                 <details class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-2">
@@ -265,4 +265,5 @@ pagina_foot([
     'scripts' => ['js/torre.js', 'js/app.core.js'],
     'inline' => $inline,
     'defer' => true,
+    'footer_ancho' => 'w-full max-w-5xl mx-auto',
 ]);

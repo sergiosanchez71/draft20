@@ -347,8 +347,10 @@ try {
     $rHomeSsr = http_req('GET', $base . '/index.php');
     check(substr_count((string) $rHomeSsr['raw'], 'aria-pressed="true"') >= 3,
         'lobby SSR: los 3 toggles de ⭐ salen activados por defecto');
-    check((bool) preg_match('/<div class="w-full max-w-3xl mx-auto">\s*<div id="app"/', (string) $rHomeSsr['raw']),
-        'lobby: #app limitado a max-w-3xl en escritorio');
+    check((bool) preg_match('/<div class="w-full max-w-5xl mx-auto">\s*<div id="app"/', (string) $rHomeSsr['raw']),
+        'lobby: #app limitado a max-w-5xl en escritorio');
+    check((bool) preg_match('/<footer class="[^"]*max-w-5xl mx-auto[^"]*"/', (string) $rHomeSsr['raw']),
+        'footer alineado a max-w-5xl en escritorio');
     $mBuild = [];
     check((bool) preg_match('/<meta name="app-build" content="(\d+|dev)">/', (string) $rJuegoAds['raw'], $mBuild),
         'juego: meta de build para diagnóstico');
