@@ -185,7 +185,11 @@ function url_selector_idioma(string $lang): string
         $limpia = substr($limpia, 0, $posHash);
     }
     $sep = strpos($limpia, '?') === false ? '?' : '&';
-    return $limpia . $sep . 'lang=' . rawurlencode($lang) . $hash;
+    // Wrapper de GameDistribution sin ?gd=1: el selector debe conservar el
+    // modo GD al recargar el iframe (si no, XFO volvería a bloquearlo).
+    $gd = (defined('D20_GD_MODE') && D20_GD_MODE
+        && !(isset($_GET['gd']) && (string) $_GET['gd'] === '1')) ? 'gd=1&' : '';
+    return $limpia . $sep . $gd . 'lang=' . rawurlencode($lang) . $hash;
 }
 
 /** Canonical absoluto: limpio en español y con ?lang=en en inglés. */

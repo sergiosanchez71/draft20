@@ -77,6 +77,9 @@ https://draft20.es/?gd=1&lang=en&gd_sdk_referrer_url=<portal>
 - `?gd=1` activa el modo GD en `inc/layout.php`: `frame-ancestors *`, sin
   `X-Frame-Options`, sin GA/AdSense/consentimiento, sin footer, sin manifest ni
   service worker. La web normal mantiene `DENY` y su CSP completa.
+- El modo GD también se activa solo cuando la página llega con
+  `gd_sdk_referrer_url` o desde un referrer `*.gamedistribution.com` (wrapper
+  oficial y wrapper de revisión), aunque el iframe no lleve `?gd=1`.
 - El SDK (`js/gd.js`) se carga una sola vez con `GD_GAME_ID` y se encarga del
   pre-roll obligatorio en el primer inicio de partida y de los display ads.
 - El juego arranca **in-page** con `window.__juegoInit(codigo)`: no se navega a

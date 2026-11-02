@@ -40,11 +40,15 @@ function kill_server($proc): void
     @proc_close($proc);
 }
 
-function http_req(string $method, string $url, ?array $body = null): array
+function http_req(string $method, string $url, ?array $body = null, array $extraHeaders = []): array
 {
+    $cabeceras = "Content-Type: application/json\r\nUser-Agent: Draft20Smoke/1.0\r\n";
+    foreach ($extraHeaders as $h) {
+        $cabeceras .= rtrim((string) $h, "\r\n") . "\r\n";
+    }
     $ctx = stream_context_create(['http' => [
         'method' => $method,
-        'header' => "Content-Type: application/json\r\nUser-Agent: Draft20Smoke/1.0\r\n",
+        'header' => $cabeceras,
         'content' => $body === null ? '' : json_encode($body),
         'ignore_errors' => true,
         'timeout' => 15,
@@ -332,6 +336,23 @@ try {
     check(strpos($rawGd, '<footer') === false, 'GD: sin footer con enlaces salientes');
     check(strpos($rawGd, 'name="robots" content="noindex, follow"') !== false, 'GD: noindex');
     check(substr_count($rawGd, 'href="#app"') >= 2, 'GD: CTAs internos apuntan a #app');
+
+    // 10a2) Wrapper antiguo/de revisión: iframea la web sin ?gd=1. El referrer
+    // de gamedistribution.com debe activar el modo GD por sí solo.
+    $rGdRef = http_req('GET', $base . '/index.php', null, ['Referer: https://revision.gamedistribution.com/949d5680eca140e399c4b8d028e696fc/']);
+    $rawGdRef = (string) $rGdRef['raw'];
+    $hGdRef = implode("\n", (array) ($rGdRef['headers'] ?? []));
+    check($rGdRef['code'] === 200 && stripos($hGdRef, 'X-Frame-Options:') === false,
+        'GD referrer: sin X-Frame-Options');
+    check(strpos($hGdRef, 'Content-Security-Policy: frame-ancestors *') !== false,
+        'GD referrer: CSP permite el iframe del wrapper');
+    check(preg_match('/<body class="[^"]*gd-mode/', $rawGdRef) === 1,
+        'GD referrer: body.gd-mode automático');
+    check(strpos($rawGdRef, 'window.__GD_MODE = true') !== false, 'GD referrer: bootstrap GD');
+    check(strpos($rawGdRef, 'js/gd.min.js') !== false || strpos($rawGdRef, 'js/gd.js') !== false,
+        'GD referrer: carga gd.js');
+    check((bool) preg_match('/href="[^"]*gd=1[^"]*lang=es[^"]*"/', $rawGdRef),
+        'GD referrer: el selector de idioma conserva gd=1');
 
     // 10b) SEO: entidad de sitio, llms.txt y lastmod real del sitemap.
     $rSeoHome = http_req('GET', $base . '/index.php');

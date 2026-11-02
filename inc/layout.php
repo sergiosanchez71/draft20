@@ -42,12 +42,39 @@ function e(?string $s): string
 }
 
 /**
- * Modo GameDistribution: la misma landing se sirve dentro del iframe de GD
- * con ?gd=1. Solo cambia cabeceras, analítica y el arranque del juego.
+ * Modo GameDistribution: la misma landing se sirve dentro del iframe de GD.
+ * Solo cambia cabeceras, analítica y el arranque del juego.
+ *
+ * Se activa con ?gd=1 (wrapper nuevo), con gd_sdk_referrer_url (wrapper
+ * oficial self-hosted) o cuando la página se carga desde un wrapper alojado
+ * en gamedistribution.com (revisión / wrapper antiguo sin query).
  */
 function gd_mode(): bool
 {
-    return isset($_GET['gd']) && (string) $_GET['gd'] === '1';
+    static $modo = null;
+    if ($modo !== null) {
+        return $modo;
+    }
+    $modo = false;
+    if (isset($_GET['gd']) && (string) $_GET['gd'] === '1') {
+        $modo = true;
+    } elseif (isset($_GET['gd_sdk_referrer_url'])) {
+        $modo = true;
+    } else {
+        $ref = (string) ($_SERVER['HTTP_REFERER'] ?? '');
+        if ($ref !== '') {
+            $host = strtolower((string) parse_url($ref, PHP_URL_HOST));
+            if ($host === 'gamedistribution.com' || str_ends_with($host, '.gamedistribution.com')) {
+                $modo = true;
+            }
+        }
+    }
+    // El selector de idioma conserva el modo aunque el wrapper antiguo no
+    // haya añadido ?gd=1 a la URL (ver url_selector_idioma()).
+    if ($modo && !defined('D20_GD_MODE')) {
+        define('D20_GD_MODE', true);
+    }
+    return $modo;
 }
 
 /** @return array<int, array{id:string, emoji:string, tematicas:array<int, array{id:string, emoji:string}>}> */
