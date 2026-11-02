@@ -28,8 +28,9 @@ Abrir `http://127.0.0.1:8000` en el navegador.
 Tailwind se compila a `css/tailwind.css` y los JS se minifican a `js/*.min.js` (las páginas usan `asset_js()`, que prefiere la versión minificada si existe):
 
 ```bash
-npm install     # solo la primera vez
-npm run build   # build:css (Tailwind) + build:js (terser)
+npm install       # solo la primera vez
+npm run build     # build:css (Tailwind) + build:js (terser)
+npm run build:gd  # genera dist/draft20-gd.zip (wrapper de GameDistribution)
 ```
 
 > Tras cambiar clases de Tailwind en PHP/JS, vuelve a ejecutar `npm run build`. Los archivos generados (`css/tailwind.css`, `js/*.min.js`) se commitean: Hostinger no compila en el deploy.
@@ -60,6 +61,52 @@ CI lista en **`tools/ci.yml`** (GitHub Actions: `php -l` de todo el repo, los tr
 6. **Search Console**: verificar la propiedad (DNS TXT) y enviar `https://draft20.es/sitemap.xml`.
 7. **Caché del CDN**: los assets van versionados con `?v=filemtime(...)`, así que cada deploy genera URLs nuevas y no hace falta purgar caché. Si tras desplegar ves la versión antigua, haz un hard reload una vez (el `sw.js` y el `manifest` van con `no-cache` por `.htaccess`) y, si persiste, purga la caché del CDN una única vez.
 8. **Precalentado tras cada deploy**: `npm run warmup` (recorre HTML, fichas, assets versionados, sitemap, sw… para calentar origen y CDN y evitar la ráfaga de la primera oleada). Si algo va lento: `npm run latencia` (mediana/p95 por endpoint; picos al minuto del deploy y normales a los 10 min = arranque en frío).
+
+### GameDistribution (integración self-hosted)
+
+Draft 20 se publica en GameDistribution con un **wrapper iframe propio**. El ZIP
+que se sube al panel de GD solo contiene `gd/index.html`, que carga la web real:
+
+```text
+https://draft20.es/?gd=1&lang=en&gd_sdk_referrer_url=<portal>
+```
+
+- `gd/index.html` es el wrapper: iframea la landing completa y reenvía el
+  `gd_sdk_referrer_url` que GD añade a la URL del portal (mismo criterio que el
+  wrapper oficial `index_iframe.html`).
+- `?gd=1` activa el modo GD en `inc/layout.php`: `frame-ancestors *`, sin
+  `X-Frame-Options`, sin GA/AdSense/consentimiento, sin footer, sin manifest ni
+  service worker. La web normal mantiene `DENY` y su CSP completa.
+- El SDK (`js/gd.js`) se carga una sola vez con `GD_GAME_ID` y se encarga del
+  pre-roll obligatorio en el primer inicio de partida y de los display ads.
+- El juego arranca **in-page** con `window.__juegoInit(codigo)`: no se navega a
+  `juego.php` ni se recarga el iframe. Al terminar se vuelve al lobby sin salir
+  del documento.
+- La sesión y los datos del bot viajan también en memoria entre lobby y juego,
+  para que la partida funcione aunque el navegador bloquee `localStorage` en un
+  iframe de terceros.
+
+**Anuncios solicitados**
+
+| Momento | Formato | Contenedor |
+| --- | --- | --- |
+| Durante la partida, arriba | 728×90 escalado | `#gdAdJuego` |
+| Entre la clasificación y los botones del final | 300×250 | `#gdAdFinal` |
+| Entre las tarjetas del lobby (crear / unirse) | 300×250 | `#gdAdLobby` |
+
+**Checklist de publicación**
+
+1. `npm run build` y `npm test` en verde.
+2. `npm run build:gd` y subir `dist/draft20-gd.zip` al panel de GD.
+3. Abrir la revisión de GD en un iframe, **ver el pre-roll completo** una vez y
+   comprobar que el juego arranca, se juega y vuelve al lobby sin recargar.
+4. Comprobar que los tres huecos de anuncio aparecen cuando el SDK los rellena y
+   se colapsan sin dejar huecos visibles si no hay fill.
+5. Solicitar la activación/publicación en el panel.
+
+> El SDK vive dentro de la página de Hostinger, no en el wrapper. El wrapper se
+> puede regenerar en cualquier momento con `npm run build:gd`; el ZIP sale en
+> `dist/` y no se commitea.
 
 ---
 

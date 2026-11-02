@@ -8,6 +8,7 @@
     const POLL_MS = 1000;
     const POLL_OCULTO_MS = 10000; // pestaña en 2º plano: se baja la cadencia, no se corta
     const BOT_MAX_RESPUESTA_MS = 60000; // watchdog del bot: solo corre en su turno
+    const GD_MODE = !!window.__GD_MODE;
 
     const D = window.DraftApp;
     if (!D) return;
@@ -128,6 +129,20 @@
      *  contenedor dormant colapsado (hooks data-ad-* para la red futura). */
     const AD_POS = { banner: 'juego', final: 'final' };
     function crearAd(clave, clase, ancho, alto) {
+        // GameDistribution: display ads del propio SDK. El banner superior es
+        // 728x90 y el final 300x250; gd.js los escala para que quepan.
+        if (GD_MODE) {
+            const esBanner = clave === 'banner';
+            const id = esBanner ? 'gdAdJuego' : 'gdAdFinal';
+            return el('div', {
+                id: id + 'Slot',
+                class: 'ad-slot gd-ad-slot ' + (esBanner ? 'gd-ad--banner' : 'gd-ad--final'),
+                'data-gd-w': esBanner ? '728' : '300',
+                'data-gd-h': esBanner ? '90' : '250',
+            }, [
+                el('div', { id: id, class: 'gd-ad-inner' }),
+            ]);
+        }
         const cfg = window.__ADS;
         const pos = AD_POS[clave] || clave;
         const hueco = el('div', {
@@ -148,18 +163,60 @@
 
     /** Encola el bloque recién insertado (el loader async procesa la cola al llegar). */
     function pedirAd() {
+        if (GD_MODE) return;
         try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { /* sin ads */ }
     }
 
+    /** Pide a gd.js el display ad de un contenedor recién pintado. */
+    function pedirAdGD(containerId) {
+        if (!GD_MODE || typeof window.__gdShowAd !== 'function') return;
+        try { window.__gdShowAd(containerId); } catch (e) { /* sin ads */ }
+    }
+
+    /** Deja el estado listo para una nueva partida (incluye volver de GD). */
+    function reiniciarEstadoJuego() {
+        stopPollingGame();
+        state.sala = null;
+        state.jugadorSlot = null;
+        state.pollTerminal = false;
+        state.pollFailures = 0;
+        state.pollInFlight = false;
+        state.actionInFlight = false;
+        state.offlineActivo = false;
+        state.lastRenderSig = null;
+        state.torre = null;
+        state.torreHecha = null;
+        state.esperaRival = null;
+        state.avisoUnion = false;
+        state.guiado = false;
+        state.bot = null;
+        state.partidaGuardada = false;
+        reiniciarFlagsPartida();
+    }
+
     // =================== JUEGO ===================
-    async function juegoInit(codigo) {
+    async function juegoInit(codigo, memoria) {
         if (!codigo || !/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/.test(codigo)) {
-            window.location.href = url('index.php');
+            if (GD_MODE) volverAlLobbyGD();
+            else window.location.href = url('index.php');
             return;
         }
-        const session = loadSession(codigo);
+        reiniciarEstadoJuego();
+        // Respaldo en memoria: en GD la partida arranca sin recargar y dentro
+        // de un iframe de terceros localStorage puede estar bloqueado.
+        const sessionMemoria = (GD_MODE && memoria && memoria.jugadorId)
+            ? { jugadorId: memoria.jugadorId, jugadorNombre: memoria.jugadorNombre }
+            : null;
+        const botMemoria = (GD_MODE && memoria && memoria.bot) ? memoria.bot : null;
+        let session = loadSession(codigo);
+        if ((!session || !session.jugadorId) && sessionMemoria) session = sessionMemoria;
         if (!session || !session.jugadorId) {
-            window.location.href = url('index.php?sala=' + encodeURIComponent(codigo));
+            if (GD_MODE) {
+                toast(t('ui.app.sala_expirada'));
+                volverAlLobbyGD();
+            } else {
+                window.location.href = url('index.php?sala=' + encodeURIComponent(codigo));
+            }
             return;
         }
         state.codigo = codigo;
@@ -167,11 +224,13 @@
         state.jugadorNombre = session.jugadorNombre;
 
         // ¿Partida de práctica contra el bot?
+        state.bot = null;
         try {
             const botRaw = localStorage.getItem('draft20_bot_' + codigo);
             state.bot = botRaw ? JSON.parse(botRaw) : null;
             if (state.bot && !state.bot.jugadorId) state.bot = null;
         } catch (e) { state.bot = null; }
+        if (!state.bot && botMemoria && botMemoria.jugadorId) state.bot = botMemoria;
         state.partidaGuardada = false;
 
         // ¿Piso de la Torre de Batalla? Vinculación estricta por código de
@@ -182,7 +241,8 @@
                 // Sala ya resuelta y vuelta atrás/recarga: al lobby (el run
                 // ya avanzó; reentrar reprocesaría el piso).
                 if (window.Torre.pisoHecho(codigo)) {
-                    window.location.href = url('index.php');
+                    if (GD_MODE) volverAlLobbyGD();
+                    else window.location.href = url('index.php');
                     return;
                 }
                 const meta = window.Torre.cargar();
@@ -220,8 +280,16 @@
         renderGameShell();
         if (state.torre) torrePintarHud();
         await pollGameTick();
-        startPollingGame();
+        // Si el poll ya ha devuelto al lobby (sala expirada), no relanzar.
+        if (state.codigo === codigo) startPollingGame();
+        instalarListenersJuego();
+    }
 
+    let listenersJuegoListos = false;
+    /** Listeners de visibilidad/bfcache: una sola vez por documento. */
+    function instalarListenersJuego() {
+        if (listenersJuegoListos) return;
+        listenersJuegoListos = true;
         // Al volver a la pestaña, poll inmediato (evita last_seen obsoleto).
         // En segundo plano NO se corta el poll (en móvil, cortar provocaba
         // avisos de "rival desconectado" y hasta abandono): solo se baja a 10 s.
@@ -258,6 +326,9 @@
 
     /** Selector Español / English de la cabecera de partida (juego.php no usa site_header). */
     function selectorIdiomaJuego() {
+        // En GD cambiar de idioma recarga el iframe y perdería la partida; el
+        // selector sigue disponible en la cabecera del lobby.
+        if (GD_MODE) return null;
         const actual = window.D20_LANG === 'en' ? 'en' : 'es';
         const nav = el('nav', {
             class: 'd20-lang d20-lang--game',
@@ -351,6 +422,7 @@
         app.appendChild(emoteBar);
         app.appendChild(actionBar);
         if (adJuego) pedirAd();
+        if (adJuego) pedirAdGD('gdAdJuego');
     }
 
     function setOfflineBanner(show) {
@@ -374,7 +446,8 @@
                 stopPollingGame();
                 clearSession(state.codigo);
                 toast(t('ui.app.sala_expirada'));
-                window.location.href = url('index.php');
+                if (GD_MODE) volverAlLobbyGD();
+                else window.location.href = url('index.php');
                 return;
             }
             // Solo cuenta como "sin conexión" un fallo de red real (status 0);
@@ -799,9 +872,8 @@
                 body: JSON.stringify({ codigo: state.codigo, jugador_id: state.jugadorId, accion: 'abandonar' }),
             }).catch(function () { /* best-effort */ });
         } catch (e) { /* ignore */ }
-        window.location.href = url('juego.php?codigo=' + encodeURIComponent(esp.codigo));
+        D.irAlJuego(esp.codigo);
     }
-
     function identifySlots() {
         const s = state.sala;
         if (!s) return;
@@ -1592,21 +1664,27 @@
 
         // Estructura persistente: el anuncio vive en #adFinalHost y no se
         // recrea en los repintados por revancha (sin peticiones repetidas).
+        // Orden: resultado → clasificación → anuncio → botones.
         let top = document.getElementById('finalTop');
+        let listsHost = document.getElementById('finalLists');
         let bottom = document.getElementById('finalBottom');
-        if (!top || !bottom || !document.getElementById('adFinalHost')) {
+        if (!top || !listsHost || !bottom || !document.getElementById('adFinalHost')) {
             clear(card);
             top = el('div', { id: 'finalTop' });
+            listsHost = el('div', { id: 'finalLists' });
             bottom = el('div', { id: 'finalBottom' });
             const host = el('div', { id: 'adFinalHost' });
             const adFinal = crearAd('final', 'ad-final', 300, 250);
             if (adFinal) host.appendChild(adFinal);
             card.appendChild(top);
+            card.appendChild(listsHost);
             card.appendChild(host);
             card.appendChild(bottom);
             if (adFinal) pedirAd();
+            if (adFinal) pedirAdGD('gdAdFinal');
         } else {
             clear(top);
+            clear(listsHost);
             clear(bottom);
         }
 
@@ -1749,7 +1827,7 @@
         renderSerieYLogros(resultado, myItems, rivalItems, mySpent).forEach(function (b) { bottom.appendChild(b); });
         bottom.appendChild(el('p', { class: 'text-center text-xs text-slate-400 mb-4' },
             t('ui.juego.tematica_label') + ': ' + (s.tematica ? (tematicaEmoji(s.tematica) + ' ' + tTematica(s.tematica)) : '—')));
-        bottom.appendChild(lists);
+        listsHost.appendChild(lists);
         bottom.appendChild(statsLine);
         bottom.appendChild(exitBtn);
     }
@@ -1768,8 +1846,8 @@
         ]));
         wrap.appendChild(el('div', { class: 'flex gap-2 mt-6 px-2 w-full' }, [
             el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
-            el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
-            el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { D.mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
+            GD_MODE ? null : el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+            GD_MODE ? null : el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { D.mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
         ]));
           wrap.appendChild(el('div', { class: 'w-full mt-6 px-2' }, [
               el('button', {
@@ -1974,6 +2052,26 @@
         ]));
     }
 
+    /** Vuelta al lobby dentro del mismo documento (GD). */
+    function volverAlLobbyGD() {
+        stopPollingGame();
+        try { detenerVigilancia(); } catch (e) { /* ignore */ }
+        // Sin código no hay respuestas tardías que puedan repintar la partida
+        // encima del lobby ya restaurado.
+        state.codigo = null;
+        state.jugadorId = null;
+        state.jugadorNombre = null;
+        state.sala = null;
+        state.bot = null;
+        state.esperaRival = null;
+        state.avisoUnion = false;
+        if (typeof window.__gdVolverLobby === 'function') {
+            window.__gdVolverLobby();
+        } else {
+            window.location.href = url('index.php');
+        }
+    }
+
     /** Salida confirmada: avisa el abandono y vuelve al lobby. */
     function salirYa() {
         vibrate([120, 60, 120]);
@@ -1988,7 +2086,8 @@
             keepalive: true,
             body: JSON.stringify({ codigo: state.codigo, jugador_id: state.jugadorId, accion: 'abandonar' }),
         }).catch(function () { /* ignore */ });
-        window.location.href = url('index.php');
+        if (GD_MODE) volverAlLobbyGD();
+        else window.location.href = url('index.php');
     }
 
     function onLeave() {
@@ -2002,7 +2101,8 @@
         limpiarEsperaPendiente();
         clearSession(state.codigo);
         stopPollingGame();
-        window.location.href = url('index.php');
+        if (GD_MODE) volverAlLobbyGD();
+        else window.location.href = url('index.php');
     }
 
     // =================== TORRE DE BATALLA ===================
@@ -2110,13 +2210,18 @@
     /** Reintenta el piso perdido con su misma temática y sala nueva. */
     async function torreReintentar() {
         const run = window.Torre.cargar();
-        if (!run || !run.enProgreso || !run.temaPiso) { window.location.href = url('index.php'); return; }
+        if (!run || !run.enProgreso || !run.temaPiso) {
+            if (GD_MODE) volverAlLobbyGD();
+            else window.location.href = url('index.php');
+            return;
+        }
         await iniciarPartidaBot(run.temaPiso, window.Torre.DIFICULTAD, state.jugadorNombre || t('ui.juego.lbl_tu'), false, { torre: true });
     }
 
     function torreIrLobby() {
         try { if (typeof stopPollingGame === 'function') stopPollingGame(); } catch (e) { /* ignore */ }
-        window.location.href = url('index.php');
+        if (GD_MODE) volverAlLobbyGD();
+        else window.location.href = url('index.php');
     }
 
     let torreTemaNext = null;
@@ -2138,6 +2243,7 @@
         card.appendChild(host);
         card.appendChild(bottom);
         if (adFinal) pedirAd();
+        if (adFinal) pedirAdGD('gdAdFinal');
         vibrate([100, 50, 100]);
         try { sfx('fin'); } catch (e) { /* ignore */ }
         return { top: top, bottom: bottom };
@@ -2233,7 +2339,11 @@
     /** Juega el piso con la temática ya asignada en la transición. */
     async function torreJugarSiguienteReal(tema) {
         const run = window.Torre.cargar();
-        if (!run || !run.enProgreso) { window.location.href = url('index.php'); return; }
+        if (!run || !run.enProgreso) {
+            if (GD_MODE) volverAlLobbyGD();
+            else window.location.href = url('index.php');
+            return;
+        }
         run.temaPiso = tema;
         window.Torre.guardar(run);
         evento('torre:piso_' + run.pisoActual);
@@ -2367,7 +2477,11 @@
     /** Fin de la subida tras derrota: solo acciones (el titular ya está visible). */
     function torrePantallaFin(piso) {
         const box = torreAcciones();
-        if (!box) { window.location.href = url('index.php'); return; }
+        if (!box) {
+            if (GD_MODE) volverAlLobbyGD();
+            else window.location.href = url('index.php');
+            return;
+        }
         box.appendChild(el('button', {
             class: 'w-full bg-amber-400 text-slate-900 font-bold py-3 rounded-lg btn-tap mt-2',
             onclick: async function () {
@@ -2394,7 +2508,11 @@
 
     function torreAlTerminarPiso(resultado, d) {
         const run = window.Torre.cargar();
-        if (!run || !run.enProgreso) { window.location.href = url('index.php'); return; }
+        if (!run || !run.enProgreso) {
+            if (GD_MODE) volverAlLobbyGD();
+            else window.location.href = url('index.php');
+            return;
+        }
         registrarHistorial(resultado === 'tablas' ? 'draw' : resultado);
         const r = window.Torre.resumenPiso(d.miItems, d.rivalItems, d.miDinero, d.rivalDinero);
         const res = (r.resultado === 'win') ? 'win' : (r.resultado === 'loss' ? 'loss' : 'tablas');
@@ -2421,6 +2539,17 @@
         torreUltimo = { resultado: res, d: d, r: r, piso: run.pisoActual };
         torrePantallaDerrota(d, r, run.pisoActual, res);
     }
+
+    // GameDistribution: pausa/reanudación del poll cuando el SDK muestra un
+    // anuncio a pantalla completa (SDK_GAME_PAUSE / SDK_GAME_START).
+    window.__d20Pause = function () {
+        if (!state.codigo) return;
+        stopPollingGame();
+    };
+    window.__d20Resume = function () {
+        if (!state.codigo || state.pollTerminal) return;
+        if (document.getElementById('scoreboard')) { startPollingGame(); pollGameTick(); }
+    };
 
     // =================== EXPOSE ===================
     D.exportarPartidas = exportarPartidasReferencia;

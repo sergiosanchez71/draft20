@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <title>Draft 20</title>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0f172a;
+        }
+        #game {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: #0f172a;
+        }
+        #loading {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f8fafc;
+            font: 600 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background: #0f172a;
+            z-index: 2;
+            transition: opacity 0.2s ease;
+        }
+        #loading.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Draft 20</div>
+    <iframe id="game" title="Draft 20" allow="autoplay; fullscreen; gamepad; accelerometer; gyroscope; clipboard-write" allowfullscreen></iframe>
+    <script>
+        (function () {
+            'use strict';
+            var params = new URLSearchParams(window.location.search);
+            var lang = params.get('lang') === 'es' ? 'es' : 'en';
+
+            // Mismo criterio que el wrapper oficial de GameDistribution: el
+            // portal pasa gd_sdk_referrer_url a la página padre; si no, se usa
+            // el referrer (la URL del portal) y, en local, la del wrapper.
+            function referrerDelPortal() {
+                var parentUrl = window.location.href;
+                try {
+                    if (window.location !== window.parent.location && document.referrer) {
+                        parentUrl = document.referrer;
+                    }
+                } catch (e) { /* cross-origin: nos quedamos con la URL propia */ }
+                try {
+                    var p = new URL(parentUrl);
+                    return p.searchParams.get('gd_sdk_referrer_url') || parentUrl;
+                } catch (e) {
+                    return parentUrl || window.location.href;
+                }
+            }
+
+            var referrer = referrerDelPortal();
+            var src = 'https://draft20.es/?gd=1&lang=' + encodeURIComponent(lang);
+            if (referrer) src += '&gd_sdk_referrer_url=' + encodeURIComponent(referrer);
+
+            var iframe = document.getElementById('game');
+            var loading = document.getElementById('loading');
+            iframe.src = src;
+            iframe.addEventListener('load', function () {
+                loading.classList.add('is-hidden');
+                setTimeout(function () { loading.remove(); }, 300);
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -307,6 +307,31 @@ try {
     $metaCsp = $mMeta[1] ?? '';
     check($nonce !== '' && $metaCsp !== '' && strpos($metaCsp, $nonce) !== false, 'el meta CSP usa el mismo nonce');
     check(strpos($metaCsp, 'object-src') !== false && strpos($metaCsp, 'default-src') !== false, 'meta CSP completa');
+    check(strpos($hcsp, 'frame-ancestors \'none\'') !== false, 'CSP: la web normal no se puede enmarcar');
+    check(strpos($hcsp, 'X-Frame-Options: DENY') !== false, 'XFO: la web normal no se puede enmarcar');
+
+    // 10a) GameDistribution: la misma landing dentro del iframe, sin analítica
+    // ni consentimiento propios y con los huecos del SDK.
+    $rGd = http_req('GET', $base . '/index.php?gd=1&lang=en');
+    $rawGd = (string) $rGd['raw'];
+    $hGd = implode("\n", (array) ($rGd['headers'] ?? []));
+    check($rGd['code'] === 200, 'GD: landing servida (200)');
+    check(stripos($hGd, 'X-Frame-Options:') === false, 'GD: sin X-Frame-Options');
+    check(strpos($hGd, 'Content-Security-Policy: frame-ancestors *') !== false, 'GD: CSP permite el iframe del portal');
+    check(strpos($rawGd, 'class="') !== false && preg_match('/<body class="[^"]*gd-mode/', $rawGd) === 1,
+        'GD: body.gd-mode');
+    check(strpos($rawGd, 'id="gdAdLobbySlot"') !== false && strpos($rawGd, 'id="gdAdLobby"') !== false,
+        'GD: hueco de display ad en el lobby');
+    check(strpos($rawGd, 'window.__GD_MODE = true') !== false && strpos($rawGd, 'window.__GD_GAME_ID') !== false,
+        'GD: bootstrap con modo y game id');
+    check(strpos($rawGd, 'js/gd.js') !== false || strpos($rawGd, 'js/gd.min.js') !== false, 'GD: carga gd.js');
+    check(strpos($rawGd, 'id="btnInstalar"') === false, 'GD: sin botón de instalar PWA');
+    check(strpos($rawGd, 'id="d20-consent"') === false, 'GD: sin banner de consentimiento propio');
+    check(strpos($rawGd, 'googletagmanager.com/gtag/js') === false, 'GD: sin GA4');
+    check(strpos($rawGd, 'rel="manifest"') === false, 'GD: sin manifest PWA');
+    check(strpos($rawGd, '<footer') === false, 'GD: sin footer con enlaces salientes');
+    check(strpos($rawGd, 'name="robots" content="noindex, follow"') !== false, 'GD: noindex');
+    check(substr_count($rawGd, 'href="#app"') >= 2, 'GD: CTAs internos apuntan a #app');
 
     // 10b) SEO: entidad de sitio, llms.txt y lastmod real del sitemap.
     $rSeoHome = http_req('GET', $base . '/index.php');
@@ -347,7 +372,7 @@ try {
     $rHomeSsr = http_req('GET', $base . '/index.php');
     check(substr_count((string) $rHomeSsr['raw'], 'aria-pressed="true"') >= 3,
         'lobby SSR: los 3 toggles de ⭐ salen activados por defecto');
-    check((bool) preg_match('/<div class="w-full max-w-5xl mx-auto">\s*<div id="app"/', (string) $rHomeSsr['raw']),
+    check((bool) preg_match('/<div id="d20-app-wrap" class="w-full max-w-5xl mx-auto">\s*<div id="app"/', (string) $rHomeSsr['raw']),
         'lobby: #app limitado a max-w-5xl en escritorio');
     check((bool) preg_match('/<footer class="[^"]*max-w-5xl mx-auto[^"]*"/', (string) $rHomeSsr['raw']),
         'footer alineado a max-w-5xl en escritorio');
@@ -355,7 +380,7 @@ try {
     check((bool) preg_match('/<meta name="app-build" content="(\d+|dev)">/', (string) $rJuegoAds['raw'], $mBuild),
         'juego: meta de build para diagnóstico');
     $buildEsperado = '0';
-    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/torre.min.js', 'js/app.core.js', 'js/app.game.js', 'js/torre.js'] as $relJs) {
+    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/torre.min.js', 'js/gd.min.js', 'js/app.core.js', 'js/app.game.js', 'js/bot_policy.js', 'js/torre.js', 'js/gd.js'] as $relJs) {
         $fJs = $root . '/' . $relJs;
         if (is_file($fJs)) {
             $buildEsperado = (string) max((int) $buildEsperado, (int) filemtime($fJs));

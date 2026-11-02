@@ -6,6 +6,11 @@
             "sala_expirada": "La partida ya no está disponible",
             "idioma": "Idioma"
         },
+        "gd": {
+            "cargando": "Cargando…",
+            "preparando": "Preparando la partida…",
+            "enlace_bloqueado": "Esta sección está disponible en draft20.es"
+        },
         "lobby": {
             "btn_crear": "Crear sala privada",
             "label_unirse": "Código de sala",

@@ -13,7 +13,9 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.4.1';
+const APP_VERSION = '1.4.2';
+// GameDistribution: integración self-hosted (wrapper iframe → esta web).
+const GD_GAME_ID = '949d5680eca140e399c4b8d028e696fc';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
 // Google Analytics 4 directo (gtag.js). Vacío = no se pinta nada.
 const GA4_ID = 'G-JR150JQ65Z';
@@ -37,6 +39,15 @@ const AD_HUECOS = [
 function e(?string $s): string
 {
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * Modo GameDistribution: la misma landing se sirve dentro del iframe de GD
+ * con ?gd=1. Solo cambia cabeceras, analítica y el arranque del juego.
+ */
+function gd_mode(): bool
+{
+    return isset($_GET['gd']) && (string) $_GET['gd'] === '1';
 }
 
 /** @return array<int, array{id:string, emoji:string, tematicas:array<int, array{id:string, emoji:string}>}> */
@@ -179,10 +190,20 @@ function csp_headers(): void
     if (headers_sent()) {
         return;
     }
+    // En modo GD la página vive dentro del iframe del wrapper: hay que permitir
+    // el framing y no aplicar la CSP estricta de la web normal (el SDK de GD
+    // carga sus propios scripts y anuncios). El resto de la política no hace
+    // falta aquí: frame-ancestors * deja el documento sin restricciones extra.
+    if (gd_mode()) {
+        header_remove('X-Frame-Options');
+        header('Content-Security-Policy: frame-ancestors *');
+        return;
+    }
+    header('X-Frame-Options: DENY');
     header('Content-Security-Policy: ' . csp_policy());
 }
 
-/** Política CSP (sin frame-ancestors: va en meta y ahí se ignora; cubre XFO). */
+/** Política CSP (frame-ancestors se envía también por cabecera). */
 function csp_policy(): string
 {
     $n = csp_nonce();
@@ -196,12 +217,17 @@ function csp_policy(): string
         "img-src 'self' data: https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.google-analytics.com; " .
         "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://www.google.com https://fundingchoicesmessages.google.com; " .
         "frame-src https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
-        "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
+        "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 }
 
 /** Meta CSP para el <head>: el hosting puede reescribir la cabecera HTTP. */
 function csp_meta(): string
 {
+    // En modo GD la cabecera ya autoriza el framing y el SDK; una meta con
+    // frame-ancestors no aporta nada y podría limitar los scripts del SDK.
+    if (gd_mode()) {
+        return '';
+    }
     return '<meta http-equiv="Content-Security-Policy" content="' . e(csp_policy()) . '">';
 }
 
@@ -209,7 +235,7 @@ function csp_meta(): string
 function app_build(): string
 {
     $max = 0;
-    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/torre.min.js', 'js/app.core.js', 'js/app.game.js', 'js/torre.js'] as $rel) {
+    foreach (['js/app.core.min.js', 'js/app.game.min.js', 'js/bot_policy.min.js', 'js/torre.min.js', 'js/gd.min.js', 'js/app.core.js', 'js/app.game.js', 'js/bot_policy.js', 'js/torre.js', 'js/gd.js'] as $rel) {
         $f = __DIR__ . '/../' . $rel;
         if (is_file($f)) {
             $max = max($max, (int) filemtime($f));
@@ -224,7 +250,7 @@ function app_build(): string
  */
 function ga_head(): string
 {
-    if (GA4_ID === '') {
+    if (gd_mode() || GA4_ID === '') {
         return '';
     }
     $n = e(csp_nonce());
@@ -253,7 +279,7 @@ function ga_body(): string
 function consent_banner(): void
 {
     static $pintado = false;
-    if ($pintado || GA4_ID === '') {
+    if ($pintado || gd_mode() || GA4_ID === '') {
         return;
     }
     $pintado = true;
@@ -501,6 +527,9 @@ function pagina_head(array $opts): void
         : SITE_URL . '/og-image.png');
     $ogImage = og_imagen_idioma((string) $ogImage);
     $bodyClass = $opts['body_class'] ?? 'bg-slate-900 text-slate-100 min-h-screen flex flex-col';
+    if (gd_mode()) {
+        $bodyClass .= ' gd-mode';
+    }
     $jsonLd = array_merge(site_json_ld(), $opts['json_ld'] ?? []);
     csp_headers();
     ?><!DOCTYPE html>
@@ -536,12 +565,14 @@ function pagina_head(array $opts): void
     <link rel="icon" type="image/png" sizes="96x96" href="<?= e(asset('icons/icon-96.png')) ?>">
     <link rel="icon" type="image/png" sizes="192x192" href="<?= e(asset('icons/icon-192.png')) ?>">
     <link rel="apple-touch-icon" href="<?= e(asset('icons/icon-180.png')) ?>">
+<?php if (!gd_mode()): ?>
     <link rel="manifest" href="<?= e(idioma_actual() === 'en' ? '/manifest.en.webmanifest' : '/manifest.webmanifest') ?>">
+<?php endif; ?>
     <link rel="alternate" type="application/rss+xml" title="<?= e(idioma_actual() === 'en' ? 'Draft 20 — Guides' : 'Draft 20 — Guías') ?>" href="<?= e(url_lang('/feed.xml')) ?>">
 <?php foreach (($opts['prefetch'] ?? []) as $pf): ?>
     <link rel="prefetch" href="<?= e($pf) ?>">
 <?php endforeach; ?>
-<?php if (ADS_ACTIVOS && ADSENSE_CLIENT !== ''): ?>
+<?php if (!gd_mode() && ADS_ACTIVOS && ADSENSE_CLIENT !== ''): ?>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?= e(ADSENSE_CLIENT) ?>" crossorigin="anonymous"></script>
 <?php endif; ?>
     <?= css_tags($opts['css_inline'] ?? true) ?>
@@ -565,6 +596,18 @@ function pagina_head(array $opts): void
  */
 function site_header(): void
 {
+    if (gd_mode()) {
+        // En el iframe de GameDistribution no se ofrecen enlaces de navegación
+        // (sacarían al jugador de la experiencia), pero el selector ES/EN sí
+        // debe seguir disponible en el lobby.
+        ?>
+        <header class="d20-gd-header w-full bg-slate-900/95 border-b border-slate-800 px-4 py-2 flex items-center justify-center gap-4">
+            <span class="text-amber-400 font-bold text-sm"><?= e(SITE_NOMBRE) ?></span>
+            <?= selector_idioma('d20-lang--header') ?>
+        </header>
+        <?php
+        return;
+    }
     $enlaces = [
         ['href' => '/como-jugar', 'texto' => t('ui.nav.como_jugar')],
         ['href' => '/como-jugar-y-estrategia', 'texto' => t('ui.nav.estrategia')],
@@ -588,7 +631,9 @@ function site_header(): void
  */
 function pagina_foot(array $opts = []): void
 {
-    site_footer((string) ($opts['footer_ancho'] ?? ''));
+    if (!gd_mode()) {
+        site_footer((string) ($opts['footer_ancho'] ?? ''));
+    }
     if (!empty($opts['inline_first'])) {
         echo '    <script nonce="' . e(csp_nonce()) . '">' . $opts['inline_first'] . '</script>' . "\n";
     }
@@ -604,7 +649,7 @@ function pagina_foot(array $opts = []): void
         echo '    <script nonce="' . e(csp_nonce()) . '">(window.adsbygoogle = window.adsbygoogle || []).push({});</script>' . "\n";
     }
     // Contador anónimo de páginas (sin cookies ni identificadores).
-    $eventoPagina = evento_pagina_actual();
+    $eventoPagina = gd_mode() ? '' : evento_pagina_actual();
     if ($eventoPagina !== '' && !es_crawler()) {
         echo '    <script nonce="' . e(csp_nonce()) . '">'
             . 'if(!window.__ev){window.__ev=1;try{navigator.sendBeacon("/api/evento.php",JSON.stringify({evento:"' . $eventoPagina . '"}))}catch(e){}}'

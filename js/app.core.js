@@ -8,6 +8,9 @@
     const POLL_MS = 1000;
     const POLL_OCULTO_MS = 5000; // lobby en 2º plano: se baja la cadencia, no se corta
     const BOT_MAX_RESPUESTA_MS = 60000; // watchdog del bot: solo corre en su turno
+    // GameDistribution: la landing y el juego conviven en el mismo documento
+    // dentro del iframe self-hosted. Sin navegación a juego.php.
+    const GD_MODE = !!window.__GD_MODE;
 
     const state = {
         codigo: null,
@@ -90,6 +93,28 @@
         const sep = base.indexOf('?') >= 0 ? '&' : '?';
         return base + sep + 'lang=en' + hash;
     }
+    /** Arranca una partida: en GD in-page (con pre-roll en gd.js); en la web
+     *  normal navega a juego.php como siempre. */
+    function irAlJuego(codigo) {
+        if (GD_MODE && typeof window.__gdStartGame === 'function') {
+            // La sesión viaja en memoria además de localStorage: dentro de un
+            // iframe de terceros el almacenamiento puede estar bloqueado.
+            const sesion = (state.codigo === codigo && state.jugadorId)
+                ? { jugadorId: state.jugadorId, jugadorNombre: state.jugadorNombre }
+                : loadSession(codigo);
+            const memoria = sesion && sesion.jugadorId
+                ? {
+                    jugadorId: sesion.jugadorId,
+                    jugadorNombre: sesion.jugadorNombre,
+                    bot: (state.codigo === codigo && state.bot) ? state.bot : null,
+                }
+                : null;
+            window.__gdStartGame(codigo, memoria);
+            return;
+        }
+        window.location.href = url('juego.php?codigo=' + encodeURIComponent(codigo));
+    }
+
     function categoriasData() { return Array.isArray(window.__CATEGORIAS) ? window.__CATEGORIAS : []; }
     function destacadosData() {
         if (Array.isArray(window.__DESTACADOS) && window.__DESTACADOS.length) return window.__DESTACADOS;
@@ -325,6 +350,7 @@
     // =================== contador anónimo ===================
     /** Incrementa un contador agregado (sin cookies ni identificadores). */
     function evento(nombre) {
+        if (GD_MODE) return; // sin analítica propia dentro de GameDistribution
         try {
             if (navigator.sendBeacon) {
                 navigator.sendBeacon('/api/evento.php', JSON.stringify({ evento: nombre }));
@@ -685,16 +711,18 @@
             const session = loadSession(linkSala);
             if (session && session.jugadorId) {
                 // Ya jugó/creó esta sala, ir al juego
-                window.location.href = url('juego.php?codigo=' + encodeURIComponent(linkSala));
+                irAlJuego(linkSala);
                 return;
             }
             renderJoinView(linkSala, '');
         } else {
             renderInitialView();
             if (irAPractica) resaltarPractica();
-            buscarPartidaEnCurso().then(function (partida) {
-                if (partida) pintarBannerPartida(partida);
-            });
+            if (!GD_MODE) {
+                buscarPartidaEnCurso().then(function (partida) {
+                    if (partida) pintarBannerPartida(partida);
+                });
+            }
         }
     }
 
@@ -866,16 +894,16 @@
             title: t('ui.lobby.btn_reglas'),
             onclick: showRulesModal,
         }, '?');
-        app.appendChild(el('header', { class: 'py-1.5 px-3 flex items-center gap-2 min-h-[44px]' }, [
+        const cabeceraHijos = [
             el('p', { class: 'flex-1 text-amber-300/80 text-xs font-mono truncate' },
                 hayStats
                     ? t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 })
                     : ''),
-            btnInstalar,
-            btnProgreso,
-            btnSonido,
-            btnReglas,
-        ]));
+        ];
+        // En GD no se ofrece instalar la PWA: el juego ya vive en el portal.
+        if (!GD_MODE) cabeceraHijos.push(btnInstalar);
+        cabeceraHijos.push(btnProgreso, btnSonido, btnReglas);
+        app.appendChild(el('header', { class: 'py-1.5 px-3 flex items-center gap-2 min-h-[44px]' }, cabeceraHijos));
 
         const selectorBox = el('div', { id: 'tematicaSelector', class: 'mb-4' });
         const botSelectorBox = el('div', { id: 'tematicaBotSelector', class: 'mb-4' });
@@ -990,6 +1018,16 @@
         app.appendChild(rapidaForm);
         app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, t('ui.lobby.separador_o')));
         app.appendChild(createForm);
+        // Hueco de display ad de GameDistribution entre las tarjetas de crear
+        // sala y unirse. Fuera de body.gd-mode queda oculto por CSS.
+        app.appendChild(el('div', {
+            id: 'gdAdLobbySlot',
+            class: 'gd-ad-slot gd-ad--lobby',
+            'data-gd-w': '300',
+            'data-gd-h': '250',
+        }, [
+            el('div', { id: 'gdAdLobby', class: 'gd-ad-inner' }),
+        ]));
         app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, t('ui.lobby.separador_o')));
         app.appendChild(joinForm);
         app.appendChild(el('div', { class: 'text-center text-slate-400 text-xs my-2' }, t('ui.lobby.separador_o')));
@@ -1021,6 +1059,9 @@
         try {
             if (!localStorage.getItem('draft20_reglas')) showRulesModal();
         } catch (e) { /* ignore */ }
+
+        // Aviso para gd.js: el hueco del lobby acaba de (re)pintarse.
+        try { document.dispatchEvent(new CustomEvent('d20:lobby')); } catch (e) { /* ignore */ }
     }
 
     const TEMATICA_RANDOM = '__random__';
@@ -1200,6 +1241,9 @@
                 dificultad: dificultad || 'normal',
             }));
         } catch (e) { /* ignore */ }
+        // Respaldo en memoria: en GD el arranque es in-page y no queremos
+        // depender de localStorage (modo privado / iframe restringido).
+        state.bot = { jugadorId: r2.jugador_id, dificultad: dificultad || 'normal' };
         // Torre: vincular la sala al piso en curso antes de redirigir.
         if (esTorre && window.Torre) {
             try {
@@ -1216,7 +1260,7 @@
         guardarNombre(nombreFinal);
         saveSession();
         evento('game:bot');
-        window.location.href = url('juego.php?codigo=' + encodeURIComponent(r.codigo));
+        irAlJuego(r.codigo);
         return true;
     }
 
@@ -1288,7 +1332,7 @@
             const r = await api('GET', 'api/estado.php?codigo=' + encodeURIComponent(run.codigoSala) + '&t=' + Date.now());
             const est = r && r.sala && r.sala.estado;
             if (r && r.ok && (est === 'jugando' || est === 'esperando')) {
-                window.location.href = url('juego.php?codigo=' + encodeURIComponent(run.codigoSala));
+                irAlJuego(run.codigoSala);
                 return;
             }
         }
@@ -1354,7 +1398,7 @@
         guardarNombre(state.jugadorNombre);
         saveSession();
         // J2 entra directamente al juego
-        window.location.href = url('juego.php?codigo=' + encodeURIComponent(codigo));
+        irAlJuego(codigo);
     }
 
     function renderCreatorView() {
@@ -1369,8 +1413,8 @@
             el('div', { class: 'text-5xl font-mono font-bold text-amber-400 tracking-widest my-4' }, state.codigo),
             el('div', { class: 'flex gap-2 mt-4' }, [
                 el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
-                el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
-                el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
+                GD_MODE ? null : el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+                GD_MODE ? null : el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
             ]),
         ]));
 
@@ -1411,7 +1455,7 @@
         state.sala = r.sala;
         if (r.sala.estado === 'jugando' || r.sala.estado === 'finalizada') {
             stopPollingLobby();
-            window.location.href = url('juego.php?codigo=' + encodeURIComponent(state.codigo));
+            irAlJuego(state.codigo);
         }
     }
 
@@ -1434,7 +1478,7 @@
         evento('game:rapida');
 
         if (r.rol === 'rival') {
-            window.location.href = url('juego.php?codigo=' + encodeURIComponent(r.codigo));
+            irAlJuego(r.codigo);
             return;
         }
         renderBuscandoView();
@@ -1454,8 +1498,8 @@
             el('div', { class: 'text-3xl font-mono font-bold text-amber-400 tracking-widest my-4' }, state.codigo || ''),
             el('div', { class: 'flex gap-2' }, [
                 el('button', { class: 'flex-1 bg-slate-700 text-slate-100 py-3 rounded-lg btn-tap', onclick: function () { copyLink(state.codigo); } }, t('ui.lobby.btn_copiar')),
-                el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
-                el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
+                GD_MODE ? null : el('button', { class: 'flex-1 bg-emerald-500 text-slate-900 py-3 rounded-lg btn-tap', onclick: function () { shareWhatsApp(state.codigo); } }, t('ui.lobby.btn_whatsapp')),
+                GD_MODE ? null : el('button', { class: 'bg-slate-700 text-slate-100 py-3 px-4 rounded-lg btn-tap', onclick: function () { mostrarQR(state.codigo); } }, t('ui.lobby.btn_qr')),
             ]),
         ]));
 
@@ -1601,6 +1645,32 @@
         if (state.colaTimer) { clearInterval(state.colaTimer); state.colaTimer = null; }
     }
 
+    /** Vuelve al lobby sin recargar (solo GD): limpia el estado de partida y
+     *  repinta la landing. app.game.js ya ha parado el poll y la sesión. */
+    function volverAlLobby() {
+        stopPollingLobby();
+        state.codigo = null;
+        state.jugadorId = null;
+        state.jugadorSlot = null;
+        state.jugadorNombre = null;
+        state.rivalNombre = null;
+        state.sala = null;
+        state.bot = null;
+        state.torre = null;
+        state.pollTerminal = false;
+        state.pollFailures = 0;
+        state.pollInFlight = false;
+        state.actionInFlight = false;
+        state.partidaGuardada = false;
+        state.esperaRival = null;
+        state.avisoUnion = false;
+        state.lastRenderSig = null;
+        state.tematicaCreada = null;
+        const app = $('#app');
+        if (app) app.className = 'flex flex-col';
+        renderInitialView();
+    }
+
     // =================== EXPOSE ===================
     window.__init = indexInit;
 
@@ -1633,5 +1703,7 @@
         evento: evento,
         limpiarEspera: limpiarEspera,
         iniciarPartidaBot: iniciarPartidaBot,
+        irAlJuego: irAlJuego,
+        volverAlLobby: volverAlLobby,
     };
 })();

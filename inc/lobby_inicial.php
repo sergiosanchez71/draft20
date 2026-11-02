@@ -15,6 +15,7 @@ function lobby_inicial_html(?string $tematicaPre = null, ?string $tematicaBotPre
     $cat = static fn(string $k): string => (string) ($L[$k] ?? '');
     $tor = cargar_lang()['ui']['torre'] ?? [];
     $torre = static fn(string $k): string => (string) ($tor[$k] ?? '');
+    $gd = gd_mode();
 
     $opciones = static function (?string $sel): string {
         $sel = $sel ?? '__random__';
@@ -66,7 +67,7 @@ function lobby_inicial_html(?string $tematicaPre = null, ?string $tematicaBotPre
 
     return '<header class="py-1.5 px-3 flex items-center gap-2 min-h-[44px]">'
         . '<p class="flex-1 text-amber-300/80 text-xs font-mono truncate"></p>'
-        . '<button id="btnInstalar" class="w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500 text-slate-900 text-base font-bold btn-tap" aria-label="' . e($cat('pwa_instalar')) . '" title="' . e($cat('pwa_instalar')) . '">📲</button>'
+        . ($gd ? '' : '<button id="btnInstalar" class="w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500 text-slate-900 text-base font-bold btn-tap" aria-label="' . e($cat('pwa_instalar')) . '" title="' . e($cat('pwa_instalar')) . '">📲</button>')
         . '<button class="w-9 h-9 flex-shrink-0 rounded-full bg-slate-700 text-slate-200 text-base font-bold btn-tap" aria-label="' . e($cat('btn_progreso')) . '" title="' . e($cat('btn_progreso')) . '">🏅</button>'
         . '<button class="w-9 h-9 flex-shrink-0 rounded-full bg-slate-700 text-slate-200 text-base font-bold btn-tap" aria-label="' . e($cat('sonido')) . '" title="' . e($cat('sonido')) . '">🔇</button>'
         . '<button class="w-9 h-9 flex-shrink-0 rounded-full bg-slate-700 text-slate-200 text-sm font-bold btn-tap" aria-label="' . e($cat('btn_reglas')) . '" title="' . e($cat('btn_reglas')) . '">?</button>'
@@ -89,6 +90,11 @@ function lobby_inicial_html(?string $tematicaPre = null, ?string $tematicaBotPre
         . $toggle('mb-4')
         . '<button id="btnCreate" class="w-full bg-amber-400 text-slate-900 font-bold py-4 rounded-lg btn-tap text-lg">' . e($cat('btn_crear')) . '</button>'
         . '</section>'
+        // Hueco de display ad de GameDistribution entre las tarjetas de crear
+        // sala y unirse. Fuera de body.gd-mode queda oculto (CSS).
+        . '<div id="gdAdLobbySlot" class="gd-ad-slot gd-ad--lobby" data-gd-w="300" data-gd-h="250">'
+        . '<div id="gdAdLobby" class="gd-ad-inner"></div>'
+        . '</div>'
         . '<div class="text-center text-slate-400 text-xs my-2">' . e($cat('separador_o')) . '</div>'
         . '<section class="bg-slate-800 p-6 rounded-lg m-4 fade-in">'
         . '<label class="block text-sm text-slate-400 mb-1">' . e($cat('label_unirse')) . '</label>'

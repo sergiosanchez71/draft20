@@ -5,3 +5,5 @@ api/datos/*.json
 api/datos/clave_ranking.txt
 api/datos/rl/
 api/datos/stats/
+
+dist/

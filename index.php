@@ -19,6 +19,7 @@ require_once __DIR__ . '/api/ranking_lib.php';
 
 $LANG = cargar_lang();
 $SEO  = is_array($LANG['seo'] ?? null) ? $LANG['seo'] : [];
+$gdMode = gd_mode();
 
 $salaFromLink = $_GET['sala'] ?? null;
 if (!is_string($salaFromLink) || !preg_match('/^[A-Z0-9]{5}$/', $salaFromLink)) {
@@ -79,28 +80,34 @@ pagina_head([
     'titulo' => (string) ($SEO['home_titulo'] ?? SITE_NOMBRE),
     'descripcion' => $descripcion,
     'canonical' => '/',
-    // La vista de unirse por enlace (?sala=CODE) no debe indexarse.
-    'robots' => $salaFromLink ? 'noindex, follow' : 'index, follow',
+    // La vista de unirse por enlace (?sala=CODE) no debe indexarse; el modo
+    // GD tampoco (es una vista de juego dentro del iframe del portal).
+    'robots' => ($gdMode || $salaFromLink) ? 'noindex, follow' : 'index, follow',
     'json_ld' => $jsonLd,
     // El bundle del lobby se descubre en el <head> y llega antes (SI/LCP).
-    'preload_scripts' => ['js/app.core.js'],
+    'preload_scripts' => $gdMode
+        ? ['js/app.core.js', 'js/app.game.js', 'js/bot_policy.js', 'js/gd.js']
+        : ['js/app.core.js'],
     // El juego se precarga en segundo plano: entrar a la partida es inmediato.
     'prefetch' => ['/js/app.game.min.js', '/js/bot_policy.min.js'],
 ]);
 ?>
-    <div class="min-h-screen flex flex-col">
+    <div id="d20-page" class="min-h-screen flex flex-col">
+        <div id="d20-landing-top">
         <header class="px-6 pt-8 pb-2 text-center safe-pt">
             <h1 class="text-4xl font-bold text-amber-400"><?= e(SITE_NOMBRE) ?></h1>
             <p class="text-slate-400 text-sm mt-2"><?= e((string) ($LANG['ui']['app']['subtitulo_lobby'] ?? '')) ?></p>
             <p class="text-slate-300 text-sm mt-4 max-w-xl mx-auto leading-relaxed"><?= e((string) ($SEO['hero_texto'] ?? '')) ?></p>
-            <a href="<?= e(url_lang('/#app')) ?>" class="inline-block mt-5 bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
+            <a href="<?= e($gdMode ? '#app' : url_lang('/#app')) ?>" class="inline-block mt-5 bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['hero_cta'] ?? 'Jugar')) ?></a>
         </header>
+        </div>
 
         <main class="flex-1 flex flex-col">
-            <div class="w-full max-w-5xl mx-auto">
+            <div id="d20-app-wrap" class="w-full max-w-5xl mx-auto">
                 <div id="app" class="flex flex-col"><?= lobby_inicial_html($tematicaPre, $tematicaBotPre) ?></div>
             </div>
 
+            <div id="d20-seo">
             <section class="max-w-5xl mx-auto w-full px-4 mt-10">
                 <details class="acordeon bg-slate-800 border border-slate-700 rounded-lg">
                     <summary class="flex items-center justify-between gap-2 px-4 py-3 cursor-pointer font-bold text-xl text-slate-100">
@@ -226,8 +233,9 @@ pagina_head([
             </section>
 
             <section class="text-center mt-10 px-4">
-                <a href="<?= e(url_lang('/#app')) ?>" class="inline-block bg-emerald-500 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['cta_final'] ?? '')) ?></a>
+                <a href="<?= e($gdMode ? '#app' : url_lang('/#app')) ?>" class="inline-block bg-emerald-500 text-slate-900 font-bold py-3 px-6 rounded-lg btn-tap"><?= e((string) ($SEO['cta_final'] ?? '')) ?></a>
             </section>
+            </div>
         </main>
     </div>
 <?php
@@ -244,6 +252,7 @@ $inlineFirst = 'window.LANG = ' . json_encode($langCliente, JSON_UNESCAPED_UNICO
     . 'window.D20_LANG = ' . json_encode(idioma_actual()) . ';'
     . 'window.__CATEGORIAS = ' . json_encode($categorias, JSON_UNESCAPED_UNICODE) . ';'
     . 'window.__DESTACADOS = ' . json_encode(destacados(), JSON_UNESCAPED_UNICODE) . ';'
+    . ($gdMode ? 'window.__GD_MODE = true;window.__GD_GAME_ID = ' . json_encode(GD_GAME_ID, JSON_UNESCAPED_SLASHES) . ';' : '')
     . ($tematicaPre !== null ? 'window.__tematicaPre = ' . json_encode($tematicaPre) . ';' : '')
     . ($tematicaBotPre !== null ? 'window.__tematicaBotPre = ' . json_encode($tematicaBotPre) . ';' : '');
 
@@ -251,18 +260,22 @@ $inline = '(function () {'
     . ' const linkSala = ' . json_encode($salaFromLink, JSON_UNESCAPED_UNICODE) . ';'
     // app.core.min.js va con defer: esperamos a que el bundle esté ejecutado.
     . ' document.addEventListener("DOMContentLoaded", function () { window.__init(linkSala); });'
-    . ' if ("serviceWorker" in navigator) { window.addEventListener("load", function () {'
-    . ' navigator.serviceWorker.register("/sw.js?v=' . (is_file(__DIR__ . '/sw.js') ? filemtime(__DIR__ . '/sw.js') : '1') . '").catch(function () {});'
-    . ' }); }'
+    // En GameDistribution no hay service worker: el juego vive en el iframe
+    // del portal y cada versión se sirve directamente desde Hostinger.
+    . ($gdMode ? '' : ' if ("serviceWorker" in navigator) { window.addEventListener("load", function () {'
+        . ' navigator.serviceWorker.register("/sw.js?v=' . (is_file(__DIR__ . '/sw.js') ? filemtime(__DIR__ . '/sw.js') : '1') . '").catch(function () {});'
+        . ' }); }')
     . '})();';
 
-if (ADS_ACTIVOS && ADSENSE_SLOT_LOBBY !== '') {
+if (!$gdMode && ADS_ACTIVOS && ADSENSE_SLOT_LOBBY !== '') {
     $inline .= '(window.adsbygoogle = window.adsbygoogle || []).push({});';
 }
 
 pagina_foot([
     'inline_first' => $inlineFirst,
-    'scripts' => ['js/torre.js', 'js/app.core.js'],
+    'scripts' => $gdMode
+        ? ['js/torre.js', 'js/bot_policy.js', 'js/app.core.js', 'js/app.game.js', 'js/gd.js']
+        : ['js/torre.js', 'js/app.core.js'],
     'inline' => $inline,
     'defer' => true,
     'footer_ancho' => 'w-full max-w-5xl mx-auto',

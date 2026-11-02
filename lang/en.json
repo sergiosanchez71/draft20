@@ -6,6 +6,11 @@
             "sala_expirada": "The game is no longer available",
             "idioma": "Language"
         },
+        "gd": {
+            "cargando": "Loading…",
+            "preparando": "Preparing the game…",
+            "enlace_bloqueado": "This section is available at draft20.es"
+        },
         "lobby": {
             "btn_crear": "Create private room",
             "label_unirse": "Room code",
