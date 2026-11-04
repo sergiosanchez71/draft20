@@ -172,8 +172,10 @@
         const lbl = el('div', {
             style: 'font-size:11px; color:#888; margin-bottom:4px;'
         }, 'Publicidad');
-        const s1 = document.createElement('script');
-        s1.textContent = "atOptions = {'key' : '" + key + "', 'format' : 'iframe', 'height' : " + h + ", 'width' : " + w + ", 'params' : {}};";
+        // Definir atOptions directamente en window ANTES del script externo
+        // para evitar race condition: el iframe de bauval.org lee atOptions
+        // al cargarse y si no existe, el anuncio queda vacío.
+        window.atOptions = {'key' : key, 'format' : 'iframe', 'height' : h, 'width' : w, 'params' : {}};
         const s2 = document.createElement('script');
         s2.src = 'https://bauval.org/22/' + key;
         s2.onerror = function () {
@@ -181,7 +183,6 @@
             wrap.style.minHeight = h + 'px';
         };
         wrap.appendChild(lbl);
-        wrap.appendChild(s1);
         wrap.appendChild(s2);
         return wrap;
     }
