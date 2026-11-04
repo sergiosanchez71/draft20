@@ -338,6 +338,7 @@ try {
     check(strpos($rawGd, 'window.__GD_MODE = true') !== false && strpos($rawGd, 'window.__GD_GAME_ID') !== false,
         'GD: bootstrap con modo y game id');
     check(strpos($rawGd, 'js/gd.js') !== false || strpos($rawGd, 'js/gd.min.js') !== false, 'GD: carga gd.js');
+    check(strpos($rawGd, '"items":{"ing_') !== false, 'GD: LANG incluye los nombres de los items');
     check(strpos($rawGd, 'id="btnInstalar"') === false, 'GD: sin botón de instalar PWA');
     check(strpos($rawGd, 'id="d20-consent"') === false, 'GD: sin banner de consentimiento propio');
     check(strpos($rawGd, 'googletagmanager.com/gtag/js') === false, 'GD: sin GA4');
@@ -376,6 +377,7 @@ try {
     $rLlms = http_req('GET', $base . '/llms.txt');
     check($rLlms['code'] === 200 && strpos((string) $rLlms['raw'], '# Draft 20') === 0, 'llms.txt servido con H1');
     check(strpos((string) $rSeoHome['raw'], 'pagead2.googlesyndication.com') === false, 'home: sin loader de AdSense (red inactiva)');
+    check(strpos((string) $rSeoHome['raw'], '"items":{') === false, 'home: landing normal sin diccionario pesado de items');
     check(strpos($hcsp, 'pagead2.googlesyndication.com') === false && strpos($hcsp, 'fundingchoicesmessages.google.com') !== false, 'CSP: sin dominios de AdSense, con fundingchoices');
     check(strpos($hcsp, 'https://www.googletagmanager.com') !== false && strpos((string) $rSeoHome['raw'], 'googletagmanager.com/gtag/js?id=G-JR150JQ65Z') !== false, 'GA4: CSP lo permite y el head lleva gtag.js directo');
     check((bool) preg_match('/<script nonce="[A-Za-z0-9+\/=]+">window\.dataLayer=window\.dataLayer\|\|/', (string) $rSeoHome['raw']) && strpos((string) $rSeoHome['raw'], 'gtag("consent","default"') !== false, 'GA4: consent mode denegado por defecto con nonce');
@@ -387,6 +389,7 @@ try {
     check($rAds['code'] === 200 && strpos((string) $rAds['raw'], 'dormant') !== false, 'ads.txt placeholder sin red activa');
     check(strpos((string) $rSeoHome['raw'], 'data-ad-pos="lobby"') !== false && strpos((string) $rSeoHome['raw'], 'data-ad-size="320x100"') !== false, 'home: hueco dormant del lobby');
     $rJuegoAds = http_req('GET', $base . '/juego.php?codigo=ABCDE');
+    check(strpos((string) $rJuegoAds['raw'], '"items":{"ing_') !== false, 'juego: LANG incluye los nombres de los items');
     $rJuegoMalo = http_req('GET', $base . '/juego.php?codigo=ABC12');
     $cabMalo = implode("\n", (array) ($rJuegoMalo['headers'] ?? []));
     check(strpos($cabMalo, ' 302') !== false && strpos($cabMalo, 'Location: /') !== false, 'juego: código fuera de CHARSET (ABC12) redirige al inicio');

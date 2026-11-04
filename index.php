@@ -244,12 +244,18 @@ pagina_head([
 <?php
 
 // i18n del cliente: el lobby solo necesita ui + nombres de temáticas/categorías.
-// Los nombres de los ítems (pesados) se quedan fuera de la landing.
+// Los nombres de los ítems (pesados) se quedan fuera de la landing normal.
 $langCliente = [
     'ui' => $LANG['ui'] ?? [],
     'tematicas' => $LANG['tematicas'] ?? [],
     'tematicas_categorias' => $LANG['tematicas_categorias'] ?? [],
 ];
+// En modo GD el juego se sirve en esta misma página: sin `items`, tItem()
+// devuelve la key y el jugador ve IDs como "ing_pan_brioche". Solo se cargan
+// en GD; la landing normal sigue sin ese payload.
+if ($gdMode) {
+    $langCliente['items'] = $LANG['items'] ?? [];
+}
 
 $inlineFirst = 'window.LANG = ' . json_encode($langCliente, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . ';'
     . 'window.D20_LANG = ' . json_encode(idioma_actual()) . ';'

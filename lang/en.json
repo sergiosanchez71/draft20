@@ -9,6 +9,7 @@
         "gd": {
             "cargando": "Loading…",
             "preparando": "Preparing the game…",
+            "anuncio_no_disponible": "The ad could not be loaded. The game will continue.",
             "enlace_bloqueado": "This section is available at draft20.es"
         },
         "lobby": {

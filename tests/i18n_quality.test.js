@@ -359,6 +359,19 @@ async function checkAsync(nombre, fn) {
             assert.strictEqual(domEs.window.DraftApp.tApi('Mensaje no mapeado.', 400), 'Mensaje no mapeado.');
             domEs.window.close();
         });
+
+        await checkAsync('tItem resuelve el nombre traducido cuando hay diccionario', async function () {
+            const core = fs.readFileSync(path.join(ROOT, 'js', 'app.core.js'), 'utf8');
+            const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+                url: BASE + '/', runScripts: 'outside-only',
+            });
+            dom.window.LANG = en;
+            dom.window.D20_LANG = 'en';
+            dom.window.eval(core);
+            assert.strictEqual(dom.window.DraftApp.tItem('ing_pan_brioche'), en.items.ing_pan_brioche);
+            assert.notStrictEqual(dom.window.DraftApp.tItem('ing_pan_brioche'), 'ing_pan_brioche');
+            dom.window.close();
+        });
     } finally {
         matarServidor(proc);
     }

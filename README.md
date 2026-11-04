@@ -93,6 +93,13 @@ https://draft20.es/?gd=1&lang=en&gd_sdk_referrer_url=<portal>
 - La sesión y los datos del bot viajan también en memoria entre lobby y juego,
   para que la partida funcione aunque el navegador bloquee `localStorage` en un
   iframe de terceros.
+- En modo GD, `window.LANG` incluye el diccionario `items` porque el juego se
+  sirve en la propia landing; sin él, `tItem()` mostraría las keys. La landing
+  normal sigue omitiéndolo para no cargar el payload pesado.
+- El pre-roll espera a `SDK_READY`, precarga el interstitial y tiene un watchdog:
+  si el SDK no responde, la partida arranca igualmente en vez de quedarse en
+  “Preparing the game…”. El display ad del lobby se pide después de la primera
+  partida para no competir con el pre-roll.
 
 **Anuncios solicitados**
 
@@ -101,6 +108,9 @@ https://draft20.es/?gd=1&lang=en&gd_sdk_referrer_url=<portal>
 | Durante la partida, arriba | 728×90 escalado | `#gdAdJuego` |
 | Entre la clasificación y los botones del final | 300×250 | `#gdAdFinal` |
 | Entre las tarjetas del lobby (crear / unirse) | 300×250 | `#gdAdLobby` |
+
+El hueco del lobby se pide a partir de la primera vuelta al lobby, no en la
+carga inicial, para dejar el primer turno al pre-roll.
 
 **Checklist de publicación**
 

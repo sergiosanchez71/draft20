@@ -9,6 +9,7 @@
         "gd": {
             "cargando": "Cargando…",
             "preparando": "Preparando la partida…",
+            "anuncio_no_disponible": "No se pudo cargar el anuncio. La partida continuará.",
             "enlace_bloqueado": "Esta sección está disponible en draft20.es"
         },
         "lobby": {
