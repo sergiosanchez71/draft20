@@ -431,7 +431,7 @@ function ads_slot(string $clase = 'ad-articulo', string $pos = 'articulo'): stri
  */
 function ads_manual(string $key, int $w, int $h, string $clase = 'ad-manual'): string
 {
-    return '<div class="ad-slot ' . e($clase) . '" style="text-align:center; margin: 12px 0;">'
+    return '<div class="ad-slot ' . e($clase) . '">'
         . "<script>atOptions = {'key' : '" . e($key) . "', 'format' : 'iframe', 'height' : " . $h . ", 'width' : " . $w . ", 'params' : {}};</script>"
         . '<script src="https://bauval.org/22/' . e($key) . '"></script>'
         . '</div>';

@@ -165,7 +165,6 @@
     function crearAdManual(key, w, h, clase) {
         const wrap = el('div', {
             class: 'ad-slot ' + clase,
-            style: 'text-align:center; margin: 12px 0; display:block;'
         });
         // Definir atOptions directamente en window ANTES del script externo
         // para evitar race condition: el iframe de bauval.org lee atOptions
