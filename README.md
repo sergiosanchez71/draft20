@@ -112,6 +112,11 @@ https://draft20.es/?gd=1&lang=en&gd_sdk_referrer_url=<portal>
    se colapsan sin dejar huecos visibles si no hay fill.
 5. Solicitar la activación/publicación en el panel.
 
+> Si la revisión todavía sirve el wrapper antiguo (iframe sin `?gd=1`), no hace
+> falta esperar a subir el ZIP: la landing detecta el iframe de
+> GameDistribution y salta a `?gd=1` conservando el referrer del portal. El ZIP
+> nuevo sigue siendo la vía recomendada para el wrapper oficial.
+
 > El SDK vive dentro de la página de Hostinger, no en el wrapper. El wrapper se
 > puede regenerar en cualquier momento con `npm run build:gd`; el ZIP sale en
 > `dist/` y no se commitea.
