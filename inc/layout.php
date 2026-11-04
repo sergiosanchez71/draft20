@@ -218,7 +218,7 @@ function csp_headers(bool $gd_frame = false): void
     header('Content-Security-Policy: ' . csp_policy($gd_frame));
 }
 
-/** Política CSP (frame-ancestors se envía también por cabecera). */
+/** Política CSP (frame-ancestors se envía también por cabecera). Versión 1.4.3 - fix bauval. */
 function csp_policy(bool $gd_frame = false): string
 {
     $n = csp_nonce();
