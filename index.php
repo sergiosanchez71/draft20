@@ -110,6 +110,9 @@ pagina_head([
                 <div id="app" class="flex flex-col"><?= lobby_inicial_html($tematicaPre, $tematicaBotPre) ?></div>
             </div>
 
+            <!-- Anuncio entre el lobby (bot/practicar) y el contenido SEO "How to play" -->
+            <?= ads_manual('e7365c7f2b2e336598f6594fbd2e70b9', 728, 90, 'ad-lobby-principal') ?>
+
             <div id="d20-seo">
             <section class="max-w-5xl mx-auto w-full px-4 mt-10">
                 <details class="acordeon bg-slate-800 border border-slate-700 rounded-lg">

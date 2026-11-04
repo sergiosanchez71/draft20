@@ -13,7 +13,7 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.4.2';
+const APP_VERSION = '1.4.3';
 // GameDistribution: integración self-hosted (wrapper iframe → esta web).
 const GD_GAME_ID = '949d5680eca140e399c4b8d028e696fc';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
@@ -229,11 +229,11 @@ function csp_policy(bool $gd_frame = false): string
     // beacons van a google-analytics. Sin iframes: frame-src sin gtm.
     // Al activar red, re-añadir sus dominios aquí (ver README Publicidad).
     return "default-src 'self'; " .
-        "script-src 'self' 'nonce-" . $n . "' " .
-        "https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
+        "script-src 'self' 'nonce-" . $n . "' 'unsafe-inline' " .
+        "https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com https://bauval.org; " .
         "style-src 'self' 'unsafe-inline'; " .
         "img-src 'self' data: https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.google-analytics.com; " .
-        "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://www.google.com https://fundingchoicesmessages.google.com; " .
+        "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://www.google.com https://fundingchoicesmessages.google.com https://bauval.org; " .
         "frame-src https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
         "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; " . $ancestros;
 }
@@ -421,6 +421,20 @@ function ads_slot(string $clase = 'ad-articulo', string $pos = 'articulo'): stri
     return '<div class="ad-slot ' . e($clase) . '" data-ad-pos="' . e($pos) . '" data-ad-size="' . e($tam) . '">'
         . '<ins class="adsbygoogle" style="display:inline-block;width:' . $ancho . 'px;height:' . $alto . 'px" '
         . 'data-ad-client="' . e(ADSENSE_CLIENT) . '" data-ad-slot="' . e(ADSENSE_SLOT_ARTICULO) . '"></ins>'
+        . '</div>';
+}
+
+/**
+ * Bloque de anuncio manual (red externa tipo bauval.org).
+ * Devuelve el contenedor con los scripts atOptions + src listos para insertar
+ * en cualquier plantilla. No depende de ADS_ACTIVOS ni de AdSense.
+ */
+function ads_manual(string $key, int $w, int $h, string $clase = 'ad-manual'): string
+{
+    return '<div class="ad-slot ' . e($clase) . '" style="text-align:center; margin: 12px 0;">'
+        . '<div style="font-size:11px; color:#888; margin-bottom:4px;">Publicidad</div>'
+        . "<script>atOptions = {'key' : '" . e($key) . "', 'format' : 'iframe', 'height' : " . $h . ", 'width' : " . $w . ", 'params' : {}};</script>"
+        . '<script src="https://bauval.org/22/' . e($key) . '"></script>'
         . '</div>';
 }
 

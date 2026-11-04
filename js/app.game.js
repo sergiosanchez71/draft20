@@ -161,6 +161,31 @@
         return hueco;
     }
 
+    /** Anuncio manual (red externa, scripts atOptions + src).
+     *  Siempre deja el hueco visible con el label "Publicidad" aunque el
+     *  script externo falle o bloquee CSP. */
+    function crearAdManual(key, w, h, clase) {
+        const wrap = el('div', {
+            class: 'ad-slot ' + clase,
+            style: 'text-align:center; margin: 12px 0; display:block;'
+        });
+        const lbl = el('div', {
+            style: 'font-size:11px; color:#888; margin-bottom:4px;'
+        }, 'Publicidad');
+        const s1 = document.createElement('script');
+        s1.textContent = "atOptions = {'key' : '" + key + "', 'format' : 'iframe', 'height' : " + h + ", 'width' : " + w + ", 'params' : {}};";
+        const s2 = document.createElement('script');
+        s2.src = 'https://bauval.org/22/' + key;
+        s2.onerror = function () {
+            // Si el script externo falla, al menos el hueco se ve con el label.
+            wrap.style.minHeight = h + 'px';
+        };
+        wrap.appendChild(lbl);
+        wrap.appendChild(s1);
+        wrap.appendChild(s2);
+        return wrap;
+    }
+
     /** Encola el bloque recién insertado (el loader async procesa la cola al llegar). */
     function pedirAd() {
         if (GD_MODE) return;
@@ -414,15 +439,16 @@
 
         app.appendChild(header);
         app.appendChild(offlineBanner);
-        const adJuego = crearAd('banner', 'ad-juego', 320, 50);
-        if (adJuego) app.appendChild(adJuego);
         app.appendChild(scoreboard);
+        // Banner 320x50 debajo de los cuadros de monedas (scoreboard), antes del itemCard,
+        // para que el cuadro del ítem quede más grande y el anuncio no entorpezca los botones.
+        const adJuego = crearAdManual('4cf4ce1d53bfee37bb86d0db5e583250', 320, 50, 'ad-juego');
+        if (adJuego) app.appendChild(adJuego);
+        if (adJuego) pedirAdGD('gdAdJuego');
         app.appendChild(itemCard);
         app.appendChild(inventory);
         app.appendChild(emoteBar);
         app.appendChild(actionBar);
-        if (adJuego) pedirAd();
-        if (adJuego) pedirAdGD('gdAdJuego');
     }
 
     function setOfflineBanner(show) {
@@ -1674,7 +1700,7 @@
             listsHost = el('div', { id: 'finalLists' });
             bottom = el('div', { id: 'finalBottom' });
             const host = el('div', { id: 'adFinalHost' });
-            const adFinal = crearAd('final', 'ad-final', 300, 250);
+            const adFinal = crearAdManual('40043263ec9e2b72d03e877a2d6951fd', 300, 250, 'ad-final');
             if (adFinal) host.appendChild(adFinal);
             card.appendChild(top);
             card.appendChild(listsHost);
@@ -2237,13 +2263,11 @@
         const top = el('div', { id: 'finalTop' });
         const bottom = el('div', { id: 'finalBottom' });
         const host = el('div', { id: 'adFinalHost' });
-        const adFinal = crearAd('final', 'ad-final', 300, 250);
+        const adFinal = crearAdManual('40043263ec9e2b72d03e877a2d6951fd', 300, 250, 'ad-final');
         if (adFinal) host.appendChild(adFinal);
         card.appendChild(top);
         card.appendChild(host);
         card.appendChild(bottom);
-        if (adFinal) pedirAd();
-        if (adFinal) pedirAdGD('gdAdFinal');
         vibrate([100, 50, 100]);
         try { sfx('fin'); } catch (e) { /* ignore */ }
         return { top: top, bottom: bottom };

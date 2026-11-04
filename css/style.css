@@ -153,6 +153,18 @@ body.guiado #app { overflow-y: auto; }
     margin-bottom: 1.5rem;
 }
 
+/* Pantalla principal: 728×90 entre el lobby y el SEO "How to play".
+   Solo en desktop/tablet: en móvil se oculta para no desbordar. */
+.ad-lobby-principal {
+    margin: 20px auto;
+    max-width: 728px;
+    height: 90px;
+    min-height: 90px;
+}
+@media (max-width: 768px) {
+    .ad-lobby-principal { display: none; }
+}
+
 /* Huecos dormant (sin red publicitaria activa): colapsados por completo,
    cero impacto visual. Al rellenarse con un anuncio (dejan de estar :empty)
    recuperan su tamaño reservado anti-CLS. Hooks data-ad-pos/data-ad-size
@@ -353,3 +365,5 @@ body.gd-mode .gd-ad-slot.is-empty {
 .d20-lang--header { margin-left: 0.15rem; }
 .d20-lang--game { border-color: rgba(148, 163, 184, 0.25); padding: 0.1rem; }
 .d20-lang--game .d20-lang__link { padding: 0.22rem 0.38rem; font-size: 0.65rem; }
+
+

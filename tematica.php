@@ -146,7 +146,7 @@ pagina_head([
         <p class="text-sm text-slate-300 leading-relaxed mb-10"><?= e($tacticaTema) ?></p>
         <?php endif; ?>
 
-        <?= ads_slot() ?>
+        <?= ads_manual('40043263ec9e2b72d03e877a2d6951fd', 300, 250, 'ad-articulo') ?>
 
         <?php if ($preguntas !== []): ?>
         <h2 class="text-xl font-bold text-slate-100 mb-4"><?= e(seo_ui('tematica_faq_titulo')) ?></h2>
