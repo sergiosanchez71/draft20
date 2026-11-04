@@ -161,17 +161,12 @@
         return hueco;
     }
 
-    /** Anuncio manual (red externa, scripts atOptions + src).
-     *  Siempre deja el hueco visible con el label "Publicidad" aunque el
-     *  script externo falle o bloquee CSP. */
+    /** Anuncio manual (red externa, scripts atOptions + src). */
     function crearAdManual(key, w, h, clase) {
         const wrap = el('div', {
             class: 'ad-slot ' + clase,
             style: 'text-align:center; margin: 12px 0; display:block;'
         });
-        const lbl = el('div', {
-            style: 'font-size:11px; color:#888; margin-bottom:4px;'
-        }, 'Publicidad');
         // Definir atOptions directamente en window ANTES del script externo
         // para evitar race condition: el iframe de bauval.org lee atOptions
         // al cargarse y si no existe, el anuncio queda vacío.
@@ -179,10 +174,8 @@
         const s2 = document.createElement('script');
         s2.src = 'https://bauval.org/22/' + key;
         s2.onerror = function () {
-            // Si el script externo falla, al menos el hueco se ve con el label.
             wrap.style.minHeight = h + 'px';
         };
-        wrap.appendChild(lbl);
         wrap.appendChild(s2);
         return wrap;
     }
