@@ -38,11 +38,21 @@
     var preRollResolver = null;
     var preRollVisto = false;
     var algunaVezJugado = false;
+    var preRollIntentos = 0;
+    var MAX_PRE_ROLL_INTENTOS = 2;
+
+    // Log de eventos del SDK para diagnóstico. Útil para saber por qué un
+    // anuncio no se reproduce en el navegador del jugador.
+    function gdLog() {
+        var args = Array.prototype.slice.call(arguments);
+        try { console.log('[GD] ' + args.join(' ')); } catch (e) { /* ignore */ }
+    }
 
     window.GD_OPTIONS = {
         gameId: GAME_ID,
         onEvent: function (evt) {
             var name = evt && evt.name;
+            if (name) gdLog('evento:', name);
             if (name === 'SDK_READY') {
                 sdkReady = true;
                 if (sdkResolve) {
@@ -54,10 +64,15 @@
             }
             if (name === 'SDK_ERROR') {
                 sdkFailed = true;
+                gdLog('SDK_ERROR');
                 if (sdkResolve) {
                     sdkResolve();
                     sdkResolve = null;
                 }
+                return;
+            }
+            if (name === 'AD_ERROR') {
+                gdLog('AD_ERROR:', evt && evt.message);
                 return;
             }
             if (name === 'SDK_GAME_PAUSE') {
@@ -172,13 +187,17 @@
     }
 
     function mostrarPreRoll() {
-        if (preRollHecho) return Promise.resolve();
-        preRollHecho = true;
+        if (preRollIntentos >= MAX_PRE_ROLL_INTENTOS) return Promise.resolve();
+        preRollIntentos++;
+        gdLog('pre-roll intento', preRollIntentos, 'de', MAX_PRE_ROLL_INTENTOS);
         preRollVisto = false;
         adEnCurso = false;
         mostrarLoading(t('ui.gd.preparando', 'Preparando la partida…'));
         return esperarSdk(9000).then(function (listo) {
-            if (!listo) return false;
+            if (!listo) {
+                gdLog('SDK no listo para pre-roll');
+                return false;
+            }
             return new Promise(function (resolve) {
                 var terminado = false;
                 var watchdog = null;
@@ -234,19 +253,27 @@
             });
         }).then(function (visto) {
             if (!visto) {
-                // No se llegó a ver el anuncio: permitir reintentarlo en la
-                // siguiente partida y avisar sin bloquear el arranque.
+                gdLog('pre-roll sin anuncio visible');
+                // No se llegó a ver el anuncio: reintentar si aún quedan intentos,
+                // o avisar y permitir seguir jugando sin bloquear el arranque.
+                if (preRollIntentos < MAX_PRE_ROLL_INTENTOS) {
+                    gdLog('reintentando pre-roll en 3 s');
+                    return esperar(3000).then(mostrarPreRoll);
+                }
                 preRollHecho = false;
                 var D = window.DraftApp;
                 if (D && typeof D.toast === 'function') {
-                    D.toast(t('ui.gd.anuncio_no_disponible', 'No se pudo cargar el anuncio. La partida continuará.'), 3500);
+                    D.toast(t('ui.gd.anuncio_no_disponible', 'No se pudo cargar el anuncio. La partida continuará.'), 4000);
                 }
+            } else {
+                gdLog('pre-roll completado');
             }
             // Un mínimo de feedback evita el parpadeo si el anuncio responde
             // al instante (o si el SDK no está disponible en local).
             return esperar(MIN_LOADING_MS);
-        }).catch(function () {
+        }).catch(function (e) {
             // El juego nunca debe quedarse bloqueado por un fallo del anuncio.
+            gdLog('pre-roll error:', String(e));
             preRollHecho = false;
         }).then(function () {
             ocultarLoading();
@@ -363,6 +390,10 @@
     window.__gdVolverLobby = function () {
         inGame = false;
         document.body.classList.remove('gd-jugando');
+        // Resetear el estado del pre-roll para que se pueda intentar de nuevo
+        // en la siguiente partida desde el lobby.
+        preRollIntentos = 0;
+        preRollHecho = false;
         var D = window.DraftApp;
         if (D && typeof D.volverAlLobby === 'function') D.volverAlLobby();
         else window.location.reload();
