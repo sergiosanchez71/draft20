@@ -581,9 +581,9 @@ function pagina_head(array $opts): void
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <?= gd_frame_redirect($gdFrame) ?>
     <?= deteccion_idioma_script() ?>
     <?= csp_meta($gdFrame) ?>
-    <?= gd_frame_redirect($gdFrame) ?>
     <?= ga_head() ?>
     <meta name="theme-color" content="#0f172a">
     <meta name="app-version" content="<?= e(APP_VERSION) ?>">
