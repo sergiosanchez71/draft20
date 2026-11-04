@@ -232,7 +232,7 @@ function csp_policy(bool $gd_frame = false): string
         "script-src 'self' 'unsafe-inline' 'unsafe-eval' " .
         "https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com https://bauval.org; " .
         "style-src 'self' 'unsafe-inline'; " .
-        "img-src 'self' data: https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.google-analytics.com https://static.nresystems.com https://cdn.storageimagedisplay.com; " .
+        "img-src 'self' data: https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.google-analytics.com https://static.nresystems.com https://cdn.storageimagedisplay.com https://www.bauval.org https://cdn.nresystems.com https://tps.systems.nresystems.com https://www.googletagmanager.com; " .
         "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://www.google.com https://fundingchoicesmessages.google.com https://bauval.org; " .
         "frame-src https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
         "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; " . $ancestros;
