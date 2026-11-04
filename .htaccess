@@ -80,8 +80,9 @@ ErrorDocument 404 /404.php
     # la emite PHP en las páginas HTML: si se fija aquí, mod_headers reemplaza
     # la de PHP y el nonce nunca llega al navegador.
     Header always set X-Content-Type-Options "nosniff"
-    # X-Frame-Options lo decide PHP por página: DENY en la web normal y sin
-    # cabecera en ?gd=1 (el juego vive dentro del iframe de GameDistribution).
+    # X-Frame-Options lo decide PHP por página: DENY en contenido y juego; sin
+    # cabecera en la landing (enmarcable solo por GameDistribution por CSP) y
+    # en ?gd=1 (el juego vive dentro del iframe del portal).
     Header always set Cross-Origin-Opener-Policy "same-origin"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"

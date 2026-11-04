@@ -80,6 +80,9 @@ pagina_head([
     'titulo' => (string) ($SEO['home_titulo'] ?? SITE_NOMBRE),
     'descripcion' => $descripcion,
     'canonical' => '/',
+    // El wrapper antiguo de GD iframea la landing sin query: se permite el
+    // framing solo desde dominios de GameDistribution y se redirige a ?gd=1.
+    'gd_frame' => true,
     // La vista de unirse por enlace (?sala=CODE) no debe indexarse; el modo
     // GD tampoco (es una vista de juego dentro del iframe del portal).
     'robots' => ($gdMode || $salaFromLink) ? 'noindex, follow' : 'index, follow',

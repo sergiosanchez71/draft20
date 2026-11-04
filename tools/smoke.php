@@ -311,8 +311,17 @@ try {
     $metaCsp = $mMeta[1] ?? '';
     check($nonce !== '' && $metaCsp !== '' && strpos($metaCsp, $nonce) !== false, 'el meta CSP usa el mismo nonce');
     check(strpos($metaCsp, 'object-src') !== false && strpos($metaCsp, 'default-src') !== false, 'meta CSP completa');
-    check(strpos($hcsp, 'frame-ancestors \'none\'') !== false, 'CSP: la web normal no se puede enmarcar');
-    check(strpos($hcsp, 'X-Frame-Options: DENY') !== false, 'XFO: la web normal no se puede enmarcar');
+    check(strpos($hcsp, 'frame-ancestors https://gamedistribution.com https://*.gamedistribution.com') !== false,
+        'CSP: la landing solo se puede enmarcar desde GameDistribution');
+    check(stripos($hcsp, 'X-Frame-Options:') === false,
+        'XFO: la landing no bloquea al wrapper de GD');
+    check(strpos((string) $rcsp['raw'], 'gd_sdk_referrer_url') !== false,
+        'landing: redirección a modo GD para el wrapper antiguo');
+    $rContenido = http_req('GET', $base . '/como-jugar');
+    $hContenido = implode("\n", (array) ($rContenido['headers'] ?? []));
+    check(strpos($hContenido, 'frame-ancestors \'none\'') !== false
+        && strpos($hContenido, 'X-Frame-Options: DENY') !== false,
+        'CSP/XFO: el contenido normal sigue sin poder enmarcarse');
 
     // 10a) GameDistribution: la misma landing dentro del iframe, sin analítica
     // ni consentimiento propios y con los huecos del SDK.
@@ -337,22 +346,24 @@ try {
     check(strpos($rawGd, 'name="robots" content="noindex, follow"') !== false, 'GD: noindex');
     check(substr_count($rawGd, 'href="#app"') >= 2, 'GD: CTAs internos apuntan a #app');
 
-    // 10a2) Wrapper antiguo/de revisión: iframea la web sin ?gd=1. El referrer
-    // de gamedistribution.com debe activar el modo GD por sí solo.
+    // 10a2) Wrapper antiguo/de revisión: iframea la landing sin ?gd=1. La
+    // página normal se deja enmarcar por GD y su script salta a ?gd=1
+    // conservando el referrer del portal; el servidor ya no adivina por
+    // Referer (evita envenenar la caché del CDN con HTML en modo GD).
     $rGdRef = http_req('GET', $base . '/index.php', null, ['Referer: https://revision.gamedistribution.com/949d5680eca140e399c4b8d028e696fc/']);
     $rawGdRef = (string) $rGdRef['raw'];
     $hGdRef = implode("\n", (array) ($rGdRef['headers'] ?? []));
     check($rGdRef['code'] === 200 && stripos($hGdRef, 'X-Frame-Options:') === false,
-        'GD referrer: sin X-Frame-Options');
-    check(strpos($hGdRef, 'Content-Security-Policy: frame-ancestors *') !== false,
-        'GD referrer: CSP permite el iframe del wrapper');
-    check(preg_match('/<body class="[^"]*gd-mode/', $rawGdRef) === 1,
-        'GD referrer: body.gd-mode automático');
-    check(strpos($rawGdRef, 'window.__GD_MODE = true') !== false, 'GD referrer: bootstrap GD');
-    check(strpos($rawGdRef, 'js/gd.min.js') !== false || strpos($rawGdRef, 'js/gd.js') !== false,
-        'GD referrer: carga gd.js');
-    check((bool) preg_match('/href="[^"]*gd=1[^"]*lang=es[^"]*"/', $rawGdRef),
-        'GD referrer: el selector de idioma conserva gd=1');
+        'GD wrapper: la landing se deja enmarcar');
+    check(strpos($hGdRef, 'frame-ancestors https://gamedistribution.com https://*.gamedistribution.com') !== false,
+        'GD wrapper: CSP permite el iframe del portal');
+    check(preg_match('/<body class="[^"]*gd-mode/', $rawGdRef) !== 1,
+        'GD wrapper: la landing normal no se sirve como GD');
+    check(strpos($rawGdRef, 'location.replace') !== false
+        && strpos($rawGdRef, 'gd_sdk_referrer_url') !== false,
+        'GD wrapper: redirección a ?gd=1 con el referrer del portal');
+    check(strpos($rawGdRef, 'js/gd.min.js') === false && strpos($rawGdRef, 'window.__GD_MODE') === false,
+        'GD wrapper: la landing normal no carga el SDK');
 
     // 10b) SEO: entidad de sitio, llms.txt y lastmod real del sitemap.
     $rSeoHome = http_req('GET', $base . '/index.php');

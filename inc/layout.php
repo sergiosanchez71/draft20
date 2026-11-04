@@ -45,9 +45,10 @@ function e(?string $s): string
  * Modo GameDistribution: la misma landing se sirve dentro del iframe de GD.
  * Solo cambia cabeceras, analítica y el arranque del juego.
  *
- * Se activa con ?gd=1 (wrapper nuevo), con gd_sdk_referrer_url (wrapper
- * oficial self-hosted) o cuando la página se carga desde un wrapper alojado
- * en gamedistribution.com (revisión / wrapper antiguo sin query).
+ * Se activa con ?gd=1 (wrapper nuevo) o con gd_sdk_referrer_url (wrapper
+ * oficial self-hosted). El wrapper antiguo de revisión no añade query: la
+ * landing normal detecta el iframe de GD en el cliente y redirige a ?gd=1
+ * conservando el referrer del portal (ver gd_frame_redirect()).
  */
 function gd_mode(): bool
 {
@@ -55,26 +56,8 @@ function gd_mode(): bool
     if ($modo !== null) {
         return $modo;
     }
-    $modo = false;
-    if (isset($_GET['gd']) && (string) $_GET['gd'] === '1') {
-        $modo = true;
-    } elseif (isset($_GET['gd_sdk_referrer_url'])) {
-        $modo = true;
-    } else {
-        $ref = (string) ($_SERVER['HTTP_REFERER'] ?? '');
-        if ($ref !== '') {
-            $host = strtolower((string) parse_url($ref, PHP_URL_HOST));
-            if ($host === 'gamedistribution.com' || str_ends_with($host, '.gamedistribution.com')) {
-                $modo = true;
-            }
-        }
-    }
-    // El selector de idioma conserva el modo aunque el wrapper antiguo no
-    // haya añadido ?gd=1 a la URL (ver url_selector_idioma()).
-    if ($modo && !defined('D20_GD_MODE')) {
-        define('D20_GD_MODE', true);
-    }
-    return $modo;
+    return $modo = (isset($_GET['gd']) && (string) $_GET['gd'] === '1')
+        || isset($_GET['gd_sdk_referrer_url']);
 }
 
 /** @return array<int, array{id:string, emoji:string, tematicas:array<int, array{id:string, emoji:string}>}> */
@@ -212,7 +195,7 @@ function csp_nonce(): string
     return $nonce;
 }
 
-function csp_headers(): void
+function csp_headers(bool $gd_frame = false): void
 {
     if (headers_sent()) {
         return;
@@ -226,14 +209,22 @@ function csp_headers(): void
         header('Content-Security-Policy: frame-ancestors *');
         return;
     }
-    header('X-Frame-Options: DENY');
-    header('Content-Security-Policy: ' . csp_policy());
+    // La landing normal se deja enmarcar SOLO por GameDistribution para que el
+    // wrapper antiguo de revisión pueda cargarla y saltar a ?gd=1. El resto de
+    // páginas y el resto de portales siguen bloqueados por CSP.
+    if (!$gd_frame) {
+        header('X-Frame-Options: DENY');
+    }
+    header('Content-Security-Policy: ' . csp_policy($gd_frame));
 }
 
 /** Política CSP (frame-ancestors se envía también por cabecera). */
-function csp_policy(): string
+function csp_policy(bool $gd_frame = false): string
 {
     $n = csp_nonce();
+    $ancestros = $gd_frame
+        ? "frame-ancestors https://gamedistribution.com https://*.gamedistribution.com"
+        : "frame-ancestors 'none'";
     // Medición (GA4 gtag.js): gtag/js sale del host de Tag Manager y los
     // beacons van a google-analytics. Sin iframes: frame-src sin gtm.
     // Al activar red, re-añadir sus dominios aquí (ver README Publicidad).
@@ -244,18 +235,43 @@ function csp_policy(): string
         "img-src 'self' data: https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.google-analytics.com; " .
         "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://www.google.com https://fundingchoicesmessages.google.com; " .
         "frame-src https://www.google.com https://www.gstatic.com https://fundingchoicesmessages.google.com; " .
-        "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+        "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; " . $ancestros;
 }
 
 /** Meta CSP para el <head>: el hosting puede reescribir la cabecera HTTP. */
-function csp_meta(): string
+function csp_meta(bool $gd_frame = false): string
 {
     // En modo GD la cabecera ya autoriza el framing y el SDK; una meta con
     // frame-ancestors no aporta nada y podría limitar los scripts del SDK.
     if (gd_mode()) {
         return '';
     }
-    return '<meta http-equiv="Content-Security-Policy" content="' . e(csp_policy()) . '">';
+    return '<meta http-equiv="Content-Security-Policy" content="' . e(csp_policy($gd_frame)) . '">';
+}
+
+/**
+ * El wrapper antiguo de GD iframea la landing sin ?gd=1. Al cargarse dentro
+ * de gamedistribution.com, salta a la URL de modo GD conservando el referrer
+ * del portal para que el SDK no bloquee el dominio. Se ejecuta antes de GA y
+ * AdSense, así que la página normal no llega a pintarse dentro del iframe.
+ */
+function gd_frame_redirect(bool $gd_frame = false): string
+{
+    if (!$gd_frame || gd_mode()) {
+        return '';
+    }
+    $n = e(csp_nonce());
+    return '<script nonce="' . $n . '">(function(){try{'
+        . 'if(window.top===window.self)return;'
+        . 'var r=document.referrer;if(!r)return;'
+        . 'var h="";try{h=new URL(r).hostname.toLowerCase()}catch(e){return}'
+        . 'if(h!=="gamedistribution.com"&&!/(^|\\.)gamedistribution\\.com$/.test(h))return;'
+        . 'var p=location.pathname;if(p!=="/"&&p!=="/index.php")return;'
+        . 'var u=new URL(location.href);if(u.searchParams.get("gd")==="1")return;'
+        . 'u.search="?gd=1&lang=en";'
+        . 'u.searchParams.set("gd_sdk_referrer_url",r);'
+        . 'location.replace(u.toString());'
+        . '}catch(e){}})();</script>';
 }
 
 /** Sello de build: mtime más reciente de los bundles (app vs web). */
@@ -558,14 +574,16 @@ function pagina_head(array $opts): void
         $bodyClass .= ' gd-mode';
     }
     $jsonLd = array_merge(site_json_ld(), $opts['json_ld'] ?? []);
-    csp_headers();
+    $gdFrame = (bool) ($opts['gd_frame'] ?? false);
+    csp_headers($gdFrame);
     ?><!DOCTYPE html>
 <html lang="<?= e(idioma_bcp47()) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <?= deteccion_idioma_script() ?>
-    <?= csp_meta() ?>
+    <?= csp_meta($gdFrame) ?>
+    <?= gd_frame_redirect($gdFrame) ?>
     <?= ga_head() ?>
     <meta name="theme-color" content="#0f172a">
     <meta name="app-version" content="<?= e(APP_VERSION) ?>">
