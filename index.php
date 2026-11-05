@@ -38,6 +38,21 @@ if (!is_string($tematicaBotPre) || !isset(mapa_tematicas()[$tematicaBotPre])) {
 }
 
 $categorias = categorias();
+// Reordenar categorías para la portada según idioma: EN prioriza reconocimiento internacional.
+if (idioma_actual() === 'en') {
+    $ordenEn = ['cultura', 'viral', 'deporte', 'comida', 'ocio', 'fantasia', 'naturaleza', 'crimen', 'ciencia'];
+    $mapa = [];
+    foreach ($categorias as $cat) {
+        $mapa[$cat['id']] = $cat;
+    }
+    $ordenado = [];
+    foreach ($ordenEn as $id) {
+        if (isset($mapa[$id])) {
+            $ordenado[] = $mapa[$id];
+        }
+    }
+    $categorias = $ordenado;
+}
 $numTematicas = count(mapa_tematicas());
 $num = static fn(string $s): string => str_replace('{n}', (string) $numTematicas, $s);
 

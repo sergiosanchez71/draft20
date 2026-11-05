@@ -35,6 +35,7 @@ const CHARSET          = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const SALAS_DIR        = __DIR__ . '/salas/';
 const DINERO_INICIAL   = 20;
 const MAX_INTENTOS     = 25;
+const IDIOMAS          = ['es', 'en'];
 
 if (!function_exists('responder')) {
     function responder(array $payload, int $code = 200): void {
@@ -110,6 +111,16 @@ rl_guard('unirse', 60, 3600);
 $input    = leer_input_json();
 $codigo   = isset($input['codigo']) && is_string($input['codigo']) ? strtoupper(trim($input['codigo'])) : '';
 $nombreJ2 = isset($input['nombre']) && is_string($input['nombre']) ? trim($input['nombre']) : '';
+// País e idioma del jugador 2 (opcionales, sin guardar IP ni datos personales).
+$paisJug2   = (string) preg_replace('/[^A-Z]{2}/', '', strtoupper($input['pais'] ?? ''));
+$idiomaJug2 = (string) preg_replace('/[^a-z]{2}/', '', strtolower($input['idioma'] ?? ''));
+if (!in_array($idiomaJug2, IDIOMAS, true)) {
+    $idiomaJug2 = '';
+}
+$paisServidor = (string) ($_SERVER['HTTP_CF_IPCountry'] ?? '');
+if ($paisJug2 === '' && $paisServidor !== '') {
+    $paisJug2 = $paisServidor;
+}
 
 // Unión marcada como bot (partida de práctica): el slot no pollea, así que
 // no debe contar para abandono ni para el aviso de "rival desconectado".
@@ -185,6 +196,13 @@ try {
     $estado['last_seen'][1] = time();
     if ($esBot) {
         $estado['bot_slot'] = 1;
+    }
+    // Actualizar país e idioma con los del jugador 2 si se proporcionaron.
+    if ($paisJug2 !== '') {
+        $estado['pais'] = $paisJug2;
+    }
+    if ($idiomaJug2 !== '') {
+        $estado['idioma'] = $idiomaJug2;
     }
 
     ftruncate($fp, 0); rewind($fp);

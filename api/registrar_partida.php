@@ -40,6 +40,7 @@ const MAX_ITEMS     = 16;
 const NIVELES       = ['facil', 'normal', 'dificil', 'extremo'];
 const RESULTADOS    = ['bot', 'humano', 'empate'];
 const POR_ITEM      = ['bot', 'humano'];
+const IDIOMAS       = ['es', 'en'];
 
 if (!function_exists('responder')) {
     function responder(array $payload, int $code = 200): void {
@@ -88,6 +89,13 @@ if ($version === '' || strlen($version) > 12) $version = '0';
 $valorHumano = max(0, min(99, (int) ($in['valorHumano'] ?? 0)));
 $valorBot    = max(0, min(99, (int) ($in['valorBot'] ?? 0)));
 
+// País e idioma (opcionales, sin guardar IP ni datos personales).
+$pais   = (string) preg_replace('/[^A-Z]{2}/', '', strtoupper($in['pais'] ?? ''));
+$idioma = (string) preg_replace('/[^a-z]{2}/', '', strtolower($in['idioma'] ?? ''));
+if (!in_array($idioma, IDIOMAS, true)) {
+    $idioma = '';
+}
+
 $items = [];
 if (is_array($in['items'] ?? null)) {
     foreach (array_slice($in['items'], 0, MAX_ITEMS) as $it) {
@@ -114,6 +122,8 @@ $registro = [
     'valorHumano' => $valorHumano,
     'valorBot'    => $valorBot,
     'items'       => $items,
+    'pais'        => $pais !== '' ? $pais : null,
+    'idioma'      => $idioma !== '' ? $idioma : null,
 ];
 
 if (!is_dir(DATOS_DIR)) {
