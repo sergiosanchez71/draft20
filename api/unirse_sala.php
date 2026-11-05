@@ -111,11 +111,6 @@ rl_guard('unirse', 60, 3600);
 $input    = leer_input_json();
 $codigo   = isset($input['codigo']) && is_string($input['codigo']) ? strtoupper(trim($input['codigo'])) : '';
 $nombreJ2 = isset($input['nombre']) && is_string($input['nombre']) ? trim($input['nombre']) : '';
-// Idioma del jugador 2 (opcional, sin guardar IP ni datos personales).
-$idiomaJug2 = (string) preg_replace('/[^a-z]{2}/', '', strtolower($input['idioma'] ?? ''));
-if (!in_array($idiomaJug2, IDIOMAS, true)) {
-    $idiomaJug2 = '';
-}
 
 // Unión marcada como bot (partida de práctica): el slot no pollea, así que
 // no debe contar para abandono ni para el aviso de "rival desconectado".
@@ -192,11 +187,6 @@ try {
     if ($esBot) {
         $estado['bot_slot'] = 1;
     }
-    // Actualizar idioma con el del jugador 2 si se proporcionó.
-    if ($idiomaJug2 !== '') {
-        $estado['idioma'] = $idiomaJug2;
-    }
-
     ftruncate($fp, 0); rewind($fp);
     fwrite($fp, json_encode($estado, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     fflush($fp);

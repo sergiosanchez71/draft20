@@ -64,11 +64,8 @@ if (!function_exists('ranking_humanas')) {
                     $mt[$tipo]++;
                     $mtem = &$out['porMes'][$mes]['porTematica'];
                     $mtem[$t] = ($mtem[$t] ?? 0) + 1;
-                    $mp = &$out['porMes'][$mes]['porIdiomas'];
-                    $idioma = (string) ($r['idioma'] ?? 'NO_IDENTIFICADO');
-                    if (!isset($mp[$idioma])) $mp[$idioma] = 0;
-                    $mp[$idioma]++;
-                    unset($mt, $mtem, $mp);
+                    $mtem[$t] = ($mtem[$t] ?? 0) + 1;
+                    unset($mt, $mtem);
                 }
                 flock($fp, LOCK_UN);
             }
@@ -93,15 +90,11 @@ if (!function_exists('ranking_humanas')) {
             foreach (array_slice($ordenadasMes, 0, 10) as $id) {
                 $top[$id] = (int) ($datos['porTematica'][$id] ?? 0);
             }
-            // Ordenar porIdiomas del mes
-            $ordenadasIdiomasMes = $ordenar($datos['porIdiomas']);
-            $porIdiomasMes = array_replace(array_fill_keys($ordenadasIdiomasMes, 0), $datos['porIdiomas']);
             $out['porMes'][$mes] = [
                 'total' => $datos['total'],
                 'topTematica' => is_string($topTematica) ? $topTematica : '',
                 'top' => $top,
                 'porTipo' => $datos['porTipo'],
-                'porIdiomas' => $porIdiomasMes,
             ];
         }
         return $out;

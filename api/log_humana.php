@@ -35,9 +35,6 @@ if (!function_exists('registrar_partida_humana')) {
         $tematica = (string) preg_replace('/[^a-z0-9_]/', '', $tematica);
         if ($tematica === '' || strlen($tematica) > 40) $tematica = 'desconocida';
 
-        // Idioma (opcional, sin guardar IP ni datos personales).
-        $idioma = (string) preg_replace('/[^a-z]{2}/', '', strtolower($sala['idioma'] ?? ''));
-
         // Ganador: suma de ⭐; empate a ⭐ lo rompe quien conserve más monedas.
         $v = [0, 0];
         $d = [0, 0];
@@ -69,7 +66,6 @@ if (!function_exists('registrar_partida_humana')) {
             'rondas'    => max(0, (int) ($sala['ronda'] ?? 0)),
             'resultado' => $resultado,
             'durSeg'    => max(0, $ahora - (int) ($sala['creado_en'] ?? $ahora)),
-            'idioma'    => $idioma !== '' ? $idioma : null,
         ];
 
         if ($logPath === '') {

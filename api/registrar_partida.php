@@ -89,12 +89,6 @@ if ($version === '' || strlen($version) > 12) $version = '0';
 $valorHumano = max(0, min(99, (int) ($in['valorHumano'] ?? 0)));
 $valorBot    = max(0, min(99, (int) ($in['valorBot'] ?? 0)));
 
-// Idioma (opcional, sin guardar IP ni datos personales).
-$idioma = (string) preg_replace('/[^a-z]{2}/', '', strtolower($in['idioma'] ?? ''));
-if (!in_array($idioma, IDIOMAS, true)) {
-    $idioma = '';
-}
-
 $items = [];
 if (is_array($in['items'] ?? null)) {
     foreach (array_slice($in['items'], 0, MAX_ITEMS) as $it) {
@@ -121,7 +115,6 @@ $registro = [
     'valorHumano' => $valorHumano,
     'valorBot'    => $valorBot,
     'items'       => $items,
-    'idioma'      => $idioma !== '' ? $idioma : null,
 ];
 
 if (!is_dir(DATOS_DIR)) {

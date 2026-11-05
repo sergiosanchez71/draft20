@@ -741,7 +741,6 @@
         // Estadísticas anónimas (solo partidas terminadas contra el bot).
         if (s.estado !== 'finalizada') return;
         try {
-            const idioma = obtenerIdioma();
             const payload = {
                 version: versionBot(),
                 tematica: registro.tematica,
@@ -759,7 +758,6 @@
                             precio: it.precio || 0,
                         };
                     }),
-                idioma: idioma,
             };
             fetch('api/registrar_partida.php', {
                 method: 'POST',

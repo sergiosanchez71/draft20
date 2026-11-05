@@ -12,14 +12,6 @@
     // dentro del iframe self-hosted. Sin navegación a juego.php.
     const GD_MODE = !!window.__GD_MODE;
 
-    // ---------- Idioma del jugador (sin IP, solo navegador) ----------
-    const IDIOMA_POR_DEFECTO = 'es';
-    function obtenerIdioma() {
-        let idioma = (window.D20_LANG || navigator.language || IDIOMA_POR_DEFECTO).toString();
-        idioma = idioma.replace(/_/g, '-').split('-')[0];
-        return idioma;
-    }
-
     const state = {
         codigo: null,
         jugadorId: null,
@@ -1199,7 +1191,6 @@
             tematica: tematica,
             nombre: nombre,
             mostrar_valores: !!state.mostrarValores,
-            idioma: idioma,
         });
         btn.disabled = false; btn.classList.remove('opacity-50');
         if (!r.ok) { showLobbyError(errorRedHumano(r.error, r._status)); vibrate([100, 50, 100]); return; }
@@ -1242,7 +1233,6 @@
             nombre: nombreFinal,
             mostrar_valores: mv,
             torre: esTorre,
-            idioma: idioma,
         });
         if (!r.ok) { toast(errorRedHumano(r.error, r._status)); return false; }
         const r2 = await api('POST', 'api/unirse_sala.php', { codigo: r.codigo, nombre: nombreBot(), bot: true, creador_id: r.jugador_id });
@@ -1401,8 +1391,7 @@
         if (!/^[A-Z0-9]{5}$/.test(codigo)) { showLobbyError(t('ui.lobby.error_codigo_invalido')); vibrate([80, 40, 80]); return; }
         const btn = $('#btnJoin');
         btn.disabled = true; btn.classList.add('opacity-50');
-        const idioma = obtenerIdioma();
-        const r = await api('POST', 'api/unirse_sala.php', { codigo: codigo, nombre: nombre, idioma: idioma });
+        const r = await api('POST', 'api/unirse_sala.php', { codigo: codigo, nombre: nombre });
         btn.disabled = false; btn.classList.remove('opacity-50');
         if (!r.ok) { showLobbyError(errorRedHumano(r.error, r._status)); vibrate([100, 50, 100]); return; }
         state.codigo = codigo;

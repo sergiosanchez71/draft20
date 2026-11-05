@@ -454,7 +454,6 @@ if (!function_exists('crear_sala_nueva')) {
             'mostrar_valores'      => !empty($opciones['mostrar_valores']), // true = mostrar ⭐ durante la partida
             'rapida'               => !empty($opciones['rapida']),          // true = sala de partida rápida
             'torre'                => !empty($opciones['torre']),           // true = piso de la Torre (sin ranking ni stats)
-            'idioma'               => $idiomaCreador !== '' ? $idiomaCreador : null,
             'creado_en'           => $ahora,
             'actualizado_en'      => $ahora,
         ];
@@ -543,11 +542,6 @@ $nombreJ1   = isset($input['nombre']) && is_string($input['nombre']) ? trim($inp
 $mostrarValores = !empty($input['mostrar_valores']);
 // Torre de Batalla: pisos en solitario que no entran en ranking ni stats.
 $esTorre = !empty($input['torre']);
-// Idioma (opcional, sin guardar IP ni datos personales).
-$idiomaCreador = (string) preg_replace('/[^a-z]{2}/', '', strtolower($input['idioma'] ?? ''));
-if (!in_array($idiomaCreador, IDIOMAS, true)) {
-    $idiomaCreador = '';
-}
 
 if ($tematicaId === '') {
     responder(['ok' => false, 'error' => 'Falta el campo "tematica".'], 400);
