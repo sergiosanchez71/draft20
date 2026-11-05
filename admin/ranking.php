@@ -265,7 +265,7 @@ $agg = ranking_humanas([
 </div>
 
 <script>
-const API_URL = window.location.pathname + '?clave=' + encodeURIComponent(<?= json_encode($clave) ?>) + '&json=true&dias=';
+const API_URL = '/api/ranking.php?clave=' + encodeURIComponent(<?= json_encode($clave) ?>) + '&json=true&dias=';
 const claveActual = <?= json_encode($clave) ?>;
 
 async function cargarDatos(dias) {
