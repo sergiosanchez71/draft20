@@ -14,7 +14,7 @@ if (!function_exists('ranking_humanas')) {
      * Agrega uno o varios archivos jsonl de partidas.
      *
      * @param string|array $logPath Ruta o array de rutas a archivos jsonl.
-     * @return array{total:int,porTematica:array<string,int>,porModo:array<string,int>,porTipo:array<string,int>,porResultado:array<string,int>,porFranja:array<string,int>,porMes:array<string,array{total:int,topTematica:string,top:array<string,int>,porTipo:array<string,int>,porPaises:array<string,int>}>,porPais:array<string,int>,rankingPorPais:array<string,array{total:int,porTematica:array<string,int>,porMes:array<string,array{total:int,top:array<string,int>}>} }>
+     * @return array{total:int,porTematica:array<string,int>,porModo:array<string,int>,porTipo:array<string,int>,porResultado:array<string,int>,porFranja:array<string,int>,porMes:array<string,array{total:int,topTematica:string,top:array<string,int>,porTipo:array<string,int>,porPaises:array<string,int>}>,porPais:array<string,int>}
      */
     function ranking_humanas($logPath, int $dias): array
     {
@@ -29,7 +29,6 @@ if (!function_exists('ranking_humanas')) {
             'porFranja' => ['00-06' => 0, '06-12' => 0, '12-18' => 0, '18-24' => 0],
             'porMes' => [],
             'porPais' => [],
-            'rankingPorPais' => [],
         ];
         foreach ($rutas as $ruta) {
             if (!is_file($ruta)) continue;
@@ -71,23 +70,8 @@ if (!function_exists('ranking_humanas')) {
                     if (!isset($mp[$pais])) $mp[$pais] = 0;
                     $mp[$pais]++;
                     unset($mt, $mtem, $mp);
-                    // Por país global
+                    // Por país global (conteo simple)
                     $out['porPais'][$pais] = ($out['porPais'][$pais] ?? 0) + 1;
-                    // Ranking por país (agregado por país)
-                    if (!isset($out['rankingPorPais'][$pais])) {
-                        $out['rankingPorPais'][$pais] = ['total' => 0, 'porTematica' => [], 'porMes' => []];
-                    }
-                    $rp = &$out['rankingPorPais'][$pais];
-                    $rp['total']++;
-                    $rp['porTematica'][$t] = ($rp['porTematica'][$t] ?? 0) + 1;
-                    $rmes = date('Y-m', $ts);
-                    if (!isset($rp['porMes'][$rmes])) {
-                        $rp['porMes'][$rmes] = ['total' => 0, 'top' => []];
-                    }
-                    $rp['porMes'][$rmes]['total']++;
-                    $rtem = &$rp['porMes'][$rmes]['top'];
-                    $rtem[$t] = ($rtem[$t] ?? 0) + 1;
-                    unset($rp, $rtem);
                 }
                 flock($fp, LOCK_UN);
             }
@@ -126,18 +110,6 @@ if (!function_exists('ranking_humanas')) {
                 'porPaises' => $porPaisesMes,
             ];
         }
-        // Ordenar rankingPorPais: porTematica y porMes.top de cada país
-        foreach ($out['rankingPorPais'] as $pais => &$datosPais) {
-            $ordenadasTema = $ordenar($datosPais['porTematica']);
-            $datosPais['porTematica'] = array_replace(array_fill_keys($ordenadasTema, 0), $datosPais['porTematica']);
-            ksort($datosPais['porMes']);
-            foreach ($datosPais['porMes'] as $mesP => &$datosMesP) {
-                $ordenadasTemaMes = $ordenar($datosMesP['top']);
-                $datosMesP['top'] = array_replace(array_fill_keys($ordenadasTemaMes, 0), $datosMesP['top']);
-            }
-            unset($datosMesP);
-        }
-        unset($datosPais);
         return $out;
     }
 }
