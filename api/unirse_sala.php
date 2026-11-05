@@ -111,15 +111,10 @@ rl_guard('unirse', 60, 3600);
 $input    = leer_input_json();
 $codigo   = isset($input['codigo']) && is_string($input['codigo']) ? strtoupper(trim($input['codigo'])) : '';
 $nombreJ2 = isset($input['nombre']) && is_string($input['nombre']) ? trim($input['nombre']) : '';
-// País e idioma del jugador 2 (opcionales, sin guardar IP ni datos personales).
-$paisJug2   = (string) preg_replace('/[^A-Z]{2}/', '', strtoupper($input['pais'] ?? ''));
+// Idioma del jugador 2 (opcional, sin guardar IP ni datos personales).
 $idiomaJug2 = (string) preg_replace('/[^a-z]{2}/', '', strtolower($input['idioma'] ?? ''));
 if (!in_array($idiomaJug2, IDIOMAS, true)) {
     $idiomaJug2 = '';
-}
-$paisServidor = (string) ($_SERVER['HTTP_CF_IPCountry'] ?? '');
-if ($paisJug2 === '' && $paisServidor !== '') {
-    $paisJug2 = $paisServidor;
 }
 
 // Unión marcada como bot (partida de práctica): el slot no pollea, así que
@@ -197,10 +192,7 @@ try {
     if ($esBot) {
         $estado['bot_slot'] = 1;
     }
-    // Actualizar país e idioma con los del jugador 2 si se proporcionaron.
-    if ($paisJug2 !== '') {
-        $estado['pais'] = $paisJug2;
-    }
+    // Actualizar idioma con el del jugador 2 si se proporcionó.
     if ($idiomaJug2 !== '') {
         $estado['idioma'] = $idiomaJug2;
     }

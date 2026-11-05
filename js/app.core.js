@@ -12,21 +12,12 @@
     // dentro del iframe self-hosted. Sin navegación a juego.php.
     const GD_MODE = !!window.__GD_MODE;
 
-    // ---------- País e idioma del jugador (sin IP, solo navegador) ----------
+    // ---------- Idioma del jugador (sin IP, solo navegador) ----------
     const IDIOMA_POR_DEFECTO = 'es';
-    const PAIS_POR_IDIOMA = {
-        es: 'ES', en: 'US', pt: 'BR', fr: 'FR', it: 'IT', de: 'DE',
-        ja: 'JP', ko: 'KO', zh: 'CN', ru: 'RU', ar: 'SA', nl: 'NL',
-    };
-    function obtenerPaisIdioma() {
+    function obtenerIdioma() {
         let idioma = (window.D20_LANG || navigator.language || IDIOMA_POR_DEFECTO).toString();
         idioma = idioma.replace(/_/g, '-').split('-')[0];
-        if (!(idioma in PAIS_POR_IDIOMA)) {
-            idioma = IDIOMA_POR_DEFECTO;
-        }
-        const m = (window.D20_LANG || navigator.language || '').match(/([a-z]{2})-([A-Z]{2})/i);
-        const pais = m ? m[2].toUpperCase() : (PAIS_POR_IDIOMA[idioma] || 'NO_IDENTIFICADO');
-        return { pais: pais, idioma: idioma };
+        return idioma;
     }
 
     const state = {
@@ -1203,12 +1194,11 @@
         const nombre = $('#nameCreate').value.trim();
         const btn = $('#btnCreate');
         btn.disabled = true; btn.classList.add('opacity-50');
-        const { pais, idioma } = obtenerPaisIdioma();
+        const idioma = obtenerIdioma();
         const r = await api('POST', 'api/crear_sala.php', {
             tematica: tematica,
             nombre: nombre,
             mostrar_valores: !!state.mostrarValores,
-            pais: pais,
             idioma: idioma,
         });
         btn.disabled = false; btn.classList.remove('opacity-50');
@@ -1246,13 +1236,12 @@
         const temaFinal = (tematica === TEMATICA_RANDOM || !tematica)
             ? resolverTematica({ tematicaSeleccionada: TEMATICA_RANDOM })
             : tematica;
-        const { pais, idioma } = obtenerPaisIdioma();
+        const idioma = obtenerIdioma();
         const r = await api('POST', 'api/crear_sala.php', {
             tematica: temaFinal,
             nombre: nombreFinal,
             mostrar_valores: mv,
             torre: esTorre,
-            pais: pais,
             idioma: idioma,
         });
         if (!r.ok) { toast(errorRedHumano(r.error, r._status)); return false; }
@@ -1412,8 +1401,8 @@
         if (!/^[A-Z0-9]{5}$/.test(codigo)) { showLobbyError(t('ui.lobby.error_codigo_invalido')); vibrate([80, 40, 80]); return; }
         const btn = $('#btnJoin');
         btn.disabled = true; btn.classList.add('opacity-50');
-        const { pais, idioma } = obtenerPaisIdioma();
-        const r = await api('POST', 'api/unirse_sala.php', { codigo: codigo, nombre: nombre, pais: pais, idioma: idioma });
+        const idioma = obtenerIdioma();
+        const r = await api('POST', 'api/unirse_sala.php', { codigo: codigo, nombre: nombre, idioma: idioma });
         btn.disabled = false; btn.classList.remove('opacity-50');
         if (!r.ok) { showLobbyError(errorRedHumano(r.error, r._status)); vibrate([100, 50, 100]); return; }
         state.codigo = codigo;
