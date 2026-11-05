@@ -11,13 +11,15 @@ declare(strict_types=1);
 
 if (!function_exists('ranking_humanas')) {
     /**
-     * Agrega api/datos/partidas_humanas.jsonl.
+     * Agrega uno o varios archivos jsonl de partidas.
      *
-     * @return array{total:int,porTematica:array<string,int>,porModo:array<string,int>,porTipo:array<string,int>,porResultado:array<string,int>,porFranja:array<string,int>,porMes:array<string,array{total:int,topTematica:string,top:array<string,int>,porTipo:array<string,int>}>}
+     * @param string|array $logPath Ruta o array de rutas a archivos jsonl.
+     * @return array{total:int,porTematica:array<string,int>,porModo:array<string,int>,porTipo:array<string,int>,porResultado:array<string,int>,porFranja:array<string,int>,porMes:array<string,array{total:int,topTematica:string,top:array<string,int>,porTipo:array<string,int>,porPaises:array<string,int>}>,porPais:array<string,int>,rankingPorPais:array<string,array{total:int,porTematica:array<string,int>,porMes:array<string,array{total:int,top:array<string,int>}>} }>
      */
-    function ranking_humanas(string $logPath, int $dias): array
+    function ranking_humanas($logPath, int $dias): array
     {
         $desde = $dias <= 0 ? 0 : time() - $dias * 86400;
+        $rutas = is_array($logPath) ? $logPath : [$logPath];
         $out = [
             'total' => 0,
             'porTematica' => [],
@@ -26,46 +28,71 @@ if (!function_exists('ranking_humanas')) {
             'porResultado' => ['j1' => 0, 'j2' => 0, 'empate' => 0],
             'porFranja' => ['00-06' => 0, '06-12' => 0, '12-18' => 0, '18-24' => 0],
             'porMes' => [],
+            'porPais' => [],
+            'rankingPorPais' => [],
         ];
-        if (!is_file($logPath)) return $out;
-        $fp = @fopen($logPath, 'rb');
-        if ($fp === false) return $out;
-        if (flock($fp, LOCK_SH)) {
-            while (($l = fgets($fp)) !== false) {
-                $r = json_decode(trim($l), true);
-                if (!is_array($r)) continue;
-                $ts = (int) ($r['ts'] ?? 0);
-                if ($ts < $desde) continue;
-                $out['total']++;
-                $t = (string) ($r['tematica'] ?? 'desconocida');
-                $out['porTematica'][$t] = ($out['porTematica'][$t] ?? 0) + 1;
-                $out['porModo'][!empty($r['visibles']) ? 'visible' : 'oculto']++;
-                $tipo = (string) ($r['tipo'] ?? 'privada');
-                if (!isset($out['porTipo'][$tipo])) $out['porTipo'][$tipo] = 0;
-                $out['porTipo'][$tipo]++;
-                $res = (string) ($r['resultado'] ?? 'empate');
-                if (!isset($out['porResultado'][$res])) $out['porResultado'][$res] = 0;
-                $out['porResultado'][$res]++;
-                $h = (int) date('G', $ts);
-                if ($h < 6) $out['porFranja']['00-06']++;
-                elseif ($h < 12) $out['porFranja']['06-12']++;
-                elseif ($h < 18) $out['porFranja']['12-18']++;
-                else $out['porFranja']['18-24']++;
-                $mes = date('Y-m', $ts);
-                if (!isset($out['porMes'][$mes])) {
-                    $out['porMes'][$mes] = ['total' => 0, 'topTematica' => '', 'porTipo' => [], 'porTematica' => []];
+        foreach ($rutas as $ruta) {
+            if (!is_file($ruta)) continue;
+            $fp = @fopen($ruta, 'rb');
+            if ($fp === false) continue;
+            if (flock($fp, LOCK_SH)) {
+                while (($l = fgets($fp)) !== false) {
+                    $r = json_decode(trim($l), true);
+                    if (!is_array($r)) continue;
+                    $ts = (int) ($r['ts'] ?? 0);
+                    if ($ts < $desde) continue;
+                    $out['total']++;
+                    $t = (string) ($r['tematica'] ?? 'desconocida');
+                    $out['porTematica'][$t] = ($out['porTematica'][$t] ?? 0) + 1;
+                    $out['porModo'][!empty($r['visibles']) ? 'visible' : 'oculto']++;
+                    $tipo = (string) ($r['tipo'] ?? 'privada');
+                    if (!isset($out['porTipo'][$tipo])) $out['porTipo'][$tipo] = 0;
+                    $out['porTipo'][$tipo]++;
+                    $res = (string) ($r['resultado'] ?? 'empate');
+                    if (!isset($out['porResultado'][$res])) $out['porResultado'][$res] = 0;
+                    $out['porResultado'][$res]++;
+                    $h = (int) date('G', $ts);
+                    if ($h < 6) $out['porFranja']['00-06']++;
+                    elseif ($h < 12) $out['porFranja']['06-12']++;
+                    elseif ($h < 18) $out['porFranja']['12-18']++;
+                    else $out['porFranja']['18-24']++;
+                    $mes = date('Y-m', $ts);
+                    if (!isset($out['porMes'][$mes])) {
+                        $out['porMes'][$mes] = ['total' => 0, 'topTematica' => '', 'porTipo' => [], 'porTematica' => [], 'porPaises' => []];
+                    }
+                    $out['porMes'][$mes]['total']++;
+                    $mt = &$out['porMes'][$mes]['porTipo'];
+                    if (!isset($mt[$tipo])) $mt[$tipo] = 0;
+                    $mt[$tipo]++;
+                    $mtem = &$out['porMes'][$mes]['porTematica'];
+                    $mtem[$t] = ($mtem[$t] ?? 0) + 1;
+                    $mp = &$out['porMes'][$mes]['porPaises'];
+                    $pais = (string) ($r['pais'] ?? 'NO_IDENTIFICADO');
+                    if (!isset($mp[$pais])) $mp[$pais] = 0;
+                    $mp[$pais]++;
+                    unset($mt, $mtem, $mp);
+                    // Por país global
+                    $out['porPais'][$pais] = ($out['porPais'][$pais] ?? 0) + 1;
+                    // Ranking por país (agregado por país)
+                    if (!isset($out['rankingPorPais'][$pais])) {
+                        $out['rankingPorPais'][$pais] = ['total' => 0, 'porTematica' => [], 'porMes' => []];
+                    }
+                    $rp = &$out['rankingPorPais'][$pais];
+                    $rp['total']++;
+                    $rp['porTematica'][$t] = ($rp['porTematica'][$t] ?? 0) + 1;
+                    $rmes = date('Y-m', $ts);
+                    if (!isset($rp['porMes'][$rmes])) {
+                        $rp['porMes'][$rmes] = ['total' => 0, 'top' => []];
+                    }
+                    $rp['porMes'][$rmes]['total']++;
+                    $rtem = &$rp['porMes'][$rmes]['top'];
+                    $rtem[$t] = ($rtem[$t] ?? 0) + 1;
+                    unset($rp, $rtem);
                 }
-                $out['porMes'][$mes]['total']++;
-                $mt = &$out['porMes'][$mes]['porTipo'];
-                if (!isset($mt[$tipo])) $mt[$tipo] = 0;
-                $mt[$tipo]++;
-                $mtem = &$out['porMes'][$mes]['porTematica'];
-                $mtem[$t] = ($mtem[$t] ?? 0) + 1;
-                unset($mt, $mtem);
+                flock($fp, LOCK_UN);
             }
-            flock($fp, LOCK_UN);
+            fclose($fp);
         }
-        fclose($fp);
         // Orden: más partidas primero; a igualdad, id alfabético (ranking estable).
         $ordenar = static function (array $conteo): array {
             $pares = [];
@@ -75,6 +102,9 @@ if (!function_exists('ranking_humanas')) {
         };
         $ordenadas = $ordenar($out['porTematica']);
         $out['porTematica'] = array_replace(array_fill_keys($ordenadas, 0), $out['porTematica']);
+        // Ordenar porPais
+        $ordenadasPais = $ordenar($out['porPais']);
+        $out['porPais'] = array_replace(array_fill_keys($ordenadasPais, 0), $out['porPais']);
         ksort($out['porMes']);
         foreach ($out['porMes'] as $mes => $datos) {
             $ordenadasMes = $ordenar($datos['porTematica']);
@@ -85,13 +115,29 @@ if (!function_exists('ranking_humanas')) {
             foreach (array_slice($ordenadasMes, 0, 10) as $id) {
                 $top[$id] = (int) ($datos['porTematica'][$id] ?? 0);
             }
+            // Ordenar porPaises del mes
+            $ordenadasPaisesMes = $ordenar($datos['porPaises']);
+            $porPaisesMes = array_replace(array_fill_keys($ordenadasPaisesMes, 0), $datos['porPaises']);
             $out['porMes'][$mes] = [
                 'total' => $datos['total'],
                 'topTematica' => is_string($topTematica) ? $topTematica : '',
                 'top' => $top,
                 'porTipo' => $datos['porTipo'],
+                'porPaises' => $porPaisesMes,
             ];
         }
+        // Ordenar rankingPorPais: porTematica y porMes.top de cada país
+        foreach ($out['rankingPorPais'] as $pais => &$datosPais) {
+            $ordenadasTema = $ordenar($datosPais['porTematica']);
+            $datosPais['porTematica'] = array_replace(array_fill_keys($ordenadasTema, 0), $datosPais['porTematica']);
+            ksort($datosPais['porMes']);
+            foreach ($datosPais['porMes'] as $mesP => &$datosMesP) {
+                $ordenadasTemaMes = $ordenar($datosMesP['top']);
+                $datosMesP['top'] = array_replace(array_fill_keys($ordenadasTemaMes, 0), $datosMesP['top']);
+            }
+            unset($datosMesP);
+        }
+        unset($datosPais);
         return $out;
     }
 }

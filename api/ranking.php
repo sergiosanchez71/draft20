@@ -45,5 +45,8 @@ if ($secreto === '' || !hash_equals($secreto, $clave)) {
 
 $diasRaw = isset($_GET['dias']) && is_string($_GET['dias']) ? $_GET['dias'] : '0';
 $dias = ($diasRaw === '0' || strtolower($diasRaw) === 'todo') ? 0 : max(1, min(180, (int) $diasRaw));
-$agg = ranking_humanas(__DIR__ . '/datos/partidas_humanas.jsonl', $dias);
+$agg = ranking_humanas([
+    __DIR__ . '/datos/partidas_humanas.jsonl',
+    __DIR__ . '/datos/partidas.jsonl',
+], $dias);
 responder(['ok' => true, 'dias' => $dias] + $agg, 200);
