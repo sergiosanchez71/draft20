@@ -1,56 +1,9 @@
-<?php
-/**
- * Draft 20 — Panel interno: Ranking por idioma (HTML).
- *
- * Lee los mismos jsonl que api/ranking.php y muestra un panel visual
- * con filtros desplegables, tablas y barras de progreso.
- *
- * Acceso con ?clave=<secreto> (mismo secreto que api/ranking.php).
- */
-declare(strict_types=1);
-
-require_once __DIR__ . '/../api/ranking_lib.php';
-
-if (!function_exists('responder')) {
-    function responder(array $payload, int $code = 200): void {
-        http_response_code($code);
-        header('Content-Type: application/json; charset=utf-8');
-        header('Cache-Control: no-store');
-        echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        exit;
-    }
-}
-
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
-    http_response_code(405);
-    header('Content-Type: text/plain; charset=utf-8');
-    echo 'Método no permitido. Usa GET.';
-    exit;
-}
-
-$secreto = trim((string) @file_get_contents(__DIR__ . '/../api/datos/clave_ranking.txt'));
-$clave = isset($_GET['clave']) && is_string($_GET['clave']) ? $_GET['clave'] : '';
-if ($secreto === '' || !hash_equals($secreto, $clave)) {
-    http_response_code(403);
-    header('Content-Type: text/plain; charset=utf-8');
-    echo 'No autorizado.';
-    exit;
-}
-
-$diasRaw = isset($_GET['dias']) && is_string($_GET['dias']) ? $_GET['dias'] : '0';
-$dias = ($diasRaw === '0' || strtolower($diasRaw) === 'todo') ? 0 : max(1, min(180, (int) $diasRaw));
-$titulo = 'Draft 20 — Ranking por Idioma';
-$agg = ranking_humanas([
-    __DIR__ . '/../api/datos/partidas_humanas.jsonl',
-    __DIR__ . '/../api/datos/partidas.jsonl',
-], $dias);
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?= htmlspecialchars($titulo) ?></title>
+<title>Draft 20 — Ranking por Idioma</title>
 <style>
     * { box-sizing: border-box; }
     body {
@@ -202,11 +155,11 @@ $agg = ranking_humanas([
 <div class="container">
     <header>
         <div>
-            <h1><?= htmlspecialchars($titulo) ?></h1>
+            <h1>Draft 20 — Ranking por Idioma</h1>
             <div class="subtitle">Vista interna de administración · Datos desde <code>api/datos/partidas_*.jsonl</code></div>
         </div>
         <div class="auth-bar">
-            <input type="text" id="claveInput" placeholder="Clave API" value="<?= htmlspecialchars($clave) ?>" maxlength="128">
+            <input type="text" id="claveInput" placeholder="Clave API" maxlength="128">
             <button id="btnConsultar">Consultar</button>
             <button class="secondary" id="btnExportar">Exportar CSV</button>
         </div>
@@ -265,11 +218,20 @@ $agg = ranking_humanas([
 </div>
 
 <script>
-const API_URL = '/api/ranking.php?clave=' + encodeURIComponent(<?= json_encode($clave) ?>) + '&json=true&dias=';
-const claveActual = <?= json_encode($clave) ?>;
+function getParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name) || '';
+}
+
+const claveURL = getParam('clave');
+
+function buildApiUrl(dias) {
+    const clave = document.getElementById('claveInput').value.trim() || claveURL;
+    return '/api/ranking.php?clave=' + encodeURIComponent(clave) + '&json=true&dias=' + dias;
+}
 
 async function cargarDatos(dias) {
-    const res = await fetch(API_URL + dias);
+    const res = await fetch(buildApiUrl(dias));
     if (!res.ok) throw new Error('Error ' + res.status);
     return res.json();
 }
@@ -336,17 +298,22 @@ function htmlEscape(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&l
 document.getElementById('btnConsultar').addEventListener('click', async () => {
     const clave = document.getElementById('claveInput').value.trim();
     if (!clave) { alert('Ingresa la clave API'); return; }
-    window.location.href = window.location.pathname + '?clave=' + encodeURIComponent(clave) + '&dias=' + document.getElementById('filtroRango').value;
+    const dias = document.getElementById('filtroRango').value;
+    window.location.href = window.location.pathname + '?clave=' + encodeURIComponent(clave) + '&dias=' + dias;
 });
 
 document.getElementById('btnExportar').addEventListener('click', () => {
-    window.location.href = window.location.pathname + '?clave=' + encodeURIComponent(document.getElementById('claveInput').value) + '&csv=true&dias=' + document.getElementById('filtroRango').value;
+    const clave = document.getElementById('claveInput').value.trim();
+    if (!clave) { alert('Ingresa la clave API'); return; }
+    const dias = document.getElementById('filtroRango').value;
+    window.location.href = window.location.pathname + '?clave=' + encodeURIComponent(clave) + '&csv=true&dias=' + dias;
 });
 
 // Carga inicial con la clave ya en la URL (si la hay)
 const params = new URLSearchParams(window.location.search);
-if (params.get('clave')) {
-    document.getElementById('claveInput').value = params.get('clave');
+const claveUrl = params.get('clave');
+if (claveUrl) {
+    document.getElementById('claveInput').value = claveUrl;
     const dias = params.get('dias') || '30';
     document.getElementById('filtroRango').value = dias;
     cargarDatos(dias).then(d => render(d)).catch(e => {
@@ -358,5 +325,3 @@ if (params.get('clave')) {
 </script>
 </body>
 </html>
-<?php
-exit;
