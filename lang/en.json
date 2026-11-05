@@ -346,8 +346,8 @@
             "como_jugarla": "How to play it: {tema} tactics",
             "ver_todas": "See all {categoria} themes",
             "tambien": "You may also like",
-            "titulo": "{tema} — 20 items to play Draft 20",
-            "meta_desc": "The 20 items in {tema} in Draft 20. Free turn-based auction for 2 players, no registration."
+            "titulo": "{tema} — Draft 20: 2-player auction game",
+            "meta_desc": "Bid on the 20 items of {tema} in Draft 20. Free turn-based auction for 2 players: 8 rounds, 20 coins, no registration."
         },
         "categoria": {
             "truco": "Auction tip for {categoria}",
@@ -663,6 +663,7 @@
         "peliculas": "Movies",
         "vacaciones": "Vacation",
         "futbol": "Soccer",
+        "nfl": "NFL",
         "videojuegos": "Video games",
         "poderes": "Iconic Powers",
         "atraco": "Heist",
@@ -680,6 +681,7 @@
         "musica": "Music",
         "series": "TV Series",
         "anime": "Anime",
+        "series_streaming": "Streaming Series",
         "comics": "Comics",
         "juegos_mesa": "Board Games",
         "libros": "Books",

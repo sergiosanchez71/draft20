@@ -30,6 +30,7 @@ return [
         ['id' => 'peliculas',     'emoji' => '🎬'],
         ['id' => 'series',        'emoji' => '📺'],
         ['id' => 'anime',         'emoji' => '🌸', 'destacado' => true],
+        ['id' => 'series_streaming', 'emoji' => '📺', 'destacado' => true],
         ['id' => 'comics',        'emoji' => '💥'],
         ['id' => 'libros',        'emoji' => '📚'],
         ['id' => 'musica',        'emoji' => '🎸'],
@@ -57,6 +58,7 @@ return [
     ]],
     ['id' => 'deporte', 'emoji' => '⚽', 'tematicas' => [
         ['id' => 'futbol',      'emoji' => '⚽', 'destacado' => true],
+        ['id' => 'nfl',         'emoji' => '🏈', 'destacado' => true],
         ['id' => 'nba',         'emoji' => '🏀'],
         ['id' => 'tenis',       'emoji' => '🎾'],
         ['id' => 'boxeo',       'emoji' => '🥊'],

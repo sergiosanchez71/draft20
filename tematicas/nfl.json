@@ -1,0 +1,24 @@
+{
+  "items": [
+    {"id": "nfl_kansas_city_chiefs", "emoji": "🏈"},
+    {"id": "nfl_super_bowl", "emoji": "🏆"},
+    {"id": "nfl_patrick_mahomes", "emoji": "🦬"},
+    {"id": "nfl_dallas_cowboys", "emoji": "⭐"},
+    {"id": "nfl_san_francisco_49ers", "emoji": "💎"},
+    {"id": "nfl_tom_brady", "emoji": "🐐"},
+    {"id": "nfl_lamar_jackson", "emoji": "⚡"},
+    {"id": "nfl_green_bay_packers", "emoji": "🧀"},
+    {"id": "nfl_pittsburgh_steelers", "emoji": "⚒️"},
+    {"id": "nfl_chicago_bears", "emoji": "🏘️"},
+    {"id": "nfl_new_england_patriots", "emoji": "🇺🇸"},
+    {"id": "nfl_quarterback", "emoji": "🎯"},
+    {"id": "nfl_touchdown", "emoji": "🏅"},
+    {"id": "nfl_draft", "emoji": "📋"},
+    {"id": "nfl_sunday_night", "emoji": "🌙"},
+    {"id": "nfl_tailgate", "emoji": "🍔"},
+    {"id": "nfl_cheerleader", "emoji": "📣"},
+    {"id": "nfl_referee", "emoji": "🦓"},
+    {"id": "nfl_instant_replay", "emoji": "📺"},
+    {"id": "nfl_hail_mary", "emoji": "🙏"}
+  ]
+}

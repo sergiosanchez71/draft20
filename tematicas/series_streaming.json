@@ -1,0 +1,24 @@
+{
+  "items": [
+    {"id": "ss_breaking_bad", "emoji": "🧪"},
+    {"id": "ss_stranger_things", "emoji": "🎄"},
+    {"id": "ss_game_of_thrones", "emoji": "🐉"},
+    {"id": "ss_the_sopranos", "emoji": "🍝"},
+    {"id": "ss_wire", "emoji": "🔍"},
+    {"id": "ss_cher_nobyl", "emoji": "☢️"},
+    {"id": "ss_dark", "emoji": "⏳"},
+    {"id": "ss_peakys", "emoji": "👑"},
+    {"id": "ss_office", "emoji": "📎"},
+    {"id": "ss_friends", "emoji": "☕"},
+    {"id": "ss_rick_morty", "emoji": "🌀"},
+    {"id": "ss_lacasadepapel", "emoji": "🎭"},
+    {"id": "ss_squid_game", "emoji": "🦑"},
+    {"id": "ss_the_crown", "emoji": "👑"},
+    {"id": "ss_mandalorian", "emoji": "🪦"},
+    {"id": "ss_last_of_us", "emoji": "🍄"},
+    {"id": "ss_wednesday", "emoji": "🖤"},
+    {"id": "ss_succession", "emoji": "💼"},
+    {"id": "ss_euphoria", "emoji": "💎"},
+    {"id": "ss_better_call_saul", "emoji": "📞"}
+  ]
+}

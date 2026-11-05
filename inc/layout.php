@@ -91,9 +91,13 @@ function mapa_tematicas(): array
     return $map;
 }
 
-/** IDs de ⭐ Destacados en orden de presentación (fuente única SSR + JS vía window.__DESTACADOS). */
+/** IDs de ⭐ Destacados en orden de presentación, diferenciados por idioma (fuente única SSR + JS vía window.__DESTACADOS). */
 function destacados_ids(): array
 {
+    $lang = idioma_actual();
+    if ($lang === 'en') {
+        return ['pokemon', 'marvel_dc', 'star_wars', 'harry_potter', 'disney', 'nfl', 'nba', 'f1', 'series_streaming', 'peliculas', 'series', 'anime', 'sushi', 'tacos', 'hamburguesa', 'pizza', 'videojuegos', 'gta_vi', 'mundial_2026', 'futbol', 'tenis', 'dragon_ball', 'one_piece', 'pop_stars', 'kpop', 'anime_moderno'];
+    }
     return ['mundial_2026', 'gta_vi', 'la_velada', 'pizza', 'hamburguesa', 'anime', 'kpop', 'padel', 'tacos', 'marvel_dc', 'harry_potter', 'star_wars', 'pokemon', 'futbol', 'videojuegos', 'anime_moderno', 'freidora_aire', 'pokemon_legendarios', 'sandwich', 'acampada', 'helado', 'futbol_historicos', 'freestylers', 'raperos'];
 }
 

@@ -71,6 +71,28 @@ return [
         ],
     ],
 
+    'nfl' => [
+        'descripcion' => 'La NFL es mucho más que un deporte: es espectáculo, estrategia y espectáculo medio tiempo. Aquí pujas por los equipos más icónicos (Kansas City Chiefs, Dallas Cowboys, San Francisco 49ers), por leyendas como Patrick Mahomes y Tom Brady, y por momentos que definen la temporada: el Super Bowl, el draft, el Hail Mary y el tailgate antes del partido. Cada ronda es una jugada de ajedrez con 20 monedas y 8 rondas de subasta. Ideal para quienes entienden que en el fútbol americano, como en Draft 20, el presupuesto es tan importante como la jugada.',
+        'preguntas' => [
+            ['q' => '¿Qué hace especial a la temática NFL?', 'a' => 'Combina equipos, jugadores, posiciones y momentos icónicos de la liga de fútbol americano más importante del mundo, con el Super Bowl como plato fuerte.'],
+            ['q' => '¿Quién es el ítem más valioso?', 'a' => 'Patrick Mahomes y Tom Brady suelen liderar las pujas, con el Super Bowl muy cerca.'],
+            ['q' => '¿Qué es un Hail Mary?', 'a'=> 'Un pase desesperado de última instancia: en la subasta es el ítem que arriesga todo por una jugada épica.'],
+            ['q' => '¿Necesitas saber de fútbol americano?', 'a' => 'No: los nombres de equipos y el Super Bowl son reconocibles globalmente, y el resto lo pone la estrategia de puja.']
+        ],
+        'tactica' => 'La NFL premia quien gestiona el presupuesto como un general manager. Deja que el rival pague caro por los Chiefs o los Cowboys en las primeras rondas mientras tú cierras con equipos sólidos a mitad de precio. El draft y el Super Bowl son tus infladores: nadie los deja pasar, así que úsalos para forzar sobrecostes. Y guarda monedas para el final, donde los equipos medianos pueden decidir la partida.'
+    ],
+
+    'series_streaming' => [
+        'descripcion' => 'Breaking Bad, Stranger Things, Game of Thrones, The Sopranos, The Wire, Chernobyl, Dark, Peaky Blinders, The Office, Friends, Rick and Morty, La Casa de Papel, El Juego del Calamar, The Crown, The Mandalorian, The Last of Us, Wednesday, Succession, Euphoria y Better Call Saul compiten en la misma subasta. Es la temática para quienes discuten series con pasión: cada ítem trae su propio fandom, sus spoilers y sus debates interminables. Desde los dramas de prestige hasta los fenómenos de Netflix, aquí se juega con conocimiento cultural y con estrategia de puja.',
+        'preguntas' => [
+            ['q' => '¿Qué series aparecen en la temática?', 'a' => 'Series de todos los géneros y plataformas: dramas de HBO, fenómenos de Netflix, comedias clásicas y thrillers actuales.'],
+            ['q' => '¿Cuál es la serie más valiosa?', 'a' => 'Breaking Bad y Game of Thrones suelen liderar las pujas, con Stranger Things muy cerca.'],
+            ['q' => '¿Hay series de comedia?', 'a' => 'Sí: The Office y Friends son valores seguros que suelen salir más baratos de lo que valen.'],
+            ['q' => '¿Hace falta haber visto todas las series?', 'a' => 'No: basta reconocer los títulos más famosos. El resto lo pone la estrategia de subasta.']
+        ],
+        'tactica' => 'Las series se juegan con el hype y la nostalgia. Deja que el rival se desangre por Game of Thrones o Stranger Things mientras tú cierras con The Wire, The Sopranos o Chernobyl, que deciden igual por menos. Las series de culto (The Office, Friends, Rick and Morty) son tus infladores perfectos: casi nadie las pelea en serio pero todos las reconocen. Y ataca a los fenómenos recientes (El Juego del Calamar, Wednesday): vienen con precio de estreno y rendimiento real.'
+    ],
+
     // ===================== OCIO =====================
     'videojuegos' => [
         'descripcion' => 'Elden Ring, GTA V, Zelda: Breath of the Wild y Red Dead Redemption 2 frente a Big Rigs y Sonic 2006. La temática para discutir sobre obras maestras y desastres, y para descubrir cuál de los dos jugadores recuerda los lanzamientos con más cariño.',

@@ -346,8 +346,8 @@
             "como_jugarla": "Cómo jugarla: táctica de {tema}",
             "ver_todas": "Ver todas las temáticas de {categoria}",
             "tambien": "También te puede interesar",
-            "titulo": "{tema} — 20 ítems para jugar a Draft 20",
-            "meta_desc": "Los 20 ítems de {tema} en Draft 20. Subasta por turnos gratis para 2 jugadores, sin registro."
+            "titulo": "{tema} — Draft 20: juego de subasta para 2 jugadores",
+            "meta_desc": "Puja por los 20 ítems de {tema} en Draft 20. Subasta por turnos para 2 jugadores: 8 rondas, 20 monedas, sin registro."
         },
         "categoria": {
             "truco": "Truco de subasta en {categoria}",
@@ -597,6 +597,7 @@
         "peliculas": "Películas",
         "vacaciones": "Vacaciones",
         "futbol": "Fútbol",
+        "nfl": "Fútbol Americano NFL",
         "videojuegos": "Videojuegos",
         "poderes": "Poderes Icónicos",
         "atraco": "Atraco",
@@ -614,6 +615,7 @@
         "musica": "Música",
         "series": "Series",
         "anime": "Anime",
+        "series_streaming": "Series de Streaming",
         "comics": "Cómics",
         "juegos_mesa": "Juegos de Mesa",
         "libros": "Libros",
