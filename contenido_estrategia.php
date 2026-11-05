@@ -12,9 +12,9 @@
 declare(strict_types=1);
 
 return [
-    'titulo' => 'Cómo jugar a Draft 20 y ganar: reglas y estrategia completa',
-    'desc' => 'Guía completa de Draft 20: concepto, reglas de las 8 rondas, gestión de las 20 monedas, psicología de la puja (farol, inflar precios, forzar sobrecostes) y estrategias por temática.',
-    'h1' => 'Cómo jugar a Draft 20 y ganar: estrategia completa',
+    'titulo' => 'Cómo jugar a Draft 20: reglas y estrategia de subasta',
+    'desc' => '8 rondas, 20 monedas y una temática. Aprende las tácticas de puja para ganar a tu oponente en Draft 20. Juega gratis sin registrarte.',
+    'h1' => 'Cómo jugar a Draft 20: reglas y estrategia de subasta',
     'fecha' => '2026-09-28',
     'intro' => [
         'Draft 20 es un duelo de subastas para dos jugadores: 8 rondas, 20 monedas por cabeza y una temática por partida. Cada ronda sale un ítem a subasta, pujáis por turnos y quien se lo lleva lo añade a su equipo de 4. Gana quien suma más estrellas al final. Las reglas se aprenden en dos minutos; ganar de forma consistente exige gestionar la banca, leer al rival y conocer la temática.',

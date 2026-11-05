@@ -6,9 +6,9 @@ declare(strict_types=1);
 
 return [
     'juegos-por-whatsapp' => [
-        'titulo' => 'Juegos para jugar con un amigo por WhatsApp (sin instalar nada)',
-        'desc' => 'Cinco juegos para jugar con un amigo por WhatsApp sin instalar nada: cómo se organiza la partida, qué necesitas y cuánto dura cada uno.',
-        'h1' => 'Juegos para jugar con un amigo por WhatsApp',
+        'titulo' => 'Juegos para dos por WhatsApp sin instalar nada — Draft 20',
+        'desc' => 'Draft 20 y otros 4 juegos para jugar con un amigo por WhatsApp, sin registro ni descarga. Dos móviles, 5 minutos y una subasta por turnos.',
+        'h1' => 'Juegos para dos por WhatsApp sin instalar nada',
         'fecha' => '2026-09-17',
         'secciones' => [
             [

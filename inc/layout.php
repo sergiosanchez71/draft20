@@ -13,7 +13,7 @@ const SITE_URL   = 'https://draft20.es';
 const SITE_NOMBRE = 'Draft 20';
 const SITE_EMAIL = 'contacto@draft20.es';
 // Versión visible de la app (mantener en sync con package.json).
-const APP_VERSION = '1.4.3';
+const APP_VERSION = '1.4.4';
 // GameDistribution: integración self-hosted (wrapper iframe → esta web).
 const GD_GAME_ID = '949d5680eca140e399c4b8d028e696fc';
 const ADSENSE_CLIENT = 'ca-pub-9504493922636861';
