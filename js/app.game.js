@@ -700,7 +700,7 @@
      * Si la partida terminó, envía además una copia anónima al servidor
      * (sin nombres, IDs ni códigos) para las estadísticas de calibración.
      */
-    function guardarPartidaReferenciaSiToca() {
+    async function guardarPartidaReferenciaSiToca() {
         if (!state.bot || state.partidaGuardada || state.jugadorSlot === null) return;
         const s = state.sala;
         if (!s || (s.estado !== 'finalizada' && s.estado !== 'abandonada')) return;
@@ -766,6 +766,12 @@
                 keepalive: true,
                 body: JSON.stringify(payload),
             }).catch(function () { /* best-effort */ });
+
+            // Racha diaria (partida contra el bot terminada).
+            try {
+                const uid = D.ensureUserId();
+                if (uid) await D.registrarRachaDia(uid, D.fechaHoyLocal());
+            } catch (e) { /* ignore */ }
         } catch (e) { /* ignore */ }
     }
 
@@ -1612,6 +1618,10 @@
         { id: 'austero', icono: '💰', test: function (r, mi, ri, gasto) { return r === 'win' && gasto <= 8; } },
         { id: 'derrochador', icono: '💸', test: function (r, mi, ri, gasto) { return r === 'win' && gasto >= 18; } },
         { id: 'racha', icono: '🔥', test: function () { return (loadStats().streak || 0) >= 3; } },
+        { id: 'racha_5', icono: '🔥', test: function () { const v = parseInt(localStorage.getItem('draft20_racha_actual') || '0', 10); return v >= 5; } },
+        { id: 'racha_10', icono: '🔥', test: function () { const v = parseInt(localStorage.getItem('draft20_racha_actual') || '0', 10); return v >= 10; } },
+        { id: 'racha_25', icono: '🔥', test: function () { const v = parseInt(localStorage.getItem('draft20_racha_actual') || '0', 10); return v >= 25; } },
+        { id: 'racha_50', icono: '🔥', test: function () { const v = parseInt(localStorage.getItem('draft20_racha_actual') || '0', 10); return v >= 50; } },
         { id: 'veterano', icono: '🎖️', test: function () { const s = loadStats(); return ((s.wins || 0) + (s.losses || 0) + (s.draws || 0)) >= 10; } },
         { id: 'primera_victoria', icono: '🥇', test: function (r) { return r === 'win'; } },
         { id: 'serie_ganada', icono: '🏆', test: function () { return !!(state.serieFinal && state.serieFinal.ganada === 'mio'); } },
@@ -1758,6 +1768,31 @@
             }
         }
         registrarResultado(resultado);
+
+        // Registrar racha diaria (partida terminada, humana o contra bot).
+        try {
+            const uid = D.ensureUserId();
+            if (uid) D.registrarRachaDia(uid, D.fechaHoyLocal());
+        } catch (e) { /* ignore */ }
+
+        // Mostrar mensaje de racha en la pantalla final.
+        try {
+            const uid = D.ensureUserId();
+            if (uid) {
+                (async function () {
+                    const r = await D.consultarRacha(uid);
+                    if (r && r.racha_actual > 0) {
+                        const rachaBlock = el('div', { class: 'text-center text-xs text-slate-400 mb-4 font-mono' },
+                            r.racha_actual === 1
+                                ? t('ui.juego.racha_iniciada')
+                                : t('ui.juego.racha_extendida', { dias: r.racha_actual })
+                        );
+                        const bottom = document.getElementById('finalBottom');
+                        if (bottom) bottom.insertBefore(rachaBlock, bottom.firstChild);
+                    }
+                })();
+            }
+        } catch (e) { /* ignore */ }
 
         const header = el('div', { class: 'text-center mb-4' }, [
             el('div', { class: 'text-4xl mb-2' }, '🏆'),

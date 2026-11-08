@@ -195,6 +195,61 @@
         return { wins: 0, losses: 0, draws: 0, streak: 0, best: 0 };
     }
     function saveStats(s) { try { localStorage.setItem('draft20_stats', JSON.stringify(s)); } catch (e) { /* ignore */ } }
+
+    // =================== identidad de usuario anónima (racha) ===================
+    /** UUID v4 sencillo (suficiente para identificar el dispositivo/navegador). */
+    function generarUuid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    /** Devuelve (y crea si hace falta) el user_id anónimo guardado en localStorage. */
+    function ensureUserId() {
+        try {
+            let id = localStorage.getItem('draft20_usuario');
+            if (!id) {
+                id = generarUuid();
+                localStorage.setItem('draft20_usuario', id);
+            }
+            return id;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /** Fecha de hoy en YYYY-MM-DD (hora local del dispositivo). */
+    function fechaHoyLocal() {
+        const ahora = new Date();
+        const y = ahora.getFullYear();
+        const m = String(ahora.getMonth() + 1).padStart(2, '0');
+        const d = String(ahora.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + d;
+    }
+
+    /** Registra que el usuario jugó una partida hoy (fire-and-forget, sin bloquear la UI). */
+    async function registrarRachaDia(userId, fecha) {
+        if (!userId) return;
+        try {
+            await api('POST', 'api/racha.php', { user_id: userId, fecha: fecha });
+            const r = await consultarRacha(userId);
+            if (r && r.racha_actual > 0) {
+                try { localStorage.setItem('draft20_racha_actual', String(r.racha_actual)); } catch (e) { /* ignore */ }
+            }
+        } catch (e) { /* el servidor no debe romper la experiencia de juego */ }
+    }
+
+    /** Consulta la racha del usuario. Devuelve null si falla. */
+    async function consultarRacha(userId) {
+        if (!userId) return null;
+        try {
+            const r = await api('GET', 'api/racha.php?user_id=' + encodeURIComponent(userId));
+            return r.ok ? r : null;
+        } catch (e) { return null; }
+    }
+
     function registrarResultado(resultado) {
         if (state.statsRegistradas || state.bot) return;
         state.statsRegistradas = true;
@@ -227,7 +282,7 @@
         try { localStorage.setItem('draft20_nombre', (nombre || '').trim()); } catch (e) { /* ignore */ }
     }
 
-    const LOGROS_IDS = ['coleccionista', 'cazador', 'austero', 'derrochador', 'racha', 'veterano', 'primera_victoria', 'serie_ganada', 'explorador', 'verdugo'];
+    const LOGROS_IDS = ['coleccionista', 'cazador', 'austero', 'derrochador', 'racha', 'racha_5', 'racha_10', 'racha_25', 'racha_50', 'veterano', 'primera_victoria', 'serie_ganada', 'explorador', 'verdugo'];
 
     /** Slug del icono: codepoints en hex sin FE0F, unidos por '-'. */
     function emojiSlug(emoji) {
@@ -277,15 +332,15 @@
         { id: 'austero', icono: '💰' },
         { id: 'derrochador', icono: '💸' },
         { id: 'racha', icono: '🔥' },
+        { id: 'racha_5', icono: '🔥' },
+        { id: 'racha_10', icono: '🔥' },
+        { id: 'racha_25', icono: '🔥' },
+        { id: 'racha_50', icono: '🔥' },
         { id: 'veterano', icono: '🎖️' },
         { id: 'primera_victoria', icono: '🥇' },
         { id: 'serie_ganada', icono: '🏆' },
         { id: 'explorador', icono: '🗺️' },
         { id: 'verdugo', icono: '⚔️' },
-        { id: 'torre_piso3', icono: '🪜' },
-        { id: 'torre_piso7', icono: '🗼' },
-        { id: 'torre_piso10', icono: '👑' },
-        { id: 'torre_intocable', icono: '💎' },
     ];
     function logroIcono(id) {
         for (let i = 0; i < LOGROS_META.length; i++) {
@@ -469,6 +524,8 @@
             t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 })));
         filas.push(el('div', { class: 'text-center text-xs text-slate-400 mb-3' },
             t('ui.lobby.progreso_racha', { actual: st.streak || 0, mejor: st.best || 0 })));
+        filas.push(el('div', { class: 'text-center text-[10px] text-slate-500 mb-3' },
+            t('ui.lobby.racha_aviso_local')));
         if (serie) {
             filas.push(el('div', { class: 'text-center text-xs text-amber-300 mb-3' },
                 t('ui.lobby.progreso_serie', { rival: serie.rival, mio: serie.mio || 0, suyos: serie.rivalPuntos || 0 })));
@@ -899,6 +956,8 @@
                 hayStats
                     ? t('ui.lobby.stats_record', { v: st.wins || 0, d: st.losses || 0, e: st.draws || 0 })
                     : ''),
+            el('span', { id: 'lobbyRachaDia', class: 'ml-2 text-amber-400 text-xs font-bold hidden' }, '🔥 0'),
+            el('span', { id: 'lobbyRachaCuentaAtras', class: 'ml-2 text-slate-400 text-xs hidden' }, ''),
         ];
         // En GD no se ofrece instalar la PWA: el juego ya vive en el portal.
         if (!GD_MODE) cabeceraHijos.push(btnInstalar);
@@ -1060,6 +1119,54 @@
             if (!localStorage.getItem('draft20_reglas')) showRulesModal();
         } catch (e) { /* ignore */ }
 
+        // Racha diaria: mostrar en el header si hay user_id y racha > 0.
+        const uid = ensureUserId();
+        if (uid && !GD_MODE) {
+            consultarRacha(uid).then(function(rachaData) {
+                const elRacha = document.getElementById('lobbyRachaDia');
+                const elCuentaAtras = document.getElementById('lobbyRachaCuentaAtras');
+                if (elRacha && rachaData && rachaData.racha_actual > 0) {
+                    elRacha.classList.remove('hidden');
+                    elRacha.textContent = '🔥 ' + rachaData.racha_actual;
+                    if (rachaData.racha_maxima > 0) {
+                        elRacha.title = t('ui.lobby.racha_mejor', { mejor: rachaData.racha_maxima });
+                    }
+
+                    // Si no jugó hoy, mostrar cuenta atrás hasta medianoche local.
+                    if (!rachaData.jugado_hoy && elCuentaAtras) {
+                        let intervaloCuentaAtras = null;
+                        function actualizarCuentaAtras() {
+                            const ahora = new Date();
+                            const medianoche = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() + 1, 0, 0, 0);
+                            const segundos = Math.max(0, Math.floor((medianoche - ahora) / 1000));
+                            if (segundos <= 0) {
+                                elCuentaAtras.classList.add('hidden');
+                                if (intervaloCuentaAtras) clearInterval(intervaloCuentaAtras);
+                                return;
+                            }
+                            const h = String(Math.floor(segundos / 3600)).padStart(2, '0');
+                            const m = String(Math.floor((segundos % 3600) / 60)).padStart(2, '0');
+                            const s = String(segundos % 60).padStart(2, '0');
+                            elCuentaAtras.classList.remove('hidden');
+                            elCuentaAtras.textContent = t('ui.lobby.racha_cuenta_atras', { tiempo: h + ':' + m + ':' + s });
+                        }
+                        actualizarCuentaAtras();
+                        intervaloCuentaAtras = setInterval(actualizarCuentaAtras, 1000);
+                    } else if (elCuentaAtras) {
+                        elCuentaAtras.classList.add('hidden');
+                    }
+                } else if (elRacha) {
+                    elRacha.classList.add('hidden');
+                    if (elCuentaAtras) elCuentaAtras.classList.add('hidden');
+                }
+            }).catch(function() { /* ignore */ });
+        } else {
+            const elRacha = document.getElementById('lobbyRachaDia');
+            const elCuentaAtras = document.getElementById('lobbyRachaCuentaAtras');
+            if (elRacha) elRacha.classList.add('hidden');
+            if (elCuentaAtras) elCuentaAtras.classList.add('hidden');
+        }
+
         // Aviso para gd.js: el hueco del lobby acaba de (re)pintarse.
         try { document.dispatchEvent(new CustomEvent('d20:lobby')); } catch (e) { /* ignore */ }
     }
@@ -1179,6 +1286,11 @@
         box.textContent = msg;
         box.classList.remove('hidden');
         setTimeout(function () { box.classList.add('hidden'); }, 4000);
+    }
+
+    /** Devuelve el idioma actual de la interfaz (es o en). */
+    function obtenerIdioma() {
+        return window.D20_LANG || 'es';
     }
 
     async function onCreate() {
@@ -1687,6 +1799,8 @@
         $: $,
         loadSession: loadSession, saveSession: saveSession, clearSession: clearSession,
         loadStats: loadStats, registrarResultado: registrarResultado,
+        ensureUserId: ensureUserId, fechaHoyLocal: fechaHoyLocal,
+        registrarRachaDia: registrarRachaDia, consultarRacha: consultarRacha,
         TEMATICA_RANDOM: TEMATICA_RANDOM,
         resolverTematica: resolverTematica,
         renderTematicaSelector: renderTematicaSelector,

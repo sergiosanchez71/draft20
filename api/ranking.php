@@ -25,6 +25,67 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/ranking_lib.php';
 
+if (!function_exists('leerFechasPorUsuario')) {
+    /**
+     * Lee todas las fechas únicas por user_id del log de racha.
+     * Devuelve un mapa [user_id => [fecha1, fecha2, ...]].
+     */
+    function leerFechasPorUsuario(): array {
+        $porUsuario = [];
+        $ruta = __DIR__ . '/datos/racha.jsonl';
+        if (!is_file($ruta)) {
+            return $porUsuario;
+        }
+        $fp = @fopen($ruta, 'rb');
+        if ($fp === false) {
+            return $porUsuario;
+        }
+        if (flock($fp, LOCK_SH)) {
+            while (($linea = fgets($fp)) !== false) {
+                $r = json_decode(trim($linea), true);
+                if (is_array($r) && isset($r['user_id'], $r['fecha'])) {
+                    $uid = (string) $r['user_id'];
+                    $f   = (string) $r['fecha'];
+                    if ($uid !== '' && $f !== '' && !in_array($f, $porUsuario[$uid] ?? [], true)) {
+                        $porUsuario[$uid][] = $f;
+                    }
+                }
+            }
+            flock($fp, LOCK_UN);
+        }
+        fclose($fp);
+        foreach ($porUsuario as $uid => $fechas) {
+            sort($porUsuario[$uid]);
+        }
+        return $porUsuario;
+    }
+}
+
+if (!function_exists('rachaActual')) {
+    /**
+     * Calcula la racha actual (días consecutivos hacia atrás desde hoy).
+     */
+    function rachaActual(array $fechas, string $hoy): int {
+        $ayer = date('Y-m-d', strtotime($hoy . ' -1 day'));
+        $jugadoHoy = in_array($hoy, $fechas, true);
+        if (!$jugadoHoy && !in_array($ayer, $fechas, true)) {
+            return 0;
+        }
+        $racha = 1;
+        $cursor = $jugadoHoy ? $hoy : $ayer;
+        while (true) {
+            $siguiente = date('Y-m-d', strtotime($cursor . ' -1 day'));
+            if (in_array($siguiente, $fechas, true)) {
+                $racha++;
+                $cursor = $siguiente;
+            } else {
+                break;
+            }
+        }
+        return $racha;
+    }
+}
+
 if (!function_exists('responder')) {
     function responder(array $payload, int $code = 200): void {
         http_response_code($code);
@@ -53,4 +114,17 @@ $agg = ranking_humanas([
     __DIR__ . '/datos/partidas.jsonl',
 ], $dias);
 
-responder(['ok' => true, 'dias' => $dias] + $agg, 200);
+// Distribución de rachas actuales: { "1": 5, "2": 3, "50+": 1 }.
+$porUsuario = leerFechasPorUsuario();
+$hoy = date('Y-m-d');
+$distribucion = [];
+foreach ($porUsuario as $fechas) {
+    $racha = rachaActual($fechas, $hoy);
+    if ($racha > 0) {
+        $clave = $racha >= 50 ? '50+' : (string) $racha;
+        $distribucion[$clave] = ($distribucion[$clave] ?? 0) + 1;
+    }
+}
+ksort($distribucion, SORT_STRING);
+
+responder(['ok' => true, 'dias' => $dias] + $agg + ['rachaDiasXUsuarios' => $distribucion], 200);
